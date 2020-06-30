@@ -1,0 +1,29 @@
+Package: ISAnalytics
+Title: Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies.
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given = "Andrea",
+           family = "Calabria",
+           role = c("aut", "cre"),
+           email = "calabria.andrea@hsr.it"
+    )
+     person(given = "Giulio",
+           family = "Spinozzi",
+           role = c("aut"),
+           email = "spinozzi.giulio@hsr.it"
+    )
+    person(given = "Giulia",
+           family = "Pais",
+           role = c("aut"),
+           email = "giuliapais1@gmail.com",
+          )
+          )
+Description: ISAnalytics is an R package developed to analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies.
+License: CC BY 4.0
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
+Suggests: 
+    testthat,
+    covr
