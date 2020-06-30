@@ -6,12 +6,12 @@ Authors@R: c(
            family = "Calabria",
            role = c("aut", "cre"),
            email = "calabria.andrea@hsr.it"
-    )
+    ),
      person(given = "Giulio",
            family = "Spinozzi",
            role = c("aut"),
            email = "spinozzi.giulio@hsr.it"
-    )
+    ),
     person(given = "Giulia",
            family = "Pais",
            role = c("aut"),
