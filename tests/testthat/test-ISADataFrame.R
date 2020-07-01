@@ -48,9 +48,28 @@ test_that("new_ISADataFrame works when the input is a dataframe", {
   expect_equal(attr(isadf, "mandatoryVars"), c("chr", "integration_locus", "strand"))
 })
 
+test_that("ISADataFrame is extensible", {
+  subClass <- function(x, y) {
+    new_ISADataFrame(x, y = y, class="subClass")
+  }
+  testSub <- subClass(test_tibble_correct, c("one, two"))
+  expect_s3_class(testSub, c("subClass", "ISADataFrame"))
+  expect_s3_class(testSub[1], c("subClass", "ISADataFrame"))
+})
+
 #--------------------------------------------------------------------------------------------------------------------------#
 # Tests validate_ISADataFrame
 #--------------------------------------------------------------------------------------------------------------------------#
+#---Creating structures with NO exp data---#
+noExpList <- list(chr = c(as.character(1:10)), integration_locus = runif(10, min=100, max =10000),
+                  strand = sample(c("+", "-"), 10, replace = TRUE))
+noExpListWithMeta <- list(chr = c(as.character(1:10)), integration_locus = runif(10, min=100, max =10000),
+                          strand = sample(c("+", "-"), 10, replace = TRUE), meta1 = rep_len("met1", 10))
+noExpTibble <- as_tibble(noExpList)
+noExpTibbleWithMeta <- as_tibble(noExpListWithMeta)
+noExpDf <- as.data.frame(noExpList)
+noExpDfWithMeta <- as.data.frame(noExpListWithMeta)
+
 test_that("validate_ISADataFrame passes with correctly built ISAdf", {
   isadf <- new_ISADataFrame(listToTibble_correct) #With list
   expect_true(validate_ISADataFrame(isadf))
@@ -93,15 +112,6 @@ test_that("validate_ISADataFrame throws a warning if declared metadata variables
 })
 
 test_that("Validate_ISADataFrame fails if no experimental columns are detected", {
-  #---Creating structures with NO exp data---#
-  noExpList <- list(chr = c(as.character(1:10)), integration_locus = runif(10, min=100, max =10000),
-                    strand = sample(c("+", "-"), 10, replace = TRUE))
-  noExpListWithMeta <- list(chr = c(as.character(1:10)), integration_locus = runif(10, min=100, max =10000),
-                            strand = sample(c("+", "-"), 10, replace = TRUE), meta1 = rep_len("met1", 10))
-  noExpTibble <- as_tibble(noExpList)
-  noExpTibbleWithMeta <- as_tibble(noExpListWithMeta)
-  noExpDf <- as.data.frame(noExpList)
-  noExpDfWithMeta <- as.data.frame(noExpListWithMeta)
 
   isadf <- new_ISADataFrame(noExpList) # with list
   isadf2 <- new_ISADataFrame(noExpListWithMeta, meta = "meta1") # with list and meta
@@ -150,4 +160,142 @@ test_that("Validate_ISADataFrame throws a warning if exp data is detected but it
                  regexp = "Validation of ISADataFrame - warning: found experimental columns with non numeric type")
   expect_warning(validate_ISADataFrame(isadf2),
                  regexp = "Validation of ISADataFrame - warning: found experimental columns with non numeric type")
+})
+
+#--------------------------------------------------------------------------------------------------------------------------#
+# Tests ISADataFrame()
+#--------------------------------------------------------------------------------------------------------------------------#
+listToTibble_correctMeta <- list(chr = c(as.character(1:10)), integration_locus = runif(10, min=100, max =10000),
+                             strand = sample(c("+", "-"), 10, replace = TRUE), #mandatory vars
+                             meta1 = rep_len("m1", 10), # 1 metadata column
+                             exp_1 = runif(10, min = 0, max = 10000),
+                             exp_2 = runif(10, min = 0, max = 10000),
+                             exp_3 = runif(10, min = 0, max = 10000))
+test_df_correctMeta <- as.data.frame(listToTibble_correctMeta)
+test_tibble_correctMeta <- as_tibble(listToTibble_correctMeta)
+
+listToTibble_diffLeng <- list(chr = c(as.character(1:10)), integration_locus = runif(10, min=100, max =10000),
+                                 strand = sample(c("+", "-"), 10, replace = TRUE), #mandatory vars
+                                 meta1 = rep_len("m1", 10), # 1 metadata column
+                                 exp_1 = runif(5, min = 0, max = 10000),
+                                 exp_2 = runif(10, min = 0, max = 10000),
+                                 exp_3 = runif(8, min = 0, max = 10000))
+
+listToTibble_correctNonNum <- list(chr = c(as.character(1:10)), integration_locus = runif(10, min=100, max =10000),
+                                 strand = sample(c("+", "-"), 10, replace = TRUE), #mandatory vars
+                                 nonNumericdata = rep_len("random", 10), # 1 non numeric column
+                                 exp_1 = runif(10, min = 0, max = 10000),
+                                 exp_2 = runif(10, min = 0, max = 10000),
+                                 exp_3 = runif(10, min = 0, max = 10000))
+test_df_correctNonNum <- as.data.frame(listToTibble_correctNonNum)
+test_tibble_correctNonNum <- as_tibble(listToTibble_correctNonNum)
+
+listToTibble_correctAll <- list(chr = c(as.character(1:10)), integration_locus = runif(10, min=100, max =10000),
+                                strand = sample(c("+", "-"), 10, replace = TRUE), #mandatory vars
+                                meta1 = rep_len("m1", 10), # 1 metadata column
+                                nonNumericdata = rep_len("random", 10), # 1 non numeric column
+                                exp_1 = runif(5, min = 0, max = 10000), # different lenghts
+                                exp_2 = runif(10, min = 0, max = 10000),
+                                exp_3 = runif(8, min = 0, max = 10000))
+
+test_that("ISADataFrame with try.correct is able to fix list element lengths", {
+  expect_message(isadf <- ISADataFrame(listToTibble_diffLeng, metadata = "meta1"),
+                 regexp = "Warning - introduced NAs to fix issues in provided list")
+  isadf <- ISADataFrame(listToTibble_diffLeng, metadata = "meta1")
+  expect_s3_class(isadf, "ISADataFrame")
+  expect_true(any(is.na(isadf$exp_1)))
+  expect_true(any(is.na(isadf$exp_3)))
+  expect_false(any(is.na(isadf$exp_2)))
+})
+
+test_that("ISADataFrame without try.correct is not able to fix list element lengths and fails", {
+  expect_error(isadf <- ISADataFrame(listToTibble_diffLeng, metadata = "meta1", try.correct = FALSE))
+})
+
+test_that("ISADataFrame() fails if there are no mandatory vars", {
+  expect_error(isadf <- ISADataFrame(listToTibble_casual)) # with list
+  expect_error(isadf <- ISADataFrame(test_tibble_casual)) # with tibble
+  expect_error(isadf <- ISADataFrame(test_df_casual)) # with data.frame
+})
+
+test_that("ISADataFrame() fails if there is no experimental data", {
+  expect_error(isadf <- ISADataFrame(noExpList))
+  expect_error(isadf <- ISADataFrame(noExpListWithMeta, metadata = "meta1"))
+  expect_error(isadf <- ISADataFrame(noExpDf))
+  expect_error(isadf <- ISADataFrame(noExpDfWithMeta, metadata = "meta1"))
+  expect_error(isadf <- ISADataFrame(noExpTibble))
+  expect_error(isadf <- ISADataFrame(noExpTibbleWithMeta, metadata = "meta1"))
+})
+
+test_that("ISADataFrame() with try.correct corrects missing metadata", {
+  isadf <- ISADataFrame(listToTibble_correctMeta, metadata = c("meta1", "meta2"))
+  expect_s3_class(isadf, "ISADataFrame")
+  expect_equal(attr(isadf, "metadata"), c("meta1"))
+  expect_message(isadf <- ISADataFrame(listToTibble_correctMeta, metadata = c("meta1", "meta2")),
+                 regexp = "Auto-corrected: the input data doesn't contain the specified metadata columns")
+  isadf <- ISADataFrame(test_df_correctMeta, metadata = c("meta1", "meta2"))
+  expect_s3_class(isadf, "ISADataFrame")
+  expect_equal(attr(isadf, "metadata"), c("meta1"))
+  expect_message(isadf <- ISADataFrame(test_df_correctMeta, metadata = c("meta1", "meta2")),
+                 regexp = "Auto-corrected: the input data doesn't contain the specified metadata columns")
+  isadf <- ISADataFrame(test_tibble_correctMeta, metadata = c("meta1", "meta2"))
+  expect_s3_class(isadf, "ISADataFrame")
+  expect_equal(attr(isadf, "metadata"), c("meta1"))
+  expect_message(isadf <- ISADataFrame(test_tibble_correctMeta, metadata = c("meta1", "meta2")),
+                 regexp = "Auto-corrected: the input data doesn't contain the specified metadata columns")
+
+})
+
+test_that("ISADataFrame() without try.correct fails and doesn't correct missing metadata", {
+  expect_error(isadf <- ISADataFrame(listToTibble_correctMeta, metadata = c("meta1", "meta2"), try.correct = FALSE))
+  expect_error(isadf <- ISADataFrame(test_df_correctMeta, metadata = c("meta1", "meta2"), try.correct = FALSE))
+  expect_error(isadf <- ISADataFrame(test_tibble_correctMeta, metadata = c("meta1", "meta2"), try.correct = FALSE))
+})
+
+test_that("ISADataFrame() with try.correct corrects non numeric experimental data", {
+  isadf <- ISADataFrame(listToTibble_correctNonNum)
+  expect_s3_class(isadf, "ISADataFrame")
+  expect_equal(attr(isadf, "metadata"), c("nonNumericdata"))
+  expect_message(isadf <- ISADataFrame(listToTibble_correctNonNum),
+                 regexp = "Auto-corrected: found experimental columns with non numeric type")
+  isadf <- ISADataFrame(test_df_correctNonNum)
+  expect_s3_class(isadf, "ISADataFrame")
+  expect_equal(attr(isadf, "metadata"), c("nonNumericdata"))
+  expect_message(isadf <- ISADataFrame(test_df_correctNonNum),
+                 regexp = "Auto-corrected: found experimental columns with non numeric type")
+  isadf <- ISADataFrame(test_tibble_correctNonNum)
+  expect_s3_class(isadf, "ISADataFrame")
+  expect_equal(attr(isadf, "metadata"), c("nonNumericdata"))
+  expect_message(isadf <- ISADataFrame(test_tibble_correctNonNum),
+                 regexp = "Auto-corrected: found experimental columns with non numeric type")
+})
+
+test_that("ISADataFrame() without try.correct fails and doesn't correct non numeric experimental data", {
+  expect_error(isadf <- ISADataFrame(listToTibble_correctNonNum, try.correct = FALSE))
+  expect_error(isadf <- ISADataFrame(test_df_correctNonNum, try.correct = FALSE))
+  expect_error(isadf <- ISADataFrame(test_tibble_correctNonNum, try.correct = FALSE))
+})
+
+test_that("ISADataFrame() with try.correct is successful for all warnings", {
+  isadf <- ISADataFrame(listToTibble_correctAll, metadata = c("meta1","meta2", "meta3"))
+  expect_s3_class(isadf, "ISADataFrame")
+  expect_true(any(is.na(isadf$exp_1)))
+  expect_true(any(is.na(isadf$exp_3)))
+  expect_false(any(is.na(isadf$exp_2)))
+  expect_equal(attr(isadf, "metadata"), c("meta1","nonNumericdata"))
+  expect_message(isadf <- ISADataFrame(listToTibble_correctAll, metadata = c("meta1","meta2", "meta3")),
+                 regexp = "Auto-corrected: found experimental columns with non numeric type")
+  expect_message(isadf <- ISADataFrame(listToTibble_correctAll, metadata = c("meta1","meta2", "meta3")),
+                 regexp = "Auto-corrected: the input data doesn't contain the specified metadata columns")
+  expect_message(isadf <- ISADataFrame(listToTibble_correctAll, metadata = c("meta1","meta2", "meta3")),
+                 regexp = "Warning - introduced NAs to fix issues in provided list")
+})
+
+listToTibble_noExpOneNonNum <- list(chr = c(as.character(1:10)), integration_locus = runif(10, min=100, max =10000),
+                                   strand = sample(c("+", "-"), 10, replace = TRUE), #mandatory vars
+                                   nonNumericdata = rep_len("random", 10) # 1 non numeric column
+                                   )
+
+test_that("ISADataFrame() with try.correct is able to identify missing exp data after correction", {
+  expect_error(isadf<-ISADataFrame(listToTibble_noExpOneNonNum))
 })

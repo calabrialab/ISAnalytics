@@ -10,7 +10,7 @@ validate_ISADataFrame(x)
 \item{x}{the ISADataFrame object to validate}
 }
 \value{
-TRUE if all checks pass, error otherwise
+"TRUE" if all checks pass, error otherwise
 }
 \description{
 This is a devel function and should \strong{not} be used interactively.
@@ -23,4 +23,17 @@ both in \code{mandatoryVars} and \code{metadata} and the column contains numeric
 }
 
 If all checks pass the function returns TRUE, otherwise some kind of error is shown.
+}
+\examples{
+\dontrun{
+isadf <- new_ISADataFrame(list(chr = c(as.character(1:10)),
+integration_locus = runif(10, min=100, max =10000),
+strand = sample(c("+", "-"), 10, replace = TRUE),
+exp_1 = runif(10, min = 0, max = 10000),
+exp_2 = runif(10, min = 0, max = 10000),
+exp_3 = runif(10, min = 0, max = 10000)))
+
+validate_ISADataFrame(isadf)
+}
+
 }

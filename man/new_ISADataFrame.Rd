@@ -2,21 +2,26 @@
 % Please edit documentation in R/ISADataFrame.R
 \name{new_ISADataFrame}
 \alias{new_ISADataFrame}
-\alias{ISADataFrame}
 \title{Low-level efficient constructor for ISADataFrame objects.}
 \usage{
 new_ISADataFrame(
   x,
   mandVars = c("chr", "integration_locus", "strand"),
-  meta = character()
+  meta = character(),
+  ...,
+  class = character()
 )
 }
 \arguments{
-\item{x}{a named list}
+\item{x}{a named list, a tibble or a data.frame}
 
 \item{mandVars}{a character vector containing the names of the mandatory vars that must be present in the data frame}
 
 \item{meta}{a character vector containing the names of the variables representing metadata or annotations (optional)}
+
+\item{...}{optional arguments, to be used for those who want to extend ISADataFrame}
+
+\item{class}{character vector representing all the classes}
 }
 \value{
 a new object of S3 class ISADataFrame
@@ -33,17 +38,26 @@ From a devel perspective you could directly use this function in those pieces of
 of having the correct input parameters.
 For more insight on this topic take a look at \href{https://adv-r.hadley.nz/s3.html#s3-classes}{Hadley Wickham - Advanced R}.
 }
+\details{
+Note that if the constructor is supplied with a named list with elements having different length, the resulting
+ISADataFrame will have truncated length equal to the minimum of the lenghts of the elements in the list. Appropriate checks
+should be performed in validators and/or helpers.
+}
 \examples{
 \dontrun{
- # Specifing the named list only returns an ISAdf where mandatoryVars are as defaults (chr, integration_locus, strand),
+ # Specifing the named list only returns an ISAdf where mandatoryVars
+ # are as defaults (chr, integration_locus, strand),
  # and empty metadata
  isaDf <- new_ISADataFrame(list(a=1:10, b=10:1))
 
  # You can change the mandatory variables by explicitly specifying the names
- isaDf <- new_ISADataFrame(list(a=1:10, b=10:1), mandVars = c("myvar1", "myvar2"))
+ isaDf <- new_ISADataFrame(list(a=1:10, b=10:1),
+                           mandVars = c("myvar1", "myvar2"))
 
  # You can specify the metadata columns also
- isaDf <- new_ISADataFrame(list(a=1:10, b=10:1), mandVars = c("myvar1", "myvar2"), meta = c("m1","m2", "m3"))
+ isaDf <- new_ISADataFrame(list(a=1:10, b=10:1),
+                           mandVars = c("myvar1", "myvar2"),
+                           meta = c("m1","m2", "m3"))
 }
 }
 \seealso{
