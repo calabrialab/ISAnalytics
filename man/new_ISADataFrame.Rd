@@ -15,11 +15,14 @@ new_ISADataFrame(
 \arguments{
 \item{x}{a named list, a tibble or a data.frame}
 
-\item{mandVars}{a character vector containing the names of the mandatory vars that must be present in the data frame}
+\item{mandVars}{a character vector containing the names of the mandatory
+vars that must be present in the data frame}
 
-\item{meta}{a character vector containing the names of the variables representing metadata or annotations (optional)}
+\item{meta}{a character vector containing the names of the variables
+representing metadata or annotations (optional)}
 
-\item{...}{optional arguments, to be used for those who want to extend ISADataFrame}
+\item{...}{optional arguments, to be used for those who want to extend
+ISADataFrame}
 
 \item{class}{character vector representing all the classes}
 }
@@ -27,39 +30,45 @@ new_ISADataFrame(
 a new object of S3 class ISADataFrame
 }
 \description{
-This is a devel function and should \strong{not} be used interactively.\cr\cr
-ISADataFrame is a sub-class of tbl_df (tibble): it supports all of tibble functionality and adds two
-attributes, \code{mandatoryVars} and \code{metadata} which represent respectively the columns which are mandatory
-in an ISADataFrame (chr, integration_locus, strand) and various annotations which are not experimental
-data (for example GeneName, GeneStrand...).\cr
-\strong{NOTE}: the aim of this function is to be efficent, therefore no formal correctness check of the produced
-data frame is performed and this is why this function should never be called interactively.\cr\cr
-From a devel perspective you could directly use this function in those pieces of code where there is a certainty
-of having the correct input parameters.
-For more insight on this topic take a look at \href{https://adv-r.hadley.nz/s3.html#s3-classes}{Hadley Wickham - Advanced R}.
+This is a devel function and should \strong{not} be used
+interactively.\cr\cr
+ISADataFrame is a sub-class of tbl_df (tibble): it supports all of tibble
+functionality and adds two attributes, \code{mandatoryVars} and \code{metadata} which
+represent respectively the columns which are mandatory in an ISADataFrame
+(chr, integration_locus, strand) and various annotations which are not
+experimental data (for example GeneName, GeneStrand...).\cr
+\strong{NOTE}: the aim of this function is to be efficent, therefore no formal
+correctness check of the produced data frame is performed and this is why
+this function should never be called interactively.\cr\cr
+From a devel perspective you could directly use this function in those
+pieces of code where there is a certainty of having the correct input
+parameters.
+For more insight on this topic take a look at
+\href{https://adv-r.hadley.nz/s3.html#s3-classes}{Hadley Wickham - Advanced R}.
 }
 \details{
-Note that if the constructor is supplied with a named list with elements having different length, the resulting
-ISADataFrame will have truncated length equal to the minimum of the lenghts of the elements in the list. Appropriate checks
+Note that if the constructor is supplied with a named list with
+elements having different length, the resulting
+ISADataFrame will have truncated length equal to the minimum of the lenghts
+of the elements in the list. Appropriate checks
 should be performed in validators and/or helpers.
 }
 \examples{
-\dontrun{
- # Specifing the named list only returns an ISAdf where mandatoryVars
- # are as defaults (chr, integration_locus, strand),
- # and empty metadata
- isaDf <- new_ISADataFrame(list(a=1:10, b=10:1))
+# Specifing the named list only returns an ISAdf where mandatoryVars
+# are as defaults (chr, integration_locus, strand),
+# and empty metadata
+isaDf <- new_ISADataFrame(list(a = 1:10, b = 10:1))
 
- # You can change the mandatory variables by explicitly specifying the names
- isaDf <- new_ISADataFrame(list(a=1:10, b=10:1),
-                           mandVars = c("myvar1", "myvar2"))
+# You can change the mandatory variables by explicitly specifying the names
+isaDf <- new_ISADataFrame(list(a = 1:10, b = 10:1),
+mandVars = c("myvar1", "myvar2"))
 
- # You can specify the metadata columns also
- isaDf <- new_ISADataFrame(list(a=1:10, b=10:1),
-                           mandVars = c("myvar1", "myvar2"),
-                           meta = c("m1","m2", "m3"))
-}
+# You can specify the metadata columns also
+isaDf <- new_ISADataFrame(list(a = 1:10, b = 10:1),
+mandVars = c("myvar1", "myvar2"),
+meta = c("m1", "m2", "m3"))
 }
 \seealso{
-\link{new_tibble}, \href{https://adv-r.hadley.nz/s3.html#s3-classes}{Hadley Wickham - Advanced R}
+\link{new_tibble},
+\href{https://adv-r.hadley.nz/s3.html#s3-classes}{Hadley Wickham - Advanced R}
 }

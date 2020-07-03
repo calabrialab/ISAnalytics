@@ -7,9 +7,11 @@
 
 [![Travis build
 status](https://travis-ci.com/calabrialab/isanalytics.svg?branch=master)](https://travis-ci.com/calabrialab/isanalytics)
+[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
+[![R build status -
+bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
 [![R build
 status](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
-[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
 <!-- badges: end -->
 
 ISAnalytics is an R package developed to analyze gene therapy vector

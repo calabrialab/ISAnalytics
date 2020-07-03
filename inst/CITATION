@@ -1,0 +1,29 @@
+pkgVer <- function(pkg) {
+    if (!exists("meta") || is.null(meta)) meta <- packageDescription(pkg)
+    ver <- meta$Version
+    paste0('https://github.com/calabrialab/', pkg, ' - R package version ', ver)
+}
+
+c(
+
+    bibentry(bibtype="manual",
+        title = "Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies",
+        author = personList(
+            as.person("calabrialab")
+        ),
+        year = format(Sys.Date(), "%Y"),
+        url = "http://www.bioconductor.org/packages/ISAnalytics",
+        note = pkgVer('ISAnalytics'),
+        doi = '10.18129/B9.bioc.ISAnalytics'
+    ),
+    bibentry(bibtype="article",
+        title = "Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies",
+        author = personList(
+            as.person("calabrialab")
+        ),
+        year = 2020,
+        journal = "bioRxiv",
+        doi = "10.1101/TODO",
+        url = "https://www.biorxiv.org/content/10.1101/TODO"
+    )
+)

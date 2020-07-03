@@ -10,30 +10,36 @@ validate_ISADataFrame(x)
 \item{x}{the ISADataFrame object to validate}
 }
 \value{
-"TRUE" if all checks pass, error otherwise
+'TRUE' if all checks pass, error otherwise
 }
 \description{
-This is a devel function and should \strong{not} be used interactively.
-The validator takes an ISADataFrame as input to check if the object was built correctly. More specifically:\cr
+This is a devel function and should \strong{not} be used
+interactively.
+The validator takes an ISADataFrame as input to check if the object was built
+correctly. More specifically:\cr
 \itemize{
-\item Checks if the data frame contains the mandatory variables specified by the \code{mandatoryVars} attribute
-\item Checks if the data frame contains the metadata variables specified by the \code{metadata} attribute (if not, generates only a warning)
-\item Checks if there is at least one experimental data column: a column is considered experimental data if it's name is not contained
-both in \code{mandatoryVars} and \code{metadata} and the column contains numeric values.
+\item Checks if the data frame contains the mandatory variables specified by
+the \code{mandatoryVars} attribute
+\item Checks if the data frame contains the metadata variables specified by
+the \code{metadata} attribute (if not, generates only a warning)
+\item Checks if there is at least one experimental data column: a column is
+considered experimental data if it's name is not contained
+both in \code{mandatoryVars} and \code{metadata} and the column contains numeric
+values.
 }
 
-If all checks pass the function returns TRUE, otherwise some kind of error is shown.
+If all checks pass the function returns TRUE, otherwise some kind of error
+is shown.
 }
 \examples{
-\dontrun{
 isadf <- new_ISADataFrame(list(chr = c(as.character(1:10)),
-integration_locus = runif(10, min=100, max =10000),
+integration_locus = runif(10, min = 100, max = 10000),
 strand = sample(c("+", "-"), 10, replace = TRUE),
 exp_1 = runif(10, min = 0, max = 10000),
 exp_2 = runif(10, min = 0, max = 10000),
-exp_3 = runif(10, min = 0, max = 10000)))
+exp_3 = runif(10, min = 0, max = 10000)
+))
 
 validate_ISADataFrame(isadf)
-}
 
 }
