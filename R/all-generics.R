@@ -80,10 +80,6 @@ print.ISADataFrame <- function(x, ...) {
 #' Implementation of vec_restore for ISADataFrame.
 #' @inheritParams vctrs::vec_restore
 #' @export
-#' @examples
-#' sample_isadf <- new_ISADataFrame(list(a=10:1, b=1:10))
-#' no_class <- unclass(sample_isadf)
-#' isadf <- vec_restore(no_class, sample_isadf)
 vec_restore.ISADataFrame <- function(x, to, ...) {
   new_ISADataFrame(x, meta = attr(to, "metadata"))
 }
