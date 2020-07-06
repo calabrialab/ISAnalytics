@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • ISAnalytics</title>
+<title>Internal function to convert a messy matrix to a tidy data frame — .messy_to_tidy • ISAnalytics</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,10 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Internal function to convert a messy matrix to a tidy data frame — .messy_to_tidy" />
+<meta property="og:description" content="The function uses the suite of functions provided by the
+tidyverse to have a more dense and ordered structure. This function is not
+exported and should be called in other importing functions." />
 
 
 
@@ -58,7 +61,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -120,133 +123,35 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Internal function to convert a messy matrix to a tidy data frame</h1>
+    <small class="dont-index">Source: <a href='NA/NA/NA/blob/master/R/import-functions.R'><code>R/import-functions.R</code></a></small>
+    <div class="hidden name"><code>dot-messy_to_tidy.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>The function uses the suite of functions provided by the
+tidyverse to have a more dense and ordered structure. This function is not
+exported and should be called in other importing functions.</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>.messy_to_tidy</span>(<span class='kw'>df</span>)</pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="ISADataFrame.html">ISADataFrame()</a></code> </p>
-        </td>
-        <td><p>Helper function to obtain ISADataFrame object.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-auto_detect_type.html">.auto_detect_type()</a></code> </p>
-        </td>
-        <td><p>Internal function to auto-detect the type of IS based on the headers.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-check_atLeastOneExp.html">.check_atLeastOneExp()</a></code> </p>
-        </td>
-        <td><p>Internal helper function for checking presence of experimental data columns.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-check_metadata.html">.check_metadata()</a></code> </p>
-        </td>
-        <td><p>Internal helper function for checking metadata fields.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-check_nonNumdata.html">.check_nonNumdata()</a></code> </p>
-        </td>
-        <td><p>Internal helper function for checking presence of experimental data columns
-and verifying they're numeric.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-find_nonNumData.html">.find_nonNumData()</a></code> </p>
-        </td>
-        <td><p>Internal helper function to find the indexes of detected non numeric columns.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-messy_to_tidy.html">.messy_to_tidy()</a></code> </p>
-        </td>
-        <td><p>Internal function to convert a messy matrix to a tidy data frame</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="import_single_Vispa2Matrix.html">import_single_Vispa2Matrix()</a></code> </p>
-        </td>
-        <td><p>Imports a single integration matrix from file.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="is.ISADataFrame.html">is.ISADataFrame()</a></code> </p>
-        </td>
-        <td><p>Is the object an ISADataFrame?</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="mandatoryVars.html">mandatoryVars()</a></code> </p>
-        </td>
-        <td><p>Gets the value of the attribute mandatoryVars.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="metadata.html">metadata()</a></code> </p>
-        </td>
-        <td><p>Gets the value of the attribute metadata.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="new_ISADataFrame.html">new_ISADataFrame()</a></code> </p>
-        </td>
-        <td><p>Low-level efficient constructor for ISADataFrame objects.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="pivot_longer.ISADataFrame.html">pivot_longer(<i>&lt;ISADataFrame&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Pivot_longer implementation for ISADataFrame.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="print.ISADataFrame.html">print(<i>&lt;ISADataFrame&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Printing ISADataFrames</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="validate_ISADataFrame.html">validate_ISADataFrame()</a></code> </p>
-        </td>
-        <td><p>Validator for ISADataFrame objects.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vec_restore.ISADataFrame.html">vec_restore.ISADataFrame()</a></code> </p>
-        </td>
-        <td><p>Implementation of vec_restore for ISADataFrame.</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>df</th>
+      <td><p>ISADataFrame to convert to tidy</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>a tidy ISADataFrame</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
