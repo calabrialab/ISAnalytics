@@ -22,9 +22,14 @@ BugReports: https://support.bioconductor.org/t/ISAnalytics
 biocViews: BiomedicalInformatics
 Depends: tibble
 Imports: 
-    rlang,
+    rlang (>= 0.1.2),
     methods,
-    magrittr
+    magrittr,
+    vctrs,
+    tidyr,
+    dplyr,
+    forcats,
+    utils
 Encoding: UTF-8
 LazyData: false
 Roxygen: list(markdown = TRUE)
@@ -36,5 +41,6 @@ Suggests:
     BiocStyle,
     knitcitations,
     sessioninfo,
-    rmarkdown
+    rmarkdown,
+    roxygen2
 VignetteBuilder: knitr

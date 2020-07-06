@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------#
-# ISADataFrame S3 class specs and generics
+# ISADataFrame S3 class
 #------------------------------------------------------------------------------#
 
 #' Low-level efficient constructor for ISADataFrame objects.
@@ -242,51 +242,6 @@ ISADataFrame <- function(x, metadata = character(), try.correct = TRUE) {
 }
 
 
-#' Is the object an ISADataFrame?
-#'
-#' @param x an object
-#'
-#' @importFrom methods is
-#' @return TRUE or FALSE
-#' @export
-#'
-#' @examples
-#' is.ISADataFrame(1:10)
-is.ISADataFrame <- function(x) {
-    is(x, "ISADataFrame")
-}
-
-#' Printing ISADataFrames
-#'
-#' @param x an ISADataFrame object
-#' @param ... optional arguments to print
-#'
-#' @export
-#'
-#' @examples
-#' expList <- list(chr = c(as.character(1:10)),
-#' integration_locus = runif(10, min = 100, max = 10000),
-#' strand = sample(c("+","-"), 10, replace = TRUE),
-#' meta1 = rep_len("m1", 10),
-#' exp_1 = runif(10, min = 0, max = 10000),
-#' exp_2 = runif(10, min = 0, max = 10000),
-#' exp_3 = runif(10, min = 0, max = 10000))
-#' isadf <- ISADataFrame(expList, metadata = c("meta1"))
-#' print(isadf)
-print.ISADataFrame <- function(x, ...) {
-    cat(
-        "mandatoryVars: ",
-        paste0(mandatoryVars(x)[seq_len(length(mandatoryVars(x)) - 1)], ", "),
-        mandatoryVars(x)[length(mandatoryVars(x))],
-        "\n"
-    )
-    cat("metadata: ", paste0(metadata(x)[seq_len(length(metadata(x)) - 1)],
-                            ", "),
-        metadata(x)[length(metadata(x))], "\n")
-    NextMethod(...)
-}
-
-
 #' Gets the value of the attribute mandatoryVars.
 #'
 #' @param x an ISADataFrame object
@@ -330,6 +285,7 @@ metadata <- function(x) {
     stopifnot(is.ISADataFrame(x))
     attr(x, "metadata")
 }
+
 
 #' Internal helper function for checking metadata fields.
 #'
