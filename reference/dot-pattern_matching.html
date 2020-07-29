@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Import a single integration matrix from file — import_single_Vispa2Matrix • ISAnalytics</title>
+<title>Internal function to match user defined patterns on a vector of file names. — .pattern_matching • ISAnalytics</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,11 @@
 
 
 
-<meta property="og:title" content="Import a single integration matrix from file — import_single_Vispa2Matrix" />
-<meta property="og:description" content="This function allows to read and import an integration matrix
-produced as the output of Vispa2 pipeline and converts it to a tidy
-ISADataFrame." />
+<meta property="og:title" content="Internal function to match user defined patterns on a vector of file names. — .pattern_matching" />
+<meta property="og:description" content="For each pattern specified by the user, the function tries to find a match
+on all the file names and combines the results as a tibble in which column
+names are the patterns and the values are TRUE if the pattern matched on the
+element at that index or FALSE otherwise." />
 
 
 
@@ -125,48 +126,37 @@ ISADataFrame." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Import a single integration matrix from file</h1>
-    <small class="dont-index">Source: <a href='NA/NA/NA/blob/master/R/import-functions.R'><code>R/import-functions.R</code></a></small>
-    <div class="hidden name"><code>import_single_Vispa2Matrix.Rd</code></div>
+    <h1>Internal function to match user defined patterns on a vector of file names.</h1>
+    <small class="dont-index">Source: <a href='NA/NA/NA/blob/master/R/internal-functions.R'><code>R/internal-functions.R</code></a></small>
+    <div class="hidden name"><code>dot-pattern_matching.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function allows to read and import an integration matrix
-produced as the output of Vispa2 pipeline and converts it to a tidy
-ISADataFrame.</p>
+    <p>For each pattern specified by the user, the function tries to find a match
+on all the file names and combines the results as a tibble in which column
+names are the patterns and the values are TRUE if the pattern matched on the
+element at that index or FALSE otherwise.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>import_single_Vispa2Matrix</span>(<span class='kw'>path</span>)</pre>
+    <pre class="usage"><span class='fu'>.pattern_matching</span>(<span class='kw'>filenames</span>, <span class='kw'>patterns</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>path</th>
-      <td><p>The path to the file on disk</p></td>
+      <th>filenames</th>
+      <td><p>A character vector of file names</p></td>
+    </tr>
+    <tr>
+      <th>patterns</th>
+      <td><p>A character vector of patterns to be matched</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A tidy ISADataFrame</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <p>A tibble</p>
 
-    <p>The import series of functions is designed to work in combination
-with the use of Vispa2 pipeline, please refer to this article for more
-details: <a href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/'>VISPA2:
-A Scalable Pipeline for High-Throughput Identification and Annotation of
-Vector Integration Sites</a>.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p>Other Import functions: 
-<code><a href='import_association_file.html'>import_association_file</a>()</code>,
-<code><a href='import_parallel_Vispa2Matrices_interactive.html'>import_parallel_Vispa2Matrices_interactive</a>()</code></p></div>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>path_to_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_annotated_ISMatrix.tsv.xz"</span>,
-package = <span class='st'>"ISAnalytics"</span>)
-<span class='kw'>isa_dataframe</span> <span class='op'>&lt;-</span> <span class='fu'>import_single_Vispa2Matrix</span>(<span class='kw'>path_to_file</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

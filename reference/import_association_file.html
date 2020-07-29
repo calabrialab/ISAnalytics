@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Import a single integration matrix from file — import_single_Vispa2Matrix • ISAnalytics</title>
+<title>Import the association file from disk — import_association_file • ISAnalytics</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,10 @@
 
 
 
-<meta property="og:title" content="Import a single integration matrix from file — import_single_Vispa2Matrix" />
-<meta property="og:description" content="This function allows to read and import an integration matrix
-produced as the output of Vispa2 pipeline and converts it to a tidy
-ISADataFrame." />
+<meta property="og:title" content="Import the association file from disk — import_association_file" />
+<meta property="og:description" content="Imports the association file and immediately performs a check on
+the file system starting from the root to assess the alignment between the
+two." />
 
 
 
@@ -125,48 +125,79 @@ ISADataFrame." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Import a single integration matrix from file</h1>
+    <h1>Import the association file from disk</h1>
     <small class="dont-index">Source: <a href='NA/NA/NA/blob/master/R/import-functions.R'><code>R/import-functions.R</code></a></small>
-    <div class="hidden name"><code>import_single_Vispa2Matrix.Rd</code></div>
+    <div class="hidden name"><code>import_association_file.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function allows to read and import an integration matrix
-produced as the output of Vispa2 pipeline and converts it to a tidy
-ISADataFrame.</p>
+    <p>Imports the association file and immediately performs a check on
+the file system starting from the root to assess the alignment between the
+two.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>import_single_Vispa2Matrix</span>(<span class='kw'>path</span>)</pre>
+    <pre class="usage"><span class='fu'>import_association_file</span>(<span class='kw'>path</span>, <span class='kw'>root</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>path</th>
-      <td><p>The path to the file on disk</p></td>
+      <td><p>The path on disk to the association file.</p></td>
+    </tr>
+    <tr>
+      <th>root</th>
+      <td><p>The path on disk of the root folder of Vispa2 output.
+See details.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A tidy ISADataFrame</p>
+    <p>A tibble with the contents of the association file plus a column
+containing the path in the file system for every project and pool if found.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The import series of functions is designed to work in combination
 with the use of Vispa2 pipeline, please refer to this article for more
 details: <a href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/'>VISPA2:
-A Scalable Pipeline for High-Throughput Identification and Annotation of
-Vector Integration Sites</a>.</p>
+A Scalable Pipeline for High-Throughput Identification
+and Annotation of Vector Integration Sites</a>.<br />
+The pipeline automatically produces an hierarchical structure in the file
+system which follows this schema:</p><ul>
+<li><p>/root_folder</p><ul>
+<li><p>Optional intermediate folders</p><ul>
+<li><p>ProjectID<br />
+|_bam<br />
+|_bcmuxall<br />
+|_bed<br />
+|_iss<br />
+|_quality<br />
+|_report<br />
+|_quantification<br />
+*|___concatenatePoolIDSeqRun<br /></p></li>
+</ul></li>
+</ul></li>
+</ul>
+
+<p>For each ProjectID there may be several nested PoolIDs. The alignment
+function only looks for PoolIDs in the quantification folder, since it's
+the location of the matrices to import.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other Import functions: 
-<code><a href='import_association_file.html'>import_association_file</a>()</code>,
-<code><a href='import_parallel_Vispa2Matrices_interactive.html'>import_parallel_Vispa2Matrices_interactive</a>()</code></p></div>
+<code><a href='import_parallel_Vispa2Matrices_interactive.html'>import_parallel_Vispa2Matrices_interactive</a>()</code>,
+<code><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>path_to_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_annotated_ISMatrix.tsv.xz"</span>,
+    <pre class="examples"><div class='input'><span class='kw'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
 package = <span class='st'>"ISAnalytics"</span>)
-<span class='kw'>isa_dataframe</span> <span class='op'>&lt;-</span> <span class='fu'>import_single_Vispa2Matrix</span>(<span class='kw'>path_to_file</span>)</div></pre>
+<span class='kw'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package = <span class='st'>"ISAnalytics"</span>)
+<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>()
+<span class='kw'>zip</span>::<span class='fu'><a href='https://rdrr.io/pkg/zip/man/unzip.html'>unzip</a></span>(<span class='kw'>root_pth</span>, exdir = <span class='kw'>root</span>)
+<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='kw'>root</span>, <span class='st'>"fs"</span>)
+<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span>(<span class='st'>'"'</span>, <span class='st'>""</span>, <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span>(<span class='st'>"\\\\"</span>, <span class='st'>"/"</span>, <span class='kw'>root</span>))
+<span class='kw'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'>import_association_file</span>(<span class='kw'>path</span>, <span class='kw'>root</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -75,7 +75,7 @@ and verifying they're numeric." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.4</span>
       </span>
     </div>
 
@@ -128,7 +128,7 @@ and verifying they're numeric." />
     <div class="page-header">
     <h1>Internal helper function for checking presence of experimental data columns
 and verifying they're numeric.</h1>
-    <small class="dont-index">Source: <a href='NA/NA/NA/blob/master/R/ISADataFrame.R'><code>R/ISADataFrame.R</code></a></small>
+    <small class="dont-index">Source: <a href='NA/NA/NA/blob/master/R/internal-functions.R'><code>R/internal-functions.R</code></a></small>
     <div class="hidden name"><code>dot-check_nonNumdata.Rd</code></div>
     </div>
 
@@ -150,8 +150,8 @@ and verifying they're numeric.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>TRUE if at least one experimental data column of type numeric was
-detected, 'Warning' if one or more non-numeric
+    <p>TRUE if at least one experimental data column of type numeric (or
+integer) was detected, 'Warning' if one or more non-numeric
 columns were detected which are not metadata, FALSE in all other cases</p>
 
   </div>
