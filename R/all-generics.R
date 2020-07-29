@@ -3,6 +3,7 @@
 #' @inheritParams tidyr::pivot_longer
 #' @export
 #' @importFrom tidyr pivot_longer
+#' @return An ISADataFrame
 #' @examples
 #' path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
 #' package = "ISAnalytics")
@@ -49,6 +50,7 @@ is.ISADataFrame <- function(x) {
 #' @param ... optional arguments to print
 #'
 #' @export
+#' @return Nothing
 #'
 #' @examples
 #' expList <- list(chr = c(as.character(1:10)),
@@ -79,6 +81,8 @@ print.ISADataFrame <- function(x, ...) {
 
 #' Implementation of vec_restore for ISADataFrame.
 #' @inheritParams vctrs::vec_restore
+#' @return See official documentation at \code{
+#' \link[vctrs:vec_proxy]{vec_restore}}
 #' @export
 vec_restore.ISADataFrame <- function(x, to, ...) {
   new_ISADataFrame(x, meta = attr(to, "metadata"))

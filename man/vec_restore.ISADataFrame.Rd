@@ -13,6 +13,10 @@ vec_restore.ISADataFrame(x, to, ...)
 
 \item{...}{These dots are for future extensions and must be empty.}
 }
+\value{
+See official documentation at \code{
+\link[vctrs:vec_proxy]{vec_restore}}
+}
 \description{
 Implementation of vec_restore for ISADataFrame.
 }

@@ -119,6 +119,9 @@ a character week variable to an integer.}
 
 \item{...}{Additional arguments passed on to methods.}
 }
+\value{
+An ISADataFrame
+}
 \description{
 Pivot_longer implementation for ISADataFrame.
 }

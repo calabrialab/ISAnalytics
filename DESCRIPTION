@@ -1,6 +1,6 @@
 Package: ISAnalytics
 Title: Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies
-Version: 0.99.2
+Version: 0.99.4
 Date: 2020-07-03
 Authors@R: c(
   person(given = "Andrea",
@@ -20,20 +20,30 @@ License: CC BY 4.0
 URL: https://github.com//calabrialab/isanalytics
 BugReports: https://support.bioconductor.org/t/ISAnalytics
 biocViews: BiomedicalInformatics
-Depends: tibble
+Depends: 
+    R (>= 4.0)
 Imports: 
-    rlang (>= 0.1.2),
     methods,
-    magrittr,
     vctrs,
-    tidyr,
+    utils,
+    reactable,
+    htmltools,
     dplyr,
+    readr,
+    tidyr,
+    purrr,
+    rlang,
     forcats,
-    utils
+    tibble,
+    BiocParallel,
+    magrittr,
+    stringr,
+    fs,
+    zip
 Encoding: UTF-8
 LazyData: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Suggests: 
     testthat,
     covr,

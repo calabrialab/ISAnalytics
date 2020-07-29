@@ -2,17 +2,23 @@
 # Importing functions
 #------------------------------------------------------------------------------#
 
-#' Imports a single integration matrix from file.
+#' Import a single integration matrix from file
 #'
 #' @description This function allows to read and import an integration matrix
 #' produced as the output of Vispa2 pipeline and converts it to a tidy
 #' ISADataFrame.
 #'
-#' @param path the path to the file on disk
+#' @param path The path to the file on disk
 #'
-#' @return a tidy ISADataFrame
+#' @return A tidy ISADataFrame
+#' @family Import functions
 #' @importFrom tidyr separate
 #' @importFrom utils read.csv
+#' @details The import series of functions is designed to work in combination
+#' with the use of Vispa2 pipeline, please refer to this article for more
+#' details: \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/}{VISPA2:
+#' A Scalable Pipeline for High-Throughput Identification and Annotation of
+#' Vector Integration Sites}.
 #' @export
 #'
 #' @examples
@@ -43,61 +49,398 @@ import_single_Vispa2Matrix <- function(path) {
          "NEW_NOTANN" = {
            isadf <- ISADataFrame(df)
          },
-         "MALFORMED" = stop("Error - the IS matrix you're trying to import is
-                            malformed, aborting")
+         "MALFORMED" = stop(paste("Error - the IS matrix you're trying to",
+                                  "import is malformed, aborting"))
          )
   isadf <- .messy_to_tidy(isadf)
   isadf
 }
 
 
-#' Internal function to convert a messy matrix to a tidy data frame
+#' Import the association file from disk
 #'
-#' @description The function uses the suite of functions provided by the
-#' tidyverse to have a more dense and ordered structure. This function is not
-#' exported and should be called in other importing functions.
+#' @description Imports the association file and immediately performs a check on
+#' the file system starting from the root to assess the alignment between the
+#' two.
+#' @param path The path on disk to the association file.
+#' @param root The path on disk of the root folder of Vispa2 output.
+#' See details.
+#' @family Import functions
+#' @return A tibble with the contents of the association file plus a column
+#' containing the path in the file system for every project and pool if found.
+#' @details The import series of functions is designed to work in combination
+#' with the use of Vispa2 pipeline, please refer to this article for more
+#' details: \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/}{VISPA2:
+#' A Scalable Pipeline for High-Throughput Identification
+#' and Annotation of Vector Integration Sites}.\cr
+#' The pipeline automatically produces an hierarchical structure in the file
+#' system which follows this schema:
+#' * /root_folder
+#'   * Optional intermediate folders
+#'     * ProjectID\cr
+#'       |_bam\cr
+#'       |_bcmuxall\cr
+#'       |_bed\cr
+#'       |_iss\cr
+#'       |_quality\cr
+#'       |_report\cr
+#'       |_quantification\cr
+#'        *|___concatenatePoolIDSeqRun\cr
 #'
-#' @param df ISADataFrame to convert to tidy
+#' For each ProjectID there may be several nested PoolIDs. The alignment
+#' function only looks for PoolIDs in the quantification folder, since it's
+#' the location of the matrices to import.
+#' @export
 #'
-#' @return a tidy ISADataFrame
-#' @importFrom rlang .data
-#' @importFrom tidyr pivot_longer
-#' @importFrom dplyr arrange all_of
-#' @importFrom forcats fct_inseq as_factor
-.messy_to_tidy <- function(df) {
-  stopifnot(is.ISADataFrame(df))
-  exp_cols <- which(!(colnames(df) %in% c(mandatoryVars(df), metadata(df))))
-  isadf_tidy <- df %>% tidyr::pivot_longer(cols = dplyr::all_of(exp_cols),
-                                           names_to = "ExperimentID",
-                                           values_to = "Value",
-                                           values_drop_na = TRUE) %>%
-        dplyr::arrange(forcats::fct_inseq(forcats::as_factor(.data$chr)))
-  new_meta <- c(metadata(df), "ExperimentID")
-  attr(isadf_tidy, "metadata") <- new_meta
-  isadf_tidy
+#' @examples
+#' path <- system.file("extdata", "ex_association_file.tsv",
+#' package = "ISAnalytics")
+#' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+#' root <- tempdir()
+#' zip::unzip(root_pth, exdir = root)
+#' root <- file.path(root, "fs")
+#' root <- gsub('"', "", gsub("\\\\", "/", root))
+#' association_file <- import_association_file(path, root)
+import_association_file <- function(path,
+                                    root) {
+  # Check parameters
+  stopifnot(is.character(path) & length(path) == 1)
+  stopifnot(is.character(root) & length(root) == 1)
+  stopifnot(file.exists(path))
+  stopifnot(file.exists(root))
+
+  # Read file and check the correctness
+  as_file <- .read_and_correctness_af(path)
+
+  # Checks if the association file and the file system are aligned
+  checks <- .check_file_system_alignment(as_file, root_folder = root)
+  widg <- .checker_widget(checks)
+  print(widg)
+
+  as_file <- .update_af_after_alignment(as_file, checks, root)
+  as_file
 }
 
-#' Internal function to auto-detect the type of IS based on the headers.
+
+#' Import integration matrices based on the association file.
 #'
-#' @param df the data frame to inspect
+#' @description These functions are designed to import the appropriate
+#' integration matrix files given the association file and the root folder of
+#' the file system where Vispa2 matrices are generated.
+#' @details Import family functions are designed to work in combination with
+#' Vispa2, for more details on this take a look here:
+#' \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/}{VISPA2:
+#' A Scalable Pipeline for High-Throughput Identification
+#' and Annotation of Vector Integration Sites}.\cr
+#' For more details on how to properly use this function, refer to the vignette
+#' TODO
+#' @rdname import_parallel_Vispa2Matrices
+#' @section Interactive version:
+#' The interactive version of import_parallel_Vispa2Matrices asks user for input
+#' and allows a more detailed choice of projects to import, pools to import and,
+#' if necessary, duplicate files. During the execution, a series of reports is
+#' shown in html format.
+#' @param association_file A single string containing the path to the
+#' association file on disk, or a tibble resulting from the previous call of
+#' `import_association_file`
+#' @param root A single string containing the path to the root folder containing
+#' Vispa2 output. Can be NULL if association_file parameter is a tibble
+#' @param quantification_type A vector of requested quantification_types. Must
+#' be one in `quantification_types()`
+#' @param matrix_type A single string representing the type of matrices to
+#' be imported. Can only be one in `"annotated"` or `"not_annotated"`
+#' @param workers A single number representing the number of parallel workers to
+#' use for the import
+#' @importFrom htmltools browsable tagList
+#' @importFrom tibble is_tibble
+#' @family Import functions
 #'
-#' @return one value among:
-#' * "OLD" : for old-style matrices that had only one column holding all genomic
-#' coordinates
-#' * "NEW_ANNOTATED" :  for the classic Vispa2 annotated matrices
-#' * "NEW_NOTANN" : for Vispa2 not annotated matrices
-#' * "MALFORMED" : in any other case
-.auto_detect_type <- function(df) {
-  if ("IS_genomicID" %in% colnames(df) &
-      all(!(c("chr", "integration_locus", "strand") %in% colnames(df)))) {
-    return("OLD")
+#' @return A named list of tibbles containing data from all imported integration
+#' matrices, divided by quantification type
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Can't run because it's interactive and requires user input
+#' matrices <- import_parallel_Vispa2Matrices_interactive(association_file,
+#' root, quantification_type, matrix_type, workers)
+#' }
+import_parallel_Vispa2Matrices_interactive <- function(association_file,
+                                                      root,
+                                                      quantification_type,
+                                                      matrix_type = "annotated",
+                                                      workers = 2) {
+  # Check parameters
+  stopifnot(!missing(association_file))
+  stopifnot(is.character(association_file) |
+              tibble::is_tibble(association_file))
+  if (is.character(association_file)) {
+    stopifnot(length(association_file) == 1)
+    stopifnot(!missing(root) && is.character(root) && length(root) == 1)
+  } else {
+    root <- NULL
   }
-  if (all(c("chr", "integration_locus", "strand") %in% colnames(df))) {
-    if (all(c("GeneName", "GeneStrand") %in% colnames(df))) {
-      return("NEW_ANNOTATED")
-    } else {
-      return("NEW_NOTANN")
-    }
+  stopifnot(is.numeric(workers) & length(workers) == 1)
+  workers <- floor(workers)
+  stopifnot(!missing(quantification_type))
+  stopifnot(all(quantification_type %in% quantification_types()))
+  stopifnot(is.character(matrix_type) & matrix_type %in% c("annotated",
+                                                           "not_annotated"))
+
+  # Manage association file
+  association_file <- .manage_association_file(association_file, root)
+  checker_widg <- association_file[[2]]
+  association_file <- association_file[[1]]
+  if (!is.null(checker_widg)) {
+    print(checker_widg)
   }
-  return("MALFORMED")
+  ## User selects projects to keep
+  association_file <- .interactive_select_projects_import(association_file)
+  ## User selects pools to keep
+  association_file <- .interactive_select_pools_import(association_file)
+  ## Scan the appropriate file system paths and look for files
+  files_found <- .lookup_matrices(association_file, quantification_type,
+                                  matrix_type)
+  ff_widget <- .files_found_widget(files_found)
+  if (!is.null(checker_widg)) {
+    print(htmltools::browsable(htmltools::tagList(
+      ff_widget,
+      checker_widg
+    )))
+  } else {
+    print(ff_widget)
+  }
+  ## Manage missing files and duplicates
+  files_to_import <- .manage_anomalies_interactive(files_found)
+  fimp_widget <- .files_to_import_widget(files_to_import)
+
+  if (!is.null(checker_widg)) {
+    print(htmltools::browsable(htmltools::tagList(
+      fimp_widget,
+      ff_widget,
+      checker_widg
+    )))
+  } else {
+    print(htmltools::browsable(htmltools::tagList(
+      fimp_widget,
+      ff_widget
+    )))
+  }
+
+  ## If files to import are 0 just terminate
+  if (nrow(files_to_import) == 0) {
+    stop("No files to import")
+  }
+
+  ## Import
+  matrices <- .parallel_import_merge(files_to_import, workers)
+  fimported_widg <- matrices[[2]]
+  fimported_widg <- .files_imported_widget(fimported_widg)
+  if (!is.null(checker_widg)) {
+    print(htmltools::browsable(htmltools::tagList(
+      fimported_widg,
+      fimp_widget,
+      ff_widget,
+      checker_widg
+    )))
+  } else {
+    print(htmltools::browsable(htmltools::tagList(
+      fimported_widg,
+      fimp_widget,
+      ff_widget
+    )))
+  }
+  matrices <- matrices[[1]]
+  matrices
+}
+
+
+#' @describeIn import_parallel_Vispa2Matrices Automatic version
+#'
+#' @section Automatic version:
+#' The automatic version of import_parallel_Vispa2Matrices doesn't interact with
+#' the user directly, for this reason options in this modality are more limited
+#' compared to the interactive version. In automatic version you can't:
+#' * Choose single projects or pools: to have a selection import the association
+#' file first and filter it according to your needs before calling the function
+#' (more details on this in the vignette)
+#' * Choose duplicates: if, after filtering by the specified patterns,
+#' duplicates are found they are automatically ignored
+#'
+#' @param patterns A character vector of additional patterns to match on file
+#' names. Please note that patterns must be regular expressions. Can be NULL if
+#' no patterns needs to be matched.
+#' @param matching_opt A single value between `matching_options`
+#' @seealso \code{\link{matching_options}},
+#' \url{https://stringr.tidyverse.org/articles/regular-expressions.html}
+#' @family Import functions
+#' @importFrom htmltools browsable tagList
+#' @importFrom tibble is_tibble
+#'
+#' @export
+#'
+#' @examples
+#' path <- system.file("extdata", "ex_association_file.tsv",
+#' package = "ISAnalytics")
+#' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+#' root <- tempdir()
+#' zip::unzip(root_pth, exdir = root)
+#' root <- file.path(root, "fs")
+#' root <- gsub('"', "", gsub("\\\\", "/", root))
+#' matrices <- import_parallel_Vispa2Matrices_auto(path, root,
+#' c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY")
+import_parallel_Vispa2Matrices_auto <- function(association_file,
+                                           root,
+                                           quantification_type,
+                                           matrix_type = "annotated",
+                                           workers = 2,
+                                           patterns = NULL,
+                                           matching_opt = matching_options()) {
+  # Check parameters
+  stopifnot(!missing(association_file))
+  stopifnot(is.character(association_file) |
+              tibble::is_tibble(association_file))
+  if (is.character(association_file)) {
+    stopifnot(length(association_file) == 1)
+    stopifnot(!missing(root) && is.character(root) && length(root) == 1)
+  } else {
+    root <- NULL
+  }
+  stopifnot(is.numeric(workers) & length(workers) == 1)
+  workers <- floor(workers)
+  stopifnot(!missing(quantification_type))
+  stopifnot(all(quantification_type %in% quantification_types()))
+  stopifnot(is.character(matrix_type) & matrix_type %in% c("annotated",
+                                                           "not_annotated"))
+  if (!is.null(patterns)) {
+    stopifnot(is.character(patterns))
+  }
+  ### Evaluate matching_opt
+  matching_option <- match.arg(matching_opt)
+  stopifnot(is.character(matching_option))
+
+  # Manage association file
+  association_file <- .manage_association_file(association_file, root)
+  checker_widg <- association_file[[2]]
+  association_file <- association_file[[1]]
+  if (!is.null(checker_widg)) {
+    print(checker_widg)
+  }
+
+  # Automatic workflow - limited options
+  ## In automatic workflow all projects and pools contained in the association
+  ## file are considered. If more precise selection is needed on this, user
+  ## should use the interactive version or filter the association file
+  ## appropriately before calling the function.
+
+  ## Scan the appropriate file system paths and look for files
+  files_found <- .lookup_matrices_auto(association_file, quantification_type,
+                                       matrix_type, patterns, matching_option)
+
+  ff_widget <- .files_found_widget(files_found)
+  if (!is.null(checker_widg)) {
+    print(htmltools::browsable(htmltools::tagList(
+      ff_widget,
+      checker_widg
+    )))
+  } else {
+    print(ff_widget)
+  }
+
+  ## Manage missing files and duplicates
+  files_to_import <- .manage_anomalies_auto(files_found)
+  fimp_widget <- .files_to_import_widget(files_to_import)
+
+  if (!is.null(checker_widg)) {
+    print(htmltools::browsable(htmltools::tagList(
+      fimp_widget,
+      ff_widget,
+      checker_widg
+    )))
+  } else {
+    print(htmltools::browsable(htmltools::tagList(
+      fimp_widget,
+      ff_widget
+    )))
+  }
+  ## If files to import are 0 just terminate
+  if (nrow(files_to_import) == 0) {
+    stop("No files to import")
+  }
+
+  ## Import
+  matrices <- .parallel_import_merge(files_to_import, workers)
+  fimported_widg <- matrices[[2]]
+  fimported_widg <- .files_imported_widget(fimported_widg)
+  if (!is.null(checker_widg)) {
+    print(htmltools::browsable(htmltools::tagList(
+      fimported_widg,
+      fimp_widget,
+      ff_widget,
+      checker_widg
+    )))
+  } else {
+    print(htmltools::browsable(htmltools::tagList(
+      fimported_widg,
+      fimp_widget,
+      ff_widget
+    )))
+  }
+  matrices <- matrices[[1]]
+  matrices
+}
+
+#' Possible choices for the `quantification_type` parameter.
+#'
+#' These are all the possible values for the `quantification_type` parameter in
+#' `import_parallel_vispa2Matrices_interactive` and
+#' `import_parallel_vispa2Matrices_auto`.
+#'
+#' @details The possible values are:
+#' * fragmentEstimate
+#' * seqCount
+#' * barcodeCount
+#' * cellCount
+#' * ShsCount
+#' @return A vector of characters for quantification types
+#' @export
+#' @seealso \code{
+#' \link[import_parallel_vispa2Matrices]{
+#' import_parallel_vispa2Matrices_interactive}},
+#' \code{
+#' \link[import_parallel_vispa2Matrices]{
+#' import_parallel_vispa2Matrices_auto}}
+#'
+#' @family Import functions helpers
+#'
+#' @examples
+#' quant_types <- quantification_types()
+quantification_types <- function() {
+  c("fragmentEstimate", "seqCount",
+    "barcodeCount", "cellCount",
+    "ShsCount")
+}
+
+
+#' Possible choices for the `matching_opt` parameter.
+#'
+#' These are all the possible values for the `matching_opt` parameter in
+#' `import_parallel_vispa2Matrices_auto`.
+#' @details The values "ANY", "ALL" and "OPTIONAL", represent how the patterns
+#' should be matched, more specifically
+#' * ANY = look only for files that match AT LEAST one of the patterns specified
+#' * ALL = look only for files that match ALL of the patterns specified
+#' * OPTIONAL = look preferentially for files that match, in order, all
+#' patterns or any pattern and if no match is found return what is found (keep
+#' in mind that duplicates are discarded in automatic mode)
+#' @return A vector of characters for matching_opt
+#' @export
+#' @family Import functions helpers
+#' @seealso \code{
+#' \link[import_parallel_vispa2Matrices]{import_parallel_vispa2Matrices_auto}}
+#'
+#' @examples
+#' opts <- matching_options()
+matching_options <- function() {
+  c("ANY", "ALL", "OPTIONAL")
 }
