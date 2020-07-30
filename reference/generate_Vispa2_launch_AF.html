@@ -96,7 +96,7 @@ launch of Vispa2 pipeline for each project/pool pair specified." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/test.html">test</a>
+      <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
   </ul>
 </li>
@@ -177,16 +177,18 @@ project that doesn't match no file will be produced since that pool doesn't
 exist in the corresponding project.</p></li>
 </ul>
 
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other Utility functions: 
+<code><a href='generate_blank_association_file.html'>generate_blank_association_file</a>()</code>,
+<code><a href='unzip_file_system.html'>unzip_file_system</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>temp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>()
 <span class='kw'>path_af</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
 package = <span class='st'>"ISAnalytics"</span>)
 <span class='kw'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package = <span class='st'>"ISAnalytics"</span>)
-<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>()
-<span class='kw'>zip</span>::<span class='fu'><a href='https://rdrr.io/pkg/zip/man/unzip.html'>unzip</a></span>(<span class='kw'>root_pth</span>, exdir = <span class='kw'>root</span>)
-<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='kw'>root</span>, <span class='st'>"fs"</span>)
-<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span>(<span class='st'>'"'</span>, <span class='st'>""</span>, <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span>(<span class='st'>"\\\\"</span>, <span class='st'>"/"</span>, <span class='kw'>root</span>))
+<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span>(<span class='kw'>root_pth</span>, <span class='st'>"fs"</span>)
 <span class='kw'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span>(<span class='kw'>path_af</span>, <span class='kw'>root</span>)
 <span class='fu'>generate_Vispa2_launch_AF</span>(<span class='kw'>association_file</span>, <span class='st'>"CLOEXP"</span>, <span class='st'>"POOL6"</span>, <span class='kw'>temp</span>)</div></pre>
   </div>

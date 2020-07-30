@@ -97,7 +97,7 @@ the file system where Vispa2 matrices are generated." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/test.html">test</a>
+      <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
   </ul>
 </li>
@@ -206,8 +206,8 @@ Vispa2, for more details on this take a look here:
 <a href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/'>VISPA2:
 A Scalable Pipeline for High-Throughput Identification
 and Annotation of Vector Integration Sites</a>.<br />
-For more details on how to properly use this function, refer to the vignette
-TODO</p>
+For more details on how to properly use these functions, refer to the
+vignette - vignette("how_to_import_functions")</p>
     <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
 
     
@@ -256,10 +256,7 @@ duplicates are found they are automatically ignored</p></li>
 <span class='kw'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
 package = <span class='st'>"ISAnalytics"</span>)
 <span class='kw'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package = <span class='st'>"ISAnalytics"</span>)
-<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>()
-<span class='kw'>zip</span>::<span class='fu'><a href='https://rdrr.io/pkg/zip/man/unzip.html'>unzip</a></span>(<span class='kw'>root_pth</span>, exdir = <span class='kw'>root</span>)
-<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='kw'>root</span>, <span class='st'>"fs"</span>)
-<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span>(<span class='st'>'"'</span>, <span class='st'>""</span>, <span class='fu'><a href='https://rdrr.io/r/base/grep.html'>gsub</a></span>(<span class='st'>"\\\\"</span>, <span class='st'>"/"</span>, <span class='kw'>root</span>))
+<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span>(<span class='kw'>root_pth</span>, <span class='st'>"fs"</span>)
 <span class='kw'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'>import_parallel_Vispa2Matrices_auto</span>(<span class='kw'>path</span>, <span class='kw'>root</span>,
 <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span>), <span class='st'>"annotated"</span>, <span class='fl'>2</span>, <span class='kw'>NULL</span>, <span class='st'>"ANY"</span>)</div></pre>
   </div>
