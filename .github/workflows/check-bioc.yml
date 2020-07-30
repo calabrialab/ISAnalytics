@@ -405,6 +405,7 @@ jobs:
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
           remotes::install_cran("rcmdcheck")
           BiocManager::install("BiocCheck")
+          install.packages(".", repos=NULL, type="source")  ## needed by parallel workers
         shell: Rscript {0}
 
       - name: Session info
