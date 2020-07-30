@@ -23,6 +23,8 @@ with the use of Vispa2 pipeline, please refer to this article for more
 details: \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/}{VISPA2:
 A Scalable Pipeline for High-Throughput Identification and Annotation of
 Vector Integration Sites}.
+For more details on how to properly use these functions, refer to the
+vignette - vignette("how_to_import_functions")
 }
 \examples{
 path_to_file <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",

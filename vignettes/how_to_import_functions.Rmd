@@ -1,0 +1,337 @@
+---
+title: "How to use import functions"
+author: 
+  - name: Giulia Pais
+    affiliation:
+    - San Raffaele Telethon Institute for Gene Therapy - SR-Tiget, Via Olgettina 60, 20132 Milano - Italia
+    email: giuliapais1@gmail.com, calabria.andrea@hsr.it
+output: 
+  BiocStyle::html_document:
+    self_contained: yes
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    code_folding: show
+date: "`r doc_date()`"
+package: "`r pkg_ver('ISAnalytics')`"
+vignette: >
+  %\VignetteIndexEntry{How to use import functions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}  
+---
+```{r style, echo = FALSE, results = 'asis'}
+  BiocStyle::markdown()
+```
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    crop = NULL ## Related to https://stat.ethz.ch/pipermail/bioc-devel/2020-April/016656.html
+)
+```
+
+
+```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
+## Track time spent on making the vignette
+startTime <- Sys.time()
+
+## Bib setup
+library("knitcitations")
+
+## Load knitcitations with a clean bibliography
+cleanbib()
+cite_options(hyperlink = "to.doc", citation_format = "text", style = "html")
+
+## Write bibliography information
+bib <- c(
+    R = citation(),
+    BiocStyle = citation("BiocStyle")[1],
+    knitcitations = citation("knitcitations")[1],
+    knitr = citation("knitr")[1],
+    rmarkdown = citation("rmarkdown")[1],
+    sessioninfo = citation("sessioninfo")[1],
+    testthat = citation("testthat")[1],
+    ISAnalytics = citation("ISAnalytics")[1]
+)
+
+write.bibtex(bib, file = "how_to_import_functions.bib")
+```
+
+
+# Introduction to `ISAnalytics` import functions family
+
+In this vignette we're going to explain more in detail how functions of the 
+import family should be used, the most common workflows to follow and more.
+
+## Designed to work with Vispa2 pipeline
+
+The vast majority of the functions included in this package is designed to work 
+in combination with Vispa2 pipeline. If you don't know what it is, we strongly 
+recommend you to take a look at these links:  
+
+* Article: [VISPA2: A Scalable Pipeline for High-Throughput Identification and Annotation of Vector Integration Sites](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/)  
+* BitBucket Wiki: [VISPA2 Wiki](https://bitbucket.org/andreacalabria/vispa2/wiki/Home)  
+
+## File system structure generated
+
+Vispa2 produces a standard file system structure starting from a folder you specify as your workbench or root. The structure always follows this schema:  
+
+* root/
+  * Optional intermediate folders
+    * Projects (PROJECTID)
+      * bam
+      * bcmuxall
+      * bed
+      * iss
+      * quality
+      * quantification
+        * Pools (concatenatePoolIDSeqRun)
+      * report
+
+We've included 2 examples of this structure in our package, one correct and the 
+other one including errors or potential problems. They are both in .zip format, 
+so you might want to unzip them if you plan to experiment with them.  
+An example on how to access them:  
+
+```{r}
+library(ISAnalytics)
+root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+root_correct <- unzip_file_system(root_correct, "fs")
+fs::dir_tree(root_correct)
+
+```
+
+# Importing a single integration matrix
+
+If you want to import a single integration matrix you can do so by using the `import_single_Vispa2Matrix` function.  
+This function reads the .tsv file and converts it into an ISADataFrame, the central structure of this package. An ISADataFrame is a simple extension of the s3 class `tbl_df` used by the package `tibble` and all `tidyverse` packages as well.  
+This package is in fact based on the `tidyverse` and tries to follow its philosophy and guidelines as close as possible.  
+Vispa2 pipeline and the associated Create Matrix tool produce matrices with a standard structure which we'll refer to as "messy", because different experimental data is divided in different columns and there are a lot of NA values.  
+
+```{r, echo = FALSE}
+example_matrix_path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz", package = "ISAnalytics")
+example_matrix <- read.csv(example_matrix_path, sep = "\t", header = TRUE, stringsAsFactors = FALSE, check.names = FALSE)
+knitr::kable(head(example_matrix), caption = "A simple example of messy matrix.", align = "l")
+```
+
+```{r}
+example_matrix_path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz", package = "ISAnalytics")
+imported_im <- import_single_Vispa2Matrix(example_matrix_path)
+```
+
+```{r, echo = FALSE}
+knitr::kable(head(imported_im), caption = "Example of ISADataFrame")
+```
+
+All ISADataFrames have 2 attributes called `mandatoryVars` and `metadata`, which represent, in order, variables (aka column names) that matrices MUST have in order to be properly converted to ISADataframe objects, and the column names of all of those variables that are not experimental data. You can easily access and view them like so:  
+
+```{r}
+mandatoryVars(imported_im)
+metadata(imported_im)
+```
+
+# Importing the association file
+
+While you can import single matrices for brief analysis, what you would like to do most of the times is import multiple matrices at once, based on certain parameters. To do that you must first import the association file, which is the file that holds all associated metadata and information about every project, pool and single experiment.  
+The function that imports this file does not simply read it into your R environment, but performs an alignment check with your file system, so you have to specify the path to the root folder where your Vispa2 runs produce output (see the previous section).
+To import the association file do:  
+
+```{r}
+path_as_file <- system.file("extdata", "ex_association_file.tsv", package = "ISAnalytics")
+association_file <- import_association_file(path_as_file, root_correct)
+```
+
+This will produce a visual HTML report of the results of the alignment check, either in Rstudio or in your browser.  
+If projects or pools are missing you will be notified: until you fix those problems, those elements will be ignored until you re-import the association file.
+
+# Importing multiple matrices in parallel
+
+There are 2 different functions for importing multiple matrices in parallel:  
+
+* `import_parallel_Vispa2Matrices_interactive`
+* `import_parallel_Vispa2Matrices_auto`  
+
+The interactive version will ask you to input your choices directly into the console, the automatic version will not, but has some limitations.  
+Both functions rely on the association file and some basic parameters, most notably:  
+
+* `quantification_type`: this is a string or a vector of characters indicating which quantification types you want the function to look for. The possible values are `r quantification_types()`
+* `matrix_type`: tells the function if it should consider annotated or not annotated matrices. The only possible options are "annotated" and "not_annotated"
+* `workers`: indicates the number of parallel workers to instantiate when importing. Keep in mind that the higher is the number, the faster the process is, but also higher is the RAM peak, so you should be aware of this especially if you're dealing with really big matrices. Set this parameter according to your needs and according to your hardware specifications.  
+
+Both the versions will produce several HTML reports after all key steps, such as:
+
+
+* Report on which files were found, reporting eventual anomalies (missing files or duplicates)
+* Report on which files were chosen for import after interactive selection or after automatic filtering
+* Report on which files were actually imported, signaling potential errors during the import phase  
+
+The functions both return a named list which names are the quantification types specified in input and the elements are `ISADataFrame`s, obtained by binding rows of all imported matrices for the same quantification type.
+
+## Interactive version
+
+As stated before, with the interactive version you have more control and you can directly choose:  
+
+* Which projects to import
+* Which pools to import
+* If duplicates files are found which ones are to be kept
+
+If you haven't imported the association file yet, you can directly pass the path to the association file and the path to the root folder into the function: in this way the association file will automatically be imported.
+
+Example:  
+
+```{r, eval = FALSE}
+matrices <- import_parallel_Vispa2Matrices_interactive(
+  association_file = path_as_file,
+  root = root_correct,
+  quantification_type = c("fragmentEstimate", "seqCount"),
+  matrix_type = "annotated",
+  workers = 2)
+```
+
+If you've already imported the association file you can instead call the function like this:
+
+```{r, eval = FALSE}
+matrices <- import_parallel_Vispa2Matrices_interactive(
+  association_file = association_file,
+  root = NULL,
+  quantification_type = c("fragmentEstimate", "seqCount"),
+  matrix_type = "annotated",
+  workers = 2)
+```
+
+You can simply access the data frames by doing:  
+
+```{r, eval=FALSE}
+matrices$fragmentEstimate
+matrices$seqCount
+```
+
+
+## Automatic version
+
+If you choose to opt for the automatic version you should keep in mind that the function automatically considers everything included in the association file, so if you want to import only a subset of projects and/or pools you should filter the association file according to your criteria before calling the function:
+
+```{r}
+refined_af <- association_file %>% dplyr::filter(ProjectID == "CLOEXP")
+```
+
+**NOTE: do not drop any columns when filtering the association file or the file will be flagged as malformed**  
+
+In automatic version there is no way of discriminating duplicates, so there is the possibility to specify additional patterns to look for in file names to mitigate this problem. However, if after matching of the additional patterns duplicates are still found they're simply discarded.  
+
+There are 2 additional parameters to set:  
+
+* `patterns`: a string or a character vector containing regular expressions to be matched on file names. If you're not familiar with regular expressions, I suggest you to start from here [stringr cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/strings.pdf)
+* `matching_opt`: a single string that tells the function how to match the patterns. The possible values for this parameter are `r matching_options()`:  
+  * ANY : looks for files that match at least one of the patterns specified in `patterns`
+  * ALL: looks for files that match all the patterns specified in `patterns`
+  * OPTIONAL: looks for files that preferentially match all the patterns, if none are found looks for files that match any of the patterns and finally if none are found simply looks for files present that match the quantification type.  
+  
+You can call the function with `patterns` set to NULL if you don't wish to match anything:
+
+```{r}
+matrices_auto <- import_parallel_Vispa2Matrices_auto(
+  association_file = refined_af,
+  root = NULL,
+  quantification_type = c("fragmentEstimate","seqCount"),
+  matrix_type = "annotated",
+  workers = 2,
+  patterns = NULL,
+  matching_opt = "ANY" # Same if you choose "ALL" or "OPTIONAL"
+)
+matrices_auto
+```
+
+Let's do an example with a file system where there are issues, such as duplicates:  
+```{r}
+root_err <- system.file("extdata", "fserr.zip", package = "ISAnalytics")
+root_err <- unzip_file_system(root_err, "fserr")
+fs::dir_tree(root_err)
+association_file_fserr <- import_association_file(path_as_file, root_err)
+refined_af_err <- association_file_fserr %>% dplyr::filter(ProjectID == "CLOEXP")
+matrices_auto2 <- import_parallel_Vispa2Matrices_auto(
+  association_file = refined_af_err,
+  root = NULL,
+  quantification_type = c("fragmentEstimate","seqCount"),
+  matrix_type = "annotated",
+  workers = 2,
+  patterns = "NoMate",
+  matching_opt = "ANY" # Same if you choose "ALL" or "OPTIONAL"
+)
+matrices_auto
+```
+
+As you can see, in the file system with issues we have more than one file for quantification type, duplicates have "NoMate" suffix in their file name. By specifying this pattern in the function, we're only going to import those files.  
+
+As for the interactive version, you can call the function with path to the association file and root if you want to simply import everything without filtering.
+
+# Reproducibility
+
+The `r Biocpkg("ISAnalytics")` package `r citep(bib[["ISAnalytics"]])` was made possible thanks to:
+
+* R `r citep(bib[["R"]])`
+* `r Biocpkg("BiocStyle")` `r citep(bib[["BiocStyle"]])`
+* `r CRANpkg("knitcitations")` `r citep(bib[["knitcitations"]])`
+* `r CRANpkg("knitr")` `r citep(bib[["knitr"]])`
+* `r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])`
+* `r CRANpkg("sessioninfo")` `r citep(bib[["sessioninfo"]])`
+* `r CRANpkg("testthat")` `r citep(bib[["testthat"]])`
+
+This package was developed using `r BiocStyle::Githubpkg("lcolladotor/biocthis")`.
+
+
+Code for creating the vignette
+
+```{r createVignette, eval=FALSE}
+## Create the vignette
+library("rmarkdown")
+system.time(render("how_to_import_functions.Rmd", "BiocStyle::html_document"))
+
+## Extract the R code
+library("knitr")
+knit("how_to_import_functions.Rmd", tangle = TRUE)
+```
+
+```{r createVignette2}
+## Clean up
+file.remove("how_to_import_functions.bib")
+```
+
+Date the vignette was generated.
+
+```{r reproduce1, echo=FALSE}
+## Date the vignette was generated
+Sys.time()
+```
+
+Wallclock time spent generating the vignette.
+
+```{r reproduce2, echo=FALSE}
+## Processing time in seconds
+totalTime <- diff(c(startTime, Sys.time()))
+round(totalTime, digits = 3)
+```
+
+`R` session information.
+
+```{r reproduce3, echo=FALSE}
+## Session info
+library("sessioninfo")
+options(width = 120)
+session_info()
+```
+
+
+
+# Bibliography
+
+This vignette was generated using `r Biocpkg("BiocStyle")` `r citep(bib[["BiocStyle"]])`
+with `r CRANpkg("knitr")` `r citep(bib[["knitr"]])` and `r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])` running behind the scenes.
+
+Citations made with `r CRANpkg("knitcitations")` `r citep(bib[["knitcitations"]])`.
+
+```{r vignetteBiblio, results = "asis", echo = FALSE, warning = FALSE, message = FALSE}
+## Print bibliography
+bibliography()
+```

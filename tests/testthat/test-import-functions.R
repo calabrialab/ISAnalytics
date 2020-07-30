@@ -28,12 +28,12 @@ path_af <- system.file("extdata", "ex_association_file.tsv",
 # Path to correct file system example
 path_root_correct <- system.file("extdata", "fs.zip",
                        package = "ISAnalytics")
-root_correct <- .unzip_file_system(path_root_correct, "fs")
+root_correct <- unzip_file_system(path_root_correct, "fs")
 
 # Path to incorrect file system example
 path_root_err <- system.file("extdata", "fserr.zip",
                        package = "ISAnalytics")
-root_err <- .unzip_file_system(path_root_err, "fserr")
+root_err <- unzip_file_system(path_root_err, "fserr")
 
 #------------------------------------------------------------------------------#
 # Tests .messy_to_tidy

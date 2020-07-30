@@ -61,8 +61,8 @@ Vispa2, for more details on this take a look here:
 \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/}{VISPA2:
 A Scalable Pipeline for High-Throughput Identification
 and Annotation of Vector Integration Sites}.\cr
-For more details on how to properly use this function, refer to the vignette
-TODO
+For more details on how to properly use these functions, refer to the
+vignette - vignette("how_to_import_functions")
 }
 \section{Functions}{
 \itemize{
@@ -100,10 +100,7 @@ root, quantification_type, matrix_type, workers)
 path <- system.file("extdata", "ex_association_file.tsv",
 package = "ISAnalytics")
 root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- tempdir()
-zip::unzip(root_pth, exdir = root)
-root <- file.path(root, "fs")
-root <- gsub('"', "", gsub("\\\\\\\\", "/", root))
+root <- unzip_file_system(root_pth, "fs")
 matrices <- import_parallel_Vispa2Matrices_auto(path, root,
 c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY")
 }

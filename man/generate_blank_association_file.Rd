@@ -21,3 +21,9 @@ fix a malformed association file you have already.
 temp <- tempfile()
 generate_blank_association_file(temp)
 }
+\seealso{
+Other Utility functions: 
+\code{\link{generate_Vispa2_launch_AF}()},
+\code{\link{unzip_file_system}()}
+}
+\concept{Utility functions}

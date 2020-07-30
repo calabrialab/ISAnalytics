@@ -14,6 +14,7 @@
 #'
 #' @return returns NULL
 #' @export
+#' @family Utility functions
 #'
 #' @examples
 #' temp <- tempfile()
@@ -60,6 +61,7 @@ generate_blank_association_file <- function(path) {
 #' @importFrom purrr map2 set_names walk2
 #' @importFrom dplyr select filter mutate all_of
 #' @importFrom readr write_tsv
+#' @family Utility functions
 #'
 #' @return returns NULL
 #' @export
@@ -69,10 +71,7 @@ generate_blank_association_file <- function(path) {
 #' path_af <- system.file("extdata", "ex_association_file.tsv",
 #' package = "ISAnalytics")
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' root <- tempdir()
-#' zip::unzip(root_pth, exdir = root)
-#' root <- file.path(root, "fs")
-#' root <- gsub('"', "", gsub("\\\\", "/", root))
+#' root <- unzip_file_system(root_pth, "fs")
 #' association_file <- import_association_file(path_af, root)
 #' generate_Vispa2_launch_AF(association_file, "CLOEXP", "POOL6", temp)
 generate_Vispa2_launch_AF <- function(association_file, project, pool, path) {
@@ -100,4 +99,30 @@ generate_Vispa2_launch_AF <- function(association_file, project, pool, path) {
       message(paste("Nothing to write for ", y, ", skipping."))
     }
   })
+}
+
+####---- Utilities for tests and examples ----####
+#' A utility function to unzip and use example file systems included in the
+#' package
+#'
+#' This utility function is a simple shortcut to create a temporary directory,
+#' unzip and reference the examples file systems included in the package for
+#' testing purposes.
+#'
+#' @param zipfile The zipped file to decompress
+#' @param name The name of the folder in the zipped archive ("fs" or "fserr")
+#' @importFrom zip unzip
+#' @family Utility functions
+#' @export
+#'
+#' @return A path to reference
+#' @examples
+#' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+#' root <- unzip_file_system(root_pth, "fs")
+unzip_file_system <- function(zipfile, name) {
+  root_folder <- tempdir()
+  zip::unzip(zipfile, exdir = root_folder)
+  root_folder <- file.path(root_folder, name, fsep = "\\")
+  root_folder <- gsub('"', "", gsub("\\\\", "/", root_folder))
+  root_folder
 }

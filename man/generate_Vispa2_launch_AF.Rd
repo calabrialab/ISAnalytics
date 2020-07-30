@@ -44,10 +44,13 @@ temp <- tempdir()
 path_af <- system.file("extdata", "ex_association_file.tsv",
 package = "ISAnalytics")
 root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- tempdir()
-zip::unzip(root_pth, exdir = root)
-root <- file.path(root, "fs")
-root <- gsub('"', "", gsub("\\\\\\\\", "/", root))
+root <- unzip_file_system(root_pth, "fs")
 association_file <- import_association_file(path_af, root)
 generate_Vispa2_launch_AF(association_file, "CLOEXP", "POOL6", temp)
 }
+\seealso{
+Other Utility functions: 
+\code{\link{generate_blank_association_file}()},
+\code{\link{unzip_file_system}()}
+}
+\concept{Utility functions}

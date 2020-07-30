@@ -11,7 +11,7 @@ path_af <- system.file("extdata", "ex_association_file.tsv",
 # Path to correct file system example
 path_root_correct <- system.file("extdata", "fs.zip",
                                  package = "ISAnalytics")
-root_correct <- .unzip_file_system(path_root_correct, "fs")
+root_correct <- unzip_file_system(path_root_correct, "fs")
 tempfunct <- function() {
   op <- options("viewer" = NULL)
   on.exit(options(op), add = TRUE, after = FALSE)

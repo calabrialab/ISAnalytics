@@ -50,15 +50,14 @@ system which follows this schema:
 For each ProjectID there may be several nested PoolIDs. The alignment
 function only looks for PoolIDs in the quantification folder, since it's
 the location of the matrices to import.
+For more details on how to properly use these functions, refer to the
+vignette - vignette("how_to_import_functions")
 }
 \examples{
 path <- system.file("extdata", "ex_association_file.tsv",
 package = "ISAnalytics")
 root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- tempdir()
-zip::unzip(root_pth, exdir = root)
-root <- file.path(root, "fs")
-root <- gsub('"', "", gsub("\\\\\\\\", "/", root))
+root <- unzip_file_system(root_pth, "fs")
 association_file <- import_association_file(path, root)
 }
 \seealso{

@@ -850,11 +850,12 @@
     p <- BiocParallel::MulticoreParam(workers = workers, stop.on.error = FALSE)
   }
   # Import every file
+  FUN <- function(x) {
+    matrix <- import_single_Vispa2Matrix(x)
+  }
   suppressMessages(suppressWarnings({
     matrices <- BiocParallel::bptry(
-      BiocParallel::bplapply(files$Files_chosen, FUN = function(x) {
-        matrix <- ISAnalytics::import_single_Vispa2Matrix(x)
-      }, BPPARAM = p)
+      BiocParallel::bplapply(files$Files_chosen, FUN, BPPARAM = p)
     )
     }))
   BiocParallel::bpstop(p)
@@ -1544,23 +1545,3 @@
   htmltools::browsable(widget)
 }
 
-####---- Internals utilities for tests and examples ----####
-#' A utility function to unzip and use example file systems included in the
-#' package
-#'
-#' This utility function is a simple shortcut to create a temporary directory,
-#' unzip and reference the examples file systems included in the package for
-#' testing purposes.
-#'
-#' @param zipfile The zipped file to decompress
-#' @param name The name of the folder in the zipped archive ("fs" or "fserr")
-#' @importFrom zip unzip
-#'
-#' @return A path to reference
-.unzip_file_system <- function(zipfile, name) {
-  root_folder <- tempdir()
-  zip::unzip(zipfile, exdir = root_folder)
-  root_folder <- file.path(root_folder, name, fsep = "\\")
-  root_folder <- gsub('"', "", gsub("\\\\", "/", root_folder))
-  root_folder
-}
