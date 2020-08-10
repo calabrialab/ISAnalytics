@@ -28,7 +28,8 @@ vignette - vignette("how_to_import_functions")
 }
 \examples{
 path_to_file <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-package = "ISAnalytics")
+    package = "ISAnalytics"
+)
 isa_dataframe <- import_single_Vispa2Matrix(path_to_file)
 }
 \seealso{

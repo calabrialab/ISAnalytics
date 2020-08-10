@@ -127,10 +127,15 @@ Pivot_longer implementation for ISADataFrame.
 }
 \examples{
 path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-package = "ISAnalytics")
-df <- read.csv(path, sep = "\t", check.names = FALSE,
-stringsAsFactors = FALSE)
-isadf <- ISADataFrame(df, metadata = c("GeneName","GeneStrand"))
-isadf <- tidyr::pivot_longer(isadf, cols = 6:10, names_to = "ExpID",
-values_to = "Val", values_drop_na = TRUE)
+    package = "ISAnalytics"
+)
+df <- read.csv(path,
+    sep = "\t", check.names = FALSE,
+    stringsAsFactors = FALSE
+)
+isadf <- ISADataFrame(df, metadata = c("GeneName", "GeneStrand"))
+isadf <- tidyr::pivot_longer(isadf,
+    cols = 6:10, names_to = "ExpID",
+    values_to = "Val", values_drop_na = TRUE
+)
 }

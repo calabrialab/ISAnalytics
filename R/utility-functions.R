@@ -20,18 +20,18 @@
 #' temp <- tempfile()
 #' generate_blank_association_file(temp)
 generate_blank_association_file <- function(path) {
-  stopifnot(is.character(path))
-  af <- data.frame(matrix(
-    ncol = length(association_file_columns),
-    nrow = 0)
-    )
-  colnames(af) <- association_file_columns
-  path <- fs::as_fs_path(path)
-  dir <- fs::path_dir(path)
-  if (!fs::dir_exists(dir)) {
-    fs::dir_create(dir, recurse = TRUE)
-  }
-  readr::write_tsv(af, path = path)
+    stopifnot(is.character(path))
+    af <- data.frame(matrix(
+        ncol = length(association_file_columns),
+        nrow = 0
+    ))
+    colnames(af) <- association_file_columns
+    path <- fs::as_fs_path(path)
+    dir <- fs::path_dir(path)
+    if (!fs::dir_exists(dir)) {
+        fs::dir_create(dir, recurse = TRUE)
+    }
+    readr::write_tsv(af, path = path)
 }
 
 #' Creates a reduced association file for Vispa2 run, given project and pool
@@ -69,39 +69,40 @@ generate_blank_association_file <- function(path) {
 #' @examples
 #' temp <- tempdir()
 #' path_af <- system.file("extdata", "ex_association_file.tsv",
-#' package = "ISAnalytics")
+#'     package = "ISAnalytics"
+#' )
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
 #' association_file <- import_association_file(path_af, root)
 #' generate_Vispa2_launch_AF(association_file, "CLOEXP", "POOL6", temp)
 generate_Vispa2_launch_AF <- function(association_file, project, pool, path) {
-  stopifnot(is.data.frame(association_file))
-  stopifnot(is.character(project))
-  stopifnot(is.character(pool))
-  stopifnot(length(project) == length(pool))
-  stopifnot(.check_af_correctness(association_file))
-  stopifnot(is.character(path) & length(path) == 1)
-  path <- fs::as_fs_path(path)
-  if (!fs::file_exists(path)) {
-    fs::dir_create(path)
-  }
-  files <- purrr::map2(project, pool, function(x, y) {
-    selected_cols <- association_file %>%
-      dplyr::select(dplyr::all_of(reduced_AF_columns)) %>%
-      dplyr::filter(.data$ProjectID == x, .data$PoolID == y) %>%
-      dplyr::mutate(TagID2 = .data$TagID, .before = .data$TagID)
-  }) %>% purrr::set_names(paste0(project,"-", pool,"_AF.tsv"))
-  purrr::walk2(files, names(files), function(x, y) {
-    complete_path <- fs::path(path, y)
-    if (nrow(x) > 0) {
-      readr::write_tsv(x, complete_path, col_names = FALSE)
-    } else {
-      message(paste("Nothing to write for ", y, ", skipping."))
+    stopifnot(is.data.frame(association_file))
+    stopifnot(is.character(project))
+    stopifnot(is.character(pool))
+    stopifnot(length(project) == length(pool))
+    stopifnot(.check_af_correctness(association_file))
+    stopifnot(is.character(path) & length(path) == 1)
+    path <- fs::as_fs_path(path)
+    if (!fs::file_exists(path)) {
+        fs::dir_create(path)
     }
-  })
+    files <- purrr::map2(project, pool, function(x, y) {
+        selected_cols <- association_file %>%
+            dplyr::select(dplyr::all_of(reduced_AF_columns)) %>%
+            dplyr::filter(.data$ProjectID == x, .data$PoolID == y) %>%
+            dplyr::mutate(TagID2 = .data$TagID, .before = .data$TagID)
+    }) %>% purrr::set_names(paste0(project, "-", pool, "_AF.tsv"))
+    purrr::walk2(files, names(files), function(x, y) {
+        complete_path <- fs::path(path, y)
+        if (nrow(x) > 0) {
+            readr::write_tsv(x, complete_path, col_names = FALSE)
+        } else {
+            message(paste("Nothing to write for ", y, ", skipping."))
+        }
+    })
 }
 
-####---- Utilities for tests and examples ----####
+#### ---- Utilities for tests and examples ----####
 #' A utility function to unzip and use example file systems included in the
 #' package
 #'
@@ -120,9 +121,9 @@ generate_Vispa2_launch_AF <- function(association_file, project, pool, path) {
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
 unzip_file_system <- function(zipfile, name) {
-  root_folder <- tempdir()
-  zip::unzip(zipfile, exdir = root_folder)
-  root_folder <- file.path(root_folder, name, fsep = "\\")
-  root_folder <- gsub('"', "", gsub("\\\\", "/", root_folder))
-  root_folder
+    root_folder <- tempdir()
+    zip::unzip(zipfile, exdir = root_folder)
+    root_folder <- file.path(root_folder, name, fsep = "\\")
+    root_folder <- gsub('"', "", gsub("\\\\", "/", root_folder))
+    root_folder
 }

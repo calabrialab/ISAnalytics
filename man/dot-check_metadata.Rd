@@ -7,7 +7,7 @@
 .check_metadata(x)
 }
 \arguments{
-\item{x}{an ISADataFrame object}
+\item{x}{An ISADataFrame object}
 }
 \value{
 FALSE if some metadata are not found in the data frame, TRUE

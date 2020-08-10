@@ -94,15 +94,20 @@ duplicates are found they are automatically ignored
 \examples{
 \dontrun{
 # Can't run because it's interactive and requires user input
-matrices <- import_parallel_Vispa2Matrices_interactive(association_file,
-root, quantification_type, matrix_type, workers)
+matrices <- import_parallel_Vispa2Matrices_interactive(
+    association_file,
+    root, quantification_type, matrix_type, workers
+)
 }
 path <- system.file("extdata", "ex_association_file.tsv",
-package = "ISAnalytics")
+    package = "ISAnalytics"
+)
 root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 root <- unzip_file_system(root_pth, "fs")
-matrices <- import_parallel_Vispa2Matrices_auto(path, root,
-c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY")
+matrices <- import_parallel_Vispa2Matrices_auto(
+    path, root,
+    c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
+)
 }
 \seealso{
 \code{\link{matching_options}},

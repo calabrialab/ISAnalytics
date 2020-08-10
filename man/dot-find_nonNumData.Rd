@@ -7,10 +7,10 @@
 .find_nonNumData(x)
 }
 \arguments{
-\item{x}{an ISADataFrame object}
+\item{x}{An ISADataFrame object}
 }
 \value{
-a numeric vector
+A numeric vector
 }
 \description{
 Internal helper function to find the indexes of detected non numeric columns.

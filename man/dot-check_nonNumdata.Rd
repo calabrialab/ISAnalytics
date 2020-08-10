@@ -8,7 +8,7 @@ and verifying they're numeric.}
 .check_nonNumdata(x)
 }
 \arguments{
-\item{x}{an ISADataFrame object}
+\item{x}{An ISADataFrame object}
 }
 \value{
 TRUE if at least one experimental data column of type numeric (or

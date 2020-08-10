@@ -7,7 +7,7 @@
 .check_atLeastOneExp(x)
 }
 \arguments{
-\item{x}{an ISADataFrame object}
+\item{x}{An ISADataFrame object}
 }
 \value{
 FALSE if no experimental columns were detected, TRUE if at least

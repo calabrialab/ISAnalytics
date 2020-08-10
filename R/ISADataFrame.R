@@ -46,22 +46,25 @@
 #'
 #' # You can change the mandatory variables by explicitly specifying the names
 #' isaDf <- new_ISADataFrame(list(a = 1:10, b = 10:1),
-#' mandVars = c("myvar1", "myvar2"))
+#'     mandVars = c("myvar1", "myvar2")
+#' )
 #'
 #' # You can specify the metadata columns also
 #' isaDf <- new_ISADataFrame(list(a = 1:10, b = 10:1),
-#' mandVars = c("myvar1", "myvar2"),
-#' meta = c("m1", "m2", "m3"))
+#'     mandVars = c("myvar1", "myvar2"),
+#'     meta = c("m1", "m2", "m3")
+#' )
 new_ISADataFrame <- function(x,
-                             mandVars = c("chr", "integration_locus", "strand"),
-                             meta = character(), ..., class = character()) {
+    mandVars = c("chr", "integration_locus", "strand"),
+    meta = character(), ..., class = character()) {
     stopifnot(is.list(x))
     minLength <- min(vapply(x, length, FUN.VALUE = numeric(1)))
 
     tibble::new_tibble(x,
-                       mandatoryVars = mandVars,
-                       metadata = meta, ...,
-                       nrow = minLength, class = c(class, "ISADataFrame"))
+        mandatoryVars = mandVars,
+        metadata = meta, ...,
+        nrow = minLength, class = c(class, "ISADataFrame")
+    )
 }
 
 #' Validator for ISADataFrame objects.
@@ -87,40 +90,50 @@ new_ISADataFrame <- function(x,
 #' @export
 #'
 #' @examples
-#' isadf <- new_ISADataFrame(list(chr = c(as.character(1:10)),
-#' integration_locus = runif(10, min = 100, max = 10000),
-#' strand = sample(c("+", "-"), 10, replace = TRUE),
-#' exp_1 = runif(10, min = 0, max = 10000),
-#' exp_2 = runif(10, min = 0, max = 10000),
-#' exp_3 = runif(10, min = 0, max = 10000)
+#' isadf <- new_ISADataFrame(list(
+#'     chr = c(as.character(1:10)),
+#'     integration_locus = runif(10, min = 100, max = 10000),
+#'     strand = sample(c("+", "-"), 10, replace = TRUE),
+#'     exp_1 = runif(10, min = 0, max = 10000),
+#'     exp_2 = runif(10, min = 0, max = 10000),
+#'     exp_3 = runif(10, min = 0, max = 10000)
 #' ))
 #'
 #' validate_ISADataFrame(isadf)
-#'
 validate_ISADataFrame <- function(x) {
     stopifnot(is.ISADataFrame(x))
     # checks if ISAdf contains the mandatory vars columns
-    if (!all(vapply(X = mandatoryVars(x), FUN = is.element,
-                    set = colnames(x), FUN.VALUE = logical(1)))) {
-        stop(paste("Validation of ISADataFrame failed: the input data",
-        "doesn't contain the mandatory variables"))
+    if (!all(vapply(
+        X = mandatoryVars(x), FUN = is.element,
+        set = colnames(x), FUN.VALUE = logical(1)
+    ))) {
+        stop(paste(
+            "Validation of ISADataFrame failed: the input data",
+            "doesn't contain the mandatory variables"
+        ))
     }
     # checks if there is at least one experimental data column (column type
     # must be numeric)
     checknonnum <- .check_nonNumdata(x)
     if (checknonnum == FALSE) {
-        stop(paste("Validation of ISADataFrame failed: no experimental",
-                       "variables found"))
+        stop(paste(
+            "Validation of ISADataFrame failed: no experimental",
+            "variables found"
+        ))
     }
     if (checknonnum == "Warning") {
-        warning(paste("Validation of ISADataFrame - warning: found",
-                      "experimental columns with non numeric type"))
+        warning(paste(
+            "Validation of ISADataFrame - warning: found",
+            "experimental columns with non numeric type"
+        ))
     }
     # checks if the specified metadata are present in the data frame
     checkM <- .check_metadata(x)
     if (checkM == FALSE) {
-        warning(paste("Validation of ISADataFrame - warning: the input",
-                      "data doesn't contain the specified metadata columns"))
+        warning(paste(
+            "Validation of ISADataFrame - warning: the input",
+            "data doesn't contain the specified metadata columns"
+        ))
     }
 
     return(TRUE)
@@ -156,17 +169,21 @@ validate_ISADataFrame <- function(x) {
 #' @importFrom rlang env_bind env_parent
 #' @importFrom tibble is_tibble
 #' @examples
-#' aListWithSomeIssues <- list(chr = c(as.character(1:10)),
-#' integration_locus = runif(10, min = 100, max = 10000),
-#' strand = sample(c("+", "-"), 10, replace = TRUE),
-#' meta1 = rep_len("m1", 10),
-#' nonNumericdata = rep_len("random", 10),
-#' exp_1 = runif(5, min = 0, max = 10000),
-#' exp_2 = runif(10, min = 0, max = 10000),
-#' exp_3 = runif(8, min = 0, max = 10000))
+#' aListWithSomeIssues <- list(
+#'     chr = c(as.character(1:10)),
+#'     integration_locus = runif(10, min = 100, max = 10000),
+#'     strand = sample(c("+", "-"), 10, replace = TRUE),
+#'     meta1 = rep_len("m1", 10),
+#'     nonNumericdata = rep_len("random", 10),
+#'     exp_1 = runif(5, min = 0, max = 10000),
+#'     exp_2 = runif(10, min = 0, max = 10000),
+#'     exp_3 = runif(8, min = 0, max = 10000)
+#' )
 #'
-#' isadf <- ISADataFrame(aListWithSomeIssues, metadata = c("meta1"),
-#' try.correct = TRUE)
+#' isadf <- ISADataFrame(aListWithSomeIssues,
+#'     metadata = c("meta1"),
+#'     try.correct = TRUE
+#' )
 #' head(isadf)
 ISADataFrame <- function(x, metadata = character(), try.correct = TRUE) {
     stopifnot(is.list(x) | is.data.frame(x) | is_tibble(x) | is.ISADataFrame(x))
@@ -175,9 +192,11 @@ ISADataFrame <- function(x, metadata = character(), try.correct = TRUE) {
         equalLeng <- (lengths == lengths[[1]])
         if (!all(equalLeng)) {
             if (!try.correct) {
-                stop(paste("Error in ISADataFrame(): list provided as input",
-                     "has elements with different lengths.",
-                     "Try try.correct = TRUE"))
+                stop(paste(
+                    "Error in ISADataFrame(): list provided as input",
+                    "has elements with different lengths.",
+                    "Try try.correct = TRUE"
+                ))
             } else {
                 max <- max(lengths)
                 x <- lapply(x, FUN = function(x) {
@@ -187,54 +206,75 @@ ISADataFrame <- function(x, metadata = character(), try.correct = TRUE) {
                         x
                     }
                 })
-                message(paste("Warning - introduced NAs to fix issues in",
-                        "provided list"))
+                message(paste(
+                    "Warning - introduced NAs to fix issues in",
+                    "provided list"
+                ))
             }
         }
     }
     isaDf <- new_ISADataFrame(x, meta = metadata)
-    resultValidation <- withCallingHandlers({
+    resultValidation <- withCallingHandlers(
+        {
             validate_ISADataFrame(isaDf)
         },
         error = function(cond) {
-            stop(paste("Couldn't build ISADataFrame from provided input.",
-                       "Aborting.", conditionMessage(cond)))
+            stop(paste(
+                "Couldn't build ISADataFrame from provided input.",
+                "Aborting.", conditionMessage(cond)
+            ))
         },
         warning = function(cond) {
             if (try.correct) {
-                if (conditionMessage(cond)==paste("Validation of ISADataFrame",
+                if (conditionMessage(cond) == paste(
+                    "Validation of ISADataFrame",
                     "- warning: the input data doesn't contain the specified",
-                    "metadata columns")) {
-                    present <- which(vapply(X = metadata(isaDf),
-                                            FUN = is.element,
-                                            set = colnames(isaDf),
-                                            FUN.VALUE = logical(1)))
+                    "metadata columns"
+                )) {
+                    present <- which(vapply(
+                        X = metadata(isaDf),
+                        FUN = is.element,
+                        set = colnames(isaDf),
+                        FUN.VALUE = logical(1)
+                    ))
                     attr(isaDf, "metadata") <- names(present)
                     rlang::env_bind(env_parent(), isaDf = isaDf)
-                    message(paste("Auto-corrected: the input data does not",
-                            "contain the specified metadata columns"))
+                    message(paste(
+                        "Auto-corrected: the input data does not",
+                        "contain the specified metadata columns"
+                    ))
                     invokeRestart("muffleWarning")
                 }
-                if (conditionMessage(cond)==paste("Validation of ISADataFrame",
+                if (conditionMessage(cond) == paste(
+                    "Validation of ISADataFrame",
                     "- warning: found experimental columns with non numeric",
-                    "type")) {
+                    "type"
+                )) {
                     nnum <- .find_nonNumData(isaDf)
                     attr(isaDf, "metadata") <- c(metadata(isaDf), names(nnum))
                     if (.check_atLeastOneExp(isaDf)) {
                         rlang::env_bind(env_parent(), isaDf = isaDf)
-                        message(paste("Auto-corrected: found experimental",
-                        "columns with non numeric type"))
+                        message(paste(
+                            "Auto-corrected: found experimental",
+                            "columns with non numeric type"
+                        ))
                         invokeRestart("muffleWarning")
                     } else {
-                        stop(paste("Validation of ISADataFrame failed:",
-                        "no experimental variables found"))
+                        stop(paste(
+                            "Validation of ISADataFrame failed:",
+                            "no experimental variables found"
+                        ))
                     }
                 }
             } else {
-                stop(paste("Could not build ISADataFrame - warnings thrown:",
-                           conditionMessage(cond),
-                           paste("\n", "Try auto-correct function by using",
-                               "try.correct = TRUE")))
+                stop(paste(
+                    "Could not build ISADataFrame - warnings thrown:",
+                    conditionMessage(cond),
+                    paste(
+                        "\n", "Try auto-correct function by using",
+                        "try.correct = TRUE"
+                    )
+                ))
             }
         }
     )
@@ -250,13 +290,15 @@ ISADataFrame <- function(x, metadata = character(), try.correct = TRUE) {
 #' @export
 #'
 #' @examples
-#' expList <- list(chr = c(as.character(1:10)),
-#' integration_locus = runif(10, min = 100, max = 10000),
-#' strand = sample(c("+","-"), 10, replace = TRUE),
-#' meta1 = rep_len("m1", 10),
-#' exp_1 = runif(10, min = 0, max = 10000),
-#' exp_2 = runif(10, min = 0, max = 10000),
-#' exp_3 = runif(10, min = 0, max = 10000))
+#' expList <- list(
+#'     chr = c(as.character(1:10)),
+#'     integration_locus = runif(10, min = 100, max = 10000),
+#'     strand = sample(c("+", "-"), 10, replace = TRUE),
+#'     meta1 = rep_len("m1", 10),
+#'     exp_1 = runif(10, min = 0, max = 10000),
+#'     exp_2 = runif(10, min = 0, max = 10000),
+#'     exp_3 = runif(10, min = 0, max = 10000)
+#' )
 #' isadf <- ISADataFrame(expList, metadata = c("meta1"))
 #' mandatory <- mandatoryVars(isadf)
 mandatoryVars <- function(x) {
@@ -266,19 +308,21 @@ mandatoryVars <- function(x) {
 
 #' Gets the value of the attribute metadata.
 #'
-#' @param x an ISADataFrame object
+#' @param x An ISADataFrame object
 #'
-#' @return a character vector
+#' @return A character vector
 #' @export
 #'
 #' @examples
-#' expList <- list(chr = c(as.character(1:10)),
-#' integration_locus = runif(10, min = 100, max = 10000),
-#' strand = sample(c("+","-"), 10, replace = TRUE),
-#' meta1 = rep_len("m1", 10),
-#' exp_1 = runif(10, min = 0, max = 10000),
-#' exp_2 = runif(10, min = 0, max = 10000),
-#' exp_3 = runif(10, min = 0, max = 10000))
+#' expList <- list(
+#'     chr = c(as.character(1:10)),
+#'     integration_locus = runif(10, min = 100, max = 10000),
+#'     strand = sample(c("+", "-"), 10, replace = TRUE),
+#'     meta1 = rep_len("m1", 10),
+#'     exp_1 = runif(10, min = 0, max = 10000),
+#'     exp_2 = runif(10, min = 0, max = 10000),
+#'     exp_3 = runif(10, min = 0, max = 10000)
+#' )
 #' isadf <- ISADataFrame(expList, metadata = c("meta1"))
 #' meta <- metadata(isadf)
 metadata <- function(x) {
@@ -286,3 +330,71 @@ metadata <- function(x) {
     attr(x, "metadata")
 }
 
+#' Adds new metadata to the metadata attribute.
+#'
+#' The metadata has to be present in the data frame in order to be added.
+#'
+#' @param x The ISADataFrame object
+#' @param meta A character vector containing the names of the columns to
+#' register as metadata
+#'
+#' @return An ISADataFrame object
+#' @export
+#'
+#' @examples
+#' example_matrix_ann <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
+#'     package = "ISAnalytics"
+#' )
+#' isadf_ann <- import_single_Vispa2Matrix(example_matrix_ann)
+#' isadf_ann <- add_metadata(isadf_ann, c("GeneName"))
+add_metadata <- function(x, meta) {
+    stopifnot(is.ISADataFrame(x))
+    stopifnot(is.character(meta))
+    found <- meta %in% colnames(x)
+    if (all(found == FALSE)) {
+        stop(paste("None of metadata specified found in x"))
+    }
+    if (any(found == FALSE)) {
+        meta <- meta[found]
+        current <- metadata(x)
+        attr(x, "metadata") <- c(current, meta)
+        message(paste(
+            "Some of the metadata specified were not found in the data",
+            "frame and were ignored."
+        ))
+        return(x)
+    }
+    current <- metadata(x)
+    attr(x, "metadata") <- c(current, meta)
+    return(x)
+}
+
+#' Removes metadata from the metadata attribute.
+#'
+#' The metadata has to be present in the attribute in order to be removed.
+#'
+#' @param x The ISADataFrame object
+#' @param meta A character vector containing the names of the columns to
+#' register as metadata
+#'
+#' @return An ISADataFrame object
+#' @export
+#'
+#' @examples
+#' example_matrix_ann <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
+#'     package = "ISAnalytics"
+#' )
+#' isadf_ann <- import_single_Vispa2Matrix(example_matrix_ann)
+#' isadf_ann <- remove_metadata(isadf_ann, c("GeneName"))
+remove_metadata <- function(x, meta) {
+    stopifnot(is.ISADataFrame(x))
+    stopifnot(is.character(meta))
+    found <- meta %in% metadata(x)
+    if (all(found == FALSE)) {
+        stop(paste("None of metadata specified found in x"))
+    }
+    meta <- meta[found]
+    current <- metadata(x)
+    attr(x, "metadata") <- current[!current %in% meta]
+    return(x)
+}

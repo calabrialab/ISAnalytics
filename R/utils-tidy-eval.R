@@ -12,7 +12,8 @@
 #'   expression, which is like a blueprint for the delayed computation.
 #'   \code{enquos()} returns a list of such quoted expressions.
 #'
-#' * \code{\link[rlang:nse-defuse]{expr}()} quotes a new expression _locally_. It
+#' * \code{\link[rlang:nse-defuse]{expr}()} quotes a new expression _locally_.
+#'   It
 #'   is mostly useful to build new expressions around arguments
 #'   captured with [enquo()] or [enquos()]:
 #'   \code{expr(mean(!!enquo(arg), na.rm = TRUE))}.

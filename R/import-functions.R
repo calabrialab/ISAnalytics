@@ -25,37 +25,46 @@
 #'
 #' @examples
 #' path_to_file <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-#' package = "ISAnalytics")
+#'     package = "ISAnalytics"
+#' )
 #' isa_dataframe <- import_single_Vispa2Matrix(path_to_file)
 import_single_Vispa2Matrix <- function(path) {
-  stopifnot(!missing(path) & is.character(path))
-  if (!file.exists(path)) {
-    stop(paste("File not found at", path))
-  }
-  df <- read.csv(path, sep = "\t", header = TRUE, fill = TRUE,
-                 check.names = FALSE, stringsAsFactors = FALSE)
+    stopifnot(!missing(path) & is.character(path))
+    if (!file.exists(path)) {
+        stop(paste("File not found at", path))
+    }
+    df <- read.csv(path,
+        sep = "\t", header = TRUE, fill = TRUE,
+        check.names = FALSE, stringsAsFactors = FALSE
+    )
 
-  df_type <- .auto_detect_type(df)
-  switch(df_type,
-         "OLD" = {
-           df <- df %>% tidyr::separate(col = .data$IS_genomicID,
-                                        into = c("chr", "integration_locus",
-                                                 "strand"),
-                                        sep = "_", remove = TRUE,
-                                        convert = TRUE)
-           isadf <- ISADataFrame(df)
-         },
-         "NEW_ANNOTATED" = {
-           isadf <- ISADataFrame(df, metadata = c("GeneName", "GeneStrand"))
-         },
-         "NEW_NOTANN" = {
-           isadf <- ISADataFrame(df)
-         },
-         "MALFORMED" = stop(paste("Error - the IS matrix you're trying to",
-                                  "import is malformed, aborting"))
-         )
-  isadf <- .messy_to_tidy(isadf)
-  isadf
+    df_type <- .auto_detect_type(df)
+    switch(df_type,
+        "OLD" = {
+            df <- df %>% tidyr::separate(
+                col = .data$IS_genomicID,
+                into = c(
+                    "chr", "integration_locus",
+                    "strand"
+                ),
+                sep = "_", remove = TRUE,
+                convert = TRUE
+            )
+            isadf <- ISADataFrame(df)
+        },
+        "NEW_ANNOTATED" = {
+            isadf <- ISADataFrame(df, metadata = c("GeneName", "GeneStrand"))
+        },
+        "NEW_NOTANN" = {
+            isadf <- ISADataFrame(df)
+        },
+        "MALFORMED" = stop(paste(
+            "Error - the IS matrix you're trying to",
+            "import is malformed, aborting"
+        ))
+    )
+    isadf <- .messy_to_tidy(isadf)
+    isadf
 }
 
 
@@ -98,28 +107,29 @@ import_single_Vispa2Matrix <- function(path) {
 #'
 #' @examples
 #' path <- system.file("extdata", "ex_association_file.tsv",
-#' package = "ISAnalytics")
+#'     package = "ISAnalytics"
+#' )
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
 #' association_file <- import_association_file(path, root)
 import_association_file <- function(path,
-                                    root) {
-  # Check parameters
-  stopifnot(is.character(path) & length(path) == 1)
-  stopifnot(is.character(root) & length(root) == 1)
-  stopifnot(file.exists(path))
-  stopifnot(file.exists(root))
+    root) {
+    # Check parameters
+    stopifnot(is.character(path) & length(path) == 1)
+    stopifnot(is.character(root) & length(root) == 1)
+    stopifnot(file.exists(path))
+    stopifnot(file.exists(root))
 
-  # Read file and check the correctness
-  as_file <- .read_and_correctness_af(path)
+    # Read file and check the correctness
+    as_file <- .read_and_correctness_af(path)
 
-  # Checks if the association file and the file system are aligned
-  checks <- .check_file_system_alignment(as_file, root_folder = root)
-  widg <- .checker_widget(checks)
-  print(widg)
+    # Checks if the association file and the file system are aligned
+    checks <- .check_file_system_alignment(as_file, root_folder = root)
+    widg <- .checker_widget(checks)
+    print(widg)
 
-  as_file <- .update_af_after_alignment(as_file, checks, root)
-  as_file
+    as_file <- .update_af_after_alignment(as_file, checks, root)
+    as_file
 }
 
 
@@ -163,96 +173,102 @@ import_association_file <- function(path,
 #' @examples
 #' \dontrun{
 #' # Can't run because it's interactive and requires user input
-#' matrices <- import_parallel_Vispa2Matrices_interactive(association_file,
-#' root, quantification_type, matrix_type, workers)
+#' matrices <- import_parallel_Vispa2Matrices_interactive(
+#'     association_file,
+#'     root, quantification_type, matrix_type, workers
+#' )
 #' }
 import_parallel_Vispa2Matrices_interactive <- function(association_file,
-                                                      root,
-                                                      quantification_type,
-                                                      matrix_type = "annotated",
-                                                      workers = 2) {
-  # Check parameters
-  stopifnot(!missing(association_file))
-  stopifnot(is.character(association_file) |
-              tibble::is_tibble(association_file))
-  if (is.character(association_file)) {
-    stopifnot(length(association_file) == 1)
-    stopifnot(!missing(root) && is.character(root) && length(root) == 1)
-  } else {
-    root <- NULL
-  }
-  stopifnot(is.numeric(workers) & length(workers) == 1)
-  workers <- floor(workers)
-  stopifnot(!missing(quantification_type))
-  stopifnot(all(quantification_type %in% quantification_types()))
-  stopifnot(is.character(matrix_type) & matrix_type %in% c("annotated",
-                                                           "not_annotated"))
+    root,
+    quantification_type,
+    matrix_type = "annotated",
+    workers = 2) {
+    # Check parameters
+    stopifnot(!missing(association_file))
+    stopifnot(is.character(association_file) |
+        tibble::is_tibble(association_file))
+    if (is.character(association_file)) {
+        stopifnot(length(association_file) == 1)
+        stopifnot(!missing(root) && is.character(root) && length(root) == 1)
+    } else {
+        root <- NULL
+    }
+    stopifnot(is.numeric(workers) & length(workers) == 1)
+    workers <- floor(workers)
+    stopifnot(!missing(quantification_type))
+    stopifnot(all(quantification_type %in% quantification_types()))
+    stopifnot(is.character(matrix_type) & matrix_type %in% c(
+        "annotated",
+        "not_annotated"
+    ))
 
-  # Manage association file
-  association_file <- .manage_association_file(association_file, root)
-  checker_widg <- association_file[[2]]
-  association_file <- association_file[[1]]
-  if (!is.null(checker_widg)) {
-    print(checker_widg)
-  }
-  ## User selects projects to keep
-  association_file <- .interactive_select_projects_import(association_file)
-  ## User selects pools to keep
-  association_file <- .interactive_select_pools_import(association_file)
-  ## Scan the appropriate file system paths and look for files
-  files_found <- .lookup_matrices(association_file, quantification_type,
-                                  matrix_type)
-  ff_widget <- .files_found_widget(files_found)
-  if (!is.null(checker_widg)) {
-    print(htmltools::browsable(htmltools::tagList(
-      ff_widget,
-      checker_widg
-    )))
-  } else {
-    print(ff_widget)
-  }
-  ## Manage missing files and duplicates
-  files_to_import <- .manage_anomalies_interactive(files_found)
-  fimp_widget <- .files_to_import_widget(files_to_import)
+    # Manage association file
+    association_file <- .manage_association_file(association_file, root)
+    checker_widg <- association_file[[2]]
+    association_file <- association_file[[1]]
+    if (!is.null(checker_widg)) {
+        print(checker_widg)
+    }
+    ## User selects projects to keep
+    association_file <- .interactive_select_projects_import(association_file)
+    ## User selects pools to keep
+    association_file <- .interactive_select_pools_import(association_file)
+    ## Scan the appropriate file system paths and look for files
+    files_found <- .lookup_matrices(
+        association_file, quantification_type,
+        matrix_type
+    )
+    ff_widget <- .files_found_widget(files_found)
+    if (!is.null(checker_widg)) {
+        print(htmltools::browsable(htmltools::tagList(
+            ff_widget,
+            checker_widg
+        )))
+    } else {
+        print(ff_widget)
+    }
+    ## Manage missing files and duplicates
+    files_to_import <- .manage_anomalies_interactive(files_found)
+    fimp_widget <- .files_to_import_widget(files_to_import)
 
-  if (!is.null(checker_widg)) {
-    print(htmltools::browsable(htmltools::tagList(
-      fimp_widget,
-      ff_widget,
-      checker_widg
-    )))
-  } else {
-    print(htmltools::browsable(htmltools::tagList(
-      fimp_widget,
-      ff_widget
-    )))
-  }
+    if (!is.null(checker_widg)) {
+        print(htmltools::browsable(htmltools::tagList(
+            fimp_widget,
+            ff_widget,
+            checker_widg
+        )))
+    } else {
+        print(htmltools::browsable(htmltools::tagList(
+            fimp_widget,
+            ff_widget
+        )))
+    }
 
-  ## If files to import are 0 just terminate
-  if (nrow(files_to_import) == 0) {
-    stop("No files to import")
-  }
+    ## If files to import are 0 just terminate
+    if (nrow(files_to_import) == 0) {
+        stop("No files to import")
+    }
 
-  ## Import
-  matrices <- .parallel_import_merge(files_to_import, workers)
-  fimported_widg <- matrices[[2]]
-  fimported_widg <- .files_imported_widget(fimported_widg)
-  if (!is.null(checker_widg)) {
-    print(htmltools::browsable(htmltools::tagList(
-      fimported_widg,
-      fimp_widget,
-      ff_widget,
-      checker_widg
-    )))
-  } else {
-    print(htmltools::browsable(htmltools::tagList(
-      fimported_widg,
-      fimp_widget,
-      ff_widget
-    )))
-  }
-  matrices <- matrices[[1]]
-  matrices
+    ## Import
+    matrices <- .parallel_import_merge(files_to_import, workers)
+    fimported_widg <- matrices[[2]]
+    fimported_widg <- .files_imported_widget(fimported_widg)
+    if (!is.null(checker_widg)) {
+        print(htmltools::browsable(htmltools::tagList(
+            fimported_widg,
+            fimp_widget,
+            ff_widget,
+            checker_widg
+        )))
+    } else {
+        print(htmltools::browsable(htmltools::tagList(
+            fimported_widg,
+            fimp_widget,
+            ff_widget
+        )))
+    }
+    matrices <- matrices[[1]]
+    matrices
 }
 
 
@@ -282,110 +298,117 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
 #'
 #' @examples
 #' path <- system.file("extdata", "ex_association_file.tsv",
-#' package = "ISAnalytics")
+#'     package = "ISAnalytics"
+#' )
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
-#' matrices <- import_parallel_Vispa2Matrices_auto(path, root,
-#' c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY")
+#' matrices <- import_parallel_Vispa2Matrices_auto(
+#'     path, root,
+#'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
+#' )
 import_parallel_Vispa2Matrices_auto <- function(association_file,
-                                           root,
-                                           quantification_type,
-                                           matrix_type = "annotated",
-                                           workers = 2,
-                                           patterns = NULL,
-                                           matching_opt = matching_options()) {
-  # Check parameters
-  stopifnot(!missing(association_file))
-  stopifnot(is.character(association_file) |
-              tibble::is_tibble(association_file))
-  if (is.character(association_file)) {
-    stopifnot(length(association_file) == 1)
-    stopifnot(!missing(root) && is.character(root) && length(root) == 1)
-  } else {
-    root <- NULL
-  }
-  stopifnot(is.numeric(workers) & length(workers) == 1)
-  workers <- floor(workers)
-  stopifnot(!missing(quantification_type))
-  stopifnot(all(quantification_type %in% quantification_types()))
-  stopifnot(is.character(matrix_type) & matrix_type %in% c("annotated",
-                                                           "not_annotated"))
-  if (!is.null(patterns)) {
-    stopifnot(is.character(patterns))
-  }
-  ### Evaluate matching_opt
-  matching_option <- match.arg(matching_opt)
-  stopifnot(is.character(matching_option))
+    root,
+    quantification_type,
+    matrix_type = "annotated",
+    workers = 2,
+    patterns = NULL,
+    matching_opt = matching_options()) {
+    # Check parameters
+    stopifnot(!missing(association_file))
+    stopifnot(is.character(association_file) |
+        tibble::is_tibble(association_file))
+    if (is.character(association_file)) {
+        stopifnot(length(association_file) == 1)
+        stopifnot(!missing(root) && is.character(root) && length(root) == 1)
+    } else {
+        root <- NULL
+    }
+    stopifnot(is.numeric(workers) & length(workers) == 1)
+    workers <- floor(workers)
+    stopifnot(!missing(quantification_type))
+    stopifnot(all(quantification_type %in% quantification_types()))
+    stopifnot(is.character(matrix_type) & matrix_type %in% c(
+        "annotated",
+        "not_annotated"
+    ))
+    if (!is.null(patterns)) {
+        stopifnot(is.character(patterns))
+    }
+    ### Evaluate matching_opt
+    matching_option <- match.arg(matching_opt)
+    stopifnot(is.character(matching_option))
 
-  # Manage association file
-  association_file <- .manage_association_file(association_file, root)
-  checker_widg <- association_file[[2]]
-  association_file <- association_file[[1]]
-  if (!is.null(checker_widg)) {
-    print(checker_widg)
-  }
+    # Manage association file
+    association_file <- .manage_association_file(association_file, root)
+    checker_widg <- association_file[[2]]
+    association_file <- association_file[[1]]
+    if (!is.null(checker_widg)) {
+        print(checker_widg)
+    }
 
-  # Automatic workflow - limited options
-  ## In automatic workflow all projects and pools contained in the association
-  ## file are considered. If more precise selection is needed on this, user
-  ## should use the interactive version or filter the association file
-  ## appropriately before calling the function.
+    # Automatic workflow - limited options
+    ## In automatic workflow all projects and pools contained in the association
+    ## file are considered. If more precise selection is needed on this, user
+    ## should use the interactive version or filter the association file
+    ## appropriately before calling the function.
 
-  ## Scan the appropriate file system paths and look for files
-  files_found <- .lookup_matrices_auto(association_file, quantification_type,
-                                       matrix_type, patterns, matching_option)
+    ## Scan the appropriate file system paths and look for files
+    files_found <- .lookup_matrices_auto(
+        association_file, quantification_type,
+        matrix_type, patterns, matching_option
+    )
 
-  ff_widget <- .files_found_widget(files_found)
-  if (!is.null(checker_widg)) {
-    print(htmltools::browsable(htmltools::tagList(
-      ff_widget,
-      checker_widg
-    )))
-  } else {
-    print(ff_widget)
-  }
+    ff_widget <- .files_found_widget(files_found)
+    if (!is.null(checker_widg)) {
+        print(htmltools::browsable(htmltools::tagList(
+            ff_widget,
+            checker_widg
+        )))
+    } else {
+        print(ff_widget)
+    }
 
-  ## Manage missing files and duplicates
-  files_to_import <- .manage_anomalies_auto(files_found)
-  fimp_widget <- .files_to_import_widget(files_to_import)
+    ## Manage missing files and duplicates
+    files_to_import <- .manage_anomalies_auto(files_found)
+    fimp_widget <- .files_to_import_widget(files_to_import)
 
-  if (!is.null(checker_widg)) {
-    print(htmltools::browsable(htmltools::tagList(
-      fimp_widget,
-      ff_widget,
-      checker_widg
-    )))
-  } else {
-    print(htmltools::browsable(htmltools::tagList(
-      fimp_widget,
-      ff_widget
-    )))
-  }
-  ## If files to import are 0 just terminate
-  if (nrow(files_to_import) == 0) {
-    stop("No files to import")
-  }
+    if (!is.null(checker_widg)) {
+        print(htmltools::browsable(htmltools::tagList(
+            fimp_widget,
+            ff_widget,
+            checker_widg
+        )))
+    } else {
+        print(htmltools::browsable(htmltools::tagList(
+            fimp_widget,
+            ff_widget
+        )))
+    }
+    ## If files to import are 0 just terminate
+    if (nrow(files_to_import) == 0) {
+        stop("No files to import")
+    }
 
-  ## Import
-  matrices <- .parallel_import_merge(files_to_import, workers)
-  fimported_widg <- matrices[[2]]
-  fimported_widg <- .files_imported_widget(fimported_widg)
-  if (!is.null(checker_widg)) {
-    print(htmltools::browsable(htmltools::tagList(
-      fimported_widg,
-      fimp_widget,
-      ff_widget,
-      checker_widg
-    )))
-  } else {
-    print(htmltools::browsable(htmltools::tagList(
-      fimported_widg,
-      fimp_widget,
-      ff_widget
-    )))
-  }
-  matrices <- matrices[[1]]
-  matrices
+    ## Import
+    matrices <- .parallel_import_merge(files_to_import, workers)
+    fimported_widg <- matrices[[2]]
+    fimported_widg <- .files_imported_widget(fimported_widg)
+    if (!is.null(checker_widg)) {
+        print(htmltools::browsable(htmltools::tagList(
+            fimported_widg,
+            fimp_widget,
+            ff_widget,
+            checker_widg
+        )))
+    } else {
+        print(htmltools::browsable(htmltools::tagList(
+            fimported_widg,
+            fimp_widget,
+            ff_widget
+        )))
+    }
+    matrices <- matrices[[1]]
+    matrices
 }
 
 #' Possible choices for the `quantification_type` parameter.
@@ -414,9 +437,11 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
 #' @examples
 #' quant_types <- quantification_types()
 quantification_types <- function() {
-  c("fragmentEstimate", "seqCount",
-    "barcodeCount", "cellCount",
-    "ShsCount")
+    c(
+        "fragmentEstimate", "seqCount",
+        "barcodeCount", "cellCount",
+        "ShsCount"
+    )
 }
 
 
@@ -440,5 +465,5 @@ quantification_types <- function() {
 #' @examples
 #' opts <- matching_options()
 matching_options <- function() {
-  c("ANY", "ALL", "OPTIONAL")
+    c("ANY", "ALL", "OPTIONAL")
 }

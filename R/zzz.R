@@ -1,4 +1,5 @@
 
-.onAttach <- function(libname, pkgname){
-  options(ISAnalytics.connection = stdin())
+.onAttach <- function(libname, pkgname) {
+    options(ISAnalytics.connection = stdin())
+    options(ISAnalytics.verbose = TRUE)
 }

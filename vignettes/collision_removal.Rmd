@@ -1,0 +1,239 @@
+---
+title: "Collision removal functionality"
+author: 
+  - name: Giulia Pais
+    affiliation:
+     - San Raffaele Telethon Institute for Gene Therapy - SR-Tiget, Via Olgettina 60, 20132 Milano - Italia
+    email: giuliapais1@gmail.com, calabria.andrea@hsr.it
+output: 
+  BiocStyle::html_document:
+    self_contained: yes
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    code_folding: show
+date: "`r doc_date()`"
+package: "`r pkg_ver('ISAnalytics')`"
+vignette: >
+  %\VignetteIndexEntry{Collision removal functionality}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}  
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    crop = NULL ## Related to https://stat.ethz.ch/pipermail/bioc-devel/2020-April/016656.html
+)
+```
+
+
+```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
+## Track time spent on making the vignette
+startTime <- Sys.time()
+
+## Bib setup
+library("knitcitations")
+
+## Load knitcitations with a clean bibliography
+cleanbib()
+cite_options(hyperlink = "to.doc", citation_format = "text", style = "html")
+
+## Write bibliography information
+bib <- c(
+    R = citation(),
+    BiocStyle = citation("BiocStyle")[1],
+    knitcitations = citation("knitcitations")[1],
+    knitr = citation("knitr")[1],
+    rmarkdown = citation("rmarkdown")[1],
+    sessioninfo = citation("sessioninfo")[1],
+    testthat = citation("testthat")[1],
+    ISAnalytics = citation("ISAnalytics")[1]
+)
+
+write.bibtex(bib, file = "collision_removal.bib")
+```
+
+# Introduction
+
+## What is a collision and why should you care?
+
+We're not going into too much detail here, but we're going to explain in a very simple way what is a "collision" and how the function in this package deal with them.
+
+We say that an integration (aka a unique combination of chromosome, integration locus and strand) is a *collision* if this combination is shared between different independent samples: an independent sample is a unique combination of ProjectID and SubjectID (where subjects usually represent patients). The reason behind this is that it's highly improbable to observe the very same integration in two different subjects and this phenomenon might be an indicator of some kind of contamination in the sequencing phase or in PCR phase, for this reason we might want to exclude such contamination from our analysis.  
+`ISAnalytics` provides a function that processes the imported data for the removal or reassignment of these "problematic" integrations, `remove_collisions`.
+
+The processing is done on the sequence count matrix (after import) and matrices of other quantification types are re-aligned accordingly.  
+
+## Setting options
+
+`ISAnalytics` has a verbose option that allows some functions to print additional information to the console while they're executing. To disable this feature do:
+
+```{r eval=FALSE}
+# DISABLE
+options("ISAnalytics.verbose" = FALSE)
+
+# ENABLE
+options("ISAnalytics.verbose" = TRUE)
+
+```
+
+## The logic behind the function
+
+The `remove_collisions` function follows several logical steps to decide whether an integration is a collision and if it is it decides whether to re-assign it or remove it entirely based on different criteria.
+
+### Identifying the collisions
+
+As we said before, a collision is a triplet made of chr, integration locus and strand, which is shared between different independent samples, aka a pair made of ProjectID and SubjectID. The function uses the information stored in the association file to assess which independent samples are present and counts the number of independent samples for each integration: those who have a count > 1 are considered collisions.
+
+### Re-assign vs remove
+
+Once the collisions are identified, the function follows 3 steps where it tries to re-assign the combination to a single independent sample. The criterias are:  
+
+1. Compare dates: if it's possible to have an absolute ordering on dates, the integration is re-assigned to the sample that has the earliest date. If two samples share the same date it's impossible to decide, so the next criteria is tested
+2. Compare replicate number: if a sample has the same integration in more than one replicate, it's more probable the integration is not an artifact. If it's possible to have an absolute ordering, the collision is re-assigned to the sample whose grouping is largest
+3. Compare the sequence count value: if the previous criteria wasn't sufficient to make a decision, for each group of independent samples it's evaluated the sum of the sequence count value - for each group there is a cumulative value of the sequence count and this is compared to the value of other groups. If there is a single group which has a ratio n times bigger than other groups, this one is chosen for re-assignment. The factor n is passed as a parameter in the function ( `reads_ratio`), the default value is 10.
+
+If none of the criterias were sufficient to make a decision, the integration is simply removed from the matrix.
+
+# Typical workflow
+
+To know more about import functions take a look at the vignette "How to use import functions".
+
+## Import the association file
+
+Import your association file:
+
+```{r}
+library(ISAnalytics)
+path_AF <- system.file("extdata", "ex_association_file.tsv",
+                       package = "ISAnalytics")
+
+root_correct <- system.file("extdata", "fs.zip",
+                            package = "ISAnalytics")
+root_correct <- unzip_file_system(root_correct, "fs")
+association_file <- import_association_file(path_AF, root_correct)
+```
+
+Important notes on the association file:  
+
+* You have to be sure your association file is properly filled out. The function requires you to specify a date column (by default "SequencingDate"), you have to ensure this column doesn't contain NA values or incorrect values.
+* You have to ensure that your association file contains ALL the information regarding CompleteAmplificationIDs present in the matrices you're analyzing - an error is thrown otherwise
+* If you have the verbose option set to true and your association file holds additional information on other samples which for any reason are not present in the matrix you're analyzing, you'll be notified with a console message.
+
+## Import the matrices for your analysis
+
+```{r}
+# This imports both sequence count and fragment estimate matrices
+matrices <- import_parallel_Vispa2Matrices_auto(
+  association_file = association_file, root = NULL,
+  quantification_type = c("fragmentEstimate", "seqCount"),
+  matrix_type = "annotated", workers = 2, patterns = NULL,
+  matching_opt = "ANY"
+)
+```
+
+As stated in the introduction, it is fundamental that the sequence count matrix is present for the collision removal process to take place.
+
+## Process the collisions
+
+You can process the collisions in two different ways, the recommended way is to pass the entire named list to the function, so it can realign other matrices automatically:
+
+```{r}
+# Pass the whole named list
+matrices_processed <- remove_collisions(x = matrices, association_file = association_file, date_col = "SequencingDate", reads_ratio = 10)
+```
+
+If you have the verbose option active, a report file is produced at the end that shows the before and after for each subject (and some other details). This report is an html widget, so you can save it or export it for future reference if you need it.
+
+The alternative way for using this function is to give only the sequence count matrix as input:
+
+```{r}
+# Pass the sequence count matrix only
+matrices_processed_single <- remove_collisions(x = matrices$seqCount, association_file = association_file, date_col = "SequencingDate", reads_ratio = 10)
+```
+
+If you have the verbose option active, a console message will remind you to align other matrices if you have them at a later time.
+
+## Re-align other matrices
+
+If you have opted for the second way, to realign other matrices you have to call the function `realign_after_collisions`, passing as input the processed sequence count matrix and the named list of other matrices to realign.   
+**NOTE: the names in the list must be quantification types.**
+
+```{r}
+seq_count_proc <- matrices_processed_single$seqCount
+other_matrices <- matrices[!names(matrices) %in% "seqCount"] # Select only matrices that are not relative to sequence count
+other_realigned <- realign_after_collisions(seq_count_proc, other_matrices)
+```
+
+
+# Reproducibility
+
+The `r Biocpkg("ISAnalytics")` package `r citep(bib[["ISAnalytics"]])` was made possible thanks to:
+
+* R `r citep(bib[["R"]])`
+* `r Biocpkg("BiocStyle")` `r citep(bib[["BiocStyle"]])`
+* `r CRANpkg("knitcitations")` `r citep(bib[["knitcitations"]])`
+* `r CRANpkg("knitr")` `r citep(bib[["knitr"]])`
+* `r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])`
+* `r CRANpkg("sessioninfo")` `r citep(bib[["sessioninfo"]])`
+* `r CRANpkg("testthat")` `r citep(bib[["testthat"]])`
+
+This package was developed using `r BiocStyle::Githubpkg("lcolladotor/biocthis")`.
+
+
+Code for creating the vignette
+
+```{r createVignette, eval=FALSE}
+## Create the vignette
+library("rmarkdown")
+system.time(render("collision_removal.Rmd", "BiocStyle::html_document"))
+
+## Extract the R code
+library("knitr")
+knit("collision_removal.Rmd", tangle = TRUE)
+```
+
+```{r createVignette2}
+## Clean up
+file.remove("collision_removal.bib")
+```
+
+Date the vignette was generated.
+
+```{r reproduce1, echo=FALSE}
+## Date the vignette was generated
+Sys.time()
+```
+
+Wallclock time spent generating the vignette.
+
+```{r reproduce2, echo=FALSE}
+## Processing time in seconds
+totalTime <- diff(c(startTime, Sys.time()))
+round(totalTime, digits = 3)
+```
+
+`R` session information.
+
+```{r reproduce3, echo=FALSE}
+## Session info
+library("sessioninfo")
+options(width = 120)
+session_info()
+```
+
+
+
+# Bibliography
+
+This vignette was generated using `r Biocpkg("BiocStyle")` `r citep(bib[["BiocStyle"]])`
+with `r CRANpkg("knitr")` `r citep(bib[["knitr"]])` and `r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])` running behind the scenes.
+
+Citations made with `r CRANpkg("knitcitations")` `r citep(bib[["knitcitations"]])`.
+
+```{r vignetteBiblio, results = "asis", echo = FALSE, warning = FALSE, message = FALSE}
+## Print bibliography
+bibliography()
+```

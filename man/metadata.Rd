@@ -7,22 +7,24 @@
 metadata(x)
 }
 \arguments{
-\item{x}{an ISADataFrame object}
+\item{x}{An ISADataFrame object}
 }
 \value{
-a character vector
+A character vector
 }
 \description{
 Gets the value of the attribute metadata.
 }
 \examples{
-expList <- list(chr = c(as.character(1:10)),
-integration_locus = runif(10, min = 100, max = 10000),
-strand = sample(c("+","-"), 10, replace = TRUE),
-meta1 = rep_len("m1", 10),
-exp_1 = runif(10, min = 0, max = 10000),
-exp_2 = runif(10, min = 0, max = 10000),
-exp_3 = runif(10, min = 0, max = 10000))
+expList <- list(
+    chr = c(as.character(1:10)),
+    integration_locus = runif(10, min = 100, max = 10000),
+    strand = sample(c("+", "-"), 10, replace = TRUE),
+    meta1 = rep_len("m1", 10),
+    exp_1 = runif(10, min = 0, max = 10000),
+    exp_2 = runif(10, min = 0, max = 10000),
+    exp_3 = runif(10, min = 0, max = 10000)
+)
 isadf <- ISADataFrame(expList, metadata = c("meta1"))
 meta <- metadata(isadf)
 }

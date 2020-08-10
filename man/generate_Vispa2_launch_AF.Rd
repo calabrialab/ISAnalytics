@@ -42,7 +42,8 @@ exist in the corresponding project.
 \examples{
 temp <- tempdir()
 path_af <- system.file("extdata", "ex_association_file.tsv",
-package = "ISAnalytics")
+    package = "ISAnalytics"
+)
 root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 root <- unzip_file_system(root_pth, "fs")
 association_file <- import_association_file(path_af, root)

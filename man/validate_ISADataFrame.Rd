@@ -32,14 +32,14 @@ If all checks pass the function returns TRUE, otherwise some kind of error
 is shown.
 }
 \examples{
-isadf <- new_ISADataFrame(list(chr = c(as.character(1:10)),
-integration_locus = runif(10, min = 100, max = 10000),
-strand = sample(c("+", "-"), 10, replace = TRUE),
-exp_1 = runif(10, min = 0, max = 10000),
-exp_2 = runif(10, min = 0, max = 10000),
-exp_3 = runif(10, min = 0, max = 10000)
+isadf <- new_ISADataFrame(list(
+    chr = c(as.character(1:10)),
+    integration_locus = runif(10, min = 100, max = 10000),
+    strand = sample(c("+", "-"), 10, replace = TRUE),
+    exp_1 = runif(10, min = 0, max = 10000),
+    exp_2 = runif(10, min = 0, max = 10000),
+    exp_3 = runif(10, min = 0, max = 10000)
 ))
 
 validate_ISADataFrame(isadf)
-
 }

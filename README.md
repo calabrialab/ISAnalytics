@@ -18,5 +18,43 @@ ISAnalytics is an R package developed to analyze gene therapy vector
 insertion sites data identified from genomics next generation sequencing
 reads for clonal tracking studies.
 
+In gene therapy, stem cells are modified using viral vectors to deliver
+the therapeutic transgene and replace functional properties since the
+genetic modification is stable and inherited in all cell progeny. The
+retrieval and mapping of the sequences flanking the virus-host DNA
+junctions allows the identification of insertion sites (IS), essential
+for monitoring the evolution of genetically modified cells in vivo. A
+comprehensive toolkit for the analysis of IS is required to foster
+clonal trackign studies and supporting the assessment of safety and long
+term efficacy in vivo. This package is aimed at (1) supporting
+automation of IS workflow, (2) performing base and advance analysis for
+IS tracking (clonal abundance, clonal expansions and statistics for
+insertional mutagenesis, etc.), (3) providing basic biology insights of
+transduced stem cells in vivo.
+
 ISAnalytics is currently under development with the goal of being
 published on Bioconductor soon.
+
+# Installation
+
+To install the package from GitHub:
+
+``` r
+if (!require(devtools)) {
+  install.packages("devtools")
+}
+devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
+```
+
+# Current functionality
+
+  - Central data structure: ISADataFrame
+  - Import integration matrices from files: more info with
+    `vignette("How to use import functions", package = "ISAnalytics")`
+  - Collision removal: more info with `vignette("Collision removal
+    functionality", package = "ISAnalytics")`
+
+# Getting help
+
+For help please contact the maintainer of the package or open an issue
+on GitHub.

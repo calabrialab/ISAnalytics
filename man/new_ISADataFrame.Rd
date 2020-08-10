@@ -61,12 +61,14 @@ isaDf <- new_ISADataFrame(list(a = 1:10, b = 10:1))
 
 # You can change the mandatory variables by explicitly specifying the names
 isaDf <- new_ISADataFrame(list(a = 1:10, b = 10:1),
-mandVars = c("myvar1", "myvar2"))
+    mandVars = c("myvar1", "myvar2")
+)
 
 # You can specify the metadata columns also
 isaDf <- new_ISADataFrame(list(a = 1:10, b = 10:1),
-mandVars = c("myvar1", "myvar2"),
-meta = c("m1", "m2", "m3"))
+    mandVars = c("myvar1", "myvar2"),
+    meta = c("m1", "m2", "m3")
+)
 }
 \seealso{
 \link{new_tibble},

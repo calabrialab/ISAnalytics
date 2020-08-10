@@ -3,15 +3,20 @@ library(ISAnalytics)
 library(tibble)
 
 listToTibble_casual <- list(a = 1:10, b = 10:1)
-listToTibble_correct <- list(chr = c(as.character(1:10)),
-                             integration_locus = runif(10,
-                                                       min = 100,
-                                                       max = 10000),
-                             strand = sample(c("+","-"),
-                                             10, replace = TRUE),
-                             exp_1 = runif(10, min = 0, max = 10000),
-                             exp_2 = runif(10, min = 0, max = 10000),
-                             exp_3 = runif(10, min = 0, max = 10000))
+listToTibble_correct <- list(
+    chr = c(as.character(1:10)),
+    integration_locus = runif(10,
+        min = 100,
+        max = 10000
+    ),
+    strand = sample(c("+", "-"),
+        10,
+        replace = TRUE
+    ),
+    exp_1 = runif(10, min = 0, max = 10000),
+    exp_2 = runif(10, min = 0, max = 10000),
+    exp_3 = runif(10, min = 0, max = 10000)
+)
 test_df_casual <- as.data.frame(listToTibble_casual)
 test_tibble_casual <- tibble::as_tibble(listToTibble_casual)
 test_df_correct <- as.data.frame(listToTibble_correct)
@@ -232,18 +237,24 @@ test_that("ISADataFrame() with try.correct corrects missing metadata", {
     isadf <- ISADataFrame(listToTibble_correctMeta, metadata = c("meta1", "meta2"))
     expect_s3_class(isadf, "ISADataFrame")
     expect_equal(attr(isadf, "metadata"), c("meta1"))
-    expect_message(isadf <- ISADataFrame(listToTibble_correctMeta, metadata = c("meta1", "meta2")), regexp = paste("Auto-corrected: the input data does not",
-                                                                                                                   "contain the specified metadata columns"))
+    expect_message(isadf <- ISADataFrame(listToTibble_correctMeta, metadata = c("meta1", "meta2")), regexp = paste(
+        "Auto-corrected: the input data does not",
+        "contain the specified metadata columns"
+    ))
     isadf <- ISADataFrame(test_df_correctMeta, metadata = c("meta1", "meta2"))
     expect_s3_class(isadf, "ISADataFrame")
     expect_equal(attr(isadf, "metadata"), c("meta1"))
-    expect_message(isadf <- ISADataFrame(test_df_correctMeta, metadata = c("meta1", "meta2")), regexp = paste("Auto-corrected: the input data does not",
-                                                                                                              "contain the specified metadata columns"))
+    expect_message(isadf <- ISADataFrame(test_df_correctMeta, metadata = c("meta1", "meta2")), regexp = paste(
+        "Auto-corrected: the input data does not",
+        "contain the specified metadata columns"
+    ))
     isadf <- ISADataFrame(test_tibble_correctMeta, metadata = c("meta1", "meta2"))
     expect_s3_class(isadf, "ISADataFrame")
     expect_equal(attr(isadf, "metadata"), c("meta1"))
-    expect_message(isadf <- ISADataFrame(test_tibble_correctMeta, metadata = c("meta1", "meta2")), regexp = paste("Auto-corrected: the input data does not",
-                                                                                                                  "contain the specified metadata columns"))
+    expect_message(isadf <- ISADataFrame(test_tibble_correctMeta, metadata = c("meta1", "meta2")), regexp = paste(
+        "Auto-corrected: the input data does not",
+        "contain the specified metadata columns"
+    ))
 })
 
 test_that("ISADataFrame() without try.correct fails and doesn't correct missing metadata", {
@@ -256,18 +267,24 @@ test_that("ISADataFrame() with try.correct corrects non numeric experimental dat
     isadf <- ISADataFrame(listToTibble_correctNonNum)
     expect_s3_class(isadf, "ISADataFrame")
     expect_equal(attr(isadf, "metadata"), c("nonNumericdata"))
-    expect_message(isadf <- ISADataFrame(listToTibble_correctNonNum), regexp = paste("Auto-corrected: found experimental",
-                                                                                     "columns with non numeric type"))
+    expect_message(isadf <- ISADataFrame(listToTibble_correctNonNum), regexp = paste(
+        "Auto-corrected: found experimental",
+        "columns with non numeric type"
+    ))
     isadf <- ISADataFrame(test_df_correctNonNum)
     expect_s3_class(isadf, "ISADataFrame")
     expect_equal(attr(isadf, "metadata"), c("nonNumericdata"))
-    expect_message(isadf <- ISADataFrame(test_df_correctNonNum), regexp = paste("Auto-corrected: found experimental",
-                                                                                "columns with non numeric type"))
+    expect_message(isadf <- ISADataFrame(test_df_correctNonNum), regexp = paste(
+        "Auto-corrected: found experimental",
+        "columns with non numeric type"
+    ))
     isadf <- ISADataFrame(test_tibble_correctNonNum)
     expect_s3_class(isadf, "ISADataFrame")
     expect_equal(attr(isadf, "metadata"), c("nonNumericdata"))
-    expect_message(isadf <- ISADataFrame(test_tibble_correctNonNum), regexp = paste("Auto-corrected: found experimental",
-                                                                                    "columns with non numeric type"))
+    expect_message(isadf <- ISADataFrame(test_tibble_correctNonNum), regexp = paste(
+        "Auto-corrected: found experimental",
+        "columns with non numeric type"
+    ))
 })
 
 test_that("ISADataFrame() without try.correct fails and doesn't correct non numeric experimental data", {
@@ -283,12 +300,18 @@ test_that("ISADataFrame() with try.correct is successful for all warnings", {
     expect_true(any(is.na(isadf$exp_3)))
     expect_false(any(is.na(isadf$exp_2)))
     expect_equal(attr(isadf, "metadata"), c("meta1", "nonNumericdata"))
-    expect_message(isadf <- ISADataFrame(listToTibble_correctAll, metadata = c("meta1", "meta2", "meta3")), regexp = paste("Auto-corrected: found experimental",
-                                                                                                                           "columns with non numeric type"))
-    expect_message(isadf <- ISADataFrame(listToTibble_correctAll, metadata = c("meta1", "meta2", "meta3")), regexp = paste("Auto-corrected: the input data does not",
-                                                                                                                           "contain the specified metadata columns"))
-    expect_message(isadf <- ISADataFrame(listToTibble_correctAll, metadata = c("meta1", "meta2", "meta3")), regexp = paste("Warning - introduced NAs to fix issues in",
-                                                                                                                           "provided list"))
+    expect_message(isadf <- ISADataFrame(listToTibble_correctAll, metadata = c("meta1", "meta2", "meta3")), regexp = paste(
+        "Auto-corrected: found experimental",
+        "columns with non numeric type"
+    ))
+    expect_message(isadf <- ISADataFrame(listToTibble_correctAll, metadata = c("meta1", "meta2", "meta3")), regexp = paste(
+        "Auto-corrected: the input data does not",
+        "contain the specified metadata columns"
+    ))
+    expect_message(isadf <- ISADataFrame(listToTibble_correctAll, metadata = c("meta1", "meta2", "meta3")), regexp = paste(
+        "Warning - introduced NAs to fix issues in",
+        "provided list"
+    ))
 })
 
 listToTibble_noExpOneNonNum <- list(chr = c(as.character(1:10)), integration_locus = runif(10, min = 100, max = 10000), strand = sample(c(
