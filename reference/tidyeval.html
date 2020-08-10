@@ -50,7 +50,8 @@ enquos() delay the execution of one or
 several function arguments. enquo() returns a single quoted
 expression, which is like a blueprint for the delayed computation.
 enquos() returns a list of such quoted expressions.
-expr() quotes a new expression locally. It
+expr() quotes a new expression locally.
+It
 is mostly useful to build new expressions around arguments
 captured with enquo() or enquos():
 expr(mean(!!enquo(arg), na.rm = TRUE)).
@@ -104,7 +105,7 @@ section of Advanced R." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.5</span>
       </span>
     </div>
 
@@ -126,6 +127,9 @@ section of Advanced R." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/collision_removal.html">Collision removal functionality</a>
+    </li>
     <li>
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
@@ -171,7 +175,8 @@ character vector.</p></li>
 several function arguments. <code>enquo()</code> returns a single quoted
 expression, which is like a blueprint for the delayed computation.
 <code>enquos()</code> returns a list of such quoted expressions.</p></li>
-<li><p><code><a href='https://rlang.r-lib.org/reference/nse-defuse.html'>expr</a>()</code> quotes a new expression <em>locally</em>. It
+<li><p><code><a href='https://rlang.r-lib.org/reference/nse-defuse.html'>expr</a>()</code> quotes a new expression <em>locally</em>.
+It
 is mostly useful to build new expressions around arguments
 captured with <code>enquo()</code> or <code>enquos()</code>:
 <code>expr(mean(!!enquo(arg), na.rm = TRUE))</code>.</p></li>

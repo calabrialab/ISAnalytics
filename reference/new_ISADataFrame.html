@@ -86,7 +86,7 @@ Hadley Wickham - Advanced R." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.5</span>
       </span>
     </div>
 
@@ -108,6 +108,9 @@ Hadley Wickham - Advanced R." />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/collision_removal.html">Collision removal functionality</a>
+    </li>
     <li>
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
@@ -219,12 +222,14 @@ should be performed in validators and/or helpers.</p>
 
 <span class='co'># You can change the mandatory variables by explicitly specifying the names</span>
 <span class='kw'>isaDf</span> <span class='op'>&lt;-</span> <span class='fu'>new_ISADataFrame</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(a = <span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>, b = <span class='fl'>10</span><span class='op'>:</span><span class='fl'>1</span>),
-mandVars = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"myvar1"</span>, <span class='st'>"myvar2"</span>))
+    mandVars = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"myvar1"</span>, <span class='st'>"myvar2"</span>)
+)
 
 <span class='co'># You can specify the metadata columns also</span>
 <span class='kw'>isaDf</span> <span class='op'>&lt;-</span> <span class='fu'>new_ISADataFrame</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(a = <span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>, b = <span class='fl'>10</span><span class='op'>:</span><span class='fl'>1</span>),
-mandVars = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"myvar1"</span>, <span class='st'>"myvar2"</span>),
-meta = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"m1"</span>, <span class='st'>"m2"</span>, <span class='st'>"m3"</span>))</div></pre>
+    mandVars = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"myvar1"</span>, <span class='st'>"myvar2"</span>),
+    meta = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"m1"</span>, <span class='st'>"m2"</span>, <span class='st'>"m3"</span>)
+)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

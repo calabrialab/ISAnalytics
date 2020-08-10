@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.5</span>
       </span>
     </div>
 
@@ -94,6 +94,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/collision_removal.html">Collision removal functionality</a>
+    </li>
     <li>
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
@@ -276,12 +279,17 @@ a character week variable to an integer.</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_annotated_ISMatrix.tsv.xz"</span>,
-package = <span class='st'>"ISAnalytics"</span>)
-<span class='kw'>df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span>(<span class='kw'>path</span>, sep = <span class='st'>"\t"</span>, check.names = <span class='fl'>FALSE</span>,
-stringsAsFactors = <span class='fl'>FALSE</span>)
-<span class='kw'>isadf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='ISADataFrame.html'>ISADataFrame</a></span>(<span class='kw'>df</span>, metadata = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"GeneName"</span>,<span class='st'>"GeneStrand"</span>))
-<span class='kw'>isadf</span> <span class='op'>&lt;-</span> <span class='kw'>tidyr</span>::<span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_longer.html'>pivot_longer</a></span>(<span class='kw'>isadf</span>, cols = <span class='fl'>6</span><span class='op'>:</span><span class='fl'>10</span>, names_to = <span class='st'>"ExpID"</span>,
-values_to = <span class='st'>"Val"</span>, values_drop_na = <span class='fl'>TRUE</span>)</div></pre>
+    package = <span class='st'>"ISAnalytics"</span>
+)
+<span class='kw'>df</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span>(<span class='kw'>path</span>,
+    sep = <span class='st'>"\t"</span>, check.names = <span class='fl'>FALSE</span>,
+    stringsAsFactors = <span class='fl'>FALSE</span>
+)
+<span class='kw'>isadf</span> <span class='op'>&lt;-</span> <span class='fu'><a href='ISADataFrame.html'>ISADataFrame</a></span>(<span class='kw'>df</span>, metadata = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"GeneName"</span>, <span class='st'>"GeneStrand"</span>))
+<span class='kw'>isadf</span> <span class='op'>&lt;-</span> <span class='kw'>tidyr</span>::<span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_longer.html'>pivot_longer</a></span>(<span class='kw'>isadf</span>,
+    cols = <span class='fl'>6</span><span class='op'>:</span><span class='fl'>10</span>, names_to = <span class='st'>"ExpID"</span>,
+    values_to = <span class='st'>"Val"</span>, values_drop_na = <span class='fl'>TRUE</span>
+)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
