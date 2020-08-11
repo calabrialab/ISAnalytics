@@ -242,6 +242,9 @@
                 "\\/quantification\\/",
                 concatenatePoolIDSeqRun, "$"
             )
+            pattern <- stringr::str_replace_all(pattern,
+                                                pattern = "\\\\\\/\\\\\\/",
+                                                replacement = "\\\\/")
             found <- stringr::str_extract_all(tree_struct, pattern)
             found <- unlist(found)
             value <- if (purrr::is_empty(found)) {
