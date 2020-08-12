@@ -74,7 +74,7 @@ the file system where Vispa2 matrices are generated." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.8</span>
       </span>
     </div>
 
@@ -144,7 +144,9 @@ the file system where Vispa2 matrices are generated.</p>
   <span class='kw'>root</span>,
   <span class='kw'>quantification_type</span>,
   matrix_type = <span class='st'>"annotated"</span>,
-  workers = <span class='fl'>2</span>
+  workers = <span class='fl'>2</span>,
+  tp_padding = <span class='fl'>4</span>,
+  dates_format = <span class='st'>"dmy"</span>
 )
 
 <span class='fu'>import_parallel_Vispa2Matrices_auto</span>(
@@ -154,7 +156,9 @@ the file system where Vispa2 matrices are generated.</p>
   matrix_type = <span class='st'>"annotated"</span>,
   workers = <span class='fl'>2</span>,
   patterns = <span class='kw'>NULL</span>,
-  matching_opt = <span class='fu'><a href='matching_options.html'>matching_options</a></span>()
+  matching_opt = <span class='fu'><a href='matching_options.html'>matching_options</a></span>(),
+  tp_padding = <span class='fl'>4</span>,
+  dates_format = <span class='st'>"dmy"</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -185,6 +189,17 @@ be imported. Can only be one in <code>"annotated"</code> or <code>"not_annotated
       <th>workers</th>
       <td><p>A single number representing the number of parallel workers to
 use for the import</p></td>
+    </tr>
+    <tr>
+      <th>tp_padding</th>
+      <td><p>Timepoint padding, indicates the number of digits of the
+"Timepoint" column once imported. Fills the content with 0s up to the length
+specified (ex: 1 becomes 0001 with a tp_padding of 4)</p></td>
+    </tr>
+    <tr>
+      <th>dates_format</th>
+      <td><p>A single string indicating how dates should be parsed.
+Must be a value in: <code><a href='date_formats.html'>date_formats()</a></code></p></td>
     </tr>
     <tr>
       <th>patterns</th>

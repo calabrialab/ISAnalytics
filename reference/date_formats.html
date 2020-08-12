@@ -6,7 +6,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Internal function to convert a messy matrix to a tidy data frame — .messy_to_tidy • ISAnalytics</title>
+<title>Possible choices for the dates_format parameter in
+import_association_file, import_parallel_vispa2Matrices_interactive and
+import_parallel_vispa2Matrices_auto. — date_formats • ISAnalytics</title>
 
 
 <!-- jquery -->
@@ -39,11 +41,19 @@
 
 
 
-<meta property="og:title" content="Internal function to convert a messy matrix to a tidy data frame — .messy_to_tidy" />
-<meta property="og:description" content="Uses the suite of functions provided by the
-tidyverse to prooduce a more dense and ordered structure.
-This function is not exported and should be called in other importing
-functions." />
+<meta property="og:title" content="Possible choices for the dates_format parameter in
+import_association_file, import_parallel_vispa2Matrices_interactive and
+import_parallel_vispa2Matrices_auto. — date_formats" />
+<meta property="og:description" content="All options correspond to lubridate functions:
+ymd: year, month, date
+ydm: year, day, month
+mdy: month, day, year
+myd: month, year, day
+dmy: day, month, year - default value
+dym: day, year, month
+yq: year quantile
+
+" />
 
 
 
@@ -129,33 +139,42 @@ functions." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Internal function to convert a messy matrix to a tidy data frame</h1>
-    <small class="dont-index">Source: <a href='NA/NA/NA/blob/master/R/internal-functions.R'><code>R/internal-functions.R</code></a></small>
-    <div class="hidden name"><code>dot-messy_to_tidy.Rd</code></div>
+    <h1>Possible choices for the <code>dates_format</code> parameter in
+<code>import_association_file</code>, <code>import_parallel_vispa2Matrices_interactive</code> and
+<code>import_parallel_vispa2Matrices_auto</code>.</h1>
+    <small class="dont-index">Source: <a href='NA/NA/NA/blob/master/R/import-functions.R'><code>R/import-functions.R</code></a></small>
+    <div class="hidden name"><code>date_formats.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Uses the suite of functions provided by the
-tidyverse to prooduce a more dense and ordered structure.
-This function is not exported and should be called in other importing
-functions.</p>
+    <p>All options correspond to <code>lubridate</code> functions:</p><ul>
+<li><p>ymd: year, month, date</p></li>
+<li><p>ydm: year, day, month</p></li>
+<li><p>mdy: month, day, year</p></li>
+<li><p>myd: month, year, day</p></li>
+<li><p>dmy: day, month, year - default value</p></li>
+<li><p>dym: day, year, month</p></li>
+<li><p>yq: year quantile</p></li>
+</ul>
+
     </div>
 
-    <pre class="usage"><span class='fu'>.messy_to_tidy</span>(<span class='kw'>df</span>)</pre>
+    <pre class="usage"><span class='fu'>date_formats</span>()</pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>df</th>
-      <td><p>ISADataFrame to convert to tidy</p></td>
-    </tr>
-    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a tidy ISADataFrame</p>
+    <p>A character vector</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    <p><strong>NOTE: use the same date format across the association file.</strong></p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='import_association_file.html'>import_association_file</a></code>, <code>
+import_parallel_vispa2Matrices_auto</code></p></div>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'>date_formats</span>()</div><div class='output co'>#&gt; [1] "ymd" "ydm" "mdy" "myd" "dmy" "dym" "yq" </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

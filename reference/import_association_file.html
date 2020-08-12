@@ -74,7 +74,7 @@ two." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.8</span>
       </span>
     </div>
 
@@ -139,7 +139,7 @@ the file system starting from the root to assess the alignment between the
 two.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>import_association_file</span>(<span class='kw'>path</span>, <span class='kw'>root</span>)</pre>
+    <pre class="usage"><span class='fu'>import_association_file</span>(<span class='kw'>path</span>, <span class='kw'>root</span>, tp_padding = <span class='fl'>4</span>, dates_format = <span class='st'>"dmy"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -152,6 +152,17 @@ two.</p>
       <th>root</th>
       <td><p>The path on disk of the root folder of Vispa2 output.
 See details.</p></td>
+    </tr>
+    <tr>
+      <th>tp_padding</th>
+      <td><p>Timepoint padding, indicates the number of digits of the
+"Timepoint" column once imported. Fills the content with 0s up to the length
+specified (ex: 1 becomes 0001 with a tp_padding of 4)</p></td>
+    </tr>
+    <tr>
+      <th>dates_format</th>
+      <td><p>A single string indicating how dates should be parsed.
+Must be a value in: <code><a href='date_formats.html'>date_formats()</a></code></p></td>
     </tr>
     </table>
 
@@ -190,7 +201,8 @@ For more details on how to properly use these functions, refer to the
 vignette - vignette("how_to_import_functions")</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Import functions: 
+    <div class='dont-index'><p><code><a href='date_formats.html'>date_formats</a></code></p>
+<p>Other Import functions: 
 <code><a href='import_parallel_Vispa2Matrices_interactive.html'>import_parallel_Vispa2Matrices_interactive</a>()</code>,
 <code><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a>()</code></p></div>
 

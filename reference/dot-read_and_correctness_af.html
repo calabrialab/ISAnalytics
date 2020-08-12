@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.8</span>
       </span>
     </div>
 
@@ -135,7 +135,7 @@
     <p>Reads association file and checks if it's correct or not.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>.read_and_correctness_af</span>(<span class='kw'>path</span>)</pre>
+    <pre class="usage"><span class='fu'>.read_and_correctness_af</span>(<span class='kw'>path</span>, <span class='kw'>padding</span>, <span class='kw'>date_format</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -143,6 +143,14 @@
     <tr>
       <th>path</th>
       <td><p>The path to the association file on disk</p></td>
+    </tr>
+    <tr>
+      <th>padding</th>
+      <td><p>The padding for TimePoint field</p></td>
+    </tr>
+    <tr>
+      <th>date_format</th>
+      <td><p>The date format of date columns</p></td>
     </tr>
     </table>
 
