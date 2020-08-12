@@ -179,13 +179,18 @@
 #' Reads association file and checks if it's correct or not.
 #'
 #' @param path The path to the association file on disk
+#' @param padding The padding for TimePoint field
+#' @param date_format The date format of date columns
 #' @importFrom tibble as_tibble
+#' @importFrom dplyr mutate across contains
+#' @importFrom rlang .data
+#' @importFrom stringr str_pad
+#' @import lubridate
 #'
 #' @return A tibble containing the association file.
-.read_and_correctness_af <- function(path) {
+.read_and_correctness_af <- function(path, padding, date_format) {
     stopifnot(is.character(path))
     stopifnot(file.exists(path))
-
     as_file <- read.csv(path,
         header = TRUE, check.names = FALSE,
         stringsAsFactors = FALSE, sep = "\t"
@@ -200,6 +205,16 @@
             "generate_blank_association_file()"
         ), call. = FALSE)
     }
+    as_file <- as_file %>%
+        dplyr::mutate(TimePoint = stringr::str_pad(
+            as.character(.data$TimePoint),
+            padding, side = "left",
+            pad = "0")) %>%
+        dplyr::mutate(dplyr::across(dplyr::contains("Date"), ~do.call(
+            getExportedValue("lubridate", date_format),
+            list(.x),
+            quote = TRUE
+        )))
     as_file
 }
 
@@ -314,15 +329,18 @@
 #' `import_association_file`)
 #' @param root If `association_file` is the path to the file, root is a single
 #' string holding the path to the root folder, otherwise root is `NULL`
+#' @param padding The padding for TimePoint field
+#' @param format The date format of date columns
 #'
 #' @return A list of two elements: the first element is an updated version of
 #' the association file with NAs removed, the second element is a widget showing
 #' results of alignment checks.
-.manage_association_file <- function(association_file, root) {
+.manage_association_file <- function(association_file, root, padding, format) {
     # Manage association file
     if (is.character(association_file)) {
         # If it's a path to file import the association file
-        association_file <- .read_and_correctness_af(association_file)
+        association_file <- .read_and_correctness_af(association_file,
+                                                     padding, format)
         checks <- .check_file_system_alignment(association_file, root)
         widget_checks <- .checker_widget(checks)
         association_file <- .update_af_after_alignment(
@@ -2008,7 +2026,6 @@
 #' @param seq_count_df The sequence count tibble
 #' @param association_file The association file tibble
 #' @param date_col The date column chosen
-#' @importFrom lubridate dmy
 #' @import dplyr
 #' @importFrom rlang .data
 #'
@@ -2020,8 +2037,7 @@
             dplyr::all_of(colnames(seq_count_df)), all_of(date_col),
             .data$ProjectID, .data$PoolID, .data$SubjectID,
             .data$ReplicateNumber
-        ) %>%
-        dplyr::mutate(!!date_col := lubridate::dmy(`$`(.data, !!date_col)))
+        )
     joined
 }
 

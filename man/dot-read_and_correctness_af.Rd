@@ -4,10 +4,14 @@
 \alias{.read_and_correctness_af}
 \title{Reads association file and checks if it's correct or not.}
 \usage{
-.read_and_correctness_af(path)
+.read_and_correctness_af(path, padding, date_format)
 }
 \arguments{
 \item{path}{The path to the association file on disk}
+
+\item{padding}{The padding for TimePoint field}
+
+\item{date_format}{The date format of date columns}
 }
 \value{
 A tibble containing the association file.

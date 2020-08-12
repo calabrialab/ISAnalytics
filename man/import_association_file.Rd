@@ -4,13 +4,20 @@
 \alias{import_association_file}
 \title{Import the association file from disk}
 \usage{
-import_association_file(path, root)
+import_association_file(path, root, tp_padding = 4, dates_format = "dmy")
 }
 \arguments{
 \item{path}{The path on disk to the association file.}
 
 \item{root}{The path on disk of the root folder of Vispa2 output.
 See details.}
+
+\item{tp_padding}{Timepoint padding, indicates the number of digits of the
+"Timepoint" column once imported. Fills the content with 0s up to the length
+specified (ex: 1 becomes 0001 with a tp_padding of 4)}
+
+\item{dates_format}{A single string indicating how dates should be parsed.
+Must be a value in: \code{date_formats()}}
 }
 \value{
 A tibble with the contents of the association file plus a column
@@ -62,6 +69,8 @@ root <- unzip_file_system(root_pth, "fs")
 association_file <- import_association_file(path, root)
 }
 \seealso{
+\code{\link{date_formats}}
+
 Other Import functions: 
 \code{\link{import_parallel_Vispa2Matrices_interactive}()},
 \code{\link{import_single_Vispa2Matrix}()}

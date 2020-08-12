@@ -195,7 +195,7 @@ test_that(".check_af_correctness returns FALSE for malformed file", {
 # Tests .read_and_correctness_af
 #------------------------------------------------------------------------------#
 test_that(".read_and_correctness_af succeeds when association file is correct", {
-    af <- .read_and_correctness_af(path_af)
+    af <- .read_and_correctness_af(path_af, 4, "dmy")
     expect_s3_class(af, "tbl_df")
 })
 
@@ -208,12 +208,12 @@ test_that(".read_and_correctness_af fails when association file is incorrect", {
     temp_path <- tempfile(fileext = ".tsv")
     readr::write_tsv(af, temp_path)
     expect_error({
-        af <- .read_and_correctness_af(temp_path)
+        af <- .read_and_correctness_af(temp_path, 4, "dmy")
     })
 })
 
 #### OTHER VARS ####
-af_df <- .read_and_correctness_af(path_af)
+af_df <- .read_and_correctness_af(path_af, 4, "dmy")
 missing_project <- list(
     ProjectID = "PROJECT1101",
     concatenatePoolIDSeqRun = "ABY-LR-PL4-POOL54-2"
@@ -330,6 +330,33 @@ test_that("import_association_file fails if path or root don't exist", {
         import_association_file(path_af, "a")
     )
 })
+test_that("import_association_file fails if padding is incorrect", {
+    # Padding is not numeric or integer
+    expect_error(
+        import_association_file(path_af, root_correct, tp_padding = "3")
+    )
+    # Padding is vector
+    expect_error(
+        import_association_file(path_af, root_correct, tp_padding = c(1,2))
+    )
+})
+test_that("import_association_file fails if date format is incorrect", {
+    # dates_format is not a character
+    expect_error(
+        import_association_file(path_af, root_correct,
+                                tp_padding = 4, dates_format = 1)
+    )
+    # dates_format has not length 1
+    expect_error(
+        import_association_file(path_af, root_correct,
+                                tp_padding = 4, dates_format = c("dmy", "myd"))
+    )
+    # dates_format is not one of the allowed
+    expect_error(
+        import_association_file(path_af, root_correct,
+                                tp_padding = 4, dates_format = "ggmmaaa")
+    )
+})
 ## Testing results
 test_that("import_association_file imports af with no warnings for fs", {
     op <- options("viewer" = NULL)
@@ -379,7 +406,7 @@ all_proj_pools <- list(
 test_that(".manage_association_file succeeds with fs - path version", {
     expect_warning(
         {
-            af <- .manage_association_file(path_af, root_correct)
+            af <- .manage_association_file(path_af, root_correct, 4, "dmy")
         },
         regexp = NA
     )
@@ -400,7 +427,7 @@ test_that(".manage_association_file succeeds with fs - tibble version", {
     )
     expect_warning(
         {
-            af <- .manage_association_file(af, NULL)
+            af <- .manage_association_file(af, NULL, 4, "dmy")
         },
         regexp = NA
     )
@@ -413,7 +440,7 @@ test_that(".manage_association_file succeeds with fs - tibble version", {
 test_that(".manage_association_file succeeds with fserr - path version", {
     expect_warning(
         {
-            af <- .manage_association_file(path_af, root_err)
+            af <- .manage_association_file(path_af, root_err, 4, "dmy")
         },
         regexp = warning_update_after_alignment
     )
@@ -441,7 +468,7 @@ test_that(".manage_association_file succeeds with fserr - tibble version", {
     )
     expect_warning(
         {
-            af <- .manage_association_file(af, NULL)
+            af <- .manage_association_file(af, NULL, 4, "dmy")
         },
         regexp = NA
     )
@@ -469,7 +496,7 @@ test_that(".manage_association_file fails if association file is malformed", {
     )
     af <- af %>% dplyr::select(-c("Path"))
     expect_error({
-        af <- .manage_association_file(af, NULL)
+        af <- .manage_association_file(af, NULL, 4, "dmy")
     })
     expect_warning(
         {
@@ -479,7 +506,7 @@ test_that(".manage_association_file fails if association file is malformed", {
     )
     af <- af %>% dplyr::select(-c("ProjectID"))
     expect_error({
-        af <- .manage_association_file(af, NULL)
+        af <- .manage_association_file(af, NULL, 4, "dmy")
     })
 })
 
@@ -488,9 +515,10 @@ test_that(".manage_association_file fails if association file is malformed", {
 #------------------------------------------------------------------------------#
 
 #### OTHER VARS ####
-as_file_correct <- .manage_association_file(path_af, root_correct)[[1]]
+as_file_correct <- .manage_association_file(path_af,
+                                            root_correct, 4, "dmy")[[1]]
 suppressWarnings({
-    as_file_err <- .manage_association_file(path_af, root_err)[[1]]
+    as_file_err <- .manage_association_file(path_af, root_err, 4, "dmy")[[1]]
 })
 
 test_that(".interactive_select_projects_import stops if input 1 is 0", {
@@ -1336,6 +1364,75 @@ test_that("import_parallel_Vispa2Matrices_interactive stops if
         )
     })
 })
+test_that("import_parallel_Vispa2Matrices_interactive stops if padding
+          is incorrect", {
+    # Padding is not numeric or integer
+    expect_error(
+        import_parallel_Vispa2Matrices_interactive(
+            association_file = path_af,
+            root = root_correct,
+            quantification_type =
+                quant_types,
+            matrix_type = "annotated",
+            workers = 2,
+            tp_padding = "3"
+        )
+    )
+    # Padding is vector
+    expect_error(
+        import_parallel_Vispa2Matrices_interactive(
+            association_file = path_af,
+            root = root_correct,
+            quantification_type =
+                quant_types,
+            matrix_type = "annotated",
+            workers = 2,
+            tp_padding = c(1,2)
+        )
+    )
+})
+test_that("import_parallel_Vispa2Matrices_interactive stops if date format
+          is incorrect", {
+    # dates_format is not a character
+    expect_error(
+        import_parallel_Vispa2Matrices_interactive(
+            association_file = path_af,
+            root = root_correct,
+            quantification_type =
+                quant_types,
+            matrix_type = "annotated",
+            workers = 2,
+            tp_padding = 4,
+            dates_format = 1
+        )
+    )
+    # dates_format has not length 1
+    expect_error(
+        import_parallel_Vispa2Matrices_interactive(
+            association_file = path_af,
+            root = root_correct,
+            quantification_type =
+                quant_types,
+            matrix_type = "annotated",
+            workers = 2,
+            tp_padding = 4,
+            dates_format = c("dmy", "mdy")
+        )
+    )
+    # dates_format is not one of the allowed
+    expect_error(
+        import_parallel_Vispa2Matrices_interactive(
+            association_file = path_af,
+            root = root_correct,
+            quantification_type =
+                quant_types,
+            matrix_type = "annotated",
+            workers = 2,
+            tp_padding = 4,
+            dates_format = "ggmmaaaa"
+        )
+    )
+})
 ## Testing results
 test_that("import_parallel_Vispa2Matrices_interactive succeeds for fs - path", {
     # Annotated
@@ -2086,6 +2183,80 @@ test_that("import_parallel_Vispa2Matrices_auto stops if
         )
     })
 })
+test_that("import_parallel_Vispa2Matrices_auto stops if padding
+          is incorrect", {
+              # Padding is not numeric or integer
+              expect_error(
+                  import_parallel_Vispa2Matrices_auto(
+                      association_file = path_af,
+                      root = root_correct,
+                      quantification_type =
+                          quant_types,
+                      matrix_type = "annotated",
+                      workers = 2,
+                      patterns = NULL,
+                      tp_padding = "3"
+                  )
+              )
+              # Padding is vector
+              expect_error(
+                  import_parallel_Vispa2Matrices_auto(
+                      association_file = path_af,
+                      root = root_correct,
+                      quantification_type =
+                          quant_types,
+                      matrix_type = "annotated",
+                      workers = 2,
+                      patterns = NULL,
+                      tp_padding = c(1, 2)
+                  )
+              )
+          })
+test_that("import_parallel_Vispa2Matrices_auto stops if date format
+          is incorrect", {
+              # dates_format is not a character
+              expect_error(
+                  import_parallel_Vispa2Matrices_auto(
+                      association_file = path_af,
+                      root = root_correct,
+                      quantification_type =
+                          quant_types,
+                      matrix_type = "annotated",
+                      workers = 2,
+                      patterns = NULL,
+                      tp_padding = 4,
+                      dates_format = 1
+                  )
+              )
+              # dates_format has not length 1
+              expect_error(
+                  import_parallel_Vispa2Matrices_auto(
+                      association_file = path_af,
+                      root = root_correct,
+                      quantification_type =
+                          quant_types,
+                      matrix_type = "annotated",
+                      workers = 2,
+                      patterns = NULL,
+                      tp_padding = 4,
+                      dates_format = c("dmy", "mdy")
+                  )
+              )
+              # dates_format is not one of the allowed
+              expect_error(
+                  import_parallel_Vispa2Matrices_auto(
+                      association_file = path_af,
+                      root = root_correct,
+                      quantification_type =
+                          quant_types,
+                      matrix_type = "annotated",
+                      workers = 2,
+                      patterns = NULL,
+                      tp_padding = 4,
+                      dates_format = "ggmmaaaa"
+                  )
+              )
+          })
 ## Testing results
 test_that("import_parallel_Vispa2Matrices_auto succeeds for fs - path", {
     op <- options("viewer" = NULL)

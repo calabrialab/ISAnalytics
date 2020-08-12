@@ -4,7 +4,7 @@
 \alias{.manage_association_file}
 \title{Helper function to be used when importing matrices in parallel.}
 \usage{
-.manage_association_file(association_file, root)
+.manage_association_file(association_file, root, padding, format)
 }
 \arguments{
 \item{association_file}{Either the path to the association file or the tibble
@@ -13,6 +13,10 @@ representing the imported association file (done via
 
 \item{root}{If \code{association_file} is the path to the file, root is a single
 string holding the path to the root folder, otherwise root is \code{NULL}}
+
+\item{padding}{The padding for TimePoint field}
+
+\item{format}{The date format of date columns}
 }
 \value{
 A list of two elements: the first element is an updated version of

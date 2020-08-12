@@ -76,6 +76,11 @@ import_single_Vispa2Matrix <- function(path) {
 #' @param path The path on disk to the association file.
 #' @param root The path on disk of the root folder of Vispa2 output.
 #' See details.
+#' @param tp_padding Timepoint padding, indicates the number of digits of the
+#' "Timepoint" column once imported. Fills the content with 0s up to the length
+#' specified (ex: 1 becomes 0001 with a tp_padding of 4)
+#' @param dates_format A single string indicating how dates should be parsed.
+#' Must be a value in: \code{date_formats()}
 #' @family Import functions
 #' @return A tibble with the contents of the association file plus a column
 #' containing the path in the file system for every project and pool if found.
@@ -105,6 +110,7 @@ import_single_Vispa2Matrix <- function(path) {
 #' vignette - vignette("how_to_import_functions")
 #' @export
 #'
+#' @seealso \code{\link{date_formats}}
 #' @examples
 #' path <- system.file("extdata", "ex_association_file.tsv",
 #'     package = "ISAnalytics"
@@ -113,15 +119,18 @@ import_single_Vispa2Matrix <- function(path) {
 #' root <- unzip_file_system(root_pth, "fs")
 #' association_file <- import_association_file(path, root)
 import_association_file <- function(path,
-    root) {
+    root, tp_padding = 4, dates_format = "dmy") {
     # Check parameters
     stopifnot(is.character(path) & length(path) == 1)
     stopifnot(is.character(root) & length(root) == 1)
     stopifnot(file.exists(path))
     stopifnot(file.exists(root))
+    stopifnot((is.numeric(tp_padding) |
+                   is.integer(tp_padding)) & length(tp_padding) == 1)
+    stopifnot(length(dates_format) == 1 & dates_format %in% date_formats())
 
     # Read file and check the correctness
-    as_file <- .read_and_correctness_af(path)
+    as_file <- .read_and_correctness_af(path, tp_padding, dates_format)
 
     # Checks if the association file and the file system are aligned
     checks <- .check_file_system_alignment(as_file, root_folder = root)
@@ -162,6 +171,11 @@ import_association_file <- function(path,
 #' be imported. Can only be one in `"annotated"` or `"not_annotated"`
 #' @param workers A single number representing the number of parallel workers to
 #' use for the import
+#' @param tp_padding Timepoint padding, indicates the number of digits of the
+#' "Timepoint" column once imported. Fills the content with 0s up to the length
+#' specified (ex: 1 becomes 0001 with a tp_padding of 4)
+#' @param dates_format A single string indicating how dates should be parsed.
+#' Must be a value in: \code{date_formats()}
 #' @importFrom htmltools browsable tagList
 #' @importFrom tibble is_tibble
 #' @family Import functions
@@ -182,7 +196,9 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
     root,
     quantification_type,
     matrix_type = "annotated",
-    workers = 2) {
+    workers = 2,
+    tp_padding = 4,
+    dates_format = "dmy") {
     # Check parameters
     stopifnot(!missing(association_file))
     stopifnot(is.character(association_file) |
@@ -201,9 +217,13 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
         "annotated",
         "not_annotated"
     ))
+    stopifnot((is.numeric(tp_padding) |
+                   is.integer(tp_padding)) & length(tp_padding) == 1)
+    stopifnot(length(dates_format) == 1 & dates_format %in% date_formats())
 
     # Manage association file
-    association_file <- .manage_association_file(association_file, root)
+    association_file <- .manage_association_file(association_file, root,
+                                                 tp_padding, dates_format)
     checker_widg <- association_file[[2]]
     association_file <- association_file[[1]]
     if (!is.null(checker_widg)) {
@@ -312,7 +332,9 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
     matrix_type = "annotated",
     workers = 2,
     patterns = NULL,
-    matching_opt = matching_options()) {
+    matching_opt = matching_options(),
+    tp_padding = 4,
+    dates_format = "dmy") {
     # Check parameters
     stopifnot(!missing(association_file))
     stopifnot(is.character(association_file) |
@@ -334,12 +356,17 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
     if (!is.null(patterns)) {
         stopifnot(is.character(patterns))
     }
+    stopifnot((is.numeric(tp_padding) |
+                   is.integer(tp_padding)) & length(tp_padding) == 1)
+    stopifnot(length(dates_format) == 1 & dates_format %in% date_formats())
+
     ### Evaluate matching_opt
     matching_option <- match.arg(matching_opt)
     stopifnot(is.character(matching_option))
 
     # Manage association file
-    association_file <- .manage_association_file(association_file, root)
+    association_file <- .manage_association_file(association_file, root,
+                                                 tp_padding, dates_format)
     checker_widg <- association_file[[2]]
     association_file <- association_file[[1]]
     if (!is.null(checker_widg)) {
@@ -466,4 +493,31 @@ quantification_types <- function() {
 #' opts <- matching_options()
 matching_options <- function() {
     c("ANY", "ALL", "OPTIONAL")
+}
+
+
+#' Possible choices for the `dates_format` parameter in
+#' `import_association_file`, `import_parallel_vispa2Matrices_interactive` and
+#' `import_parallel_vispa2Matrices_auto`.
+#'
+#' All options correspond to `lubridate` functions:
+#' * ymd: year, month, date
+#' * ydm: year, day, month
+#' * mdy: month, day, year
+#' * myd: month, year, day
+#' * dmy: day, month, year - default value
+#' * dym: day, year, month
+#' * yq: year quantile
+#'
+#' **NOTE: use the same date format across the association file.**
+#'
+#' @return A character vector
+#' @export
+#' @seealso \code{\link{import_association_file}}, \code{
+#' \link[import_parallel_vispa2Matrices]{import_parallel_vispa2Matrices_auto}}
+#'
+#' @examples
+#' date_formats()
+date_formats <- function() {
+    c("ymd", "ydm", "mdy", "myd", "dmy", "dym", "yq")
 }

@@ -10,7 +10,9 @@ import_parallel_Vispa2Matrices_interactive(
   root,
   quantification_type,
   matrix_type = "annotated",
-  workers = 2
+  workers = 2,
+  tp_padding = 4,
+  dates_format = "dmy"
 )
 
 import_parallel_Vispa2Matrices_auto(
@@ -20,7 +22,9 @@ import_parallel_Vispa2Matrices_auto(
   matrix_type = "annotated",
   workers = 2,
   patterns = NULL,
-  matching_opt = matching_options()
+  matching_opt = matching_options(),
+  tp_padding = 4,
+  dates_format = "dmy"
 )
 }
 \arguments{
@@ -39,6 +43,13 @@ be imported. Can only be one in \code{"annotated"} or \code{"not_annotated"}}
 
 \item{workers}{A single number representing the number of parallel workers to
 use for the import}
+
+\item{tp_padding}{Timepoint padding, indicates the number of digits of the
+"Timepoint" column once imported. Fills the content with 0s up to the length
+specified (ex: 1 becomes 0001 with a tp_padding of 4)}
+
+\item{dates_format}{A single string indicating how dates should be parsed.
+Must be a value in: \code{date_formats()}}
 
 \item{patterns}{A character vector of additional patterns to match on file
 names. Please note that patterns must be regular expressions. Can be NULL if
