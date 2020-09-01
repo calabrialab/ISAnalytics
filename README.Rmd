@@ -41,9 +41,23 @@ devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
 
 # Current functionality
 
-* Central data structure: ISADataFrame
 * Import integration matrices from files: more info with `vignette("How to use import functions", package = "ISAnalytics")`
 * Collision removal: more info with `vignette("Collision removal functionality", package = "ISAnalytics")`
+* Aggregation: more info with `vignette("Working with aggregate functions", package = "ISAnalytics")`
+* Re-calibration functions: `compute_near_integrations`
+* Analysis functions: `compute_abundance`
+* Utility functions
+
+# NEWS
+
+```{r child="NEWS.md"}
+
+```
+
+
+# TO DO in future updates  
+
+* Add vignette for association file usage
 
 # Getting help
 

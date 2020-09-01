@@ -22,10 +22,10 @@
 generate_blank_association_file <- function(path) {
     stopifnot(is.character(path))
     af <- data.frame(matrix(
-        ncol = length(association_file_columns),
+        ncol = length(association_file_columns()),
         nrow = 0
     ))
-    colnames(af) <- association_file_columns
+    colnames(af) <- association_file_columns()
     path <- fs::as_fs_path(path)
     dir <- fs::path_dir(path)
     if (!fs::dir_exists(dir)) {
@@ -34,7 +34,8 @@ generate_blank_association_file <- function(path) {
     readr::write_tsv(af, path = path)
 }
 
-#' Creates a reduced association file for Vispa2 run, given project and pool
+#' Creates a reduced association file for Vispa2 run,
+#' given project and pool
 #'
 #' The function selects the appropriate columns and prepares a file for the
 #' launch of Vispa2 pipeline for each project/pool pair specified.
@@ -52,21 +53,24 @@ generate_blank_association_file <- function(path) {
 #' @param association_file The imported association file (via
 #' `import_association_file`)
 #' @param project A vector of characters containing project names
-#' @param pool A vector of characters containing pool names. **NOTE: the names
-#' should refer to the values contained in the PoolID column of the association
-#' file and NOT the concatenatePoolIDSeqRun column!**
+#' @param pool A vector of characters containing pool names.
+#' **NOTE: the names should refer to the values contained in the
+#' PoolID column of the association file and NOT the
+#' concatenatePoolIDSeqRun column!**
 #' @param path A single string representing the path to the folder where files
 #' should be written. If the folder doesn't exist it will be created.
 #' @importFrom fs as_fs_path file_exists dir_create path
 #' @importFrom purrr map2 set_names walk2
 #' @importFrom dplyr select filter mutate all_of
 #' @importFrom readr write_tsv
+#' @importFrom magrittr `%>%`
 #' @family Utility functions
 #'
 #' @return returns NULL
 #' @export
 #'
 #' @examples
+#' op <- options("ISAnalytics.widgets" = FALSE)
 #' temp <- tempdir()
 #' path_af <- system.file("extdata", "ex_association_file.tsv",
 #'     package = "ISAnalytics"
@@ -75,6 +79,7 @@ generate_blank_association_file <- function(path) {
 #' root <- unzip_file_system(root_pth, "fs")
 #' association_file <- import_association_file(path_af, root)
 #' generate_Vispa2_launch_AF(association_file, "CLOEXP", "POOL6", temp)
+#' options(op)
 generate_Vispa2_launch_AF <- function(association_file, project, pool, path) {
     stopifnot(is.data.frame(association_file))
     stopifnot(is.character(project))
@@ -88,7 +93,7 @@ generate_Vispa2_launch_AF <- function(association_file, project, pool, path) {
     }
     files <- purrr::map2(project, pool, function(x, y) {
         selected_cols <- association_file %>%
-            dplyr::select(dplyr::all_of(reduced_AF_columns)) %>%
+            dplyr::select(dplyr::all_of(reduced_AF_columns())) %>%
             dplyr::filter(.data$ProjectID == x, .data$PoolID == y) %>%
             dplyr::mutate(TagID2 = .data$TagID, .before = .data$TagID)
     }) %>% purrr::set_names(paste0(project, "-", pool, "_AF.tsv"))

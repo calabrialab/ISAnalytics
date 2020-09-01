@@ -11,10 +11,11 @@
 \code{.identify_independent_samples}}
 }
 \value{
-A nested ISADataFrame
+A nested tibble
 }
 \description{
 Polishing consists in nesting all information relative to a single
 integration, in other words, obtaining a linked data frame for each
 integration.
 }
+\keyword{internal}

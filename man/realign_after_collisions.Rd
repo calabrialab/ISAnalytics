@@ -31,6 +31,7 @@ For more details on how to use collision removal functionality:
 \code{vignette("Collision removal functionality", package = "ISAnalytics")}
 }
 \examples{
+op <- options("ISAnalytics.widgets" = FALSE)
 path <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
 )
@@ -44,6 +45,7 @@ matrices <- import_parallel_Vispa2Matrices_auto(
 sc_matrix <- remove_collisions(matrices$seqCount, association_file)
 others <- matrices[!names(matrices) \%in\% "seqCount"]
 aligned_matrices <- realign_after_collisions(sc_matrix$seqCount, others)
+options(op)
 }
 \seealso{
 \code{\link{remove_collisions}}

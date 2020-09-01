@@ -21,3 +21,4 @@ A tibble
 Produces a joined tibble between the sequence count matrix and the
 association file
 }
+\keyword{internal}

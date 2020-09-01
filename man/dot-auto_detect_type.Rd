@@ -12,13 +12,13 @@
 \value{
 one value among:
 \itemize{
-\item "OLD" : for old-style matrices that had only one column holding all genomic
-coordinates
-\item "NEW_ANNOTATED" :  for the classic Vispa2 annotated matrices
-\item "NEW_NOTANN" : for Vispa2 not annotated matrices
+\item "OLD" : for old-style matrices that had only one column holding
+all genomic coordinates
+\item "NEW" :  for the classic Vispa2 annotated/not annotated matrices
 \item "MALFORMED" : in any other case
 }
 }
 \description{
 Internal function to auto-detect the type of IS based on the headers.
 }
+\keyword{internal}

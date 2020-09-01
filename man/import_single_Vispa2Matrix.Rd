@@ -10,12 +10,12 @@ import_single_Vispa2Matrix(path)
 \item{path}{The path to the file on disk}
 }
 \value{
-A tidy ISADataFrame
+A tidy tibble
 }
 \description{
 This function allows to read and import an integration matrix
 produced as the output of Vispa2 pipeline and converts it to a tidy
-ISADataFrame.
+tibble.
 }
 \details{
 The import series of functions is designed to work in combination
@@ -23,8 +23,8 @@ with the use of Vispa2 pipeline, please refer to this article for more
 details: \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/}{VISPA2:
 A Scalable Pipeline for High-Throughput Identification and Annotation of
 Vector Integration Sites}.
-For more details on how to properly use these functions, refer to the
-vignette - vignette("how_to_import_functions")
+For more details on how to properly use these functions, refer to
+\code{vignette("How to use import functions", package = "ISAnalytics")}
 }
 \examples{
 path_to_file <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
@@ -35,6 +35,7 @@ isa_dataframe <- import_single_Vispa2Matrix(path_to_file)
 \seealso{
 Other Import functions: 
 \code{\link{import_association_file}()},
+\code{\link{import_parallel_Vispa2Matrices_auto}()},
 \code{\link{import_parallel_Vispa2Matrices_interactive}()}
 }
 \concept{Import functions}

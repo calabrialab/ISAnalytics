@@ -21,3 +21,4 @@ the examined matrix there are additional CompleteAmplificationIDs contained
 in the association file that weren't included in the integration matrix (for
 example failed runs).
 }
+\keyword{internal}

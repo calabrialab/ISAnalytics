@@ -2,16 +2,16 @@
 % Please edit documentation in R/internal-functions.R
 \name{.four_step_check}
 \alias{.four_step_check}
-\title{Internal function that performs four-step-check of collisions for a single
-integration.}
+\title{Internal function that performs four-step-check of collisions for
+a single integration.}
 \usage{
 .four_step_check(..., date_col, reads_ratio)
 }
 \arguments{
-\item{...}{Represents a single row of a tibble obtained via \code{obtain_nested}.
-One row contains 4 variables: chr, integration_locus, strand and data, where
-data is a nested table that contains all rows that share that integration
-(collisions).}
+\item{...}{Represents a single row of a tibble obtained via
+\code{obtain_nested}. One row contains 4 variables: chr, integration_locus,
+strand and data, where data is a nested table that contains all rows
+that share that integration (collisions).}
 
 \item{date_col}{The date column to consider}
 
@@ -21,7 +21,7 @@ check}
 \value{
 A list with:
 \itemize{
-\item $data: an updated ISADataFrame with processed collisions or NULL if no
+\item $data: an updated tibble with processed collisions or NULL if no
 criteria was sufficient
 \item $reassigned: 1 if the integration was successfully reassigned, 0 otherwise
 \item $removed: 1 if the integration is removed entirely because no criteria was
@@ -29,11 +29,12 @@ met, 0 otherwise
 }
 }
 \description{
-Internal function that performs four-step-check of collisions for a single
-integration.
+Internal function that performs four-step-check of collisions for
+a single integration.
 }
 \details{
 NOTE: this function is meant to be used inside a mapping function
 such as \code{purrr::pmap}. The function only works on data regarding a SINGLE
 integration (triplet chr, integration_locus, strand).
 }
+\keyword{internal}

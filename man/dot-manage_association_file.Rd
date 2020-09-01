@@ -26,3 +26,4 @@ results of alignment checks.
 \description{
 Helper function to be used when importing matrices in parallel.
 }
+\keyword{internal}

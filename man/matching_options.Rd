@@ -17,7 +17,8 @@ These are all the possible values for the \code{matching_opt} parameter in
 The values "ANY", "ALL" and "OPTIONAL", represent how the patterns
 should be matched, more specifically
 \itemize{
-\item ANY = look only for files that match AT LEAST one of the patterns specified
+\item ANY = look only for files that match AT LEAST one of the
+patterns specified
 \item ALL = look only for files that match ALL of the patterns specified
 \item OPTIONAL = look preferentially for files that match, in order, all
 patterns or any pattern and if no match is found return what is found (keep
@@ -28,8 +29,7 @@ in mind that duplicates are discarded in automatic mode)
 opts <- matching_options()
 }
 \seealso{
-\code{
-\link[import_parallel_vispa2Matrices]{import_parallel_vispa2Matrices_auto}}
+\code{\link{import_parallel_Vispa2Matrices_auto}}
 
 Other Import functions helpers: 
 \code{\link{quantification_types}()}

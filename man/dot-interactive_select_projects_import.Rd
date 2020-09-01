@@ -2,7 +2,8 @@
 % Please edit documentation in R/internal-functions.R
 \name{.interactive_select_projects_import}
 \alias{.interactive_select_projects_import}
-\title{Allows the user to choose interactively the projects to consider for import.}
+\title{Allows the user to choose interactively the projects
+to consider for import.}
 \usage{
 .interactive_select_projects_import(association_file)
 }
@@ -14,5 +15,7 @@ A modified version of the association file where only selected
 projects are present
 }
 \description{
-Allows the user to choose interactively the projects to consider for import.
+Allows the user to choose interactively the projects
+to consider for import.
 }
+\keyword{internal}

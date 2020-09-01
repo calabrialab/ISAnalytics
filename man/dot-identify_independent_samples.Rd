@@ -2,8 +2,8 @@
 % Please edit documentation in R/internal-functions.R
 \name{.identify_independent_samples}
 \alias{.identify_independent_samples}
-\title{Identifies independent samples and separates the joined_df in collisions and
-non-collisions}
+\title{Identifies independent samples and separates the joined_df in
+collisions and non-collisions}
 \usage{
 .identify_independent_samples(joined_df)
 }
@@ -15,6 +15,7 @@ A named list containing the splitted joined_df for collisions and
 non-collisions
 }
 \description{
-Identifies independent samples and separates the joined_df in collisions and
-non-collisions
+Identifies independent samples and separates the joined_df in
+collisions and non-collisions
 }
+\keyword{internal}

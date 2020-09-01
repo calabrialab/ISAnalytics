@@ -5,6 +5,9 @@ library(ISAnalytics)
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
+op <- options(ISAnalytics.widgets = FALSE)
+on.exit(options(op))
+
 # Path to example association file
 path_af <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
@@ -14,12 +17,7 @@ path_root_correct <- system.file("extdata", "fs.zip",
     package = "ISAnalytics"
 )
 root_correct <- unzip_file_system(path_root_correct, "fs")
-tempfunct <- function() {
-    op <- options("viewer" = NULL)
-    on.exit(options(op), add = TRUE, after = FALSE)
-    import_association_file(path_af, root_correct)
-}
-as_file <- tempfunct()
+as_file <- import_association_file(path_af, root_correct)
 
 #------------------------------------------------------------------------------#
 # Tests generate_blank_association_file
@@ -34,7 +32,7 @@ test_that("generate_blank_association_file works correctly", {
     temp <- tempfile()
     generate_blank_association_file(temp)
     af <- read.csv(temp, sep = "\t", check.names = FALSE, header = TRUE)
-    expect_true(all(colnames(af) %in% association_file_columns))
+    expect_true(all(colnames(af) %in% association_file_columns()))
 })
 
 #------------------------------------------------------------------------------#

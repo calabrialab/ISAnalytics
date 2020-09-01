@@ -3,7 +3,8 @@
 \name{date_formats}
 \alias{date_formats}
 \title{Possible choices for the \code{dates_format} parameter in
-\code{import_association_file}, \code{import_parallel_vispa2Matrices_interactive} and
+\code{import_association_file},
+\code{import_parallel_vispa2Matrices_interactive} and
 \code{import_parallel_vispa2Matrices_auto}.}
 \usage{
 date_formats()
@@ -30,6 +31,6 @@ All options correspond to \code{lubridate} functions:
 date_formats()
 }
 \seealso{
-\code{\link{import_association_file}}, \code{
-\link[import_parallel_vispa2Matrices]{import_parallel_vispa2Matrices_auto}}
+\code{\link{import_association_file}},
+\code{\link{import_parallel_Vispa2Matrices_auto}}
 }

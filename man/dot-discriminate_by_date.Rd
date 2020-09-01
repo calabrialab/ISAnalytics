@@ -31,3 +31,4 @@ NOTE: this function is meant to be used inside a mapping function
 such as \code{purrr::pmap}. The function only works on data regarding a SINGLE
 integration (triplet chr, integration_locus, strand).
 }
+\keyword{internal}

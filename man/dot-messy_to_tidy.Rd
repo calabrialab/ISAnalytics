@@ -7,14 +7,15 @@
 .messy_to_tidy(df)
 }
 \arguments{
-\item{df}{ISADataFrame to convert to tidy}
+\item{df}{Messy tibble to convert to tidy}
 }
 \value{
-a tidy ISADataFrame
+a tidy tibble
 }
 \description{
 Uses the suite of functions provided by the
-tidyverse to prooduce a more dense and ordered structure.
+tidyverse to produce a more dense and ordered structure.
 This function is not exported and should be called in other importing
 functions.
 }
+\keyword{internal}

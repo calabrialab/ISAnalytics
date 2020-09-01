@@ -7,7 +7,8 @@
 .files_to_import_widget(files_to_import)
 }
 \arguments{
-\item{files_to_import}{Tibble obtained via \code{.manage_anomalies_interactive} or
+\item{files_to_import}{Tibble obtained via
+\code{.manage_anomalies_interactive} or
 \code{.manage_anomalies_auto}}
 }
 \value{
@@ -16,3 +17,4 @@ An html widget
 \description{
 Builds the html widget for the files_to_import table.
 }
+\keyword{internal}

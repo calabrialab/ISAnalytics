@@ -19,7 +19,8 @@
 #' \code{vignette("Collision removal functionality", package = "ISAnalytics")}
 #'
 #' @param x A named list of matrices (names must be quantification types), or
-#' a single ISADataFrame representing the sequence count matrix of interest.
+#' a single integration matrix representing the sequence count matrix of
+#' interest.
 #' @param association_file The association file imported via
 #' `import_association_file`
 #' @param date_col The date column that should be considered for the analysis.
@@ -28,12 +29,15 @@
 #' to be considered when deciding between seqCount value.
 #' @family Collision removal
 #' @importFrom dplyr bind_rows all_of select
+#' @importFrom tibble is_tibble
+#' @importFrom magrittr `%>%`
 #' @seealso \code{\link{date_columns_coll}}
 #'
-#' @return A list of ISADataframes with removed collisions
+#' @return A list of tibbles with removed collisions
 #' @export
 #'
 #' @examples
+#' op <- options("ISAnalytics.widgets" = FALSE)
 #' path <- system.file("extdata", "ex_association_file.tsv",
 #'     package = "ISAnalytics"
 #' )
@@ -45,19 +49,46 @@
 #'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
 #' )
 #' matrices <- remove_collisions(matrices, association_file)
+#' options(op)
 remove_collisions <- function(x,
     association_file,
     date_col = "SequencingDate",
     reads_ratio = 10) {
     # Check basic parameter correctness
     stopifnot(is.list(x) & !is.null(names(x)))
-    if (is.ISADataFrame(x)) {
+    if (tibble::is_tibble(x)) {
+        if (.check_mandatory_vars(x) == FALSE) {
+            stop(.non_ISM_error())
+        }
+        if (.check_complAmpID(x) == FALSE) {
+            stop(.missing_complAmpID_error())
+        }
+        if (.check_value_col(x) == FALSE) {
+            stop(.missing_value_col_error())
+        }
         x <- list(seqCount = x)
-    }
-    stopifnot(all(names(x) %in% quantification_types()))
-    all_ISAdf <- purrr::map_lgl(x, is.ISADataFrame)
-    if (!all(all_ISAdf)) {
-        stop("x contains elements that are not ISADataFrame objects")
+    } else {
+        stopifnot(all(names(x) %in% quantification_types()))
+        ## remove_collisions requires seqCount matrix, check if the list
+        ## contains one
+        if ((!"seqCount" %in% names(x)) ||
+            nrow(x$seqCount) == 0) {
+            stop(paste(
+                "Sequence count data frame is required for collision removal",
+                "but none was detected in x"
+            ))
+        }
+        all_ISm <- purrr::map_lgl(x, .check_mandatory_vars)
+        if (!all(all_ISm)) {
+            stop(.non_ISM_error())
+        }
+        all_campid <- purrr::map_lgl(x, .check_complAmpID)
+        if (!all(all_campid)) {
+            stop(.missing_complAmpID_error())
+        }
+        if (.check_value_col(x$seqCount) == FALSE) {
+            stop(.missing_value_col_error())
+        }
     }
     stopifnot(tibble::is_tibble(association_file))
     stopifnot(is.character(date_col) & length(date_col) == 1)
@@ -79,15 +110,6 @@ remove_collisions <- function(x,
     }
 
     # Check imported matrices vs association file
-    ## remove_collisions requires seqCount matrix, check if the list contains
-    ## one
-    if ((!"seqCount" %in% names(x)) ||
-        nrow(x$seqCount) == 0) {
-        stop(paste(
-            "Sequence count data frame is required for collision removal",
-            "but none was detected in x"
-        ))
-    }
     seq_count_df <- x$seqCount
     ## Check if association file contains all info relative to content the of
     ## the matrix
@@ -106,8 +128,8 @@ remove_collisions <- function(x,
         not_included <- .check_same_info(association_file, seq_count_df)
         if (nrow(not_included) > 0) {
             message(paste("Found additional data relative to some projects",
-                          "that are not included in the imported matrices.",
-                          "Here is a summary",
+                "that are not included in the imported matrices.",
+                "Here is a summary",
                 collapse = "\n"
             ))
             print(not_included)
@@ -136,7 +158,7 @@ remove_collisions <- function(x,
     final_matr <- fixed_collisions %>%
         dplyr::bind_rows(splitted_df$non_collisions) %>%
         dplyr::select(dplyr::all_of(colnames(seq_count_df)))
-    if (verbose == TRUE) {
+    if (getOption("ISAnalytics.widgets") == TRUE) {
         summary_tbl <- .summary_table(
             before = joined, after = final_matr,
             association_file = association_file
@@ -169,8 +191,8 @@ remove_collisions <- function(x,
                 "to re-align other related matrices see",
                 "?realign_after_collisions"
             ))
-            return(list(seqCount = final_matr))
         }
+        return(list(seqCount = final_matr))
     }
 }
 
@@ -194,6 +216,7 @@ remove_collisions <- function(x,
 #' "seqCount".
 #' @importFrom dplyr semi_join
 #' @importFrom purrr map_lgl
+#' @importFrom magrittr `%>%`
 #' @family Collision removal
 #' @seealso \code{\link{remove_collisions}}
 #'
@@ -201,6 +224,7 @@ remove_collisions <- function(x,
 #' @export
 #'
 #' @examples
+#' op <- options("ISAnalytics.widgets" = FALSE)
 #' path <- system.file("extdata", "ex_association_file.tsv",
 #'     package = "ISAnalytics"
 #' )
@@ -214,21 +238,23 @@ remove_collisions <- function(x,
 #' sc_matrix <- remove_collisions(matrices$seqCount, association_file)
 #' others <- matrices[!names(matrices) %in% "seqCount"]
 #' aligned_matrices <- realign_after_collisions(sc_matrix$seqCount, others)
+#' options(op)
 realign_after_collisions <- function(sc_matrix, other_matrices) {
     stopifnot(is.list(other_matrices) & !is.null(names(other_matrices)))
     stopifnot(all(names(other_matrices) %in% quantification_types()))
-    all_ISAdf <- purrr::map_lgl(other_matrices, is.ISADataFrame)
-    if (!all(all_ISAdf)) {
-        stop(paste(
-            "other_matrices list contains elements that are not",
-            "ISADataFrame objects"
-        ))
+    all_ISm <- purrr::map_lgl(other_matrices, .check_mandatory_vars)
+    if (!all(all_ISm)) {
+        stop(.non_ISM_error())
+    }
+    all_campid <- purrr::map_lgl(other_matrices, .check_complAmpID)
+    if (!all(all_campid)) {
+        stop(.missing_complAmpID_error())
     }
     realigned <- purrr::map(other_matrices, function(x) {
         x %>% dplyr::semi_join(sc_matrix,
             by = c(
-                "chr", "integration_locus",
-                "strand", "CompleteAmplificationID"
+                mandatory_IS_vars(),
+                "CompleteAmplificationID"
             )
         )
     })

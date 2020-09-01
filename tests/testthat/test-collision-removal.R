@@ -5,6 +5,9 @@ library(ISAnalytics)
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
+op <- options(ISAnalytics.widgets = FALSE)
+on.exit(options(op))
+
 # Path to example association file
 path_af <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
@@ -17,13 +20,6 @@ path_root_correct <- system.file("extdata", "fs.zip",
 root_correct <- unzip_file_system(path_root_correct, "fs")
 
 # Association file
-import_af_silent <- function() {
-    op <- options("viewer" = NULL)
-    on.exit(options(op))
-    af <- import_association_file(path_af, root_correct)
-    af
-}
-
 af_missing_info <- function(af) {
     af %>%
         dplyr::filter(
@@ -51,13 +47,13 @@ af_no_prob <- function(af) {
         )
 }
 
-association_file_more <- import_af_silent()
+association_file_more <- import_association_file(path_af, root_correct)
 association_file_np <- af_no_prob(association_file_more)
 association_file_miss <- af_missing_info(association_file_more)
 
 # Matrices
 import_matr_silent <- function(type) {
-    op <- options("viewer" = NULL)
+    op <- options(ISAnalytics.verbose = FALSE)
     on.exit(options(op))
     matrices <- import_parallel_Vispa2Matrices_auto(
         association_file = path_af, root = root_correct,
@@ -589,7 +585,8 @@ example_collisions <- function() {
     )
     t <- tibble::as_tibble(cols)
     t <- t %>%
-        tibble::add_column(tibble::as_tibble_col(list(smpl1, smpl2, smpl3, smpl4),
+        tibble::add_column(tibble::as_tibble_col(list(smpl1, smpl2,
+                                                      smpl3, smpl4),
             column_name = "data"
         ))
     t
@@ -712,32 +709,46 @@ test_that("remove_collisions stops if names of x are not in quant types", {
     })
 })
 
-test_that("remove_collisions stops if elements are not ISAdf", {
-    # All
+test_that("remove_collisions stops if elements are not IS matrices", {
+    non_ism <- tibble::tibble(a = c(1,2,3))
+    miss_value <- seq_count_m %>% dplyr::select(-c(.data$Value))
+    miss_camp <- seq_count_m %>%
+        dplyr::select(-c(.data$CompleteAmplificationID))
     expect_error(
         {
-            rc <- remove_collisions(
-                list(
-                    seqCount = "ab",
-                    fragmentEstimate = "cd"
-                ),
-                association_file_np
-            )
-        },
-        regexp = "x contains elements that are not ISADataFrame objects"
+            rc <- remove_collisions(x = non_ism, association_file_np)
+        }, regexp = .non_ISM_error()
     )
-    # Only some
     expect_error(
         {
-            rc <- remove_collisions(
-                list(
-                    seqCount = seq_count_m,
-                    fragmentEstimate = "cd"
-                ),
-                association_file_np
-            )
-        },
-        regexp = "x contains elements that are not ISADataFrame objects"
+            rc <- remove_collisions(x = miss_value, association_file_np)
+        }, regexp = .missing_value_col_error()
+    )
+    expect_error(
+        {
+            rc <- remove_collisions(x = miss_camp, association_file_np)
+        }, regexp = .missing_complAmpID_error()
+    )
+    expect_error(
+        {
+            rc <- remove_collisions(x = list(seqCount = non_ism,
+                                             fragmentEstimate = seq_count_m),
+                                    association_file_np)
+        }, regexp = .non_ISM_error()
+    )
+    expect_error(
+        {
+            rc <- remove_collisions(x = list(seqCount = miss_value,
+                                             fragmentEstimate = seq_count_m),
+                                    association_file_np)
+        }, regexp = .missing_value_col_error()
+    )
+    expect_error(
+        {
+            rc <- remove_collisions(x = list(seqCount = miss_camp,
+                                             fragmentEstimate = seq_count_m),
+                                    association_file_np)
+        }, regexp = .missing_complAmpID_error()
     )
 })
 
@@ -864,21 +875,22 @@ test_that("remove_collisions stops if missing info from af", {
 })
 
 test_that("remove_collisions notifies additional data and succeeds", {
-    op <- options("viewer" = NULL)
+    op <- options(ISAnalytics.verbose = TRUE)
     on.exit(options(op))
     expect_message(
         {
             invisible(capture_output({
                 coll_rem <- remove_collisions(seq_count_m, association_file_more,
-                    date_col = "SequencingDate",
-                    reads_ratio = 10
+                                              date_col = "SequencingDate",
+                                              reads_ratio = 10
                 )
             }))
         },
-        regexp = paste("Found additional data relative to some projects that are",
-            "not included in the imported matrices. Here is a summary",
-            collapse = "\n"
-        )
+        regexp = paste("Found additional data relative to some projects",
+                       "that are not included in the imported matrices.",
+                       "Here is a summary",
+                       collapse = "\n"
+        ), fixed = TRUE
     )
 })
 
@@ -888,7 +900,7 @@ test_that("remove_collisions notifies additional data and succeeds", {
 
 ### OTHER VARS ###
 silent_coll <- function() {
-    op <- options("viewer" = NULL)
+    op <- options(ISAnalytics.verbose = FALSE)
     on.exit(options(op))
     invisible(capture_output({
         coll_rem <- remove_collisions(seq_count_m, association_file_more,
@@ -925,25 +937,26 @@ test_that("realign_after_collisions fails if names not quant types", {
     })
 })
 
-test_that("realign_after_collisions fails if list contains non-ISAdf", {
+test_that("realign_after_collisions fails if list contains non-IS matrices", {
+    fe1 <- fe_m %>% dplyr::select(-c(.data$CompleteAmplificationID))
     expect_error({
         realigned <- realign_after_collisions(
             coll_rem$seqCount,
             list(
                 fragmentEstimate =
-                    tibble::as_tibble(fe_m)
+                    tibble::tibble(a = c(1,2,3))
             )
         )
-    })
+    }, regexp = .non_ISM_error())
     expect_error({
         realigned <- realign_after_collisions(
             coll_rem$seqCount,
             list(
                 fragmentEstimate = fe_m,
-                barcodeCount = "x"
+                barcodeCount = fe1
             )
         )
-    })
+    }, regexp = .missing_complAmpID_error())
 })
 
 test_that("realign_after_collisions correctly re-aligns", {

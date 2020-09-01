@@ -13,7 +13,8 @@ remove_collisions(
 }
 \arguments{
 \item{x}{A named list of matrices (names must be quantification types), or
-a single ISADataFrame representing the sequence count matrix of interest.}
+a single integration matrix representing the sequence count matrix of
+interest.}
 
 \item{association_file}{The association file imported via
 \code{import_association_file}}
@@ -25,7 +26,7 @@ Must be one value in \code{date_columns_coll()}}
 to be considered when deciding between seqCount value.}
 }
 \value{
-A list of ISADataframes with removed collisions
+A list of tibbles with removed collisions
 }
 \description{
 A collision is an integration (aka a unique combination of
@@ -44,6 +45,7 @@ For more details on how to use collision removal functionality:
 \code{vignette("Collision removal functionality", package = "ISAnalytics")}
 }
 \examples{
+op <- options("ISAnalytics.widgets" = FALSE)
 path <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
 )
@@ -55,6 +57,7 @@ matrices <- import_parallel_Vispa2Matrices_auto(
     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
 )
 matrices <- remove_collisions(matrices, association_file)
+options(op)
 }
 \seealso{
 \code{\link{date_columns_coll}}

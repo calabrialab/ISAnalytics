@@ -22,3 +22,4 @@ The function checks if there are missing folders and updates the association
 file by adding a column \code{Path} where the absolute path on disk for the
 project and pool is found, if no path is found NA is inserted instead.
 }
+\keyword{internal}

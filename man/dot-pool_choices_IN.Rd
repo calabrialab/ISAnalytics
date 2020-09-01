@@ -2,7 +2,8 @@
 % Please edit documentation in R/internal-functions.R
 \name{.pool_choices_IN}
 \alias{.pool_choices_IN}
-\title{Simple helper interal function to handle user input for actual pool choices.}
+\title{Simple helper interal function to handle user input for actual
+pool choices.}
 \usage{
 .pool_choices_IN(indexes)
 }
@@ -13,5 +14,7 @@
 The user selection as a numeric vector
 }
 \description{
-Simple helper interal function to handle user input for actual pool choices.
+Simple helper interal function to handle user input for actual
+pool choices.
 }
+\keyword{internal}

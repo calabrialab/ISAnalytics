@@ -2,8 +2,8 @@
 % Please edit documentation in R/internal-functions.R
 \name{.pool_number_IN}
 \alias{.pool_number_IN}
-\title{Simple internal helper function to handle user input for selection of number
-of pools.}
+\title{Simple internal helper function to handle user input for selection
+of number of pools.}
 \usage{
 .pool_number_IN()
 }
@@ -12,6 +12,7 @@ Numeric representing user selection (1 for all pools, 2 for
 only some pools, 0 to exit)
 }
 \description{
-Simple internal helper function to handle user input for selection of number
-of pools.
+Simple internal helper function to handle user input for selection
+of number of pools.
 }
+\keyword{internal}

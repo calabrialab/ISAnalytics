@@ -12,8 +12,9 @@
 \item{workers}{Number of parallel workers}
 }
 \value{
-A named list of ISADataFrames
+A named list of tibbles
 }
 \description{
 Internal function for importing all files for each quantification type.
 }
+\keyword{internal}

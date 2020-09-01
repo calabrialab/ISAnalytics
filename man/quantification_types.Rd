@@ -10,7 +10,8 @@ quantification_types()
 A vector of characters for quantification types
 }
 \description{
-These are all the possible values for the \code{quantification_type} parameter in
+These are all the possible values for the
+\code{quantification_type} parameter in
 \code{import_parallel_vispa2Matrices_interactive} and
 \code{import_parallel_vispa2Matrices_auto}.
 }
@@ -28,12 +29,8 @@ The possible values are:
 quant_types <- quantification_types()
 }
 \seealso{
-\code{
-\link[import_parallel_vispa2Matrices]{
-import_parallel_vispa2Matrices_interactive}},
-\code{
-\link[import_parallel_vispa2Matrices]{
-import_parallel_vispa2Matrices_auto}}
+\code{\link{import_parallel_Vispa2Matrices_interactive}},
+\code{\link{import_parallel_Vispa2Matrices_auto}}
 
 Other Import functions helpers: 
 \code{\link{matching_options}()}

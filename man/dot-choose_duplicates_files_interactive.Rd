@@ -23,3 +23,4 @@ Simple function to manage user input for duplicate file choices for each
 quantification type in a single project/pool pair (use internally in
 \code{.manage_anomalies_interactive}).
 }
+\keyword{internal}

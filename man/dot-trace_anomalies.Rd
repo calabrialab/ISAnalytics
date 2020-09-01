@@ -16,3 +16,4 @@ Updated files_found with Anomalies and Files_count columns
 \description{
 Updates a files_found tibble with Files_count and Anomalies column.
 }
+\keyword{internal}

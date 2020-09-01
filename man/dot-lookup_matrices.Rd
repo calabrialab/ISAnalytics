@@ -2,8 +2,8 @@
 % Please edit documentation in R/internal-functions.R
 \name{.lookup_matrices}
 \alias{.lookup_matrices}
-\title{Looks up matrices to import given the association file and the root of the
-file system.}
+\title{Looks up matrices to import given the association file and the
+root of the file system.}
 \usage{
 .lookup_matrices(association_file, quantification_type, matrix_type)
 }
@@ -20,6 +20,7 @@ file system.}
 A tibble containing all found files, including duplicates and missing
 }
 \description{
-Looks up matrices to import given the association file and the root of the
-file system.
+Looks up matrices to import given the association file and the
+root of the file system.
 }
+\keyword{internal}

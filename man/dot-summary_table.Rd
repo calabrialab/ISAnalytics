@@ -22,3 +22,4 @@ count for each subject before and after and the corresponding deltas.
 \description{
 Internal function to obtain a summary table after collision processing.
 }
+\keyword{internal}

@@ -19,3 +19,4 @@ A tibble containing the association file.
 \description{
 Reads association file and checks if it's correct or not.
 }
+\keyword{internal}

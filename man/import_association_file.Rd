@@ -61,17 +61,20 @@ For more details on how to properly use these functions, refer to the
 vignette - vignette("how_to_import_functions")
 }
 \examples{
+op <- options("ISAnalytics.widgets" = FALSE)
 path <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
 )
 root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 root <- unzip_file_system(root_pth, "fs")
 association_file <- import_association_file(path, root)
+options(op)
 }
 \seealso{
 \code{\link{date_formats}}
 
 Other Import functions: 
+\code{\link{import_parallel_Vispa2Matrices_auto}()},
 \code{\link{import_parallel_Vispa2Matrices_interactive}()},
 \code{\link{import_single_Vispa2Matrix}()}
 }

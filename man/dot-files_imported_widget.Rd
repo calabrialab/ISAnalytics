@@ -15,3 +15,4 @@ An html widget
 \description{
 Builds the html widget for the files_imported table.
 }
+\keyword{internal}

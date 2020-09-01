@@ -24,3 +24,4 @@ representing the number of integrations reassigned
 Internal function to process collisions on multiple integrations,
 parallelized.
 }
+\keyword{internal}

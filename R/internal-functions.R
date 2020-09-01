@@ -3,102 +3,108 @@
 #------------------------------------------------------------------------------#
 ## All functions in this file are NOT exported, to be used internally only.
 
-#### ---- Internals for ISADataFrame construction ----####
+### Convenience functions for errors and warnings ###
+#' @keywords internal
+.malformed_ISmatrix_warning <- function() {
+    paste(c(
+        "Mandatory integration matrix variables, ", mandatory_IS_vars(),
+        ", were not detected"
+    ), collapse = " ")
+}
+#' @keywords internal
+.non_ISM_error <- function() {
+    paste(
+        "One or more elements in x are not integration matrices.",
+        "Aborting."
+    )
+}
 
-#' Internal helper function for checking metadata fields.
+#' @keywords internal
+.missing_value_col_error <- function() {
+    paste(
+        "The `Value` column is missing or it contains non-numeric data.",
+        "The column is needed for this operation.",
+        "Aborting."
+    )
+}
+
+#' @keywords internal
+.missing_complAmpID_error <- function() {
+    paste(
+        "The `CompleteAmplificationID` column is missing.",
+        "The column is needed for this operation.",
+        "Aborting."
+    )
+}
+
+#' @keywords internal
+.quant_types_error <- function() {
+    paste(
+        "The list names must be quantification types",
+        ", see quantification_types() for reference"
+    )
+}
+
+
+#### ---- Internals for checks on integration matrices----####
+
+#' Internal helper function for checking mandatory vars presence in x.
 #'
-#' Checks if the specified metadata are present in the data frame.
-#' @param x An ISADataFrame object
+#' Checks if the elements of `mandatory_IS_vars` are present as column names
+#' in the data frame.
+#' @param x A data.frame object (or any extending class)
+#' @keywords internal
 #'
-#' @return FALSE if some metadata are not found in the data frame, TRUE
+#' @return FALSE if all or some elements are not found in the data frame, TRUE
 #' otherwise
-.check_metadata <- function(x) {
-    stopifnot(is.ISADataFrame(x))
-    if (!all(vapply(
-        X = metadata(x), FUN = is.element,
-        set = colnames(x), FUN.VALUE = logical(1)
-    ))) {
-        return(FALSE)
+.check_mandatory_vars <- function(x) {
+    stopifnot(is.data.frame(x))
+    res <- if (all(mandatory_IS_vars() %in% colnames(x))) {
+        TRUE
     } else {
+        FALSE
+    }
+    return(res)
+}
+
+#' Internal helper function for checking `Value` column presence in x.
+#'
+#' Checks if the column `Value` is present in the data frame and also
+#' checks if the column is numeric or integer.
+#' @param x A data.frame object (or any extending class)
+#' @keywords internal
+#'
+#' @return FALSE if not found or contains non-numeric data, TRUE otherwise
+.check_value_col <- function(x) {
+    stopifnot(is.data.frame(x))
+    present <- if ("Value" %in% colnames(x)) {
+        TRUE
+    } else {
+        FALSE
+    }
+    if (present == TRUE) {
+        return(is.numeric(x$Value) | is.integer(x$Value))
+    } else {
+        return(FALSE)
+    }
+}
+
+#' Internal helper function for checking `CompleteAmplifcationID`
+#' column presence in x.
+#'
+#' Checks if the column `CompleteAmplifcationID` is present in the data frame.
+#'
+#' @param x A data.frame object (or any extending class)
+#' @keywords internal
+#'
+#' @return FALSE if not found, TRUE otherwise
+.check_complAmpID <- function(x) {
+    stopifnot(is.data.frame(x))
+    if ("CompleteAmplificationID" %in% colnames(x)) {
         return(TRUE)
-    }
-}
-
-#' Internal helper function for checking presence of experimental data columns.
-#'
-#' Checks if there is at least one experimental data column
-#' @param x An ISADataFrame object
-#'
-#' @return FALSE if no experimental columns were detected, TRUE if at least
-#' one was detected
-.check_atLeastOneExp <- function(x) {
-    stopifnot(is.ISADataFrame(x))
-    mandAndMeta <- c(mandatoryVars(x), metadata(x))
-    if (length(colnames(x)) <= length(mandAndMeta)) {
-        return(FALSE)
     } else {
-        return(TRUE)
-    }
-}
-
-#' Internal helper function for checking presence of experimental data columns
-#' and verifying they're numeric.
-#'
-#' @param x An ISADataFrame object
-#'
-#' @return TRUE if at least one experimental data column of type numeric (or
-#' integer) was detected, 'Warning' if one or more non-numeric
-#' columns were detected which are not metadata, FALSE in all other cases
-.check_nonNumdata <- function(x) {
-    # checks if there are non numeric experimental data columns
-    atleastone <- .check_atLeastOneExp(x)
-    if (atleastone == FALSE) {
         return(FALSE)
-    } else {
-        nd <- .find_nonNumData(x)
-        if (length(nd) > 0) {
-            return("Warning")
-        } else {
-            return(TRUE)
-        }
     }
-}
-
-#' Internal helper function to find the indexes of detected non numeric columns.
-#'
-#' @param x An ISADataFrame object
-#'
-#' @return A numeric vector
-.find_nonNumData <- function(x) {
-    mandAndMeta <- c(mandatoryVars(x), metadata(x))
-    remCols <- colnames(x)[which(!(colnames(x) %in% mandAndMeta))]
-    which(vapply(x[remCols], function(.x) {
-        !(is.numeric(.x) || is.integer(.x))
-    }, FUN.VALUE = logical(1)))
-}
-
-#' Internal utility function to use for fixing the metadata attribute after
-#' structural changes to an ISADataFrame object.
-#'
-#' @param x An ISADataFrame object
-#' @importFrom rlang expr eval_tidy
-#' @importFrom purrr map_lgl
-#'
-#' @return The same ISADataFrame as input with fixed metadata
-.fix_metadata <- function(x) {
-    col_names <- colnames(x)[!colnames(x) %in% mandatoryVars(x)]
-    non_num <- purrr::map_lgl(col_names, function(y) {
-        cur_col <- rlang::expr(`$`(x, !!y))
-        cur_col <- rlang::eval_tidy(cur_col)
-        if (is.numeric(cur_col) | is.integer(cur_col)) {
-            FALSE
-        } else {
-            TRUE
-        }
-    })
-    new_meta <- col_names[which(non_num)]
-    attr(x, "metadata") <- new_meta
-    x
 }
 
 #### ---- Internals for matrix import ----####
@@ -108,20 +114,23 @@
 #' Internal function to convert a messy matrix to a tidy data frame
 #'
 #' @description Uses the suite of functions provided by the
-#' tidyverse to prooduce a more dense and ordered structure.
+#' tidyverse to produce a more dense and ordered structure.
 #' This function is not exported and should be called in other importing
 #' functions.
 #'
-#' @param df ISADataFrame to convert to tidy
+#' @param df Messy tibble to convert to tidy
+#' @keywords internal
 #'
-#' @return a tidy ISADataFrame
+#' @return a tidy tibble
 #' @importFrom rlang .data
 #' @importFrom tidyr pivot_longer
 #' @importFrom dplyr arrange all_of
 #' @importFrom forcats fct_inseq as_factor
 .messy_to_tidy <- function(df) {
-    stopifnot(is.ISADataFrame(df))
-    exp_cols <- which(!(colnames(df) %in% c(mandatoryVars(df), metadata(df))))
+    exp_cols <- which(!(colnames(df) %in% c(
+        mandatory_IS_vars(),
+        annotation_IS_vars()
+    )))
     isadf_tidy <- df %>%
         tidyr::pivot_longer(
             cols = dplyr::all_of(exp_cols),
@@ -130,32 +139,26 @@
             values_drop_na = TRUE
         ) %>%
         dplyr::arrange(forcats::fct_inseq(forcats::as_factor(.data$chr)))
-    new_meta <- c(metadata(df), "CompleteAmplificationID")
-    attr(isadf_tidy, "metadata") <- new_meta
     isadf_tidy
 }
 
 #' Internal function to auto-detect the type of IS based on the headers.
 #'
 #' @param df the data frame to inspect
+#' @keywords internal
 #'
 #' @return one value among:
-#' * "OLD" : for old-style matrices that had only one column holding all genomic
-#' coordinates
-#' * "NEW_ANNOTATED" :  for the classic Vispa2 annotated matrices
-#' * "NEW_NOTANN" : for Vispa2 not annotated matrices
+#' * "OLD" : for old-style matrices that had only one column holding
+#' all genomic coordinates
+#' * "NEW" :  for the classic Vispa2 annotated/not annotated matrices
 #' * "MALFORMED" : in any other case
 .auto_detect_type <- function(df) {
     if ("IS_genomicID" %in% colnames(df) &
-        all(!(c("chr", "integration_locus", "strand") %in% colnames(df)))) {
+        all(!mandatory_IS_vars() %in% colnames(df))) {
         return("OLD")
     }
-    if (all(c("chr", "integration_locus", "strand") %in% colnames(df))) {
-        if (all(c("GeneName", "GeneStrand") %in% colnames(df))) {
-            return("NEW_ANNOTATED")
-        } else {
-            return("NEW_NOTANN")
-        }
+    if (all(mandatory_IS_vars() %in% colnames(df))) {
+        return("NEW")
     }
     return("MALFORMED")
 }
@@ -165,10 +168,11 @@
 #' Checks if the association file has the right format (standard headers).
 #'
 #' @param df The imported association file
+#' @keywords internal
 #'
 #' @return TRUE if the check passes, FALSE otherwise
 .check_af_correctness <- function(df) {
-    if (all(association_file_columns %in% colnames(df))) {
+    if (all(association_file_columns() %in% colnames(df))) {
         return(TRUE)
     } else {
         return(FALSE)
@@ -181,6 +185,7 @@
 #' @param path The path to the association file on disk
 #' @param padding The padding for TimePoint field
 #' @param date_format The date format of date columns
+#' @keywords internal
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr mutate across contains
 #' @importFrom rlang .data
@@ -208,9 +213,11 @@
     as_file <- as_file %>%
         dplyr::mutate(TimePoint = stringr::str_pad(
             as.character(.data$TimePoint),
-            padding, side = "left",
-            pad = "0")) %>%
-        dplyr::mutate(dplyr::across(dplyr::contains("Date"), ~do.call(
+            padding,
+            side = "left",
+            pad = "0"
+        )) %>%
+        dplyr::mutate(dplyr::across(dplyr::contains("Date"), ~ do.call(
             getExportedValue("lubridate", date_format),
             list(.x),
             quote = TRUE
@@ -223,6 +230,7 @@
 #'
 #' @param df The imported association file (data.frame or tibble)
 #' @param root_folder Path to the root folder
+#' @keywords internal
 #' @importFrom dplyr select distinct mutate bind_rows
 #' @importFrom fs dir_ls
 #' @importFrom purrr pmap is_empty reduce map_dbl
@@ -258,8 +266,9 @@
                 concatenatePoolIDSeqRun, "$"
             )
             pattern <- stringr::str_replace_all(pattern,
-                                                pattern = "\\\\\\/\\\\\\/",
-                                                replacement = "\\\\/")
+                pattern = "\\\\\\/\\\\\\/",
+                replacement = "\\\\/"
+            )
             found <- stringr::str_extract_all(tree_struct, pattern)
             found <- unlist(found)
             value <- if (purrr::is_empty(found)) {
@@ -293,6 +302,7 @@
 #' @param checks The tibble representing the results
 #' of `.check_file_system_alignment`
 #' @param root The root folder
+#' @keywords internal
 #'
 #' @return An updated association file with absolute paths
 .update_af_after_alignment <- function(as_file, checks, root) {
@@ -331,6 +341,7 @@
 #' string holding the path to the root folder, otherwise root is `NULL`
 #' @param padding The padding for TimePoint field
 #' @param format The date format of date columns
+#' @keywords internal
 #'
 #' @return A list of two elements: the first element is an updated version of
 #' the association file with NAs removed, the second element is a widget showing
@@ -339,10 +350,11 @@
     # Manage association file
     if (is.character(association_file)) {
         # If it's a path to file import the association file
-        association_file <- .read_and_correctness_af(association_file,
-                                                     padding, format)
+        association_file <- .read_and_correctness_af(
+            association_file,
+            padding, format
+        )
         checks <- .check_file_system_alignment(association_file, root)
-        widget_checks <- .checker_widget(checks)
         association_file <- .update_af_after_alignment(
             association_file,
             checks, root
@@ -350,7 +362,8 @@
         association_file <- association_file %>% dplyr::filter(!is.na(
             .data$Path
         ))
-        return(list(association_file, widget_checks))
+        res <- list(association_file, checks)
+        return(res)
     } else {
         # If it's a tibble (file already imported) check the correctness
         correct <- ifelse(.check_af_correctness(association_file),
@@ -368,12 +381,15 @@
     }
 }
 
-#' Allows the user to choose interactively the projects to consider for import.
+#' Allows the user to choose interactively the projects
+#' to consider for import.
 #'
 #' @param association_file The tibble representing the imported association file
+#' @keywords internal
 #' @importFrom dplyr distinct select filter
 #' @importFrom rlang .data
 #' @importFrom stringr str_split
+#' @importFrom purrr map_dbl
 #'
 #' @return A modified version of the association file where only selected
 #' projects are present
@@ -427,7 +443,7 @@
                     con <- connection
                 }
                 projects_to_import <- readLines(con = con, n = 1)
-                projects_to_import <- sapply(unlist(
+                projects_to_import <- purrr::map_dbl(unlist(
                     stringr::str_split(projects_to_import, ",")
                 ), as.numeric)
                 if (!any(is.na(projects_to_import)) &
@@ -510,8 +526,9 @@
     }
 }
 
-#' Simple internal helper function to handle user input for selection of number
-#' of pools.
+#' Simple internal helper function to handle user input for selection
+#' of number of pools.
+#' @keywords internal
 #'
 #' @return Numeric representing user selection (1 for all pools, 2 for
 #' only some pools, 0 to exit)
@@ -540,10 +557,13 @@
     n_pools_to_import
 }
 
-#' Simple helper interal function to handle user input for actual pool choices.
+#' Simple helper interal function to handle user input for actual
+#' pool choices.
 #'
 #' @param indexes A vector of integer indexes available
+#' @keywords internal
 #' @importFrom stringr str_split
+#' @importFrom purrr map_dbl
 #'
 #' @return The user selection as a numeric vector
 .pool_choices_IN <- function(indexes) {
@@ -557,7 +577,7 @@
             con = connection,
             n = 1
         )
-        to_imp <- sapply(unlist(
+        to_imp <- purrr::map_dbl(unlist(
             stringr::str_split(to_imp, ",")
         ), as.numeric)
         if (!any(is.na(to_imp)) & all(is.numeric(to_imp))) {
@@ -585,14 +605,17 @@
     to_imp
 }
 
-#' Allows the user to choose interactively the pools to consider for import.
+#' Allows the user to choose interactively
+#' the pools to consider for import.
 #'
-#' @param association_file The tibble representing the imported association file
+#' @param association_file The tibble representing the imported
+#' association file
 #' @importFrom dplyr select distinct group_by bind_rows inner_join
 #' @importFrom tibble tibble
 #' @importFrom tidyr nest
 #' @importFrom purrr map pmap reduce
 #' @importFrom rlang .data
+#' @keywords internal
 #'
 #' @return A modified version of the association file where only selected
 #' pools for each project are present
@@ -703,6 +726,7 @@
 #'
 #' @param lups A files_found tibble obtained in a lookup function. Must contain
 #' the Files column (nested table quantification type and files)
+#' @keywords internal
 #'
 #' @return Updated files_found with Anomalies and Files_count columns
 .trace_anomalies <- function(lups) {
@@ -730,14 +754,15 @@
     lups
 }
 
-#' Looks up matrices to import given the association file and the root of the
-#' file system.
+#' Looks up matrices to import given the association file and the
+#' root of the file system.
 #'
 #' @param association_file Tibble representing the association file
 #' @param quantification_type The type of quantification matrices to look for
 #' (one in `quantification_types()`)
 #' @param matrix_type The matrix_type to lookup (one between "annotated" or
 #' "not_annotated")
+#' @keywords internal
 #' @importFrom tibble tibble
 #' @importFrom fs dir_ls as_fs_path
 #' @importFrom purrr map reduce map_dbl
@@ -842,6 +867,7 @@
 #' types that are detected as duplicates
 #' @param dupl The tibble containing quantification types and path to the files
 #' found for a single project/pool pair
+#' @keywords internal
 #' @importFrom dplyr filter slice bind_rows
 #' @importFrom purrr map reduce
 #' @importFrom rlang .data
@@ -893,6 +919,7 @@
 #' quantification type, pool and project
 #'
 #' @param files_found The tibble obtained via calling `.lookup_matrices`
+#' @keywords internal
 #' @importFrom dplyr filter select rename bind_rows arrange
 #' @importFrom tidyr unnest
 #' @importFrom tibble as_tibble tibble
@@ -1009,11 +1036,14 @@
     }
 }
 
-#' Internal function for parallel import of a single quantification type files.
+#' Internal function for parallel import of a single quantification
+#' type files.
 #'
 #' @param q_type The quantification type (single string)
-#' @param files Files_found table were absolute paths of chosen files are stored
+#' @param files Files_found table were absolute paths of chosen files
+#' are stored
 #' @param workers Number of parallel workers
+#' @keywords internal
 #' @importFrom dplyr filter mutate bind_rows distinct
 #' @importFrom BiocParallel SnowParam MulticoreParam bptry bplapply bpstop bpok
 #' @importFrom purrr is_empty reduce
@@ -1060,11 +1090,12 @@
 #'
 #' @param files_to_import The tibble containing the files to import
 #' @param workers Number of parallel workers
+#' @keywords internal
 #' @importFrom dplyr select distinct bind_rows
 #' @importFrom purrr map set_names reduce flatten
 #' @importFrom tibble as_tibble
 #'
-#' @return A named list of ISADataFrames
+#' @return A named list of tibbles
 .parallel_import_merge <- function(files_to_import, workers) {
     # Find the actual quantification types included
     q_types <- files_to_import %>%
@@ -1084,9 +1115,7 @@
         tibble::as_tibble(purrr::flatten(x[2]))
     }) %>% purrr::reduce(dplyr::bind_rows)
     imported_matrices <- purrr::map(imported_matrices, function(x) {
-        suppressMessages({
-            ISADataFrame(purrr::flatten(x[1]))
-        })
+        tibble::as_tibble(purrr::flatten(x[1]))
     })
 
     list(imported_matrices, summary_files)
@@ -1094,7 +1123,8 @@
 
 #---- USED IN : import_parallel_Vispa2Matrices_auto ----
 
-#' Internal function to match user defined patterns on a vector of file names.
+#' Internal function to match user defined patterns on a vector
+#' of file names.
 #'
 #' For each pattern specified by the user, the function tries to find a match
 #' on all the file names and combines the results as a tibble in which column
@@ -1103,6 +1133,7 @@
 #'
 #' @param filenames A character vector of file names
 #' @param patterns A character vector of patterns to be matched
+#' @keywords internal
 #' @importFrom tibble as_tibble_col
 #' @importFrom stringr str_detect
 #' @importFrom purrr map reduce
@@ -1123,6 +1154,7 @@
 #' Helper function for checking if any of the elements of the list is true.
 #'
 #' @param ... A list of logical values
+#' @keywords internal
 #'
 #' @return TRUE if any of the parameters is true
 .any_match <- function(...) {
@@ -1133,6 +1165,7 @@
 #' Helper function for checking if all of the elements of the list is true.
 #'
 #' @param ... A list of logical values
+#' @keywords internal
 #'
 #' @return TRUE if all of the parameters is true
 .all_match <- function(...) {
@@ -1147,6 +1180,7 @@
 #' @param p_matches The tibble representing the pattern matchings resulting from
 #' `pattern_matching`
 #' @param matching_opt The matching option
+#' @keywords internal
 #' @import dplyr
 #' @importFrom purrr map reduce
 #' @importFrom rlang .data
@@ -1243,13 +1277,14 @@
     to_keep
 }
 
-#' Looks up matrices to import given the association file and the root of the
-#' file system.
+#' Looks up matrices to import given the association file and the
+#' root of the file system.
 #'
 #' @inheritParams .lookup_matrices
 #' @param patterns A character vector of patterns to be matched
 #' @param matching_opt A single character representing the matching option (one
 #' of "ANY", "ALL" or "OPTIONAL")
+#' @keywords internal
 #' @importFrom purrr pmap flatten map
 #' @importFrom tibble as_tibble
 #' @importFrom stringr str_split
@@ -1298,6 +1333,7 @@
 #' * Removing duplicates
 #'
 #' @param files_found The tibble obtained via calling `.lookup_matrices_auto`
+#' @keywords internal
 #' @importFrom dplyr filter select rename bind_rows arrange
 #' @importFrom rlang .data
 #' @importFrom tidyr unnest
@@ -1381,6 +1417,7 @@
 #' Builds the html widget for the checker table.
 #'
 #' @param checker_df Tibble obtained via `.check_file_system_alignment`
+#' @keywords internal
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div span h2 css browsable
 #'
@@ -1474,6 +1511,7 @@
 #'
 #' @param files_found Tibble obtained via `.lookup_matrices` or
 #' `.lookup_matrices_auto`
+#' @keywords internal
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div span h2 css h3 browsable
 #' @importFrom dplyr select
@@ -1662,8 +1700,10 @@
 
 #' Builds the html widget for the files_to_import table.
 #'
-#' @param files_to_import Tibble obtained via `.manage_anomalies_interactive` or
+#' @param files_to_import Tibble obtained via
+#' `.manage_anomalies_interactive` or
 #' `.manage_anomalies_auto`
+#' @keywords internal
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div span h2 css browsable
 #'
@@ -1733,6 +1773,7 @@
 #' Builds the html widget for the files_imported table.
 #'
 #' @param files_imported Tibble obtained via `.parallel_import_merge`
+#' @keywords internal
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div span h2 css browsable
 #'
@@ -1825,6 +1866,7 @@
 #' @param summary Summary table
 #' @param tot_rows Total number rows of sequence count matrix before processing
 #' @param collision_rows Total number of rows of collisions
+#' @keywords internal
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div h2 h4 css browsable
 #'
@@ -1981,6 +2023,88 @@
     htmltools::browsable(widget)
 }
 
+#' Builds the html widget for the iss_import.
+#'
+#' @param report Table obtained via `import_stats_iss`
+#' @keywords internal
+#'
+#' @importFrom reactable reactable reactableTheme colDef
+#' @importFrom htmltools div h2 h4 css browsable
+#'
+#' @return A widget
+.iss_import_widget <- function(report) {
+    theme <- reactable::reactableTheme(
+        style = list(
+            fontFamily = "Calibri"
+        ),
+        cellStyle = list(
+            display = "flex",
+            flexDirection = "column",
+            justifyContent = "center"
+        )
+    )
+
+    styled_df <- reactable::reactable(
+        report,
+        striped = TRUE,
+        sortable = TRUE,
+        showSortable = TRUE,
+        bordered = FALSE,
+        outlined = TRUE,
+        searchable = TRUE,
+        pagination = TRUE,
+        paginationType = "simple",
+        showPageSizeOptions = TRUE,
+        pageSizeOptions = c(4, 8, 12),
+        defaultPageSize = 5,
+        showPagination = TRUE,
+        resizable = TRUE,
+        theme = theme,
+        defaultColDef = reactable::colDef(
+            headerStyle = list(
+                fontSize = "18px", paddingLeft = "15px",
+                display = "flex",
+                flexDirection = "column",
+                justifyContent = "center"
+            ),
+            style = list(paddingLeft = "15px"),
+            align = "left",
+            header = function(value) gsub("_", " ", value, fixed = TRUE)
+        ),
+        columns = list(
+            ProjectID = reactable::colDef(
+                filterable = TRUE
+            ),
+            Imported = reactable::colDef(
+                style = function(value) {
+                    color <- if (value == TRUE) {
+                        "#6afc21"
+                    } else {
+                        "#d61e1e"
+                    }
+                    list(
+                        paddingLeft = "15px",
+                        textTransform = "uppercase",
+                        color = color,
+                        fontWeight = "bold"
+                    )
+                },
+                align = "center"
+            )
+        )
+    )
+    widget <- htmltools::div(
+        style = htmltools::css(font.family = "Calibri"),
+        htmltools::h2("REPORT IMPORT VISPA2 STATS: FILES IMPORTED"),
+        htmltools::span("Here is a summary of all files actually imported.
+        If you see 'FALSE' in the column Imported, some errors might have
+        occurred and the function was unable to import the file or simply no
+                        path was found for that stats file."),
+        styled_df
+    )
+    htmltools::browsable(widget)
+}
+
 #### ---- Internals for collision removal ----####
 
 #---- USED IN : remove_collisions ----
@@ -1994,6 +2118,7 @@
 #'
 #' @param association_file The imported association file
 #' @param df The sequence count matrix to examine
+#' @keywords internal
 #' @import dplyr
 #' @importFrom purrr map reduce
 #' @importFrom rlang .data
@@ -2026,6 +2151,7 @@
 #' @param seq_count_df The sequence count tibble
 #' @param association_file The association file tibble
 #' @param date_col The date column chosen
+#' @keywords internal
 #' @import dplyr
 #' @importFrom rlang .data
 #'
@@ -2041,22 +2167,23 @@
     joined
 }
 
-#' Identifies independent samples and separates the joined_df in collisions and
-#' non-collisions
+#' Identifies independent samples and separates the joined_df in
+#' collisions and non-collisions
 #'
 #' @param joined_df The joined tibble obtained via `.join_matrix_af`
 #' @import dplyr
 #' @importFrom rlang .data
+#' @keywords internal
 #'
 #' @return A named list containing the splitted joined_df for collisions and
 #' non-collisions
 .identify_independent_samples <- function(joined_df) {
     temp <- joined_df %>%
         dplyr::select(
-            dplyr::all_of(mandatoryVars(joined_df)),
+            dplyr::all_of(mandatory_IS_vars()),
             .data$ProjectID, .data$SubjectID
         ) %>%
-        dplyr::group_by(.data$chr, .data$integration_locus, .data$strand) %>%
+        dplyr::group_by(dplyr::across(mandatory_IS_vars())) %>%
         dplyr::distinct(.data$ProjectID, .data$SubjectID, .keep_all = TRUE) %>%
         dplyr::summarise(n = dplyr::n(), .groups = "drop_last") %>%
         dplyr::ungroup() %>%
@@ -2064,9 +2191,9 @@
         dplyr::select(-c(.data$n))
 
     non_collisions <- joined_df %>%
-        dplyr::anti_join(temp, by = c("chr", "integration_locus", "strand"))
+        dplyr::anti_join(temp, by = mandatory_IS_vars())
     collisions <- joined_df %>%
-        dplyr::right_join(temp, by = c("chr", "integration_locus", "strand"))
+        dplyr::right_join(temp, by = mandatory_IS_vars())
     list(collisions = collisions, non_collisions = non_collisions)
 }
 
@@ -2078,17 +2205,15 @@
 #'
 #' @param collisions The collisions table obtained via
 #' `.identify_independent_samples`
-#' @importFrom dplyr group_by
+#' @keywords internal
+#' @importFrom dplyr group_by across
 #' @importFrom rlang .data
 #' @importFrom tidyr nest
 #'
-#' @return A nested ISADataFrame
+#' @return A nested tibble
 .obtain_nested <- function(collisions) {
     collisions %>%
-        dplyr::group_by(
-            .data$chr,
-            .data$integration_locus, .data$strand
-        ) %>%
+        dplyr::group_by(dplyr::across(mandatory_IS_vars())) %>%
         tidyr::nest()
 }
 
@@ -2109,6 +2234,7 @@
 #' one in \code{date_columns_coll()}
 #' @importFrom rlang expr eval_tidy .data
 #' @importFrom dplyr filter arrange
+#' @keywords internal
 #'
 #' @return A named list with:
 #' * $data: a tibble, containing the data (unmodified or modified)
@@ -2152,6 +2278,7 @@
 #' @param nest The nested table associated with a single integration
 #' @import dplyr
 #' @importFrom rlang .data
+#' @keywords internal
 #'
 #' @return A named list with:
 #' * $data: a tibble, containing the data (unmodified or modified)
@@ -2191,6 +2318,7 @@
 #' check
 #' @import dplyr
 #' @importFrom rlang .data
+#' @keywords internal
 #'
 #' @return A named list with:
 #' * $data: a tibble, containing the data (unmodified or modified)
@@ -2214,34 +2342,35 @@
     return(list(data = nest, check = TRUE))
 }
 
-#' Internal function that performs four-step-check of collisions for a single
-#' integration.
+#' Internal function that performs four-step-check of collisions for
+#' a single integration.
 #'
 #' @details NOTE: this function is meant to be used inside a mapping function
 #' such as `purrr::pmap`. The function only works on data regarding a SINGLE
 #' integration (triplet chr, integration_locus, strand).
 #'
-#' @param ... Represents a single row of a tibble obtained via `obtain_nested`.
-#' One row contains 4 variables: chr, integration_locus, strand and data, where
-#' data is a nested table that contains all rows that share that integration
-#' (collisions).
+#' @param ... Represents a single row of a tibble obtained via
+#' `obtain_nested`. One row contains 4 variables: chr, integration_locus,
+#' strand and data, where data is a nested table that contains all rows
+#' that share that integration (collisions).
 #' @param date_col The date column to consider
 #' @param reads_ratio The value of the ratio between sequence count values to
 #' check
+#' @keywords internal
 #'
 #' @importFrom tibble as_tibble tibble
 #' @importFrom purrr flatten
 #' @importFrom tidyr unnest
 #' @importFrom rlang .data env_bind
 #' @return A list with:
-#' * $data: an updated ISADataFrame with processed collisions or NULL if no
+#' * $data: an updated tibble with processed collisions or NULL if no
 #' criteria was sufficient
 #' * $reassigned: 1 if the integration was successfully reassigned, 0 otherwise
 #' * $removed: 1 if the integration is removed entirely because no criteria was
 #' met, 0 otherwise
 .four_step_check <- function(..., date_col, reads_ratio) {
     l <- list(...)
-    current <- tibble::as_tibble(l[c("chr", "integration_locus", "strand")])
+    current <- tibble::as_tibble(l[mandatory_IS_vars()])
     current_data <- tibble::as_tibble(purrr::flatten(l["data"]))
     # Try to discriminate by date
     result <- .discriminate_by_date(current_data, date_col)
@@ -2254,9 +2383,6 @@
             data = list(current_data)
         )
         res <- res %>% tidyr::unnest(.data$data)
-        suppressMessages({
-            res <- ISADataFrame(res)
-        })
         return(list(data = res, reassigned = 1, removed = 0))
     }
     current_data <- result$data
@@ -2271,9 +2397,6 @@
             data = list(current_data)
         )
         res <- res %>% tidyr::unnest(.data$data)
-        suppressMessages({
-            res <- ISADataFrame(res)
-        })
         return(list(data = res, reassigned = 1, removed = 0))
     }
     current_data <- result$data
@@ -2288,9 +2411,6 @@
             data = list(current_data)
         )
         res <- res %>% tidyr::unnest(.data$data)
-        suppressMessages({
-            res <- ISADataFrame(res)
-        })
         return(list(data = res, reassigned = 1, removed = 0))
     }
     # If all check fails remove the integration from all subjects
@@ -2303,7 +2423,7 @@
 #' @param date_col The date column to consider
 #' @param reads_ratio The value of the ratio between sequence count values to
 #' check
-#'
+#' @keywords internal
 #' @importFrom purrr pmap reduce
 #' @importFrom dplyr bind_rows
 #' @return A list containing the updated collisions, a numeric value
@@ -2341,6 +2461,7 @@
 #' @param date_col The date column to consider
 #' @param reads_ratio The value of the ratio between sequence count values to
 #' check
+#' @keywords internal
 #'
 #' @import BiocParallel
 #' @importFrom purrr map reduce
@@ -2420,6 +2541,7 @@
 #' @param association_file The association file
 #' @import dplyr
 #' @importFrom rlang .data
+#' @keywords internal
 #'
 #' @return A tibble with a summary containing for each SubjectID the number of
 #' integrations found before and after, the sum of the value of the sequence
@@ -2467,4 +2589,722 @@
             delta_seqReads = .data$sumSeqReads_before - .data$sumSeqReads_after
         )
     summary
+}
+
+#### ---- Internals for aggregate functions ----####
+
+#---- USED IN : aggregate_metadata ----
+
+#' Minimal association_file variable set.
+#'
+#' Contains the names of the columns of the association file that are a minimum
+#' requirement to perform aggregation.
+#' @keywords internal
+#'
+#' @return A character vector
+.min_var_set <- function() {
+    c(
+        "FusionPrimerPCRDate", "LinearPCRDate", "VCN", "DNAngUsed", "Kapa",
+        "ulForPool", "Path"
+    )
+}
+
+#' Minimal stats column set.
+#'
+#' Contains the name of the columns that are a minimum requirement for
+#' aggregation.
+#' @keywords internal
+#'
+#' @return A character vector
+.stats_columns_min <- function() {
+    c(
+        "POOL", "TAG", "BARCODE_MUX", "TRIMMING_FINAL_LTRLC",
+        "LV_MAPPED", "BWA_MAPPED_OVERALL", "ISS_MAPPED_PP"
+    )
+}
+
+#' Checks if the stats file contains the minimal set of columns.
+#'
+#' @param x The stats df
+#' @keywords internal
+#'
+#' @return TRUE or FALSE
+.check_stats <- function(x) {
+    if (all(.stats_columns_min() %in% colnames(x))) {
+        TRUE
+    } else {
+        FALSE
+    }
+}
+
+#' Finds automatically the path on disk to each stats file.
+#'
+#' @param association_file The association file
+#' @import dplyr
+#' @importFrom purrr pmap_dfr pmap_df
+#' @importFrom tibble as_tibble tibble add_column
+#' @importFrom stringr str_extract str_extract_all str_detect
+#' @importFrom fs dir_exists dir_ls
+#' @importFrom tidyr unnest unite
+#' @importFrom rlang .data
+#' @keywords internal
+#' @return A tibble with ProjectID and the absolute path on disk to each file
+#' if found
+.stats_report <- function(association_file) {
+    # Obtain unique projectID and path
+    temp <- association_file %>%
+        dplyr::select(.data$ProjectID, .data$Path) %>%
+        dplyr::distinct()
+    # If paths are all NA return
+    if (all(is.na(temp$Path))) {
+        return(NULL)
+    }
+    pattern <- "^stats\\."
+    file_reg <- "(?<=iss\\/).*"
+    # Obtain paths to iss folder
+    stats_paths <- purrr::pmap_dfr(temp, function(...) {
+        current <- tibble::tibble(...)
+        if (is.na(current$Path)) {
+            l <- list(ProjectID = current$ProjectID, stats_path = NA_character_)
+            tibble::as_tibble(l)
+        } else {
+            pj_path <-
+                stringr::str_extract(current$Path,
+                    pattern = paste0(
+                        ".*",
+                        current$ProjectID,
+                        "(?=\\/quantification)"
+                    )
+                )
+            pj_path <- paste0(pj_path, "/iss")
+            l <- list(ProjectID = current$ProjectID, stats_path = pj_path)
+            tibble::as_tibble(l)
+        }
+    })
+    stats_paths <- stats_paths %>% dplyr::distinct()
+    # Find all stats files in iss folders
+    stats_paths <- purrr::pmap_df(stats_paths, function(...) {
+        cur <- tibble::tibble(...)
+        # Check if folder exists
+        # Set to NA the iss folders not found
+        if (!fs::dir_exists(cur$stats_path)) {
+            cur$stats_path <- NA_character_
+            cur %>% tibble::add_column(stats_files = list(NA_character_))
+        } else {
+            files_in_iss <- unlist(fs::dir_ls(cur$stats_path))
+            files_in_iss <- unlist(stringr::str_extract_all(
+                files_in_iss, file_reg
+            ))
+            which_match <- unlist(stringr::str_detect(files_in_iss, pattern))
+            files_in_iss <- files_in_iss[which_match]
+            cur %>% tibble::add_column(stats_files = list(files_in_iss))
+        }
+    })
+    stats_paths <- stats_paths %>%
+        tidyr::unnest(.data$stats_files) %>%
+        tidyr::unite(
+            col = "files", .data$stats_path, .data$stats_files,
+            sep = "/", na.rm = TRUE
+        )
+}
+
+#' Imports all found Vispa2 stats files.
+#'
+#' @param association_file The association file
+#' @import BiocParallel
+#' @importFrom tibble as_tibble
+#' @importFrom purrr map2_lgl reduce is_empty
+#' @importFrom dplyr mutate bind_rows distinct
+#' @keywords internal
+#'
+#' @return A list with the imported stats and a report of imported files. If no
+#' files were imported returns NULL instead
+.import_stats_iss <- function(association_file) {
+    # Obtain paths
+    stats_paths <- .stats_report(association_file)
+    if (is.null(stats_paths)) {
+        return(NULL)
+    }
+    # Setup parallel workers and import
+    # Register backend according to platform
+    if (.Platform$OS.type == "windows") {
+        p <- BiocParallel::SnowParam(stop.on.error = FALSE)
+    } else {
+        p <- BiocParallel::MulticoreParam(
+            stop.on.error = FALSE
+        )
+    }
+    FUN <- function(x) {
+        stats <- read.csv(
+            file = x, sep = "\t", stringsAsFactors = FALSE,
+            check.names = FALSE
+        )
+        stats <- tibble::as_tibble(stats)
+        ok <- .check_stats(stats)
+        if (ok == TRUE) {
+            return(stats)
+        } else {
+            return(NULL)
+        }
+    }
+    suppressMessages(suppressWarnings({
+        stats_dfs <- BiocParallel::bptry(
+            BiocParallel::bplapply(stats_paths$files, FUN, BPPARAM = p)
+        )
+    }))
+    BiocParallel::bpstop(p)
+    correct <- BiocParallel::bpok(stats_dfs)
+    correct <- purrr::map2_lgl(stats_dfs, correct, function(x, y) {
+        if (is.null(x)) {
+            FALSE
+        } else {
+            y
+        }
+    })
+    stats_paths <- stats_paths %>% dplyr::mutate(Imported = correct)
+    stats_dfs <- stats_dfs[correct]
+    # Bind rows in single tibble for all files
+    if (purrr::is_empty(stats_dfs)) {
+        return(NULL)
+    }
+    stats_dfs <- purrr::reduce(stats_dfs, function(x, y) {
+        x %>%
+            dplyr::bind_rows(y) %>%
+            dplyr::distinct()
+    })
+    list(stats_dfs, stats_paths)
+}
+
+#' Performs eventual join with stats and aggregation.
+#'
+#' @param association_file The imported association file
+#' @param stats The imported stats df
+#' @param grouping_keys The names of the columns to group by
+#' @import dplyr
+#' @importFrom rlang .data
+#' @importFrom stringr str_replace_all
+#' @importFrom tidyr unite
+#' @keywords internal
+#'
+#' @return A tibble
+.join_and_aggregate <- function(association_file, stats, grouping_keys) {
+    # If stats not null join with af
+    if (!is.null(stats)) {
+        stats <- stats %>% dplyr::mutate(TAG = stringr::str_replace_all(
+            .data$TAG,
+            pattern = "\\.", replacement = ""
+        ))
+        association_file <- association_file %>%
+            dplyr::left_join(stats,
+                by = c(
+                    "concatenatePoolIDSeqRun" = "POOL",
+                    "TagSequence" = "TAG"
+                )
+            )
+        aggregated <- association_file %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(grouping_keys))) %>%
+            dplyr::summarise(
+                FusionPrimerPCRDate = suppressWarnings({
+                    min(.data$FusionPrimerPCRDate,
+                        na.rm = TRUE
+                    )
+                }),
+                LinearPCRDate = suppressWarnings({
+                    min(.data$LinearPCRDate, na.rm = TRUE)
+                }),
+                VCN = suppressWarnings({
+                    mean(.data$VCN, na.rm = TRUE)
+                }),
+                Avg_DNAngUsed = suppressWarnings({
+                    mean(.data$DNAngUsed, na.rm = TRUE)
+                }),
+                Kapa = suppressWarnings({
+                    mean(.data$Kapa, na.rm = TRUE)
+                }),
+                DNAngUsed = suppressWarnings({
+                    sum(.data$DNAngUsed, na.rm = TRUE)
+                }),
+                ulForPool = suppressWarnings({
+                    sum(.data$ulForPool, na.rm = TRUE)
+                }),
+                BARCODE_MUX = suppressWarnings({
+                    sum(.data$BARCODE_MUX, na.rm = TRUE)
+                }),
+                TRIMMING_FINAL_LTRLC = suppressWarnings({
+                    sum(.data$TRIMMING_FINAL_LTRLC, na.rm = TRUE)
+                }),
+                LV_MAPPED = suppressWarnings({
+                    sum(.data$LV_MAPPED, na.rm = TRUE)
+                }),
+                BWA_MAPPED_OVERALL = suppressWarnings({
+                    sum(.data$BWA_MAPPED_OVERALL, na.rm = TRUE)
+                }),
+                ISS_MAPPED_PP = suppressWarnings({
+                    sum(.data$ISS_MAPPED_PP, na.rm = TRUE)
+                })
+            ) %>%
+            dplyr::ungroup() %>%
+            tidyr::unite(
+                col = "AggregateMeta", dplyr::all_of(grouping_keys),
+                sep = "_", remove = FALSE
+            )
+        return(aggregated)
+    }
+    # Aggregate
+    aggregated <- association_file %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(grouping_keys))) %>%
+        dplyr::summarise(
+            FusionPrimerPCRDate = suppressWarnings({
+                min(.data$FusionPrimerPCRDate,
+                    na.rm = TRUE
+                )
+            }),
+            LinearPCRDate = suppressWarnings({
+                min(.data$LinearPCRDate, na.rm = TRUE)
+            }),
+            VCN = suppressWarnings({
+                mean(.data$VCN, na.rm = TRUE)
+            }),
+            Avg_DNAngUsed = suppressWarnings({
+                mean(.data$DNAngUsed, na.rm = TRUE)
+            }),
+            Kapa = suppressWarnings({
+                mean(.data$Kapa, na.rm = TRUE)
+            }),
+            DNAngUsed = suppressWarnings({
+                sum(.data$DNAngUsed, na.rm = TRUE)
+            }),
+            ulForPool = suppressWarnings({
+                sum(.data$ulForPool, na.rm = TRUE)
+            })
+        ) %>%
+        dplyr::ungroup() %>%
+        tidyr::unite(
+            col = "AggregateMeta", dplyr::all_of(grouping_keys),
+            sep = "_", remove = FALSE
+        )
+}
+
+#---- USED IN : aggregate_values_by_key ----
+
+#' Internal function that performs aggregation on values with a lambda
+#' operation.
+#'
+#' @param x The list of matrices to aggregate. If a single matrix has to be
+#' supplied it must be enclosed in a list. For example `x = list(matrix)`.
+#' @param af The association file
+#' @param key A string or character vector to use as key
+#' @param lambda The aggregating operation to apply to values. Must take as
+#' input a numeric/integer vector and return a single value
+#' @param group The additional variables to add to grouping
+#' @param args Additional arguments passed on to lambda (named list)
+#' @param namespace The namespace from which the lambda is exported
+#' @param envir The environment in which symbols must be evaluated
+#' @import dplyr
+#' @importFrom rlang .data
+#' @keywords internal
+#'
+#' @return A list of tibbles with aggregated values
+.aggregate_lambda <- function(x, af, key, lambda, group,
+    args, namespace, envir) {
+    # Vectorize
+    aggregated_matrices <- purrr::map(x, function(y) {
+        cols <- c(colnames(y), key)
+        agg <- y %>%
+            dplyr::left_join(af, by = "CompleteAmplificationID") %>%
+            dplyr::select(dplyr::all_of(cols)) %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(c(group, key)))) %>%
+            dplyr::summarise(Aggregated_value = .wrapper(
+                x = .data$Value,
+                lambda, args,
+                namespace, envir
+            )) %>%
+            dplyr::ungroup()
+        agg
+    })
+    aggregated_matrices
+}
+
+
+#' Wrapper function to call in summarise.
+#'
+#' This function tests for the type of result obtained by calling the lambda on
+#' the grouped `Value` column: if its an atomic type (and not a list or a
+#' vector) simply returns the result, otherwise encapsulates the result in a
+#' list to produce a list column that can be unnested with tidyr. Data frames
+#' are automatically converted to tibbles to improve performance.
+#'
+#' This function actually improves both performance and flexibility of the
+#' aggregate function since every object of any class can be included in a list
+#' and therefore in the aggregated_value column.
+#'
+#' @param x The numeric vector to which the lambda is applied
+#' @param lambda The name of the function to call
+#' @param args Additional arguments to pass to lambda
+#' @param namespace The namespace that exports lambda (or NULL)
+#' @param env The environment where symbols are evaluated
+#' @keywords internal
+#'
+#' @return An atomic type or a list
+.wrapper <- function(x, lambda, args, namespace, env) {
+    fun <- if (is.null(namespace)) {
+        lambda
+    } else {
+        getExportedValue(ns = namespace, name = lambda)
+    }
+    res <- do.call(
+        what = fun, args = append(list(x), args), quote = TRUE,
+        envir = env
+    )
+    # Check result type, if is anything else than basic types put it in a list
+    if (is.atomic(res) & !is.list(res) & length(res) == 1) {
+        return(res)
+    } else {
+        if (is.data.frame(res)) {
+            res <- tibble::as_tibble(res)
+            return(list(res))
+        }
+        return(list(res))
+    }
+}
+
+#### ---- Internals for re-calibration functions ----####
+
+#---- USED IN : compute_near_integrations ----
+
+#' Internal function that computes distance between two loci.
+#'
+#' @param x First locus
+#' @param y Second locus
+#' @keywords internal
+#'
+#' @return The distance as the absolute value of x-y
+.locus_distance <- function(x, y) {
+    abs((x - y))
+}
+
+#' Internal function for keep criteria "keep_first".
+#'
+#' Returns the first value in a set to keep or returns values to drop if
+#' inverted is TRUE.
+#'
+#' @param x A tibble or a vector of numbers
+#' @param inverted Return the values to drop instead of the ones to keep?
+#' @importFrom tibble is_tibble
+#' @keywords internal
+#'
+#' @return If x is tibble returns a tibble otherwise returns a vector
+.keep_first <- function(x, inverted = TRUE) {
+    if (tibble::is_tibble(x)) {
+        sum_val <- sum(x$Value)
+        result <- x[1, ]
+        result$Value <- sum_val
+        return(result)
+    }
+    if (is.integer(x) | is.numeric(x)) {
+        if (inverted == TRUE) {
+            return(x[c(-1)])
+        } else {
+            return(x[1])
+        }
+    }
+}
+
+#' Internal function for keep criteria "keep_central".
+#'
+#' Returns the central value in a set to keep or returns values to drop if
+#' inverted is TRUE.
+#'
+#' @param x A tibble or a vector of numbers
+#' @param inverted Return the values to drop instead of the ones to keep?
+#' @importFrom tibble is_tibble
+#' @keywords internal
+#'
+#' @return If x is tibble returns a tibble otherwise returns a vector
+.keep_central <- function(x, inverted = TRUE) {
+    if (tibble::is_tibble(x)) {
+        sum_val <- sum(x$Value)
+        result <- x[2, ]
+        result$Value <- sum_val
+        return(result)
+    }
+    if (is.integer(x) | is.numeric(x)) {
+        if (inverted == TRUE) {
+            return(x[c(-2)])
+        } else {
+            return(x[2])
+        }
+    }
+}
+
+#' Internal function for keep criteria "max_value".
+#'
+#' Returns the value in a set which has (or is) the max "Value" or returns
+#' values to drop if inverted is TRUE. If values aren't comparable (because
+#' they're equal), a second criteria is used for selection.
+#'
+#' @param x A tibble or a vector of numbers
+#' @param inverted Return the values to drop instead of the ones to keep?
+#' @param second_choice Second criteria to use if "max_value" is not applicable
+#' @importFrom tibble is_tibble
+#' @keywords internal
+#'
+#' @return If x is tibble returns a tibble otherwise returns a vector
+.keep_max_value <- function(x, second_choice, inverted = TRUE) {
+    if (tibble::is_tibble(x)) {
+        # Check if values are comparable (not equal)
+        if (length(unique(x$Value)) == length(x$Value)) {
+            sum_val <- sum(x$Value)
+            index_to_keep <- which(x$Value == max(x$Value))
+            result <- x[index_to_keep, ]
+            result$Value <- sum_val
+            return(result)
+        }
+        # If equal use second criteria
+        if (second_choice == "keep_central") {
+            return(.keep_central(x, inverted = FALSE))
+        }
+        if (second_choice == "keep_first") {
+            return(.keep_first(x, inverted = FALSE))
+        }
+    }
+    if (is.integer(x) | is.numeric(x)) {
+        # Check if values are comparable (not equal)
+        if (length(unique(x)) == length(x)) {
+            if (inverted == TRUE) {
+                to_drop <- which(x != max(x))
+                return(to_drop)
+            } else {
+                to_keep <- which(x == max(x))
+                return(to_keep)
+            }
+        }
+        # If equal use second criteria
+        if (second_choice == "keep_central") {
+            return(.keep_central(x, inverted = inverted))
+        }
+        if (second_choice == "keep_first") {
+            return(.keep_first(x, inverted = inverted))
+        }
+    }
+}
+
+
+#' Wrapper function for criteria evaluation inside `window` function.
+#'
+#' @param criterias The vector of criterias
+#' @param values The numeric vector containing values
+#' @param subset Integer vector with indexes of the values vector to pass to
+#' individual functions.
+#' @keywords internal
+#'
+#' @return Values to drop
+.check_window_criteria <- function(criterias, values, subset) {
+    if (criterias[1] == "max_value") {
+        if (is.null(subset)) {
+            to_drop <- .keep_max_value(values, criterias[2], inverted = TRUE)
+        } else {
+            to_drop <- .keep_max_value(values[subset], criterias[2],
+                inverted = TRUE
+            )
+        }
+        return(to_drop)
+    }
+    if (criterias[1] == "keep_first") {
+        if (is.null(subset)) {
+            to_drop <- .keep_first(values, inverted = TRUE)
+        } else {
+            to_drop <- .keep_first(values[subset], inverted = TRUE)
+        }
+        return(to_drop)
+    }
+    if (criterias[1] == "keep_central") {
+        if (is.null(subset)) {
+            to_drop <- .keep_central(values, inverted = TRUE)
+        } else {
+            to_drop <- .keep_central(values[subset], inverted = TRUE)
+        }
+        return(to_drop)
+    }
+}
+
+
+#' Internal for the construction of a window of width equal to 3 rows and
+#' computation of result on those values.
+#'
+#' NOTE: to use the function correctly, the parameters
+#' `indexes`, `loci` and
+#' `values` MUST be named vector with these names:
+#' c(first = ..., center = ..., last = ...)
+#'
+#' @param indexes The indexes of the rows in the window
+#' (named vector, see description)
+#' @param loci The actual value of the `integration_locus` variable
+#' for the rows (named vector, see description)
+#' @param values The actual value of the `Value` variable for the rows
+#' (named vector, see description)
+#' @param criterias The character vector containing the selection criterias
+#' @param treshold The numeric value representing the threshold for selection
+#' @keywords internal
+#'
+#' @return A named list with the indexes of rows to drop, the index
+#' of the row to collapse on and the value to assign.
+#' If no row needs to be dropped returns NULL instead.
+.window <- function(indexes, loci, values, criterias, threshold) {
+    # Compute distances from center
+    dist_x <- .locus_distance(loci["first"], loci["center"])
+    dist_y <- .locus_distance(loci["last"], loci["center"])
+    # If both above threshold
+    if (all(!c(dist_x, dist_y) < threshold)) {
+        ## Drop nothing
+        return(NULL)
+    }
+    # If both below threshold
+    if (all(c(dist_x, dist_y) < threshold)) {
+        ## Check criteria
+        to_drop <- .check_window_criteria(criterias, values, subset = NULL)
+        indexes_to_drop <- indexes[names(to_drop)]
+        collapse_on <- indexes[!names(indexes) %in%
+            names(indexes_to_drop)]
+        tot_value <- sum(values)
+        res <- list(
+            drop = indexes_to_drop, collapse_on = collapse_on,
+            value = tot_value
+        )
+        return(res)
+    }
+    # Only one below
+    if (dist_x < threshold) {
+        ## Check criteria
+        to_drop <- .check_window_criteria(criterias, values, subset = c(1, 2))
+        indexes_to_drop <- indexes[names(to_drop)]
+        collapse_on <- indexes[c(1, 2)]
+        collapse_on <- collapse_on[!names(collapse_on) %in%
+            names(indexes_to_drop)]
+        tot_value <- sum(values[c(1, 2)])
+        res <- list(
+            drop = indexes_to_drop, collapse_on = collapse_on,
+            value = tot_value
+        )
+        return(res)
+    }
+    if (dist_y < threshold) {
+        ## Check criteria
+        to_drop <- .check_window_criteria(criterias, values, subset = c(2, 3))
+        indexes_to_drop <- indexes[names(to_drop)]
+        collapse_on <- indexes[c(2, 3)]
+        collapse_on <- collapse_on[!names(collapse_on) %in%
+            names(indexes_to_drop)]
+        tot_value <- sum(values[c(2, 3)])
+        res <- list(
+            drop = indexes_to_drop, collapse_on = collapse_on,
+            value = tot_value
+        )
+        return(res)
+    }
+}
+
+#' Internal that represents the window moving and modifying the
+#' original table as it progresses.
+#'
+#' @param x The original tibble (subgroup)
+#' @param start The starting index from where the window should be built
+#' @param criterias The character vector with selecting criterias
+#' @param threshold The numeric value representing the threshold for selection
+#' @keywords internal
+#'
+#' @return A modified tibble with a number of rows less or equal than x.
+.window_slide <- function(x, start, criterias, threshold) {
+    repeat {
+        center <- start + 1
+        last <- start + 2
+        result <- .window(
+            indexes = c(
+                first = start,
+                center = center,
+                last = last
+            ),
+            loci = c(
+                first = x$integration_locus[start],
+                center = x$integration_locus[center],
+                last = x$integration_locus[last]
+            ),
+            values = c(
+                first = x$Value[start],
+                center = x$Value[center],
+                last = x$Value[last]
+            ),
+            criterias = criterias,
+            threshold = threshold
+        )
+        if (last == nrow(x)) {
+            if (!is.null(result)) {
+                x[result$collapse_on, ]$Value <- result$value
+                x <- x[-result$drop, ]
+            }
+            return(x)
+        } else {
+            if (!is.null(result)) {
+                x[result$collapse_on, ]$Value <- result$value
+                x <- x[-result$drop, ]
+            }
+            start <- if (is.null(result)) {
+                start + 1
+            } else {
+                start
+            }
+            next
+        }
+    }
+}
+
+#' Internal function that implements the sliding window algorithm.
+#'
+#' **NOTE: this function is meant to be called on a SINGLE GROUP, meaning a
+#' subset of an integration matrix in which all rows share the same chr and same
+#' strand.**
+#' Also note that is better to call this function on a group that has all
+#' distinct integration_locus values (this is ensured by calling function) and
+#' also it's not possible to call this function on groups with a single row.
+#'
+#' @param x An integration matrix subset (see description)
+#' @param threshold The numeric value representing the threshold for selection
+#' @param keep_criteria The character vector with selecting criterias
+#' @importFrom dplyr arrange
+#' @keywords internal
+#'
+#' @return A modified tibble with a number of rows less or equal than x.
+.sliding_window <- function(x, threshold, keep_criteria) {
+    ## Order by integration_locus
+    x <- x %>% dplyr::arrange(.data$integration_locus)
+    # ---- If group has only 2 rows ---- #
+    if (nrow(x) == 2) {
+        ## Compute distance
+        distance <- .locus_distance(
+            x$integration_locus[1],
+            x$integration_locus[2]
+        )
+        ## Is distance less than the treshold?
+        if (distance < threshold) {
+            ## If yes examine keep criterias
+            if (keep_criteria[1] == "max_value") {
+                return(.keep_max_value(x, keep_criteria[2]))
+            }
+            if (keep_criteria[1] == "keep_first") {
+                return(.keep_first(x))
+            }
+            if (keep_criteria[1] == "keep_central") {
+                return(.keep_central(x))
+            }
+        } else {
+            ## If not return the input as is
+            return(x)
+        }
+    }
+    # ---- If group has 3 or more rows ---- #
+    x <- .window_slide(x,
+        start = 1, criterias = keep_criteria,
+        threshold = threshold
+    )
+    return(x)
 }

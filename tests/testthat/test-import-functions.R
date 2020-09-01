@@ -2,6 +2,9 @@ context("Importing IS from files")
 
 library(ISAnalytics)
 
+op <- options("ISAnalytics.widgets" = FALSE)
+on.exit(options(op))
+
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
@@ -45,47 +48,29 @@ root_err <- unzip_file_system(path_root_err, "fserr")
 #------------------------------------------------------------------------------#
 # Tests .messy_to_tidy
 #------------------------------------------------------------------------------#
-test_that(".messy_to_tidy fails if input is not an ISADataFrame", {
-    expect_error(.messy_to_tidy(data.frame(a = seq_len(10), b = seq_len(10))))
-    expect_error(.messy_to_tidy(tibble(list(a = seq_len(10), b = seq_len(10)))))
-})
-
-test_that(".messy_to_tidy produces correct tidy ISADataFrame - annotated new", {
+test_that(".messy_to_tidy produces correct tidy df - annotated new", {
     raw_isadf <- read.csv(example_path, sep = "\t", check.names = FALSE)
-    raw_isadf <- new_ISADataFrame(raw_isadf, meta = c("GeneName", "GeneStrand"))
+    raw_isadf <- tibble::as_tibble(raw_isadf)
     tidy_isadf <- .messy_to_tidy(raw_isadf)
-    # Resulting data frame must preserve ISADataFrame class
-    expect_true(is.ISADataFrame(tidy_isadf))
-    # Resulting ISADataFrame must have the columns "ExperimentID" and "Value"
+    # Resulting df must have the columns "ExperimentID" and "Value"
     expect_true(all(c(
         "CompleteAmplificationID",
         "Value"
     ) %in% colnames(tidy_isadf)))
-    # The metadata field updates and contains the new "CompleteAmplificationID"
-    # column
-    expect_equal(metadata(tidy_isadf), c(
-        "GeneName", "GeneStrand",
-        "CompleteAmplificationID"
-    ))
-    # The data frame must not contain null values
+    # The data frame must not contain na values
     expect_true(all(!is.na(tidy_isadf$Value)))
 })
 
-test_that(".messy_to_tidy produces correct tidy ISADataFrame - not annotated", {
+test_that(".messy_to_tidy produces correct tidy df - not annotated", {
     raw_isadf <- read.csv(example_path3, sep = "\t", check.names = FALSE)
-    raw_isadf <- new_ISADataFrame(raw_isadf)
+    raw_isadf <- tibble::as_tibble(raw_isadf)
     tidy_isadf <- .messy_to_tidy(raw_isadf)
-    # Resulting data frame must preserve ISADataFrame class
-    expect_true(is.ISADataFrame(tidy_isadf))
-    # Resulting ISADataFrame must have the columns "ExperimentID" and "Value"
+    # Resulting df must have the columns "ExperimentID" and "Value"
     expect_true(all(c(
         "CompleteAmplificationID",
         "Value"
     ) %in% colnames(tidy_isadf)))
-    # The metadata field updates and contains the new "CompleteAmplificationID"
-    # column
-    expect_equal(metadata(tidy_isadf), c("CompleteAmplificationID"))
-    # The data frame must not contain null values
+    # The data frame must not contain na values
     expect_true(all(!is.na(tidy_isadf$Value)))
 })
 
@@ -95,7 +80,7 @@ test_that(".messy_to_tidy produces correct tidy ISADataFrame - not annotated", {
 test_that(".auto_detect_type detects new style annotated matrices", {
     raw_isadf <- read.csv(example_path, sep = "\t", check.names = FALSE)
     res <- .auto_detect_type(raw_isadf)
-    expect_equal(res, "NEW_ANNOTATED")
+    expect_equal(res, "NEW")
 })
 
 test_that(".auto_detect_type detects old style matrices", {
@@ -108,7 +93,7 @@ test_that(".auto_detect_type detects new not annotated matrices", {
     raw_isadf <- read.csv(example_path, sep = "\t", check.names = FALSE)
     raw_isadf <- dplyr::select(raw_isadf, -c("GeneName", "GeneStrand"))
     res <- .auto_detect_type(raw_isadf)
-    expect_equal(res, "NEW_NOTANN")
+    expect_equal(res, "NEW")
 })
 
 test_that(".auto_detect_type detects malformed matrices", {
@@ -129,36 +114,33 @@ test_that(".auto_detect_type detects malformed matrices", {
 # Tests import_single_Vispa2Matrix
 #------------------------------------------------------------------------------#
 test_that("import_single_Vispa2Matrix succeeds with standard annotated", {
-    isadf <- import_single_Vispa2Matrix(example_path)
-    expect_s3_class(isadf, "ISADataFrame")
-    expect_equal(metadata(isadf), c(
-        "GeneName", "GeneStrand",
-        "CompleteAmplificationID"
-    ))
-    expect_true(all(c("chr", "integration_locus", "strand") %in% colnames(isadf)))
-    expect_true(all(!is.na(isadf$Value)))
+    expect_warning({
+        isadf <- import_single_Vispa2Matrix(example_path)
+    }, regexp = NA)
+    expect_equal(nrow(isadf), 53)
+    expect_equal(ncol(isadf), 7)
 })
 
 test_that("import_single_Vispa2Matrix succeeds with old", {
-    isadf <- import_single_Vispa2Matrix(example_path2)
-    expect_s3_class(isadf, "ISADataFrame")
-    expect_equal(metadata(isadf), c("CompleteAmplificationID"))
-    expect_true(all(c("chr", "integration_locus", "strand") %in% colnames(isadf)))
-    expect_true(all(!is.na(isadf$Value)))
+    expect_warning({
+        isadf <- import_single_Vispa2Matrix(example_path2)
+    }, regexp = NA)
+    expect_equal(nrow(isadf), 49)
+    expect_equal(ncol(isadf), 5)
 })
 
 test_that("import_single_Vispa2Matrix succeeds with new not annotated", {
-    isadf <- import_single_Vispa2Matrix(example_path3)
-    expect_s3_class(isadf, "ISADataFrame")
-    expect_equal(metadata(isadf), c("CompleteAmplificationID"))
-    expect_true(all(c("chr", "integration_locus", "strand") %in% colnames(isadf)))
-    expect_true(all(!is.na(isadf$Value)))
+    expect_warning({
+        isadf <- import_single_Vispa2Matrix(example_path3)
+    }, regexp = NA)
+    expect_equal(nrow(isadf), 38)
+    expect_equal(ncol(isadf), 5)
 })
 
 test_that("import_single_Vispa2Matrix fails with malformed matrix", {
-    expect_error({
+    expect_warning({
         isadf <- import_single_Vispa2Matrix(example_path4)
-    })
+    }, regexp = .malformed_ISmatrix_warning())
 })
 
 test_that("import_single_Vispa2Matrix fails if file does not exist", {
@@ -264,7 +246,7 @@ test_that(".update_af_after_alignment updates correct fs - no NAs", {
         root = root_correct
     )
     expect_true(all(!is.na(updated_af$Path)))
-    expect_equal(colnames(updated_af), c(association_file_columns, "Path"))
+    expect_equal(colnames(updated_af), c(association_file_columns(), "Path"))
 })
 
 test_that(".update_af_after_alignment updates correct fserr - with NAs", {
@@ -276,7 +258,7 @@ test_that(".update_af_after_alignment updates correct fserr - with NAs", {
         )
     })
     expect_false(all(!is.na(updated_af$Path)))
-    expect_equal(colnames(updated_af), c(association_file_columns, "Path"))
+    expect_equal(colnames(updated_af), c(association_file_columns(), "Path"))
     missing <- updated_af %>%
         dplyr::filter(
             .data$ProjectID == missing_project$ProjectID,
@@ -359,28 +341,24 @@ test_that("import_association_file fails if date format is incorrect", {
 })
 ## Testing results
 test_that("import_association_file imports af with no warnings for fs", {
-    op <- options("viewer" = NULL)
-    on.exit(options(op), add = TRUE, after = FALSE)
     expect_warning(
         {
             af <- import_association_file(path_af, root_correct)
         },
         regexp = NA
     )
-    expect_equal(colnames(af), c(association_file_columns, "Path"))
+    expect_equal(colnames(af), c(association_file_columns(), "Path"))
     expect_true(all(!is.na(af$Path)))
 })
 
 test_that("import_association_file imports af with warnings for fserr", {
-    op <- options("viewer" = NULL)
-    on.exit(options(op), add = TRUE, after = FALSE)
     expect_warning(
         {
             af <- import_association_file(path_af, root_err)
         },
         regexp = warning_update_after_alignment
     )
-    expect_equal(colnames(af), c(association_file_columns, "Path"))
+    expect_equal(colnames(af), c(association_file_columns(), "Path"))
     expect_false(all(!is.na(af$Path)))
     missing <- af %>% dplyr::filter(
         .data$ProjectID == missing_project$ProjectID,
@@ -417,8 +395,6 @@ test_that(".manage_association_file succeeds with fs - path version", {
 })
 
 test_that(".manage_association_file succeeds with fs - tibble version", {
-    op <- options("viewer" = NULL)
-    on.exit(options(op), add = TRUE, after = FALSE)
     expect_warning(
         {
             af <- import_association_file(path_af, root_correct)
@@ -458,8 +434,6 @@ test_that(".manage_association_file succeeds with fserr - path version", {
 })
 
 test_that(".manage_association_file succeeds with fserr - tibble version", {
-    op <- options("viewer" = NULL)
-    on.exit(options(op), add = TRUE, after = FALSE)
     expect_warning(
         {
             af <- import_association_file(path_af, root_err)
@@ -486,8 +460,6 @@ test_that(".manage_association_file succeeds with fserr - tibble version", {
 })
 
 test_that(".manage_association_file fails if association file is malformed", {
-    op <- options("viewer" = NULL)
-    on.exit(options(op), add = TRUE, after = FALSE)
     expect_warning(
         {
             af <- import_association_file(path_af, root_correct)
@@ -707,7 +679,8 @@ test_that("pool_choices_IN stops when input is 0", {
     )
 })
 
-test_that(".pool_number_IN returns user choice correctly when not 0 - single", {
+test_that(".pool_choices_IN returns user choice correctly when not
+          0 - single", {
     input5 <- tempfile()
     op <- options(ISAnalytics.connection = c(NA, NA, NA, NA, input5))
     on.exit(options(op), add = TRUE, after = FALSE)
@@ -733,7 +706,7 @@ test_that(".pool_number_IN returns user choice correctly when not 0 - single", {
     expect_true(choice == 3)
 })
 
-test_that(".pool_number_IN returns user choice correctly when not 0 - multi", {
+test_that(".pool_choices_IN returns user choice correctly when not 0 - multi", {
     input5 <- tempfile()
     op <- options(ISAnalytics.connection = c(NA, NA, NA, NA, input5))
     on.exit(options(op), add = TRUE, after = FALSE)
@@ -742,14 +715,14 @@ test_that(".pool_number_IN returns user choice correctly when not 0 - multi", {
     invisible(capture_output({
         choice <- .pool_choices_IN(c(1, 2, 3))
     }))
-    expect_equal(choice, c("1" = 1, "2" = 2))
+    expect_equal(choice, c(1, 2))
 
     input_value5 <- "2,3"
     write(input_value5, input5)
     invisible(capture_output({
         choice <- .pool_choices_IN(c(1, 2, 3))
     }))
-    expect_equal(choice, c("2" = 2, "3" = 3))
+    expect_equal(choice, c(2, 3))
 })
 
 #------------------------------------------------------------------------------#
@@ -858,7 +831,8 @@ test_that(".lookup_matrices finds all files for fs - no duplicates", {
     expect_true(all(files_found$Files_count[[3]]$Found == 1))
     expect_true(all(files_found$Files_count[[4]]$Found == 1))
 
-    files_found <- .lookup_matrices(as_file_correct, quant_types, "not_annotated")
+    files_found <- .lookup_matrices(as_file_correct, quant_types,
+                                    "not_annotated")
     expect_true(all(c(
         "ProjectID", "concatenatePoolIDSeqRun", "Anomalies",
         "Files", "Files_count"
@@ -1444,12 +1418,7 @@ test_that("import_parallel_Vispa2Matrices_interactive succeeds for fs - path", {
         input1, NA, input3, input4, NA,
         input6, NA, NA
     ))
-    op2 <- options("viewer" = NULL)
-    on.exit(
-        {
-            options(op1)
-            options(op2)
-        },
+    on.exit(options(op1),
         add = TRUE,
         after = FALSE
     )
@@ -1505,12 +1474,7 @@ test_that("import_parallel_Vispa2Matrices_interactive succeeds
         input1, NA, input3, input4, NA,
         input6, NA, NA
     ))
-    op2 <- options("viewer" = NULL)
-    on.exit(
-        {
-            options(op1)
-            options(op2)
-        },
+    on.exit(options(op1),
         add = TRUE,
         after = FALSE
     )
@@ -1568,12 +1532,7 @@ test_that("import_parallel_Vispa2Matrices_interactive succeeds for
         input1, NA, input3, input4, NA,
         input6, input7, input8
     ))
-    op2 <- options("viewer" = NULL)
-    on.exit(
-        {
-            options(op1)
-            options(op2)
-        },
+    on.exit(options(op1),
         add = TRUE,
         after = FALSE
     )
@@ -2259,8 +2218,6 @@ test_that("import_parallel_Vispa2Matrices_auto stops if date format
           })
 ## Testing results
 test_that("import_parallel_Vispa2Matrices_auto succeeds for fs - path", {
-    op <- options("viewer" = NULL)
-    on.exit(options(op), add = TRUE, after = FALSE)
     matrices <- import_parallel_Vispa2Matrices_auto(path_af,
         root_correct,
         quant_types,
@@ -2274,8 +2231,6 @@ test_that("import_parallel_Vispa2Matrices_auto succeeds for fs - path", {
 })
 
 test_that("import_parallel_Vispa2Matrices_auto succeeds for fs - tibble", {
-    op <- options("viewer" = NULL)
-    on.exit(options(op), add = TRUE, after = FALSE)
     af <- as_file_correct %>% dplyr::filter(.data$ProjectID == "CLOEXP")
     matrices <- import_parallel_Vispa2Matrices_auto(af,
         NULL,
@@ -2290,8 +2245,6 @@ test_that("import_parallel_Vispa2Matrices_auto succeeds for fs - tibble", {
 })
 
 test_that("import_parallel_Vispa2Matrices_auto succeeds for fserr - tibble", {
-    op <- options("viewer" = NULL)
-    on.exit(options(op), add = TRUE, after = FALSE)
     af <- as_file_err %>% dplyr::filter(.data$ProjectID == "CLOEXP")
     matrices <- import_parallel_Vispa2Matrices_auto(af,
         NULL,

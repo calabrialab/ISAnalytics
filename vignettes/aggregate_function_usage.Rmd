@@ -1,0 +1,465 @@
+---
+title: "Working with aggregate functions"
+author: 
+  - name: Giulia Pais
+    affiliation: | 
+     San Raffaele Telethon Institute for Gene Therapy - SR-Tiget, 
+     Via Olgettina 60, 20132 Milano - Italia
+    email: giuliapais1@gmail.com, calabria.andrea@hsr.it
+output: 
+  BiocStyle::html_document:
+    self_contained: yes
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    code_folding: show
+date: "`r doc_date()`"
+package: "`r pkg_ver('ISAnalytics')`"
+vignette: >
+  %\VignetteIndexEntry{Working with aggregate functions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}  
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    crop = NULL
+    ## Related to
+    ## https://stat.ethz.ch/pipermail/bioc-devel/2020-April/016656.html
+)
+```
+
+
+```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
+## Track time spent on making the vignette
+startTime <- Sys.time()
+
+## Bib setup
+library("knitcitations")
+
+## Load knitcitations with a clean bibliography
+cleanbib()
+cite_options(hyperlink = "to.doc", citation_format = "text", style = "html")
+
+## Write bibliography information
+bib <- c(
+    R = citation(),
+    BiocStyle = citation("BiocStyle")[1],
+    knitcitations = citation("knitcitations")[1],
+    knitr = citation("knitr")[1],
+    rmarkdown = citation("rmarkdown")[1],
+    sessioninfo = citation("sessioninfo")[1],
+    testthat = citation("testthat")[1],
+    ISAnalytics = citation("ISAnalytics")[1]
+)
+
+write.bibtex(bib, file = "aggregate_function_usage.bib")
+```
+
+# Introduction
+
+In this vignette we're going to explain in detail how to use functions of the 
+aggregate family, namely:
+
+1. `aggregate_metadata`
+2. `aggregate_values_by_key`
+
+## How to install ISAnalytics
+
+To install the package run the following code:
+
+```{r installBioc, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+      install.packages("BiocManager")
+  }
+BiocManager::install("ISAnalytics")
+```
+
+To install from GitHub:
+
+```{r installGitHub, eval=FALSE}
+if (!require(devtools)) {
+    install.packages("devtools")
+}
+devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
+```
+```{r}
+library(ISAnalytics)
+```
+
+## Setting options
+
+`ISAnalytics` has a verbose option that allows some functions to print 
+additional information to the console while they're executing. 
+To disable this feature do:
+
+```{r OptVerbose, eval=FALSE}
+# DISABLE
+options("ISAnalytics.verbose" = FALSE)
+
+# ENABLE
+options("ISAnalytics.verbose" = TRUE)
+
+```
+
+Some functions also produce report in a user-friendly HTML format, 
+to set this feature:
+
+```{r OptWidg, eval=FALSE}
+# DISABLE HTML REPORTS
+options("ISAnalytics.widgets" = FALSE)
+
+# ENABLE HTML REPORTS
+options("ISAnalytics.widgets" = TRUE)
+```
+
+# Aggregating metadata
+
+We refer to information contained in the association file as "metadata": 
+sometimes it's useful to obtain collective information based on a certain 
+group of variables we're interested in. The function `aggregate_metadata` 
+does just that, according to the grouping variables, meaning the names of 
+the columns in the association file to perform a `group_by` operation with, 
+creates a summary which includes:
+
+* `FusionPrimerPCRDate` - The minimum date in the group for this variable
+* `LinearPCRDate` - The minimum date in the group for this variable
+* `VCN` - The mean of "VCN" column for each group
+* `Avg_DNAngUsed` - The mean of "DNAngUsed "column for each group
+* `Kapa` - The mean of "Kapa" column for each group
+* `DNAngUsed` - The sum of "DNAngUsed" column for each group
+* `ulForPool` - The sum of "ulForPool" column for each group
+* `AggregateMeta` - A string obtained by concatenation of all of the grouping 
+variables separated by "_"
+
+## Typical workflow
+
+Import the association file via `import_assocition_file`. If you need more 
+information on import function please view the vignette 
+"How to use import functions".
+
+```{r}
+options(ISAnalytics.widgets = FALSE)
+path_AF <- system.file("extdata", "ex_association_file.tsv",
+    package = "ISAnalytics"
+)
+
+root_correct <- system.file("extdata", "fs.zip",
+    package = "ISAnalytics"
+)
+root_correct <- unzip_file_system(root_correct, "fs")
+association_file <- import_association_file(path_AF, root_correct)
+```
+
+Perform aggregation:
+
+```{r}
+aggregated_meta <- aggregate_metadata(association_file,
+    grouping_keys = c(
+        "SubjectID",
+        "CellMarker",
+        "Tissue", "TimePoint"
+    ),
+    import_stats = FALSE
+)
+```
+
+```{r echo=FALSE}
+knitr::kable(aggregated_meta)
+```
+
+As you can see there is an additional parameter you can set, `import_stats`: 
+if set to `TRUE`, the function will automatically look into the file system you 
+provided as root when you imported the association file and will try to locate 
+first the `iss` folder for each project and then all Vispa2 "stats" files.  
+Vispa2 stats contain useful information that is not included in the association 
+file and is linked to the single Vispa2 run. In some cases it's useful to 
+perform aggregation on those info too. If you set the parameter to `TRUE`, 
+besides the columns mentioned before you will also have:
+
+* `BARCODE_MUX` - The sum of the "BARCODE_MUX" column for the group
+* `TRIMMING_FINAL_LTRLC` - The sum of the "TRIMMING_FINAL_LTRLC" column for 
+the group
+* `LV_MAPPED` - The sum of the "LV_MAPPED" column for the group
+* `BWA_MAPPED_OVERALL` - The sum of the "BWA_MAPPED_OVERALL" column for the 
+group
+* `ISS_MAPPED_PP` - The sum of the "ISS_MAPPED_PP" column for the group
+
+```{r R.options=options(ISAnalytics.widgets = FALSE)}
+aggregated_meta <- aggregate_metadata(association_file,
+    grouping_keys = c(
+        "SubjectID", "CellMarker",
+        "Tissue", "TimePoint"
+    ),
+    import_stats = TRUE
+)
+```
+
+```{r echo=FALSE}
+knitr::kable(aggregated_meta)
+```
+
+If you have the option `ISAnalytics.widgets` set to TRUE, this will produce a 
+report in HTML format that tells you which stats files were imported. 
+To avoid this, you can set the option to FALSE.
+
+# Aggregation of values by key
+
+`ISAnalytics` contains useful functions to aggregate the values contained in 
+your imported matrices based on a key, aka a single column or a combination of 
+columns contained in the association file that are related to the samples.
+
+## Typical workflow
+
+Import your association file (see previous section) and then import your 
+matrices:
+
+```{r R.options=options(ISAnalytics.widgets = FALSE)}
+matrices <- import_parallel_Vispa2Matrices_auto(
+    association_file = association_file, root = NULL,
+    quantification_type = c("fragmentEstimate", "seqCount"),
+    matrix_type = "annotated", workers = 2, patterns = NULL,
+    matching_opt = "ANY"
+)
+```
+
+The function `aggregate_values_by_key` can perform the aggregation both on the 
+list of matrices and a single matrix.
+
+```{r}
+# Takes the whole list and produces a list in output
+aggregated_matrices <- aggregate_values_by_key(matrices, association_file)
+
+# Takes a single matrix and produces a single matrix as output
+aggregated_matrices_single <- aggregate_values_by_key(matrices$seqCount, 
+                                                      association_file)
+```
+
+```{r echo=FALSE}
+knitr::kable(head(aggregated_matrices_single))
+```
+
+
+### Changing parameters to obtain different results
+
+The function has several different parameters that have default values that 
+can be changed according to user preference.
+
+1. **Changing the `key` value**  
+You can change the value of the parameter key as you see fit. This parameter 
+should contain one or multiple columns of the association file that you want 
+to include in the grouping when performing the aggregation. 
+The default value is set to "SubjectID".
+
+```{r}
+agg1 <- aggregate_values_by_key(
+    x = matrices$seqCount,
+    association_file = association_file,
+    key = c("SubjectID", "ProjectID")
+)
+```
+
+```{r echo=FALSE}
+knitr::kable(head(agg1))
+```
+
+2. **Changing the `lambda` and `args` values**  
+The `lambda` parameter indicates the function to be applied to the values for 
+aggregation. By default this is set to "sum", but you can change it (together 
+with other parameters also), to apply other functions, both exported from 
+packages or fully customized to your needs.  
+The only important note is that this function should perform some kind of 
+aggregation on numeric values, this means in practical terms it has to accept 
+a vector of numeric/integer values as input and produce a SINGLE value as 
+output. Valid options for this purpose might be: `sum`, `mean`, `median`, `min`,
+`max` and so on.
+
+```{r eval=FALSE}
+agg2 <- aggregate_values_by_key(
+    x = matrices$seqCount,
+    association_file = association_file,
+    key = "SubjectID",
+    lambda = "mean"
+)
+```
+
+If the function you're using accepts other parameters than the input vector, 
+you can specify them in the `args` parameter as a named list:
+
+```{r}
+agg2 <- aggregate_values_by_key(
+    x = matrices$seqCount,
+    association_file = association_file,
+    key = "SubjectID",
+    lambda = "mean",
+    args = list(na.rm = TRUE)
+)
+```
+
+In this case the `mean` function accepts an additional parameter `na.rm` that 
+we want to set to TRUE. Note that the arguments must be in a named list, where 
+names are the names of the parameters to pass on to the function.
+
+```{r echo=FALSE}
+knitr::kable(head(agg2))
+```
+
+3. **Changing the `group` value**  
+The `group` parameter should contain all other variables to include in the 
+grouping besides `key`. By default this contains `c("chr", "integration_locus",
+"strand", "GeneName", "GeneStrand")`. You can change this grouping as you see 
+fit, if you don't want to add any other variable to the key, just set it to 
+NULL.
+
+```{r}
+agg3 <- aggregate_values_by_key(
+    x = matrices$seqCount,
+    association_file = association_file,
+    key = "SubjectID",
+    lambda = "mean",
+    args = list(na.rm = TRUE),
+    group = c("chr", "integration_locus", "strand")
+)
+```
+
+```{r echo=FALSE}
+knitr::kable(head(agg3))
+```
+
+4. **Changing `namespace` and `env`**  
+As stated before, you can specify several different functions, for them to be 
+exported by the base package is not mandatory. If the function you're 
+interested in applying is exported by an installed package, you should specify 
+the name of the package in the `namespace` parameter.  
+It is also possible to apply a fully custom function (provided it respects the 
+restrictions stated before): this means you can write your own function in some
+environment (most commonly the global environment) and pass it in the function 
+as `lambda`. In this case you have to specify the environment in which the 
+function is defined and set `namespace` as NULL.
+
+```{r}
+foo <- function(x) {
+    sum(x)
+}
+env <- rlang::current_env()
+
+agg4 <- aggregate_values_by_key(
+    x = matrices$seqCount,
+    association_file = association_file,
+    key = "SubjectID",
+    lambda = "foo",
+    args = NULL,
+    namespace = NULL,
+    env = env
+)
+```
+
+```{r echo=FALSE}
+knitr::kable(head(agg4))
+```
+
+NOTE: when specifying `env`, note that also all other symbols (including those 
+passed in `args`) will be evaluated in `env`.
+
+```{r}
+foo <- function(x, y) {
+    sum(x, y)
+}
+c <- 2
+env <- rlang::current_env()
+
+agg4 <- aggregate_values_by_key(
+    x = matrices$seqCount,
+    association_file = association_file,
+    key = "SubjectID",
+    lambda = "foo",
+    args = list(y = c),
+    namespace = NULL,
+    env = env
+)
+```
+
+```{r echo=FALSE}
+knitr::kable(head(agg4))
+```
+
+### Using the function to obtain summaries for each group based on values
+
+As we've seen in the previous section, we can pass any lambda function to 
+`aggregate_values_by_key`, provided it takes as input a vector of integer or
+numeric values and produces a single value as output. This is true also for 
+other objects (S3/S4 etc): you can use this function for example to produce 
+summaries and include them in the tibble. A function we recommend is 
+`psych::describe`.
+
+```{r echo=FALSE}
+inst <- require("psych")
+```
+
+```{r eval=inst}
+agg5 <- aggregate_values_by_key(
+    x = matrices$seqCount,
+    association_file = association_file,
+    key = "SubjectID",
+    lambda = "describe",
+    args = NULL,
+    namespace = "psych",
+    env = env
+)
+head(agg5)
+```
+
+To see all of the contents of the lists, use `tidyr::unnest`:
+
+```{r eval=inst}
+library(magrittr)
+agg5 <- agg5 %>% tidyr::unnest(.data$Aggregated_value)
+```
+
+```{r echo=FALSE, eval=inst}
+knitr::kable(head(agg5))
+```
+
+# Reproducibility
+
+The `r Biocpkg("ISAnalytics")` package `r citep(bib[["ISAnalytics"]])`
+was made possible thanks to:
+
+* R `r citep(bib[["R"]])`
+* `r Biocpkg("BiocStyle")` `r citep(bib[["BiocStyle"]])`
+* `r CRANpkg("knitcitations")` `r citep(bib[["knitcitations"]])`
+* `r CRANpkg("knitr")` `r citep(bib[["knitr"]])`
+* `r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])`
+* `r CRANpkg("sessioninfo")` `r citep(bib[["sessioninfo"]])`
+* `r CRANpkg("testthat")` `r citep(bib[["testthat"]])`
+
+This package was developed using 
+`r BiocStyle::Githubpkg("lcolladotor/biocthis")`.
+
+`R` session information.
+
+```{r reproduce3, echo=FALSE}
+## Session info
+library("sessioninfo")
+options(width = 120)
+session_info()
+```
+
+
+# Bibliography
+
+This vignette was generated using `r Biocpkg("BiocStyle")` 
+`r citep(bib[["BiocStyle"]])`
+with `r CRANpkg("knitr")` `r citep(bib[["knitr"]])` and 
+`r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])` 
+running behind the scenes.
+
+Citations made with `r CRANpkg("knitcitations")` 
+`r citep(bib[["knitcitations"]])`.
+
+```{r results = "asis", echo = FALSE, warning = FALSE, message = FALSE}
+## Print bibliography
+bibliography()
+```

@@ -21,3 +21,4 @@ An updated files_found tibble according to the matching option
 \description{
 Updates files_found tibble according to pattern and matching options.
 }
+\keyword{internal}

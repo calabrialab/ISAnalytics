@@ -29,3 +29,4 @@ A widget
 \description{
 Builds the html widget for the summary table.
 }
+\keyword{internal}

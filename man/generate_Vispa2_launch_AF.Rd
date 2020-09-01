@@ -2,7 +2,8 @@
 % Please edit documentation in R/utility-functions.R
 \name{generate_Vispa2_launch_AF}
 \alias{generate_Vispa2_launch_AF}
-\title{Creates a reduced association file for Vispa2 run, given project and pool}
+\title{Creates a reduced association file for Vispa2 run,
+given project and pool}
 \usage{
 generate_Vispa2_launch_AF(association_file, project, pool, path)
 }
@@ -12,9 +13,10 @@ generate_Vispa2_launch_AF(association_file, project, pool, path)
 
 \item{project}{A vector of characters containing project names}
 
-\item{pool}{A vector of characters containing pool names. \strong{NOTE: the names
-should refer to the values contained in the PoolID column of the association
-file and NOT the concatenatePoolIDSeqRun column!}}
+\item{pool}{A vector of characters containing pool names.
+\strong{NOTE: the names should refer to the values contained in the
+PoolID column of the association file and NOT the
+concatenatePoolIDSeqRun column!}}
 
 \item{path}{A single string representing the path to the folder where files
 should be written. If the folder doesn't exist it will be created.}
@@ -40,6 +42,7 @@ exist in the corresponding project.
 }
 }
 \examples{
+op <- options("ISAnalytics.widgets" = FALSE)
 temp <- tempdir()
 path_af <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
@@ -48,6 +51,7 @@ root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 root <- unzip_file_system(root_pth, "fs")
 association_file <- import_association_file(path_af, root)
 generate_Vispa2_launch_AF(association_file, "CLOEXP", "POOL6", temp)
+options(op)
 }
 \seealso{
 Other Utility functions: 

@@ -15,3 +15,4 @@ TRUE if all of the parameters is true
 \description{
 Helper function for checking if all of the elements of the list is true.
 }
+\keyword{internal}

@@ -22,3 +22,4 @@ representing the number of integrations reassigned
 \description{
 Internal function to process collisions on multiple integrations.
 }
+\keyword{internal}

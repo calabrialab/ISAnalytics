@@ -48,11 +48,42 @@ devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
 
 # Current functionality
 
-  - Central data structure: ISADataFrame
   - Import integration matrices from files: more info with
     `vignette("How to use import functions", package = "ISAnalytics")`
   - Collision removal: more info with `vignette("Collision removal
     functionality", package = "ISAnalytics")`
+  - Aggregation: more info with `vignette("Working with aggregate
+    functions", package = "ISAnalytics")`
+  - Re-calibration functions: `compute_near_integrations`
+  - Analysis functions: `compute_abundance`
+  - Utility functions
+
+# NEWS
+
+# ISAnalytics News
+
+## Changes in version 0.99.8 (2020-08-12)
+
+  - Submitted to Bioconductor
+
+## Changes in version 0.99.9 (2020-09-01)
+
+#### NEW FEATURES
+
+  - Added functionality: aggregate functions
+  - Added vignette on aggregate functions
+  - Added recalibration functions
+  - Added first analysis function (compute\_abundance)
+
+#### SIGNIFICANT USER-VISIBLE CHANGES
+
+  - Dropped structure `ISADataFrame`: now the package only uses standard
+    tibbles
+  - Modified package documentation
+
+# TO DO in future updates
+
+  - Add vignette for association file usage
 
 # Getting help
 

@@ -21,3 +21,4 @@ corresponding path on disk if found, NA otherwise.
 Internal function to check alignment between association file and file
 system starting from the root. The alignment is checked at folder level.
 }
+\keyword{internal}

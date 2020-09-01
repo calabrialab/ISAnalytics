@@ -2,7 +2,8 @@
 % Please edit documentation in R/internal-functions.R
 \name{.pattern_matching}
 \alias{.pattern_matching}
-\title{Internal function to match user defined patterns on a vector of file names.}
+\title{Internal function to match user defined patterns on a vector
+of file names.}
 \usage{
 .pattern_matching(filenames, patterns)
 }
@@ -20,3 +21,4 @@ on all the file names and combines the results as a tibble in which column
 names are the patterns and the values are TRUE if the pattern matched on the
 element at that index or FALSE otherwise.
 }
+\keyword{internal}

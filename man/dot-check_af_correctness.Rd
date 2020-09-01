@@ -15,3 +15,4 @@ TRUE if the check passes, FALSE otherwise
 \description{
 Checks if the association file has the right format (standard headers).
 }
+\keyword{internal}
