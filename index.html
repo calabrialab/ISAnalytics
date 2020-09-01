@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
       </span>
     </div>
 
@@ -54,6 +54,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="articles/aggregate_function_usage.html">Working with aggregate functions</a>
+    </li>
+    <li>
       <a href="articles/collision_removal.html">Collision removal functionality</a>
     </li>
     <li>
@@ -67,7 +70,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="NA/NA/NA/">
+  <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -109,11 +112,61 @@
 <h1 class="hasAnchor">
 <a href="#current-functionality" class="anchor"></a>Current functionality</h1>
 <ul>
-<li>Central data structure: ISADataFrame</li>
 <li>Import integration matrices from files: more info with <code>vignette("How to use import functions", package = "ISAnalytics")</code>
 </li>
 <li>Collision removal: more info with <code>vignette("Collision removal functionality", package = "ISAnalytics")</code>
 </li>
+<li>Aggregation: more info with <code>vignette("Working with aggregate functions", package = "ISAnalytics")</code>
+</li>
+<li>Re-calibration functions: <code>compute_near_integrations</code>
+</li>
+<li>Analysis functions: <code>compute_abundance</code>
+</li>
+<li>Utility functions</li>
+</ul>
+</div>
+<div id="news" class="section level1">
+<h1 class="hasAnchor">
+<a href="#news" class="anchor"></a>NEWS</h1>
+</div>
+<div id="isanalytics-news" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-news" class="anchor"></a>ISAnalytics News</h1>
+<div id="changes-in-version-0998-2020-08-12" class="section level2">
+<h2 class="hasAnchor">
+<a href="#changes-in-version-0998-2020-08-12" class="anchor"></a>Changes in version 0.99.8 (2020-08-12)</h2>
+<ul>
+<li>Submitted to Bioconductor</li>
+</ul>
+</div>
+<div id="changes-in-version-0999-2020-09-01" class="section level2">
+<h2 class="hasAnchor">
+<a href="#changes-in-version-0999-2020-09-01" class="anchor"></a>Changes in version 0.99.9 (2020-09-01)</h2>
+<div id="new-features" class="section level4">
+<h4 class="hasAnchor">
+<a href="#new-features" class="anchor"></a>NEW FEATURES</h4>
+<ul>
+<li>Added functionality: aggregate functions</li>
+<li>Added vignette on aggregate functions</li>
+<li>Added recalibration functions</li>
+<li>Added first analysis function (compute_abundance)</li>
+</ul>
+</div>
+<div id="significant-user-visible-changes" class="section level4">
+<h4 class="hasAnchor">
+<a href="#significant-user-visible-changes" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h4>
+<ul>
+<li>Dropped structure <code>ISADataFrame</code>: now the package only uses standard tibbles</li>
+<li>Modified package documentation</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="to-do-in-future-updates" class="section level1">
+<h1 class="hasAnchor">
+<a href="#to-do-in-future-updates" class="anchor"></a>TO DO in future updates</h1>
+<ul>
+<li>Add vignette for association file usage</li>
 </ul>
 </div>
 <div id="getting-help" class="section level1">
@@ -128,9 +181,9 @@
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="NA/NA/NA/">NA/​NA/​NA/​</a>
+<li>Browse source code at <br><a href="https://github.com/calabrialab/ISAnalytics/">https://​github.com/​calabrialab/​ISAnalytics/​</a>
 </li>
-<li>Report a bug at <br><a href="https://github.com//calabrialab/isanalytics">https://​github.com//​calabrialab/​isanalytics</a>
+<li>Report a bug at <br><a href="https://github.com/calabrialab/ISAnalytics/issues">https://​github.com/​calabrialab/​ISAnalytics/​issues</a>
 </li>
 </ul>
 </div>

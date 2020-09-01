@@ -6,8 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Internal function that performs four-step-check of collisions for a single
-integration. — .four_step_check • ISAnalytics</title>
+<title>Internal function that performs four-step-check of collisions for
+a single integration. — .four_step_check • ISAnalytics</title>
 
 
 <!-- jquery -->
@@ -40,10 +40,10 @@ integration. — .four_step_check • ISAnalytics</title>
 
 
 
-<meta property="og:title" content="Internal function that performs four-step-check of collisions for a single
-integration. — .four_step_check" />
-<meta property="og:description" content="Internal function that performs four-step-check of collisions for a single
-integration." />
+<meta property="og:title" content="Internal function that performs four-step-check of collisions for
+a single integration. — .four_step_check" />
+<meta property="og:description" content="Internal function that performs four-step-check of collisions for
+a single integration." />
 
 
 
@@ -75,7 +75,7 @@ integration." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
       </span>
     </div>
 
@@ -98,6 +98,9 @@ integration." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/aggregate_function_usage.html">Working with aggregate functions</a>
+    </li>
+    <li>
       <a href="../articles/collision_removal.html">Collision removal functionality</a>
     </li>
     <li>
@@ -111,7 +114,7 @@ integration." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="../NA/NA/NA/">
+  <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -129,15 +132,15 @@ integration." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Internal function that performs four-step-check of collisions for a single
-integration.</h1>
-    <small class="dont-index">Source: <a href='NA/NA/NA/blob/master/R/internal-functions.R'><code>R/internal-functions.R</code></a></small>
+    <h1>Internal function that performs four-step-check of collisions for
+a single integration.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/internal-functions.R'><code>R/internal-functions.R</code></a></small>
     <div class="hidden name"><code>dot-four_step_check.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Internal function that performs four-step-check of collisions for a single
-integration.</p>
+    <p>Internal function that performs four-step-check of collisions for
+a single integration.</p>
     </div>
 
     <pre class="usage"><span class='fu'>.four_step_check</span>(<span class='kw'>...</span>, <span class='kw'>date_col</span>, <span class='kw'>reads_ratio</span>)</pre>
@@ -147,10 +150,10 @@ integration.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>...</th>
-      <td><p>Represents a single row of a tibble obtained via <code>obtain_nested</code>.
-One row contains 4 variables: chr, integration_locus, strand and data, where
-data is a nested table that contains all rows that share that integration
-(collisions).</p></td>
+      <td><p>Represents a single row of a tibble obtained via
+<code>obtain_nested</code>. One row contains 4 variables: chr, integration_locus,
+strand and data, where data is a nested table that contains all rows
+that share that integration (collisions).</p></td>
     </tr>
     <tr>
       <th>date_col</th>
@@ -166,7 +169,7 @@ check</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A list with:</p><ul>
-<li><p>$data: an updated ISADataFrame with processed collisions or NULL if no
+<li><p>$data: an updated tibble with processed collisions or NULL if no
 criteria was sufficient</p></li>
 <li><p>$reassigned: 1 if the integration was successfully reassigned, 0 otherwise</p></li>
 <li><p>$removed: 1 if the integration is removed entirely because no criteria was

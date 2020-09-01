@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
       </span>
     </div>
 
@@ -54,6 +54,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/aggregate_function_usage.html">Working with aggregate functions</a>
+    </li>
+    <li>
       <a href="../articles/collision_removal.html">Collision removal functionality</a>
     </li>
     <li>
@@ -67,7 +70,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="../NA/NA/NA/">
+  <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -88,12 +91,13 @@
       <h1 data-toc-skip>How to use import functions</h1>
                         <h4 class="author">Giulia Pais</h4>
             <address class="author_afil">
-      San Raffaele Telethon Institute for Gene Therapy - SR-Tiget, Via Olgettina 60, 20132 Milano - Italia<br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
+      <p>San Raffaele Telethon Institute for Gene Therapy - SR-Tiget, Via Olgettina 60, 20132 Milano - Italia</p>
+<br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 class="date">12 August 2020</h4>
+            <h4 class="date">1 September 2020</h4>
       
-      <small class="dont-index">Source: <a href="NA/NA/NA/blob/master/vignettes/how_to_import_functions.Rmd"><code>vignettes/how_to_import_functions.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/master/vignettes/how_to_import_functions.Rmd"><code>vignettes/how_to_import_functions.Rmd</code></a></small>
       <div class="hidden name"><code>how_to_import_functions.Rmd</code></div>
 
     </div>
@@ -115,12 +119,53 @@ document.addEventListener("DOMContentLoaded", function() {
 <h1 class="hasAnchor">
 <a href="#introduction-to-isanalytics-import-functions-family" class="anchor"></a>Introduction to <code>ISAnalytics</code> import functions family</h1>
 <p>In this vignette we’re going to explain more in detail how functions of the import family should be used, the most common workflows to follow and more.</p>
+<div id="how-to-install-isanalytics" class="section level2">
+<h2 class="hasAnchor">
+<a href="#how-to-install-isanalytics" class="anchor"></a>How to install ISAnalytics</h2>
+<p>To install the package run the following code:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="co">if</span>(<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, quietly = <span class="fl">TRUE</span>))
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)
+<span class="kw">BiocManager</span>::<span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"ISAnalytics"</span>)
+</pre></div>
+<p>To install from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="kw"><a href="https://devtools.r-lib.org">devtools</a></span>)) {
+  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"devtools"</span>)
+}
+<span class="kw">devtools</span>::<span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"calabrialab/ISAnalytics"</span>, build_vignettes = <span class="fl">TRUE</span>)
+</pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com//calabrialab/isanalytics">ISAnalytics</a></span>)
+<span class="co">#&gt; Loading required package: magrittr</span>
+</pre></div>
+</div>
+<div id="setting-options" class="section level2">
+<h2 class="hasAnchor">
+<a href="#setting-options" class="anchor"></a>Setting options</h2>
+<p><code>ISAnalytics</code> has a verbose option that allows some functions to print additional information to the console while they’re executing. To disable this feature do:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="co"># DISABLE</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="st">"ISAnalytics.verbose"</span> = <span class="fl">FALSE</span>)
+
+<span class="co"># ENABLE</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="st">"ISAnalytics.verbose"</span> = <span class="fl">TRUE</span>)
+</pre></div>
+<p>Some functions also produce report in a user-friendly HTML format, to set this feature:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="co"># DISABLE HTML REPORTS</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="st">"ISAnalytics.widgets"</span> = <span class="fl">FALSE</span>)
+
+<span class="co"># ENABLE HTML REPORTS</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="st">"ISAnalytics.widgets"</span> = <span class="fl">TRUE</span>)
+</pre></div>
+</div>
 <div id="designed-to-work-with-vispa2-pipeline" class="section level2">
 <h2 class="hasAnchor">
 <a href="#designed-to-work-with-vispa2-pipeline" class="anchor"></a>Designed to work with Vispa2 pipeline</h2>
 <p>The vast majority of the functions included in this package is designed to work in combination with Vispa2 pipeline. If you don’t know what it is, we strongly recommend you to take a look at these links:</p>
 <ul>
-<li>Article: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/">VISPA2: A Scalable Pipeline for High-Throughput Identification and Annotation of Vector Integration Sites</a><br>
+<li>Article: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/">VISPA2: Article</a><br>
 </li>
 <li>BitBucket Wiki: <a href="https://bitbucket.org/andreacalabria/vispa2/wiki/Home">VISPA2 Wiki</a>
 </li>
@@ -157,17 +202,18 @@ document.addEventListener("DOMContentLoaded", function() {
 </ul>
 <p>We’ve included 2 examples of this structure in our package, one correct and the other one including errors or potential problems. They are both in .zip format, so you might want to unzip them if you plan to experiment with them.<br>
 An example on how to access them:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com//calabrialab/isanalytics">ISAnalytics</a></span>)
+<div class="sourceCode" id="cb6"><pre class="downlit">
 <span class="kw">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>, package = <span class="st">"ISAnalytics"</span>)
 <span class="kw">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span>(<span class="kw">root_correct</span>, <span class="st">"fs"</span>)
 <span class="kw">fs</span>::<span class="fu"><a href="http://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span>(<span class="kw">root_correct</span>)
-<span class="co">#&gt; /tmp/RtmppXd1zZ/fs</span>
+<span class="co">#&gt; /tmp/RtmpabRcum/fs</span>
 <span class="co">#&gt; ├── PROJECT1100</span>
 <span class="co">#&gt; │   ├── bam</span>
 <span class="co">#&gt; │   ├── bcmuxall</span>
 <span class="co">#&gt; │   ├── bed</span>
 <span class="co">#&gt; │   ├── iss</span>
+<span class="co">#&gt; │   │   ├── stats.sequence_PROJECT1100.ABX-LR-PL5-POOL14-1.tsv</span>
+<span class="co">#&gt; │   │   └── stats.sequence_PROJECT1100.ABX-LR-PL6-POOL15-1.tsv</span>
 <span class="co">#&gt; │   ├── quality</span>
 <span class="co">#&gt; │   ├── quantification</span>
 <span class="co">#&gt; │   │   ├── ABX-LR-PL5-POOL14-1</span>
@@ -186,6 +232,7 @@ An example on how to access them:</p>
 <span class="co">#&gt; │   ├── bcmuxall</span>
 <span class="co">#&gt; │   ├── bed</span>
 <span class="co">#&gt; │   ├── iss</span>
+<span class="co">#&gt; │   │   └── stats.sequence_PROJECT1101.ABY-LR-PL4-POOL54-2.tsv</span>
 <span class="co">#&gt; │   ├── quality</span>
 <span class="co">#&gt; │   ├── quantification</span>
 <span class="co">#&gt; │   │   └── ABY-LR-PL4-POOL54-2</span>
@@ -200,6 +247,7 @@ An example on how to access them:</p>
 <span class="co">#&gt;         ├── bcmuxall</span>
 <span class="co">#&gt;         ├── bed</span>
 <span class="co">#&gt;         ├── iss</span>
+<span class="co">#&gt;         │   └── stats.sequence_VA.POOL6-1.tsv</span>
 <span class="co">#&gt;         ├── quality</span>
 <span class="co">#&gt;         ├── quantification</span>
 <span class="co">#&gt;         │   └── POOL6-1</span>
@@ -215,8 +263,12 @@ An example on how to access them:</p>
 <h1 class="hasAnchor">
 <a href="#importing-a-single-integration-matrix" class="anchor"></a>Importing a single integration matrix</h1>
 <p>If you want to import a single integration matrix you can do so by using the <code>import_single_Vispa2Matrix</code> function.<br>
-This function reads the .tsv file and converts it into an ISADataFrame, the central structure of this package. An ISADataFrame is a simple extension of the s3 class <code>tbl_df</code> used by the package <code>tibble</code> and all <code>tidyverse</code> packages as well.<br>
-This package is in fact based on the <code>tidyverse</code> and tries to follow its philosophy and guidelines as close as possible.<br>
+This function reads the .tsv file and converts it into a tidy tibble.<br>
+If you’re not familiar with the “tidy” concept, we recommend to take a look at this link to get the basics:</p>
+<ul>
+<li><a href="https://bookdown.org/rdpeng/RProgDA/the-importance-of-tidy-data.html">The importance of tidy data</a></li>
+</ul>
+<p>This package is in fact based on the <code>tidyverse</code> and tries to follow its philosophy and guidelines as close as possible.<br>
 Vispa2 pipeline and the associated Create Matrix tool produce matrices with a standard structure which we’ll refer to as “messy”, because different experimental data is divided in different columns and there are a lot of NA values.</p>
 <table class="table">
 <caption>A simple example of messy matrix.</caption>
@@ -307,12 +359,13 @@ Vispa2 pipeline and the associated Create Matrix tool produce matrices with a st
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">example_matrix_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ex_annotated_ISMatrix.tsv.xz"</span>, package = <span class="st">"ISAnalytics"</span>)
+<div class="sourceCode" id="cb7"><pre class="downlit">
+<span class="kw">example_matrix_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ex_annotated_ISMatrix.tsv.xz"</span>, 
+                                   package = <span class="st">"ISAnalytics"</span>)
 <span class="kw">imported_im</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_single_Vispa2Matrix.html">import_single_Vispa2Matrix</a></span>(<span class="kw">example_matrix_path</span>)
 </pre></div>
 <table class="table">
-<caption>Example of ISADataFrame</caption>
+<caption>Example of tidy integration matrix</caption>
 <thead><tr class="header">
 <th align="left">chr</th>
 <th align="right">integration_locus</th>
@@ -379,25 +432,33 @@ Vispa2 pipeline and the associated Create Matrix tool produce matrices with a st
 </tr>
 </tbody>
 </table>
-<p>All ISADataFrames have 2 attributes called <code>mandatoryVars</code> and <code>metadata</code>, which represent, in order, variables (aka column names) that matrices MUST have in order to be properly converted to ISADataframe objects, and the column names of all of those variables that are not experimental data. You can easily access and view them like so:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="fu"><a href="../reference/mandatoryVars.html">mandatoryVars</a></span>(<span class="kw">imported_im</span>)
+<p>We will refer to the structure generated by <code>import_single_Vispa2Matrix</code> as “integration matrix” for convenience.<br>
+To be considered an integration matrix the tibble must contain the mandatory variables, which are “chr” (chromosome), “integration_locus” and “strand”. It might also contain annotation variables if the matrix was annotated during the Vispa2 pipeline run.<br>
+You can access these names by using two functions:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit">
+<span class="co"># Displays the mandatory vars, can be called also for manipulation purposes </span>
+<span class="co"># on tibble instead of calling individual variables</span>
+<span class="fu"><a href="../reference/mandatory_IS_vars.html">mandatory_IS_vars</a></span>()
 <span class="co">#&gt; [1] "chr"               "integration_locus" "strand"</span>
-<span class="fu"><a href="../reference/metadata.html">metadata</a></span>(<span class="kw">imported_im</span>)
-<span class="co">#&gt; [1] "GeneName"                "GeneStrand"             </span>
-<span class="co">#&gt; [3] "CompleteAmplificationID"</span>
+
+<span class="co"># Displays the annotation variables</span>
+<span class="fu"><a href="../reference/annotation_IS_vars.html">annotation_IS_vars</a></span>()
+<span class="co">#&gt; [1] "GeneName"   "GeneStrand"</span>
 </pre></div>
+<p>You can of course operate on the integration matrices as you would on any other tibble, but some functions will check the presence of specific columns because they’re needed in that context.</p>
 </div>
 <div id="importing-the-association-file" class="section level1">
 <h1 class="hasAnchor">
 <a href="#importing-the-association-file" class="anchor"></a>Importing the association file</h1>
 <p>While you can import single matrices for brief analysis, what you would like to do most of the times is import multiple matrices at once, based on certain parameters. To do that you must first import the association file, which is the file that holds all associated metadata and information about every project, pool and single experiment.<br>
 The function that imports this file does not simply read it into your R environment, but performs an alignment check with your file system, so you have to specify the path to the root folder where your Vispa2 runs produce output (see the previous section). To import the association file do:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="kw">path_as_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ex_association_file.tsv"</span>, package = <span class="st">"ISAnalytics"</span>)
+<div class="sourceCode" id="cb9"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(ISAnalytics.widgets = <span class="fl">FALSE</span>)
+<span class="kw">path_as_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ex_association_file.tsv"</span>,
+                            package = <span class="st">"ISAnalytics"</span>)
 <span class="kw">association_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span>(<span class="kw">path_as_file</span>, <span class="kw">root_correct</span>)
 </pre></div>
-<p>This will produce a visual HTML report of the results of the alignment check, either in Rstudio or in your browser.<br>
+<p>If you have the “widgets” option active, this will produce a visual HTML report of the results of the alignment check, either in Rstudio or in your browser.<br>
 If projects or pools are missing you will be notified: until you fix those problems, those elements will be ignored until you re-import the association file.</p>
 </div>
 <div id="importing-multiple-matrices-in-parallel" class="section level1">
@@ -424,7 +485,7 @@ Both functions rely on the association file and some basic parameters, most nota
 <li>Report on which files were chosen for import after interactive selection or after automatic filtering</li>
 <li>Report on which files were actually imported, signaling potential errors during the import phase</li>
 </ul>
-<p>The functions both return a named list which names are the quantification types specified in input and the elements are <code>ISADataFrame</code>s, obtained by binding rows of all imported matrices for the same quantification type.</p>
+<p>The functions both return a named list which names are the quantification types specified in input and the elements are integration matrices, obtained by binding rows of all imported matrices for the same quantification type.</p>
 <div id="interactive-version" class="section level2">
 <h2 class="hasAnchor">
 <a href="#interactive-version" class="anchor"></a>Interactive version</h2>
@@ -436,7 +497,7 @@ Both functions rely on the association file and some basic parameters, most nota
 </ul>
 <p>If you haven’t imported the association file yet, you can directly pass the path to the association file and the path to the root folder into the function: in this way the association file will automatically be imported.</p>
 <p>Example:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit">
+<div class="sourceCode" id="cb10"><pre class="downlit">
 <span class="kw">matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_interactive</a></span>(
   association_file = <span class="kw">path_as_file</span>,
   root = <span class="kw">root_correct</span>,
@@ -445,7 +506,7 @@ Both functions rely on the association file and some basic parameters, most nota
   workers = <span class="fl">2</span>)
 </pre></div>
 <p>If you’ve already imported the association file you can instead call the function like this:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit">
+<div class="sourceCode" id="cb11"><pre class="downlit">
 <span class="kw">matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_interactive</a></span>(
   association_file = <span class="kw">association_file</span>,
   root = <span class="kw">NULL</span>,
@@ -454,7 +515,7 @@ Both functions rely on the association file and some basic parameters, most nota
   workers = <span class="fl">2</span>)
 </pre></div>
 <p>You can simply access the data frames by doing:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit">
+<div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="kw">matrices</span><span class="op">$</span><span class="kw">fragmentEstimate</span>
 <span class="kw">matrices</span><span class="op">$</span><span class="kw">seqCount</span>
 </pre></div>
@@ -463,8 +524,9 @@ Both functions rely on the association file and some basic parameters, most nota
 <h2 class="hasAnchor">
 <a href="#automatic-version" class="anchor"></a>Automatic version</h2>
 <p>If you choose to opt for the automatic version you should keep in mind that the function automatically considers everything included in the association file, so if you want to import only a subset of projects and/or pools you should filter the association file according to your criteria before calling the function:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="kw">refined_af</span> <span class="op">&lt;-</span> <span class="kw">association_file</span> <span class="op">%&gt;%</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">ProjectID</span> <span class="op">==</span> <span class="st">"CLOEXP"</span>)
+<div class="sourceCode" id="cb13"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">magrittr</span>)
+<span class="kw">refined_af</span> <span class="op">&lt;-</span> <span class="kw">association_file</span> <span class="op">%&gt;%</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">.data</span><span class="op">$</span><span class="kw">ProjectID</span> <span class="op">==</span> <span class="st">"CLOEXP"</span>)
 </pre></div>
 <p><strong>NOTE: do not drop any columns when filtering the association file or the file will be flagged as malformed</strong></p>
 <p>In automatic version there is no way of discriminating duplicates, so there is the possibility to specify additional patterns to look for in file names to mitigate this problem. However, if after matching of the additional patterns duplicates are still found they’re simply discarded.</p>
@@ -485,8 +547,8 @@ Both functions rely on the association file and some basic parameters, most nota
 </li>
 </ul>
 <p>You can call the function with <code>patterns</code> set to NULL if you don’t wish to match anything:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="kw">matrices_auto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_auto</a></span>(
+<div class="sourceCode" id="cb14"><pre class="downlit">
+<span class="kw">matrices_auto</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto</a></span>(
   association_file = <span class="kw">refined_af</span>,
   root = <span class="kw">NULL</span>,
   quantification_type = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"fragmentEstimate"</span>,<span class="st">"seqCount"</span>),
@@ -497,8 +559,6 @@ Both functions rely on the association file and some basic parameters, most nota
 )
 <span class="kw">matrices_auto</span>
 <span class="co">#&gt; $fragmentEstimate</span>
-<span class="co">#&gt; mandatoryVars:  chr,  integration_locus,  strand </span>
-<span class="co">#&gt; metadata:  GeneName,  GeneStrand,  CompleteAmplificationID </span>
 <span class="co">#&gt; # A tibble: 1,476 x 7</span>
 <span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand CompleteAmplificati… Value</span>
 <span class="co">#&gt;    &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;                &lt;dbl&gt;</span>
@@ -515,8 +575,6 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt; # … with 1,466 more rows</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $seqCount</span>
-<span class="co">#&gt; mandatoryVars:  chr,  integration_locus,  strand </span>
-<span class="co">#&gt; metadata:  GeneName,  GeneStrand,  CompleteAmplificationID </span>
 <span class="co">#&gt; # A tibble: 1,476 x 7</span>
 <span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand CompleteAmplificati… Value</span>
 <span class="co">#&gt;    &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;                &lt;int&gt;</span>
@@ -533,16 +591,17 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt; # … with 1,466 more rows</span>
 </pre></div>
 <p>Let’s do an example with a file system where there are issues, such as duplicates:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit">
+<div class="sourceCode" id="cb15"><pre class="downlit">
 <span class="kw">root_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"fserr.zip"</span>, package = <span class="st">"ISAnalytics"</span>)
 <span class="kw">root_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span>(<span class="kw">root_err</span>, <span class="st">"fserr"</span>)
 <span class="kw">fs</span>::<span class="fu"><a href="http://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span>(<span class="kw">root_err</span>)
-<span class="co">#&gt; /tmp/RtmppXd1zZ/fserr</span>
+<span class="co">#&gt; /tmp/RtmpabRcum/fserr</span>
 <span class="co">#&gt; ├── PROJECT1100</span>
 <span class="co">#&gt; │   ├── bam</span>
 <span class="co">#&gt; │   ├── bcmuxall</span>
 <span class="co">#&gt; │   ├── bed</span>
 <span class="co">#&gt; │   ├── iss</span>
+<span class="co">#&gt; │   │   └── stats.sequence_PROJECT1100.ABX-LR-PL5-POOL14-1.tsv</span>
 <span class="co">#&gt; │   ├── quality</span>
 <span class="co">#&gt; │   ├── quantification</span>
 <span class="co">#&gt; │   │   ├── ABX-LR-PL5-POOL14-1</span>
@@ -560,6 +619,7 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt;         ├── bcmuxall</span>
 <span class="co">#&gt;         ├── bed</span>
 <span class="co">#&gt;         ├── iss</span>
+<span class="co">#&gt;         │   └── stats.sequence_VA.POOL6-1.tsv</span>
 <span class="co">#&gt;         ├── quality</span>
 <span class="co">#&gt;         ├── quantification</span>
 <span class="co">#&gt;         │   └── POOL6-1</span>
@@ -572,11 +632,12 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt;         └── report</span>
 <span class="kw">association_file_fserr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span>(<span class="kw">path_as_file</span>, <span class="kw">root_err</span>)
 <span class="co">#&gt; Warning: One or more projects were not found in the filesystem starting from /</span>
-<span class="co">#&gt; tmp/RtmppXd1zZ/fserr, please check yourassociation file for errors and/or your</span>
+<span class="co">#&gt; tmp/RtmpabRcum/fserr, please check yourassociation file for errors and/or your</span>
 <span class="co">#&gt; file system.Until you re-import the association file these missing files will be</span>
 <span class="co">#&gt; ignored.</span>
-<span class="kw">refined_af_err</span> <span class="op">&lt;-</span> <span class="kw">association_file_fserr</span> <span class="op">%&gt;%</span> <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">ProjectID</span> <span class="op">==</span> <span class="st">"CLOEXP"</span>)
-<span class="kw">matrices_auto2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_auto</a></span>(
+<span class="kw">refined_af_err</span> <span class="op">&lt;-</span> <span class="kw">association_file_fserr</span> <span class="op">%&gt;%</span> 
+  <span class="kw">dplyr</span>::<span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">.data</span><span class="op">$</span><span class="kw">ProjectID</span> <span class="op">==</span> <span class="st">"CLOEXP"</span>)
+<span class="kw">matrices_auto2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto</a></span>(
   association_file = <span class="kw">refined_af_err</span>,
   root = <span class="kw">NULL</span>,
   quantification_type = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"fragmentEstimate"</span>,<span class="st">"seqCount"</span>),
@@ -587,8 +648,6 @@ Both functions rely on the association file and some basic parameters, most nota
 )
 <span class="kw">matrices_auto</span>
 <span class="co">#&gt; $fragmentEstimate</span>
-<span class="co">#&gt; mandatoryVars:  chr,  integration_locus,  strand </span>
-<span class="co">#&gt; metadata:  GeneName,  GeneStrand,  CompleteAmplificationID </span>
 <span class="co">#&gt; # A tibble: 1,476 x 7</span>
 <span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand CompleteAmplificati… Value</span>
 <span class="co">#&gt;    &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;                &lt;dbl&gt;</span>
@@ -605,8 +664,6 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt; # … with 1,466 more rows</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $seqCount</span>
-<span class="co">#&gt; mandatoryVars:  chr,  integration_locus,  strand </span>
-<span class="co">#&gt; metadata:  GeneName,  GeneStrand,  CompleteAmplificationID </span>
 <span class="co">#&gt; # A tibble: 1,476 x 7</span>
 <span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand CompleteAmplificati… Value</span>
 <span class="co">#&gt;    &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;                &lt;int&gt;</span>
@@ -646,29 +703,10 @@ Both functions rely on the association file and some basic parameters, most nota
 <em><a href="https://CRAN.R-project.org/package=testthat">testthat</a></em> <a id="cite-Wickham_2011"></a>(<a href="https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf">Wickham, 2011</a>)</li>
 </ul>
 <p>This package was developed using <em><a href="https://github.com/lcolladotor/biocthis">biocthis</a></em>.</p>
-<p>Code for creating the vignette</p>
-<div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="co">## Create the vignette</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/rstudio/rmarkdown">"rmarkdown"</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/rmarkdown/man/render.html">render</a></span>(<span class="st">"how_to_import_functions.Rmd"</span>, <span class="st">"BiocStyle::html_document"</span>))
-
-<span class="co">## Extract the R code</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://yihui.org/knitr">"knitr"</a></span>)
-<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/knit.html">knit</a></span>(<span class="st">"how_to_import_functions.Rmd"</span>, tangle = <span class="fl">TRUE</span>)
-</pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit">
-<span class="co">## Clean up</span>
-<span class="fu"><a href="https://rdrr.io/r/base/files.html">file.remove</a></span>(<span class="st">"how_to_import_functions.bib"</span>)
-<span class="co">#&gt; [1] TRUE</span>
-</pre></div>
-<p>Date the vignette was generated.</p>
-<pre><code>#&gt; [1] "2020-08-12 07:56:31 UTC"</code></pre>
-<p>Wallclock time spent generating the vignette.</p>
-<pre><code>#&gt; Time difference of 2.862 secs</code></pre>
 <p><code>R</code> session information.</p>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  setting  value                                      
-#&gt;  version  R version 4.0.2 Patched (2020-08-06 r78974)
+#&gt;  version  R version 4.0.2 Patched (2020-08-27 r79088)
 #&gt;  os       Ubuntu 20.04.1 LTS                         
 #&gt;  system   x86_64, linux-gnu                          
 #&gt;  ui       X11                                        
@@ -676,12 +714,12 @@ Both functions rely on the association file and some basic parameters, most nota
 #&gt;  collate  en_US.UTF-8                                
 #&gt;  ctype    en_US.UTF-8                                
 #&gt;  tz       UTC                                        
-#&gt;  date     2020-08-12                                 
+#&gt;  date     2020-09-01                                 
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  package       * version    date       lib source                        
 #&gt;  assertthat      0.2.1      2019-03-21 [2] RSPM (R 4.0.0)                
-#&gt;  backports       1.1.8      2020-06-17 [2] RSPM (R 4.0.1)                
+#&gt;  backports       1.1.9      2020-08-24 [1] RSPM (R 4.0.2)                
 #&gt;  bibtex          0.4.2.2    2020-01-02 [1] RSPM (R 4.0.0)                
 #&gt;  BiocManager     1.30.10    2019-11-16 [2] CRAN (R 4.0.2)                
 #&gt;  BiocParallel    1.23.2     2020-07-06 [1] Bioconductor                  
@@ -689,39 +727,38 @@ Both functions rely on the association file and some basic parameters, most nota
 #&gt;  bookdown        0.20       2020-06-23 [1] RSPM (R 4.0.2)                
 #&gt;  cli             2.0.2      2020-02-28 [2] RSPM (R 4.0.0)                
 #&gt;  crayon          1.3.4      2017-09-16 [2] RSPM (R 4.0.0)                
-#&gt;  crosstalk       1.1.0.1    2020-03-13 [2] RSPM (R 4.0.0)                
 #&gt;  desc            1.2.0      2018-05-01 [2] RSPM (R 4.0.0)                
 #&gt;  digest          0.6.25     2020-02-23 [2] RSPM (R 4.0.0)                
-#&gt;  dplyr           1.0.1      2020-07-31 [1] RSPM (R 4.0.2)                
+#&gt;  dplyr           1.0.2      2020-08-18 [1] RSPM (R 4.0.2)                
 #&gt;  ellipsis        0.3.1      2020-05-15 [2] RSPM (R 4.0.0)                
 #&gt;  evaluate        0.14       2019-05-28 [2] RSPM (R 4.0.0)                
 #&gt;  fansi           0.4.1      2020-01-08 [2] RSPM (R 4.0.0)                
 #&gt;  forcats         0.5.0      2020-03-01 [1] RSPM (R 4.0.0)                
 #&gt;  fs              1.5.0      2020-07-31 [2] RSPM (R 4.0.2)                
 #&gt;  generics        0.0.2      2018-11-29 [1] RSPM (R 4.0.0)                
-#&gt;  glue            1.4.1      2020-05-13 [2] RSPM (R 4.0.0)                
+#&gt;  glue            1.4.2      2020-08-27 [1] RSPM (R 4.0.2)                
 #&gt;  highr           0.8        2019-03-20 [2] RSPM (R 4.0.0)                
 #&gt;  hms             0.5.3      2020-01-08 [1] RSPM (R 4.0.0)                
 #&gt;  htmltools       0.5.0      2020-06-16 [2] RSPM (R 4.0.1)                
 #&gt;  htmlwidgets     1.5.1      2019-10-08 [2] RSPM (R 4.0.0)                
 #&gt;  httr            1.4.2      2020-07-20 [2] RSPM (R 4.0.2)                
-#&gt;  ISAnalytics   * 0.99.8     2020-08-12 [1] Bioconductor                  
+#&gt;  ISAnalytics   * 0.99.9     2020-09-01 [1] Bioconductor                  
 #&gt;  jsonlite        1.7.0      2020-06-25 [2] RSPM (R 4.0.2)                
 #&gt;  knitcitations * 1.0.10     2019-09-15 [1] RSPM (R 4.0.0)                
 #&gt;  knitr           1.29       2020-06-23 [2] RSPM (R 4.0.2)                
 #&gt;  lifecycle       0.2.0      2020-03-06 [2] RSPM (R 4.0.0)                
 #&gt;  lubridate       1.7.9      2020-06-08 [1] RSPM (R 4.0.2)                
-#&gt;  magrittr        1.5        2014-11-22 [2] RSPM (R 4.0.0)                
+#&gt;  magrittr      * 1.5        2014-11-22 [2] RSPM (R 4.0.0)                
 #&gt;  memoise         1.1.0      2017-04-21 [2] RSPM (R 4.0.0)                
 #&gt;  pillar          1.4.6      2020-07-10 [2] RSPM (R 4.0.2)                
 #&gt;  pkgconfig       2.0.3      2019-09-22 [2] RSPM (R 4.0.0)                
-#&gt;  pkgdown         1.5.1.9000 2020-08-10 [1] Github (r-lib/pkgdown@eae56f0)
+#&gt;  pkgdown         1.5.1.9000 2020-09-01 [1] Github (r-lib/pkgdown@ecce89e)
 #&gt;  plyr            1.8.6      2020-03-03 [1] RSPM (R 4.0.2)                
 #&gt;  purrr           0.3.4      2020-04-17 [2] RSPM (R 4.0.0)                
 #&gt;  R6              2.4.1      2019-11-12 [2] RSPM (R 4.0.0)                
+#&gt;  ragg            0.3.1      2020-07-03 [1] RSPM (R 4.0.2)                
 #&gt;  Rcpp            1.0.5      2020-07-06 [2] RSPM (R 4.0.2)                
 #&gt;  reactable       0.2.0      2020-05-28 [1] RSPM (R 4.0.0)                
-#&gt;  reactR          0.4.3      2020-07-12 [1] RSPM (R 4.0.2)                
 #&gt;  readr           1.3.1      2018-12-21 [1] RSPM (R 4.0.2)                
 #&gt;  RefManageR      1.2.12     2019-04-03 [1] RSPM (R 4.0.0)                
 #&gt;  rlang           0.4.7      2020-07-09 [2] RSPM (R 4.0.2)                
@@ -730,16 +767,17 @@ Both functions rely on the association file and some basic parameters, most nota
 #&gt;  sessioninfo   * 1.1.1      2018-11-05 [2] RSPM (R 4.0.0)                
 #&gt;  stringi         1.4.6      2020-02-17 [2] RSPM (R 4.0.0)                
 #&gt;  stringr         1.4.0      2019-02-10 [2] RSPM (R 4.0.0)                
+#&gt;  systemfonts     0.2.3      2020-06-09 [1] RSPM (R 4.0.0)                
 #&gt;  tibble          3.0.3      2020-07-10 [2] RSPM (R 4.0.2)                
-#&gt;  tidyr           1.1.1      2020-07-31 [1] RSPM (R 4.0.2)                
+#&gt;  tidyr           1.1.2      2020-08-27 [1] RSPM (R 4.0.2)                
 #&gt;  tidyselect      1.1.0      2020-05-11 [1] RSPM (R 4.0.0)                
 #&gt;  utf8            1.1.4      2018-05-24 [2] RSPM (R 4.0.0)                
-#&gt;  vctrs           0.3.2      2020-07-15 [2] RSPM (R 4.0.2)                
+#&gt;  vctrs           0.3.4      2020-08-29 [1] RSPM (R 4.0.2)                
 #&gt;  withr           2.2.0      2020-04-20 [2] RSPM (R 4.0.0)                
 #&gt;  xfun            0.16       2020-07-24 [2] RSPM (R 4.0.2)                
 #&gt;  xml2            1.3.2      2020-04-23 [2] RSPM (R 4.0.0)                
 #&gt;  yaml            2.2.1      2020-02-01 [2] RSPM (R 4.0.0)                
-#&gt;  zip             2.0.4      2019-09-01 [1] RSPM (R 4.0.0)                
+#&gt;  zip             2.1.1      2020-08-27 [1] RSPM (R 4.0.2)                
 #&gt; 
 #&gt; [1] /usr/local/lib/R/host-site-library
 #&gt; [2] /usr/local/lib/R/site-library
@@ -752,7 +790,7 @@ Both functions rely on the association file and some basic parameters, most nota
 <p>Citations made with <em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> (<a href="https://github.com/cboettig/knitcitations">Boettiger, 2019</a>).</p>
 <p>[1] J. Allaire, Y. Xie, J. McPherson, J. Luraschi, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.3. 2020. &lt;URL: <a href="https://github.com/rstudio/rmarkdown" class="uri">https://github.com/rstudio/rmarkdown</a>&gt;.</p>
 <p>[2] C. Boettiger. <em>knitcitations: Citations for ‘Knitr’ Markdown Files</em>. R package version 1.0.10. 2019. &lt;URL: <a href="https://github.com/cboettig/knitcitations" class="uri">https://github.com/cboettig/knitcitations</a>&gt;.</p>
-<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 0.99.8. 2020. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
+<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 0.99.9. 2020. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
 <p>[4] G. Csárdi, R. core, H. Wickham, W. Chang, et al. <em>sessioninfo: R Session Information</em>. R package version 1.1.1. 2018. &lt;URL: <a href="https://github.com/r-lib/sessioninfo#readme" class="uri">https://github.com/r-lib/sessioninfo#readme</a>&gt;.</p>
 <p>[5] A. Oleś, M. Morgan, and W. Huber. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.17.0. 2020. &lt;URL: <a href="https://github.com/Bioconductor/BiocStyle" class="uri">https://github.com/Bioconductor/BiocStyle</a>&gt;.</p>
 <p>[6] R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. R Foundation for Statistical Computing. Vienna, Austria, 2020. &lt;URL: <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>&gt;.</p>

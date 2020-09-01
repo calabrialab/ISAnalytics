@@ -42,7 +42,7 @@
 <meta property="og:title" content="Import a single integration matrix from file — import_single_Vispa2Matrix" />
 <meta property="og:description" content="This function allows to read and import an integration matrix
 produced as the output of Vispa2 pipeline and converts it to a tidy
-ISADataFrame." />
+tibble." />
 
 
 
@@ -74,7 +74,7 @@ ISADataFrame." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
       </span>
     </div>
 
@@ -97,6 +97,9 @@ ISADataFrame." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/aggregate_function_usage.html">Working with aggregate functions</a>
+    </li>
+    <li>
       <a href="../articles/collision_removal.html">Collision removal functionality</a>
     </li>
     <li>
@@ -110,7 +113,7 @@ ISADataFrame." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="../NA/NA/NA/">
+  <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -129,14 +132,14 @@ ISADataFrame." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Import a single integration matrix from file</h1>
-    <small class="dont-index">Source: <a href='NA/NA/NA/blob/master/R/import-functions.R'><code>R/import-functions.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/import-functions.R'><code>R/import-functions.R</code></a></small>
     <div class="hidden name"><code>import_single_Vispa2Matrix.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>This function allows to read and import an integration matrix
 produced as the output of Vispa2 pipeline and converts it to a tidy
-ISADataFrame.</p>
+tibble.</p>
     </div>
 
     <pre class="usage"><span class='fu'>import_single_Vispa2Matrix</span>(<span class='kw'>path</span>)</pre>
@@ -152,7 +155,7 @@ ISADataFrame.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A tidy ISADataFrame</p>
+    <p>A tidy tibble</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The import series of functions is designed to work in combination
@@ -160,19 +163,21 @@ with the use of Vispa2 pipeline, please refer to this article for more
 details: <a href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/'>VISPA2:
 A Scalable Pipeline for High-Throughput Identification and Annotation of
 Vector Integration Sites</a>.
-For more details on how to properly use these functions, refer to the
-vignette - vignette("how_to_import_functions")</p>
+For more details on how to properly use these functions, refer to
+<code>vignette("How to use import functions", package = "ISAnalytics")</code></p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other Import functions: 
 <code><a href='import_association_file.html'>import_association_file</a>()</code>,
+<code><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a>()</code>,
 <code><a href='import_parallel_Vispa2Matrices_interactive.html'>import_parallel_Vispa2Matrices_interactive</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>path_to_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_annotated_ISMatrix.tsv.xz"</span>,
     package = <span class='st'>"ISAnalytics"</span>
 )
-<span class='kw'>isa_dataframe</span> <span class='op'>&lt;-</span> <span class='fu'>import_single_Vispa2Matrix</span>(<span class='kw'>path_to_file</span>)</div></pre>
+<span class='kw'>isa_dataframe</span> <span class='op'>&lt;-</span> <span class='fu'>import_single_Vispa2Matrix</span>(<span class='kw'>path_to_file</span>)
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

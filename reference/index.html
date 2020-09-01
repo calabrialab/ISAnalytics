@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
       </span>
     </div>
 
@@ -94,6 +94,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/aggregate_function_usage.html">Working with aggregate functions</a>
+    </li>
+    <li>
       <a href="../articles/collision_removal.html">Collision removal functionality</a>
     </li>
     <li>
@@ -107,7 +110,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="../NA/NA/NA/">
+  <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -151,21 +154,47 @@
       <tr>
         
         <td>
-          <p><code><a href="ISADataFrame.html">ISADataFrame()</a></code> </p>
+          <p><code><a href="ISAnalytics.html">ISAnalytics</a></code> </p>
         </td>
-        <td><p>Helper function to obtain ISADataFrame object.</p></td>
+        <td><p>ISAnalytics: Analyze gene therapy vector insertion sites data
+identified from genomics next generation sequencing reads for
+clonal tracking studies</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="add_metadata.html">add_metadata()</a></code> </p>
+          <p><code><a href="aggregate_metadata.html">aggregate_metadata()</a></code> </p>
         </td>
-        <td><p>Adds new metadata to the metadata attribute.</p></td>
+        <td><p>Performs aggregation on metadata contained in the association file.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="anti_join.ISADataFrame.html">anti_join(<i>&lt;ISADataFrame&gt;</i>)</a></code> </p>
+          <p><code><a href="aggregate_values_by_key.html">aggregate_values_by_key()</a></code> </p>
         </td>
-        <td><p>anti_join implementation for ISADataFrame.</p></td>
+        <td><p>Aggregates matrices values based on specified key.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="annotation_IS_vars.html">annotation_IS_vars()</a></code> </p>
+        </td>
+        <td><p>Names of the annotation variables for an integration matrix.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="association_file_columns.html">association_file_columns()</a></code> </p>
+        </td>
+        <td><p>Names of the columns in the association file.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="compute_abundance.html">compute_abundance()</a></code> </p>
+        </td>
+        <td><p>Computes the abundance of every integration in the sample.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="compute_near_integrations.html">compute_near_integrations()</a></code> </p>
+        </td>
+        <td><p>Scans input matrix to find and merge near integration sites.</p></td>
       </tr><tr>
         
         <td>
@@ -178,290 +207,16 @@
           <p><code><a href="date_formats.html">date_formats()</a></code> </p>
         </td>
         <td><p>Possible choices for the <code>dates_format</code> parameter in
-<code>import_association_file</code>, <code>import_parallel_vispa2Matrices_interactive</code> and
+<code>import_association_file</code>,
+<code>import_parallel_vispa2Matrices_interactive</code> and
 <code>import_parallel_vispa2Matrices_auto</code>.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-all_match.html">.all_match()</a></code> </p>
-        </td>
-        <td><p>Helper function for checking if all of the elements of the list is true.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-any_match.html">.any_match()</a></code> </p>
-        </td>
-        <td><p>Helper function for checking if any of the elements of the list is true.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-auto_detect_type.html">.auto_detect_type()</a></code> </p>
-        </td>
-        <td><p>Internal function to auto-detect the type of IS based on the headers.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-check_af_correctness.html">.check_af_correctness()</a></code> </p>
-        </td>
-        <td><p>Checks if the association file has the right format (standard headers).</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-check_atLeastOneExp.html">.check_atLeastOneExp()</a></code> </p>
-        </td>
-        <td><p>Internal helper function for checking presence of experimental data columns.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-check_file_system_alignment.html">.check_file_system_alignment()</a></code> </p>
-        </td>
-        <td><p>Internal function to check alignment between association file and file
-system starting from the root. The alignment is checked at folder level.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-check_metadata.html">.check_metadata()</a></code> </p>
-        </td>
-        <td><p>Internal helper function for checking metadata fields.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-check_nonNumdata.html">.check_nonNumdata()</a></code> </p>
-        </td>
-        <td><p>Internal helper function for checking presence of experimental data columns
-and verifying they're numeric.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-check_same_info.html">.check_same_info()</a></code> </p>
-        </td>
-        <td><p>Checks if association file contains more information than the matrix.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-checker_widget.html">.checker_widget()</a></code> </p>
-        </td>
-        <td><p>Builds the html widget for the checker table.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-choose_duplicates_files_interactive.html">.choose_duplicates_files_interactive()</a></code> </p>
-        </td>
-        <td><p>Simple function to manage user input for duplicate file choices for each
-quantification type in a single project/pool pair (use internally in
-<code>.manage_anomalies_interactive</code>).</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-coll_mapping.html">.coll_mapping()</a></code> </p>
-        </td>
-        <td><p>Internal function to process collisions on multiple integrations.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-discriminate_by_date.html">.discriminate_by_date()</a></code> </p>
-        </td>
-        <td><p>Internal for date discrimination in collision removal.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-discriminate_by_replicate.html">.discriminate_by_replicate()</a></code> </p>
-        </td>
-        <td><p>Internal for replicate discrimination in collision removal.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-discriminate_by_seqCount.html">.discriminate_by_seqCount()</a></code> </p>
-        </td>
-        <td><p>Internal for sequence count discrimination in collision removal.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-files_found_widget.html">.files_found_widget()</a></code> </p>
-        </td>
-        <td><p>Builds the html widget for the files_found table.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-files_imported_widget.html">.files_imported_widget()</a></code> </p>
-        </td>
-        <td><p>Builds the html widget for the files_imported table.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-files_to_import_widget.html">.files_to_import_widget()</a></code> </p>
-        </td>
-        <td><p>Builds the html widget for the files_to_import table.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-find_nonNumData.html">.find_nonNumData()</a></code> </p>
-        </td>
-        <td><p>Internal helper function to find the indexes of detected non numeric columns.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-fix_metadata.html">.fix_metadata()</a></code> </p>
-        </td>
-        <td><p>Internal utility function to use for fixing the metadata attribute after
-structural changes to an ISADataFrame object.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-four_step_check.html">.four_step_check()</a></code> </p>
-        </td>
-        <td><p>Internal function that performs four-step-check of collisions for a single
-integration.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-identify_independent_samples.html">.identify_independent_samples()</a></code> </p>
-        </td>
-        <td><p>Identifies independent samples and separates the joined_df in collisions and
-non-collisions</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-import_type.html">.import_type()</a></code> </p>
-        </td>
-        <td><p>Internal function for parallel import of a single quantification type files.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-interactive_select_pools_import.html">.interactive_select_pools_import()</a></code> </p>
-        </td>
-        <td><p>Allows the user to choose interactively the pools to consider for import.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-interactive_select_projects_import.html">.interactive_select_projects_import()</a></code> </p>
-        </td>
-        <td><p>Allows the user to choose interactively the projects to consider for import.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-join_matrix_af.html">.join_matrix_af()</a></code> </p>
-        </td>
-        <td><p>Produces a joined tibble between the sequence count matrix and the
-association file</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-lookup_matrices.html">.lookup_matrices()</a></code> </p>
-        </td>
-        <td><p>Looks up matrices to import given the association file and the root of the
-file system.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-lookup_matrices_auto.html">.lookup_matrices_auto()</a></code> </p>
-        </td>
-        <td><p>Looks up matrices to import given the association file and the root of the
-file system.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-manage_anomalies_auto.html">.manage_anomalies_auto()</a></code> </p>
-        </td>
-        <td><p>Manages anomalies for files found.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-manage_anomalies_interactive.html">.manage_anomalies_interactive()</a></code> </p>
-        </td>
-        <td><p>Manages anomalies for files found.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-manage_association_file.html">.manage_association_file()</a></code> </p>
-        </td>
-        <td><p>Helper function to be used when importing matrices in parallel.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-messy_to_tidy.html">.messy_to_tidy()</a></code> </p>
-        </td>
-        <td><p>Internal function to convert a messy matrix to a tidy data frame</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-obtain_nested.html">.obtain_nested()</a></code> </p>
-        </td>
-        <td><p>Returns a polished version of collisions table for analysis.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-parallel_import_merge.html">.parallel_import_merge()</a></code> </p>
-        </td>
-        <td><p>Internal function for importing all files for each quantification type.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-pattern_matching.html">.pattern_matching()</a></code> </p>
-        </td>
-        <td><p>Internal function to match user defined patterns on a vector of file names.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-pool_choices_IN.html">.pool_choices_IN()</a></code> </p>
-        </td>
-        <td><p>Simple helper interal function to handle user input for actual pool choices.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-pool_number_IN.html">.pool_number_IN()</a></code> </p>
-        </td>
-        <td><p>Simple internal helper function to handle user input for selection of number
-of pools.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-process_collisions.html">.process_collisions()</a></code> </p>
-        </td>
-        <td><p>Internal function to process collisions on multiple integrations,
-parallelized.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-read_and_correctness_af.html">.read_and_correctness_af()</a></code> </p>
-        </td>
-        <td><p>Reads association file and checks if it's correct or not.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-summary_collisions_widget.html">.summary_collisions_widget()</a></code> </p>
-        </td>
-        <td><p>Builds the html widget for the summary table.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-summary_table.html">.summary_table()</a></code> </p>
-        </td>
-        <td><p>Internal function to obtain a summary table after collision processing.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-trace_anomalies.html">.trace_anomalies()</a></code> </p>
-        </td>
-        <td><p>Updates a files_found tibble with Files_count and Anomalies column.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-update_af_after_alignment.html">.update_af_after_alignment()</a></code> </p>
-        </td>
-        <td><p>Updates the association file after the alignment check.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-update_as_option.html">.update_as_option()</a></code> </p>
-        </td>
-        <td><p>Updates files_found tibble according to pattern and matching options.</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="generate_Vispa2_launch_AF.html">generate_Vispa2_launch_AF()</a></code> </p>
         </td>
-        <td><p>Creates a reduced association file for Vispa2 run, given project and pool</p></td>
+        <td><p>Creates a reduced association file for Vispa2 run,
+given project and pool</p></td>
       </tr><tr>
         
         <td>
@@ -477,7 +232,13 @@ parallelized.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices_interactive()</a></code> <code><a href="import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices_auto()</a></code> </p>
+          <p><code><a href="import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto()</a></code> </p>
+        </td>
+        <td><p>Import integration matrices based on the association file.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_interactive()</a></code> </p>
         </td>
         <td><p>Import integration matrices based on the association file.</p></td>
       </tr><tr>
@@ -489,57 +250,15 @@ parallelized.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="inner_join.ISADataFrame.html">inner_join(<i>&lt;ISADataFrame&gt;</i>)</a></code> </p>
+          <p><code><a href="mandatory_IS_vars.html">mandatory_IS_vars()</a></code> </p>
         </td>
-        <td><p>inner_join implementation for ISADataFrame.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="is.ISADataFrame.html">is.ISADataFrame()</a></code> </p>
-        </td>
-        <td><p>Is the object an ISADataFrame?</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="left_join.ISADataFrame.html">left_join(<i>&lt;ISADataFrame&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>left_join implementation for ISADataFrame.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="mandatoryVars.html">mandatoryVars()</a></code> </p>
-        </td>
-        <td><p>Gets the value of the attribute mandatoryVars.</p></td>
+        <td><p>Names of mandatory variables for an integration matrix.</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="matching_options.html">matching_options()</a></code> </p>
         </td>
         <td><p>Possible choices for the <code>matching_opt</code> parameter.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="metadata.html">metadata()</a></code> </p>
-        </td>
-        <td><p>Gets the value of the attribute metadata.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="new_ISADataFrame.html">new_ISADataFrame()</a></code> </p>
-        </td>
-        <td><p>Low-level efficient constructor for ISADataFrame objects.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="pivot_longer.ISADataFrame.html">pivot_longer(<i>&lt;ISADataFrame&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Pivot_longer implementation for ISADataFrame.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="print.ISADataFrame.html">print(<i>&lt;ISADataFrame&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Printing ISADataFrames</p></td>
       </tr><tr>
         
         <td>
@@ -556,27 +275,16 @@ sequence count matrix.</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="reduced_AF_columns.html">reduced_AF_columns()</a></code> </p>
+        </td>
+        <td><p>Names of the columns of the association file to consider for
+Vispa2 launch.</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="remove_collisions.html">remove_collisions()</a></code> </p>
         </td>
         <td><p>Identifies and removes collisions based on the sequence count matrix.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="remove_metadata.html">remove_metadata()</a></code> </p>
-        </td>
-        <td><p>Removes metadata from the metadata attribute.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="select.ISADataFrame.html">select(<i>&lt;ISADataFrame&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>select implementation for ISADataFrame.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="semi_join.ISADataFrame.html">semi_join(<i>&lt;ISADataFrame&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>semi_join implementation for ISADataFrame.</p></td>
       </tr><tr>
         
         <td>
@@ -584,18 +292,6 @@ sequence count matrix.</p></td>
         </td>
         <td><p>A utility function to unzip and use example file systems included in the
 package</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="validate_ISADataFrame.html">validate_ISADataFrame()</a></code> </p>
-        </td>
-        <td><p>Validator for ISADataFrame objects.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vec_restore.ISADataFrame.html">vec_restore.ISADataFrame()</a></code> </p>
-        </td>
-        <td><p>Implementation of vec_restore for ISADataFrame.</p></td>
       </tr>
     </tbody>
     </table>

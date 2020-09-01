@@ -79,7 +79,7 @@ remove_collisions before, there is no need to call this function." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
       </span>
     </div>
 
@@ -102,6 +102,9 @@ remove_collisions before, there is no need to call this function." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/aggregate_function_usage.html">Working with aggregate functions</a>
+    </li>
+    <li>
       <a href="../articles/collision_removal.html">Collision removal functionality</a>
     </li>
     <li>
@@ -115,7 +118,7 @@ remove_collisions before, there is no need to call this function." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="../NA/NA/NA/">
+  <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
@@ -135,7 +138,7 @@ remove_collisions before, there is no need to call this function." />
     <div class="page-header">
     <h1>Re-aligns matrices of other quantification types based on the processed
 sequence count matrix.</h1>
-    <small class="dont-index">Source: <a href='NA/NA/NA/blob/master/R/collision-removal.R'><code>R/collision-removal.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/collision-removal.R'><code>R/collision-removal.R</code></a></small>
     <div class="hidden name"><code>realign_after_collisions.Rd</code></div>
     </div>
 
@@ -180,21 +183,25 @@ must be quantification types (<code><a href='quantification_types.html'>quantifi
 <code><a href='remove_collisions.html'>remove_collisions</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
+    <pre class="examples"><div class='input'><span class='kw'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span>(<span class='st'>"ISAnalytics.widgets"</span> = <span class='fl'>FALSE</span>)
+<span class='kw'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
     package = <span class='st'>"ISAnalytics"</span>
 )
 <span class='kw'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package = <span class='st'>"ISAnalytics"</span>)
 <span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span>(<span class='kw'>root_pth</span>, <span class='st'>"fs"</span>)
 <span class='kw'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span>(<span class='kw'>path</span>, <span class='kw'>root</span>)
-<span class='kw'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_interactive.html'>import_parallel_Vispa2Matrices_auto</a></span>(
+<span class='kw'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></span>(
     <span class='kw'>association_file</span>, <span class='kw'>NULL</span>,
     <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span>), <span class='st'>"annotated"</span>, <span class='fl'>2</span>, <span class='kw'>NULL</span>, <span class='st'>"ANY"</span>
 )
-<span class='kw'>sc_matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='remove_collisions.html'>remove_collisions</a></span>(<span class='kw'>matrices</span><span class='op'>$</span><span class='kw'>seqCount</span>, <span class='kw'>association_file</span>)</div><div class='output co'>#&gt; <span class='message'>Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></div><div class='output co'>#&gt; # A tibble: 1 x 3
+<span class='kw'>sc_matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='remove_collisions.html'>remove_collisions</a></span>(<span class='kw'>matrices</span><span class='op'>$</span><span class='kw'>seqCount</span>, <span class='kw'>association_file</span>)
+</div><div class='output co'>#&gt; <span class='message'>Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 1 x 3</span><span>
 #&gt;   ProjectID   PoolID       CompleteAmplificationID                              
-#&gt;   &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;                                                
-#&gt; 1 PROJECT1101 ABY-LR-PL4-… PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14…</div><div class='output co'>#&gt; <span class='message'>Identifying collisions...</span></div><div class='output co'>#&gt; <span class='message'>Processing collisions...</span></div><div class='output co'>#&gt; <span class='message'>Finished! You provided a single sequence count as matrix, to re-align other related matrices see ?realign_after_collisions</span></div><div class='input'><span class='kw'>others</span> <span class='op'>&lt;-</span> <span class='kw'>matrices</span>[<span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='kw'>matrices</span>) <span class='op'>%in%</span> <span class='st'>"seqCount"</span>]
-<span class='kw'>aligned_matrices</span> <span class='op'>&lt;-</span> <span class='fu'>realign_after_collisions</span>(<span class='kw'>sc_matrix</span><span class='op'>$</span><span class='kw'>seqCount</span>, <span class='kw'>others</span>)</div></pre>
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                                                
+#&gt; </span><span style='color: #555555;'>1</span><span> PROJECT1101 ABY-LR-PL4-… PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14…</div><div class='output co'>#&gt; <span class='message'>Identifying collisions...</span></div><div class='output co'>#&gt; <span class='message'>Processing collisions...</span></div><div class='output co'>#&gt; <span class='message'>Finished! You provided a single sequence count as matrix, to re-align other related matrices see ?realign_after_collisions</span></div><div class='input'><span class='kw'>others</span> <span class='op'>&lt;-</span> <span class='kw'>matrices</span>[<span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span>(<span class='kw'>matrices</span>) <span class='op'>%in%</span> <span class='st'>"seqCount"</span>]
+<span class='kw'>aligned_matrices</span> <span class='op'>&lt;-</span> <span class='fu'>realign_after_collisions</span>(<span class='kw'>sc_matrix</span><span class='op'>$</span><span class='kw'>seqCount</span>, <span class='kw'>others</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span>(<span class='kw'>op</span>)
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
