@@ -206,7 +206,7 @@ An example on how to access them:</p>
 <span class="kw">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>, package = <span class="st">"ISAnalytics"</span>)
 <span class="kw">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span>(<span class="kw">root_correct</span>, <span class="st">"fs"</span>)
 <span class="kw">fs</span>::<span class="fu"><a href="http://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span>(<span class="kw">root_correct</span>)
-<span class="co">#&gt; /tmp/RtmpabRcum/fs</span>
+<span class="co">#&gt; /tmp/RtmpGSRlRL/fs</span>
 <span class="co">#&gt; ├── PROJECT1100</span>
 <span class="co">#&gt; │   ├── bam</span>
 <span class="co">#&gt; │   ├── bcmuxall</span>
@@ -595,7 +595,7 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="kw">root_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"fserr.zip"</span>, package = <span class="st">"ISAnalytics"</span>)
 <span class="kw">root_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span>(<span class="kw">root_err</span>, <span class="st">"fserr"</span>)
 <span class="kw">fs</span>::<span class="fu"><a href="http://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span>(<span class="kw">root_err</span>)
-<span class="co">#&gt; /tmp/RtmpabRcum/fserr</span>
+<span class="co">#&gt; /tmp/RtmpGSRlRL/fserr</span>
 <span class="co">#&gt; ├── PROJECT1100</span>
 <span class="co">#&gt; │   ├── bam</span>
 <span class="co">#&gt; │   ├── bcmuxall</span>
@@ -632,7 +632,7 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt;         └── report</span>
 <span class="kw">association_file_fserr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span>(<span class="kw">path_as_file</span>, <span class="kw">root_err</span>)
 <span class="co">#&gt; Warning: One or more projects were not found in the filesystem starting from /</span>
-<span class="co">#&gt; tmp/RtmpabRcum/fserr, please check yourassociation file for errors and/or your</span>
+<span class="co">#&gt; tmp/RtmpGSRlRL/fserr, please check yourassociation file for errors and/or your</span>
 <span class="co">#&gt; file system.Until you re-import the association file these missing files will be</span>
 <span class="co">#&gt; ignored.</span>
 <span class="kw">refined_af_err</span> <span class="op">&lt;-</span> <span class="kw">association_file_fserr</span> <span class="op">%&gt;%</span> 
