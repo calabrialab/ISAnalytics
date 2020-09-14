@@ -3,7 +3,8 @@
 #------------------------------------------------------------------------------#
 #' Import a single integration matrix from file
 #'
-#' @description This function allows to read and import an integration matrix
+#' @description \lifecycle{stable}
+#' This function allows to read and import an integration matrix
 #' produced as the output of Vispa2 pipeline and converts it to a tidy
 #' tibble.
 #'
@@ -57,7 +58,8 @@ import_single_Vispa2Matrix <- function(path) {
 
 #' Import the association file from disk
 #'
-#' @description Imports the association file and immediately performs a check on
+#' @description \lifecycle{maturing}
+#' Imports the association file and immediately performs a check on
 #' the file system starting from the root to assess the alignment between the
 #' two.
 #' @param path The path on disk to the association file.
@@ -134,7 +136,8 @@ import_association_file <- function(path,
 
 #' Import integration matrices based on the association file.
 #'
-#' @description These functions are designed to import the appropriate
+#' @description \lifecycle{maturing}
+#' These functions are designed to import the appropriate
 #' integration matrix files given the association file and the root folder of
 #' the file system where Vispa2 matrices are generated.
 #' @details Import family functions are designed to work in combination with

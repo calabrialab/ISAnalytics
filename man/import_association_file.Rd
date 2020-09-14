@@ -24,6 +24,7 @@ A tibble with the contents of the association file plus a column
 containing the path in the file system for every project and pool if found.
 }
 \description{
+\lifecycle{maturing}
 Imports the association file and immediately performs a check on
 the file system starting from the root to assess the alignment between the
 two.

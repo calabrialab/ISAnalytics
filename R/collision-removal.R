@@ -4,6 +4,7 @@
 
 #' Identifies and removes collisions based on the sequence count matrix.
 #'
+#' \lifecycle{experimental}
 #' A collision is an integration (aka a unique combination of
 #' chr, integration_locus and strand) which is observed in more than one
 #' independent sample (a unique pair of ProjectID and SubjectID). The function
@@ -18,15 +19,18 @@
 #' For more details on how to use collision removal functionality:
 #' \code{vignette("Collision removal functionality", package = "ISAnalytics")}
 #'
-#' @param x A named list of matrices (names must be quantification types), or
+#' @param x A named list of matrices (names must be quantification types),
 #' a single integration matrix representing the sequence count matrix of
-#' interest.
+#' interest or a multi-quantification matrix obtained via
+#' \link{comparison_matrix}
 #' @param association_file The association file imported via
 #' `import_association_file`
 #' @param date_col The date column that should be considered for the analysis.
 #' Must be one value in `date_columns_coll()`
 #' @param reads_ratio A single numeric value that represents the ratio that has
 #' to be considered when deciding between seqCount value.
+#' @param seq_count_col For support of multi-quantification matrix -
+#' the name of the sequence count values column
 #' @family Collision removal
 #' @importFrom dplyr bind_rows all_of select
 #' @importFrom tibble is_tibble
@@ -53,9 +57,11 @@
 remove_collisions <- function(x,
     association_file,
     date_col = "SequencingDate",
-    reads_ratio = 10) {
+    reads_ratio = 10,
+    seq_count_col = "seqCount") {
     # Check basic parameter correctness
     stopifnot(is.list(x) & !is.null(names(x)))
+    mode <- NULL
     if (tibble::is_tibble(x)) {
         if (.check_mandatory_vars(x) == FALSE) {
             stop(.non_ISM_error())
@@ -63,10 +69,20 @@ remove_collisions <- function(x,
         if (.check_complAmpID(x) == FALSE) {
             stop(.missing_complAmpID_error())
         }
-        if (.check_value_col(x) == FALSE) {
-            stop(.missing_value_col_error())
+        ### SUPPORT FOR MULTI-QUANTIFICATION MATRIX
+        ## Check if it contains the "Value" column. If not find all numeric
+        ## columns that are not default columns
+        num_cols <- if (.check_value_col(x) == FALSE) {
+            found <- .find_exp_cols(x)
+            if (purrr::is_empty(found)) {
+                stop(.missing_num_cols_error())
+            }
+            mode <- "MULTI"
+            found
+        } else {
+            mode <- "SC"
+            "Value"
         }
-        x <- list(seqCount = x)
     } else {
         stopifnot(all(names(x) %in% quantification_types()))
         ## remove_collisions requires seqCount matrix, check if the list
@@ -89,6 +105,7 @@ remove_collisions <- function(x,
         if (.check_value_col(x$seqCount) == FALSE) {
             stop(.missing_value_col_error())
         }
+        mode <- "LIST"
     }
     stopifnot(tibble::is_tibble(association_file))
     stopifnot(is.character(date_col) & length(date_col) == 1)
@@ -96,6 +113,17 @@ remove_collisions <- function(x,
     stopifnot(is.integer(reads_ratio) | is.numeric(reads_ratio))
     stopifnot(length(reads_ratio) == 1)
 
+    if (mode == "SC" || mode == "LIST") {
+        seq_count_col <- "Value"
+    }
+    if (mode == "MULTI") {
+        if (!seq_count_col %in% num_cols) {
+            stop(paste(
+                "Sequence count column name not found in the data",
+                "frame"
+            ))
+        }
+    }
     # Check association file correctness
     if (.check_af_correctness(association_file) == FALSE) {
         stop("Malformed association file: one or more columns are missing")
@@ -110,7 +138,11 @@ remove_collisions <- function(x,
     }
 
     # Check imported matrices vs association file
-    seq_count_df <- x$seqCount
+    seq_count_df <- if (mode == "LIST") {
+        x$seqCount
+    } else {
+        x
+    }
     ## Check if association file contains all info relative to content the of
     ## the matrix
     all_contained <- all(seq_count_df$CompleteAmplificationID %in%
@@ -150,7 +182,8 @@ remove_collisions <- function(x,
     }
     fixed_collisions <- .process_collisions(
         splitted_df$collisions,
-        date_col, reads_ratio
+        date_col, reads_ratio,
+        seqCount_col = seq_count_col
     )
     reassigned <- fixed_collisions$reassigned
     removed <- fixed_collisions$removed
@@ -172,33 +205,48 @@ remove_collisions <- function(x,
         print(widget)
     }
     ## Align other matrices if present
-    if (length(x) > 1) {
-        if (verbose == TRUE) {
-            message("Realigning matrices...")
+    if (mode == "LIST") {
+        if (length(x) > 1) {
+            if (verbose == TRUE) {
+                message("Realigning matrices...")
+            }
+            other <- x[!names(x) %in% "seqCount"]
+            other <- realign_after_collisions(final_matr, other)
+            if (verbose == TRUE) {
+                message("Finished!")
+            }
+            lst <- list(seqCount = final_matr)
+            lst <- append(lst, other)
+            return(lst)
+        } else {
+            if (verbose == TRUE) {
+                message(paste(
+                    "Finished! You provided a single sequence count as matrix,",
+                    "to re-align other related matrices see",
+                    "?realign_after_collisions"
+                ))
+            }
+            return(list(seqCount = final_matr))
         }
-        other <- x[!names(x) %in% "seqCount"]
-        other <- realign_after_collisions(final_matr, other)
-        if (verbose == TRUE) {
-            message("Finished!")
-        }
-        lst <- list(seqCount = final_matr)
-        lst <- append(lst, other)
-        return(lst)
-    } else {
-        if (verbose == TRUE) {
+    }
+    if (verbose == TRUE) {
+        if (mode == "SC") {
             message(paste(
                 "Finished! You provided a single sequence count as matrix,",
                 "to re-align other related matrices see",
                 "?realign_after_collisions"
             ))
+        } else {
+            message(paste("Finished!"))
         }
-        return(list(seqCount = final_matr))
     }
+    return(final_matr)
 }
 
 #' Re-aligns matrices of other quantification types based on the processed
 #' sequence count matrix.
 #'
+#' \lifecycle{experimental}
 #' This function should be used to keep data consistent among the same analysis:
 #' if for some reason you removed the collisions by passing only the sequence
 #' count matrix to the `remove_collisions` function, you should call this
@@ -237,7 +285,7 @@ remove_collisions <- function(x,
 #' )
 #' sc_matrix <- remove_collisions(matrices$seqCount, association_file)
 #' others <- matrices[!names(matrices) %in% "seqCount"]
-#' aligned_matrices <- realign_after_collisions(sc_matrix$seqCount, others)
+#' aligned_matrices <- realign_after_collisions(sc_matrix, others)
 #' options(op)
 realign_after_collisions <- function(sc_matrix, other_matrices) {
     stopifnot(is.list(other_matrices) & !is.null(names(other_matrices)))

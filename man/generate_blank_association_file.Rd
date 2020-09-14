@@ -23,6 +23,7 @@ generate_blank_association_file(temp)
 }
 \seealso{
 Other Utility functions: 
+\code{\link{as_sparse_matrix}()},
 \code{\link{generate_Vispa2_launch_AF}()},
 \code{\link{unzip_file_system}()}
 }

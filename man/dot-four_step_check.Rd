@@ -5,7 +5,7 @@
 \title{Internal function that performs four-step-check of collisions for
 a single integration.}
 \usage{
-.four_step_check(..., date_col, reads_ratio)
+.four_step_check(..., date_col, reads_ratio, seqCount_col)
 }
 \arguments{
 \item{...}{Represents a single row of a tibble obtained via
@@ -17,6 +17,9 @@ that share that integration (collisions).}
 
 \item{reads_ratio}{The value of the ratio between sequence count values to
 check}
+
+\item{seqCount_col}{The name of the sequence count column (support
+for multi quantification matrix)}
 }
 \value{
 A list with:

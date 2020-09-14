@@ -15,13 +15,20 @@ compute_abundance(x, percentage = TRUE)
 An integration matrix
 }
 \description{
+\lifecycle{maturing}
 Abundance is obtained for every row by calculating the ratio
 between the single value and the total value for the sample.
 }
 \examples{
 path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-package = "ISAnalytics")
+    package = "ISAnalytics"
+)
 matrix <- import_single_Vispa2Matrix(path)
 abundance <- compute_abundance(matrix)
+}
+\seealso{
+Other Analysis functions: 
+\code{\link{comparison_matrix}()},
+\code{\link{separate_quant_matrices}()}
 }
 \concept{Analysis functions}

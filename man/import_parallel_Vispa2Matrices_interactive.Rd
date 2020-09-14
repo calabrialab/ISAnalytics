@@ -43,6 +43,7 @@ A named list of tibbles containing data from all imported integration
 matrices, divided by quantification type
 }
 \description{
+\lifecycle{maturing}
 These functions are designed to import the appropriate
 integration matrix files given the association file and the root folder of
 the file system where Vispa2 matrices are generated.

@@ -52,22 +52,25 @@ association_file_np <- af_no_prob(association_file_more)
 association_file_miss <- af_missing_info(association_file_more)
 
 # Matrices
-import_matr_silent <- function(type) {
-    op <- options(ISAnalytics.verbose = FALSE)
+import_matr_silent <- function() {
+    op <- options(ISAnalytics.verbose = FALSE, ISAnalytics.widgets = FALSE)
     on.exit(options(op))
     matrices <- import_parallel_Vispa2Matrices_auto(
         association_file = path_af, root = root_correct,
-        quantification_type = type,
+        quantification_type = c("fragmentEstimate", "seqCount"),
         matrix_type = "annotated", workers = 2, patterns = NULL,
         matching_opt = "ANY"
     )
-    ex <- rlang::expr(`$`(matrices, !!type))
-    matr <- rlang::eval_tidy(ex)
-    matr
+    matrices
 }
 
-seq_count_m <- import_matr_silent("seqCount")
-fe_m <- import_matr_silent("fragmentEstimate")
+matrices <- import_matr_silent()
+
+seq_count_m <- matrices$seqCount
+fe_m <- matrices$fragmentEstimate
+
+### Multi quant matrix
+multi <- comparison_matrix(matrices)
 
 #------------------------------------------------------------------------------#
 # Tests .check_same_info
@@ -87,27 +90,45 @@ test_that(".check_same_info returns non empty if more info", {
 #------------------------------------------------------------------------------#
 # Tests .join_matrix_af
 #------------------------------------------------------------------------------#
+joined_df <- .join_matrix_af(
+    seq_count_m, association_file_np,
+    "SequencingDate"
+)
+joined_df_multi <- .join_matrix_af(
+    multi, association_file_np,
+    "SequencingDate"
+)
+
 test_that(".join_matrix_af produces the right table", {
-    joined_df <- .join_matrix_af(
-        seq_count_m, association_file_np,
-        "SequencingDate"
-    )
     expect_true(!is.null(joined_df))
     expect_true(nrow(joined_df) == nrow(seq_count_m))
     expect_true(ncol(joined_df) == 12)
+
+    expect_true(!is.null(joined_df_multi))
+    expect_true(nrow(joined_df_multi) == nrow(seq_count_m))
+    expect_true(ncol(joined_df_multi) == 13)
 })
 
 #------------------------------------------------------------------------------#
 # Tests .identify_independent_samples
 #------------------------------------------------------------------------------#
-### OTHER VARS ###
-joined_df <- .join_matrix_af(seq_count_m, association_file_np, "SequencingDate")
+splitted <- .identify_independent_samples(joined_df)
+splitted_multi <- .identify_independent_samples(joined_df_multi)
 
 test_that(".identify_independent_samples splits joined_df", {
-    splitted <- .identify_independent_samples(joined_df)
     expect_true(nrow(splitted$collisions) +
         nrow(splitted$non_collisions) == nrow(joined_df))
     expect_true(nrow(dplyr::inner_join(splitted[[1]], splitted[[2]],
+        by = c(
+            "chr",
+            "integration_locus",
+            "strand"
+        )
+    )) == 0)
+    expect_true(nrow(splitted_multi$collisions) +
+        nrow(splitted_multi$non_collisions) ==
+        nrow(joined_df_multi))
+    expect_true(nrow(dplyr::inner_join(splitted_multi[[1]], splitted_multi[[2]],
         by = c(
             "chr",
             "integration_locus",
@@ -119,11 +140,16 @@ test_that(".identify_independent_samples splits joined_df", {
 #------------------------------------------------------------------------------#
 # Tests .obtain_nested
 #------------------------------------------------------------------------------#
+nested <- .obtain_nested(splitted$collisions)
+nested_multi <- .obtain_nested(splitted_multi$collisions)
 test_that(".obtain_nested correctly returns nested table", {
-    splitted <- .identify_independent_samples(joined_df)
-    nested <- .obtain_nested(splitted$collisions)
     expect_true(ncol(nested) == 4)
     expect_equal(colnames(nested), c(
+        "chr", "integration_locus", "strand",
+        "data"
+    ))
+    expect_true(ncol(nested_multi) == 4)
+    expect_equal(colnames(nested_multi), c(
         "chr", "integration_locus", "strand",
         "data"
     ))
@@ -159,10 +185,48 @@ example_df_nested <- function(ProjectID,
         )
 }
 
+example_df_nested_multi <- function(ProjectID,
+    seqCount,
+    fragmentEstimate,
+    SequencingDate,
+    PoolID,
+    SubjectID,
+    Replicate) {
+    t <- tibble::tibble(
+        seqCount = seqCount,
+        fragmentEstimate = fragmentEstimate,
+        SequencingDate = SequencingDate,
+        ProjectID = ProjectID,
+        PoolID = PoolID,
+        SubjectID = SubjectID,
+        ReplicateNumber = Replicate
+    )
+    t <- t %>%
+        dplyr::mutate(
+            CompleteAmplificationID = paste(.data$ProjectID,
+                .data$PoolID,
+                .data$SubjectID,
+                .data$ReplicateNumber,
+                sep = "_"
+            ),
+            .before = .data$seqCount
+        )
+}
+
 test_that(".discriminate_by_date returns as expected for all equal dates", {
     dates <- lubridate::dmy("05/08/2020")
     df <- example_df_nested(
         ProjectID = "CLOEXP", Value = c(125, 25, 2),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c("subj1", "subj2", "subj3"),
+        Replicate = c(1, 1, 2)
+    )
+    result <- .discriminate_by_date(df, "SequencingDate")
+    expect_true(result$check == FALSE)
+    expect_equal(result$data, df)
+    df <- example_df_nested_multi(
+        ProjectID = "CLOEXP", seqCount = c(125, 25, 2),
+        fragmentEstimate = c(1354.54, 484.5, 386),
         SequencingDate = dates, PoolID = "POOL6",
         SubjectID = c("subj1", "subj2", "subj3"),
         Replicate = c(1, 1, 2)
@@ -195,6 +259,21 @@ test_that(".discriminate_by_date returns as expected for paired equal dates", {
     expect_true(result$check == FALSE)
     df <- df %>% dplyr::arrange(.data$SequencingDate)
     expect_equal(result$data, df)
+    df <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(125, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj2", "subj3", "subj4",
+            "subj2", "subj5"
+        ),
+        Replicate = c(1, 1, 2, 1, 2, 3)
+    )
+    result <- .discriminate_by_date(df, "SequencingDate")
+    expect_true(result$check == FALSE)
+    df <- df %>% dplyr::arrange(.data$SequencingDate)
+    expect_equal(result$data, df)
 })
 
 test_that(".discriminate_by_date returns as expected for single min date", {
@@ -209,6 +288,23 @@ test_that(".discriminate_by_date returns as expected for single min date", {
     df <- example_df_nested(
         ProjectID = "CLOEXP",
         Value = c(125, 25, 2, 50, 800, 6),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj2", "subj3", "subj4",
+            "subj2", "subj5"
+        ),
+        Replicate = c(1, 1, 2, 1, 2, 3)
+    )
+    result <- .discriminate_by_date(df, "SequencingDate")
+    expect_true(result$check == TRUE)
+    df <- df %>%
+        dplyr::filter(.data$SequencingDate == lubridate::dmy("01/08/2020"))
+    expect_equal(result$data, df)
+
+    df <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(125, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
         SequencingDate = dates, PoolID = "POOL6",
         SubjectID = c(
             "subj1", "subj2", "subj3", "subj4",
@@ -249,6 +345,22 @@ test_that(".discriminate_by_replicate returns as expected for single max", {
     expect_true(result$check == TRUE)
     df <- df %>% dplyr::filter(.data$SubjectID == "subj2")
     expect_equal(result$data, df)
+
+    df <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(125, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj6", "subj3", "subj2",
+            "subj2", "subj5"
+        ),
+        Replicate = c(1, 1, 2, 1, 2, 3)
+    )
+    result <- .discriminate_by_replicate(df)
+    expect_true(result$check == TRUE)
+    df <- df %>% dplyr::filter(.data$SubjectID == "subj2")
+    expect_equal(result$data, df)
 })
 
 test_that(".discriminate_by_replicate returns as expected for not max", {
@@ -263,6 +375,21 @@ test_that(".discriminate_by_replicate returns as expected for not max", {
     df <- example_df_nested(
         ProjectID = "CLOEXP",
         Value = c(125, 25, 2, 50, 800, 6),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj1", "subj3", "subj2",
+            "subj2", "subj5"
+        ),
+        Replicate = c(1, 2, 2, 1, 2, 3)
+    )
+    result <- .discriminate_by_replicate(df)
+    expect_true(result$check == FALSE)
+    expect_equal(result$data, df)
+
+    df <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(125, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
         SequencingDate = dates, PoolID = "POOL6",
         SubjectID = c(
             "subj1", "subj1", "subj3", "subj2",
@@ -297,7 +424,22 @@ test_that(".discriminate_by_seqCount returns as expected for ratio < 10", {
         ),
         Replicate = c(1, 2, 2, 1, 2, 3)
     )
-    result <- .discriminate_by_seqCount(df, 10)
+    result <- .discriminate_by_seqCount(df, 10, "Value")
+    expect_true(result$check == FALSE)
+    expect_equal(result$data, df)
+
+    df <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(125, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj1", "subj3", "subj2",
+            "subj2", "subj5"
+        ),
+        Replicate = c(1, 2, 2, 1, 2, 3)
+    )
+    result <- .discriminate_by_seqCount(df, 10, "seqCount")
     expect_true(result$check == FALSE)
     expect_equal(result$data, df)
 })
@@ -321,7 +463,23 @@ test_that(".discriminate_by_seqCount returns as expected for ratio > 10", {
         ),
         Replicate = c(1, 2, 2, 1, 2, 3)
     )
-    result <- .discriminate_by_seqCount(df, 10)
+    result <- .discriminate_by_seqCount(df, 10, "Value")
+    expect_true(result$check == TRUE)
+    df <- df %>% dplyr::filter(.data$SubjectID == "subj2")
+    expect_equal(result$data, df)
+
+    df <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(20, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj1", "subj3", "subj2",
+            "subj2", "subj5"
+        ),
+        Replicate = c(1, 2, 2, 1, 2, 3)
+    )
+    result <- .discriminate_by_seqCount(df, 10, "seqCount")
     expect_true(result$check == TRUE)
     df <- df %>% dplyr::filter(.data$SubjectID == "subj2")
     expect_equal(result$data, df)
@@ -355,7 +513,44 @@ test_that(".four_step_check returns as expected for first step", {
     )
     res <- purrr::pmap(ex,
         .f = .four_step_check, date_col = "SequencingDate",
-        reads_ratio = 10
+        reads_ratio = 10, seqCount_col = "Value"
+    )
+    rem_col <- purrr::map(res, function(x) {
+        x$data
+    })
+    rem_col <- purrr::reduce(rem_col, dplyr::bind_rows)
+    reassigned <- purrr::map(res, function(x) {
+        x$reassigned
+    })
+    reassigned <- purrr::reduce(reassigned, sum)
+    removed <- purrr::map(res, function(x) {
+        x$removed
+    })
+    removed <- purrr::reduce(removed, sum)
+    expect_equal(rem_col$SequencingDate, c(lubridate::dmy("01/08/2020")))
+    expect_equal(rem_col$SubjectID, c("subj1"))
+    expect_true(nrow(rem_col) == 1)
+    expect_true(reassigned == 1)
+    expect_true(removed == 0)
+
+    df <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(20, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj6", "subj3", "subj2",
+            "subj2", "subj5"
+        ),
+        Replicate = c(1, 2, 2, 1, 2, 3)
+    )
+    ex <- tibble::tibble(
+        chr = 1, integration_locus = 10493, strand = "+",
+        data = list(df)
+    )
+    res <- purrr::pmap(ex,
+        .f = .four_step_check, date_col = "SequencingDate",
+        reads_ratio = 10, seqCount_col = "seqCount"
     )
     rem_col <- purrr::map(res, function(x) {
         x$data
@@ -401,7 +596,44 @@ test_that(".four_step_check returns as expected for second step", {
     )
     res <- purrr::pmap(ex,
         .f = .four_step_check, date_col = "SequencingDate",
-        reads_ratio = 10
+        reads_ratio = 10, seqCount_col = "Value"
+    )
+    rem_col <- purrr::map(res, function(x) {
+        x$data
+    })
+    rem_col <- purrr::reduce(rem_col, dplyr::bind_rows)
+    reassigned <- purrr::map(res, function(x) {
+        x$reassigned
+    })
+    reassigned <- purrr::reduce(reassigned, sum)
+    removed <- purrr::map(res, function(x) {
+        x$removed
+    })
+    removed <- purrr::reduce(removed, sum)
+    expect_equal(rem_col$ReplicateNumber, c(1, 2))
+    expect_equal(rem_col$SubjectID, c("subj1", "subj1"))
+    expect_true(nrow(rem_col) == 2)
+    expect_true(reassigned == 1)
+    expect_true(removed == 0)
+
+    df <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(20, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj1", "subj3", "subj2",
+            "subj4", "subj5"
+        ),
+        Replicate = c(1, 2, 2, 1, 2, 3)
+    )
+    ex <- tibble::tibble(
+        chr = 1, integration_locus = 10493, strand = "+",
+        data = list(df)
+    )
+    res <- purrr::pmap(ex,
+        .f = .four_step_check, date_col = "SequencingDate",
+        reads_ratio = 10, seqCount_col = "seqCount"
     )
     rem_col <- purrr::map(res, function(x) {
         x$data
@@ -447,7 +679,7 @@ test_that(".four_step_check returns as expected for third step", {
     )
     res <- purrr::pmap(ex,
         .f = .four_step_check, date_col = "SequencingDate",
-        reads_ratio = 10
+        reads_ratio = 10, seqCount_col = "Value"
     )
     rem_col <- purrr::map(res, function(x) {
         x$data
@@ -463,6 +695,44 @@ test_that(".four_step_check returns as expected for third step", {
     removed <- purrr::reduce(removed, sum)
     expect_equal(rem_col$ReplicateNumber, c(1, 2))
     expect_equal(rem_col$Value, c(50, 800))
+    expect_equal(rem_col$SubjectID, c("subj2", "subj2"))
+    expect_true(nrow(rem_col) == 2)
+    expect_true(reassigned == 1)
+    expect_true(removed == 0)
+
+    df <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(20, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj1", "subj3", "subj2",
+            "subj2", "subj5"
+        ),
+        Replicate = c(1, 2, 2, 1, 2, 3)
+    )
+    ex <- tibble::tibble(
+        chr = 1, integration_locus = 10493, strand = "+",
+        data = list(df)
+    )
+    res <- purrr::pmap(ex,
+        .f = .four_step_check, date_col = "SequencingDate",
+        reads_ratio = 10, seqCount_col = "seqCount"
+    )
+    rem_col <- purrr::map(res, function(x) {
+        x$data
+    })
+    rem_col <- purrr::reduce(rem_col, dplyr::bind_rows)
+    reassigned <- purrr::map(res, function(x) {
+        x$reassigned
+    })
+    reassigned <- purrr::reduce(reassigned, sum)
+    removed <- purrr::map(res, function(x) {
+        x$removed
+    })
+    removed <- purrr::reduce(removed, sum)
+    expect_equal(rem_col$ReplicateNumber, c(1, 2))
+    expect_equal(rem_col$seqCount, c(50, 800))
     expect_equal(rem_col$SubjectID, c("subj2", "subj2"))
     expect_true(nrow(rem_col) == 2)
     expect_true(reassigned == 1)
@@ -494,7 +764,42 @@ test_that(".four_step_check returns as expected for fourth step", {
     )
     res <- purrr::pmap(ex,
         .f = .four_step_check, date_col = "SequencingDate",
-        reads_ratio = 10
+        reads_ratio = 10, seqCount_col = "Value"
+    )
+    rem_col <- purrr::map(res, function(x) {
+        x$data
+    })
+    rem_col <- purrr::reduce(rem_col, dplyr::bind_rows)
+    reassigned <- purrr::map(res, function(x) {
+        x$reassigned
+    })
+    reassigned <- purrr::reduce(reassigned, sum)
+    removed <- purrr::map(res, function(x) {
+        x$removed
+    })
+    removed <- purrr::reduce(removed, sum)
+    expect_null(rem_col)
+    expect_true(reassigned == 0)
+    expect_true(removed == 1)
+
+    df <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(20, 25, 2, 50, 80, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj1", "subj3", "subj2",
+            "subj2", "subj5"
+        ),
+        Replicate = c(1, 2, 2, 1, 2, 3)
+    )
+    ex <- tibble::tibble(
+        chr = 1, integration_locus = 10493, strand = "+",
+        data = list(df)
+    )
+    res <- purrr::pmap(ex,
+        .f = .four_step_check, date_col = "SequencingDate",
+        reads_ratio = 10, seqCount_col = "seqCount"
     )
     rem_col <- purrr::map(res, function(x) {
         x$data
@@ -585,17 +890,142 @@ example_collisions <- function() {
     )
     t <- tibble::as_tibble(cols)
     t <- t %>%
-        tibble::add_column(tibble::as_tibble_col(list(smpl1, smpl2,
-                                                      smpl3, smpl4),
-            column_name = "data"
+        tibble::add_column(tibble::as_tibble_col(list(
+            smpl1, smpl2,
+            smpl3, smpl4
+        ),
+        column_name = "data"
+        ))
+    t
+}
+
+example_collisions_multi <- function() {
+    cols <- list(
+        chr = c(1, 2, 3, 4),
+        integration_locus = c(103948, 14390, 12453, 12353),
+        strand = c("+", "+", "-", "-")
+    )
+    # Can discriminate by date
+    dates <- c(
+        lubridate::dmy("05/08/2020"),
+        lubridate::dmy("05/08/2020"),
+        lubridate::dmy("01/08/2020"),
+        lubridate::dmy("05/08/2020"),
+        lubridate::dmy("05/08/2020"),
+        lubridate::dmy("03/08/2020")
+    )
+    smpl1 <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(125, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj2", "subj3", "subj4",
+            "subj2", "subj5"
+        ),
+        Replicate = c(1, 1, 2, 1, 2, 3)
+    )
+    # Can discriminate by replicate
+    dates <- c(
+        lubridate::dmy("05/08/2020"),
+        lubridate::dmy("05/08/2020"),
+        lubridate::dmy("05/08/2020"),
+        lubridate::dmy("05/08/2020"),
+        lubridate::dmy("05/08/2020"),
+        lubridate::dmy("05/08/2020")
+    )
+    smpl2 <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(125, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj2", "subj3", "subj4",
+            "subj2", "subj5"
+        ),
+        Replicate = c(1, 1, 2, 1, 2, 3)
+    )
+    # Can discriminate by seqCount
+    smpl3 <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(25, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj2", "subj3", "subj4",
+            "subj2", "subj1"
+        ),
+        Replicate = c(1, 1, 2, 1, 2, 3)
+    )
+    # Can't discriminate
+    smpl4 <- example_df_nested_multi(
+        ProjectID = "CLOEXP",
+        seqCount = c(125, 25, 2, 50, 800, 6),
+        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
+        SequencingDate = dates, PoolID = "POOL6",
+        SubjectID = c(
+            "subj1", "subj2", "subj3", "subj4",
+            "subj2", "subj1"
+        ),
+        Replicate = c(1, 1, 2, 1, 2, 3)
+    )
+    t <- tibble::as_tibble(cols)
+    t <- t %>%
+        tibble::add_column(tibble::as_tibble_col(list(
+            smpl1, smpl2,
+            smpl3, smpl4
+        ),
+        column_name = "data"
         ))
     t
 }
 
 ex_collisions <- example_collisions()
+ex_collisions_multi <- example_collisions_multi()
 
 test_that(".coll_mapping produces expected result for example collisions", {
-    result <- .coll_mapping(ex_collisions, "SequencingDate", 10)
+    result <- .coll_mapping(ex_collisions, "SequencingDate", 10, "Value")
+    coll <- result$coll
+    removed <- result$removed
+    reassigned <- result$reassigned
+    expect_true(removed == 1)
+    expect_true(reassigned == 3)
+    # Removed integration should not be in the result
+    rem_integration <- coll %>%
+        dplyr::filter(
+            .data$chr == 4, .data$integration_locus == 12353,
+            .data$strand == "-"
+        )
+    expect_true(nrow(rem_integration) == 0)
+    # First integration expected result
+    first <- coll %>%
+        dplyr::filter(
+            .data$chr == 1, .data$integration_locus == 103948,
+            .data$strand == "+"
+        )
+    expect_true(all(first$SubjectID == "subj3"))
+    expect_true(nrow(first) == 1)
+    # Second integration expected result
+    second <- coll %>%
+        dplyr::filter(
+            .data$chr == 2, .data$integration_locus == 14390,
+            .data$strand == "+"
+        )
+    expect_true(all(second$SubjectID == "subj2"))
+    expect_true(nrow(second) == 2)
+    # Third integration expected result
+    third <- coll %>%
+        dplyr::filter(
+            .data$chr == 3, .data$integration_locus == 12453,
+            .data$strand == "-"
+        )
+    expect_true(all(third$SubjectID == "subj2"))
+    expect_true(nrow(third) == 2)
+
+    result <- .coll_mapping(
+        ex_collisions_multi, "SequencingDate", 10,
+        "seqCount"
+    )
     coll <- result$coll
     removed <- result$removed
     reassigned <- result$reassigned
@@ -634,7 +1064,6 @@ test_that(".coll_mapping produces expected result for example collisions", {
     expect_true(nrow(third) == 2)
 })
 
-
 #------------------------------------------------------------------------------#
 # Tests .process_collisions
 #------------------------------------------------------------------------------#
@@ -642,7 +1071,49 @@ test_that(".process_collisions returns updated collisions", {
     result <- .process_collisions(
         ex_collisions %>%
             tidyr::unnest(.data$data),
-        "SequencingDate", 10
+        "SequencingDate", 10, "Value"
+    )
+    coll <- result$coll
+    removed <- result$removed
+    reassigned <- result$reassigned
+    expect_true(removed == 1)
+    expect_true(reassigned == 3)
+    # Removed integration should not be in the result
+    rem_integration <- coll %>%
+        dplyr::filter(
+            .data$chr == 4, .data$integration_locus == 12353,
+            .data$strand == "-"
+        )
+    expect_true(nrow(rem_integration) == 0)
+    # First integration expected result
+    first <- coll %>%
+        dplyr::filter(
+            .data$chr == 1, .data$integration_locus == 103948,
+            .data$strand == "+"
+        )
+    expect_true(all(first$SubjectID == "subj3"))
+    expect_true(nrow(first) == 1)
+    # Second integration expected result
+    second <- coll %>%
+        dplyr::filter(
+            .data$chr == 2, .data$integration_locus == 14390,
+            .data$strand == "+"
+        )
+    expect_true(all(second$SubjectID == "subj2"))
+    expect_true(nrow(second) == 2)
+    # Third integration expected result
+    third <- coll %>%
+        dplyr::filter(
+            .data$chr == 3, .data$integration_locus == 12453,
+            .data$strand == "-"
+        )
+    expect_true(all(third$SubjectID == "subj2"))
+    expect_true(nrow(third) == 2)
+
+    result <- .process_collisions(
+        ex_collisions_multi %>%
+            tidyr::unnest(.data$data),
+        "SequencingDate", 10, "seqCount"
     )
     coll <- result$coll
     removed <- result$removed
@@ -695,7 +1166,8 @@ test_that("remove_collisions stops if x is not a named list", {
     })
 })
 
-test_that("remove_collisions stops if names of x are not in quant types", {
+test_that("remove_collisions stops if names of x, if list,
+          are not in quant types", {
     # All
     expect_error({
         rc <- remove_collisions(list(a = "ab", b = "cd"), association_file_np)
@@ -710,45 +1182,63 @@ test_that("remove_collisions stops if names of x are not in quant types", {
 })
 
 test_that("remove_collisions stops if elements are not IS matrices", {
-    non_ism <- tibble::tibble(a = c(1,2,3))
+    non_ism <- tibble::tibble(a = c(1, 2, 3))
     miss_value <- seq_count_m %>% dplyr::select(-c(.data$Value))
     miss_camp <- seq_count_m %>%
         dplyr::select(-c(.data$CompleteAmplificationID))
     expect_error(
         {
             rc <- remove_collisions(x = non_ism, association_file_np)
-        }, regexp = .non_ISM_error()
+        },
+        regexp = .non_ISM_error()
     )
     expect_error(
         {
             rc <- remove_collisions(x = miss_value, association_file_np)
-        }, regexp = .missing_value_col_error()
+        },
+        regexp = .missing_num_cols_error()
     )
     expect_error(
         {
             rc <- remove_collisions(x = miss_camp, association_file_np)
-        }, regexp = .missing_complAmpID_error()
+        },
+        regexp = .missing_complAmpID_error()
     )
     expect_error(
         {
-            rc <- remove_collisions(x = list(seqCount = non_ism,
-                                             fragmentEstimate = seq_count_m),
-                                    association_file_np)
-        }, regexp = .non_ISM_error()
+            rc <- remove_collisions(
+                x = list(
+                    seqCount = non_ism,
+                    fragmentEstimate = seq_count_m
+                ),
+                association_file_np
+            )
+        },
+        regexp = .non_ISM_error()
     )
     expect_error(
         {
-            rc <- remove_collisions(x = list(seqCount = miss_value,
-                                             fragmentEstimate = seq_count_m),
-                                    association_file_np)
-        }, regexp = .missing_value_col_error()
+            rc <- remove_collisions(
+                x = list(
+                    seqCount = miss_value,
+                    fragmentEstimate = seq_count_m
+                ),
+                association_file_np
+            )
+        },
+        regexp = .missing_value_col_error()
     )
     expect_error(
         {
-            rc <- remove_collisions(x = list(seqCount = miss_camp,
-                                             fragmentEstimate = seq_count_m),
-                                    association_file_np)
-        }, regexp = .missing_complAmpID_error()
+            rc <- remove_collisions(
+                x = list(
+                    seqCount = miss_camp,
+                    fragmentEstimate = seq_count_m
+                ),
+                association_file_np
+            )
+        },
+        regexp = .missing_complAmpID_error()
     )
 })
 
@@ -881,16 +1371,17 @@ test_that("remove_collisions notifies additional data and succeeds", {
         {
             invisible(capture_output({
                 coll_rem <- remove_collisions(seq_count_m, association_file_more,
-                                              date_col = "SequencingDate",
-                                              reads_ratio = 10
+                    date_col = "SequencingDate",
+                    reads_ratio = 10
                 )
             }))
         },
         regexp = paste("Found additional data relative to some projects",
-                       "that are not included in the imported matrices.",
-                       "Here is a summary",
-                       collapse = "\n"
-        ), fixed = TRUE
+            "that are not included in the imported matrices.",
+            "Here is a summary",
+            collapse = "\n"
+        ),
+        fixed = TRUE
     )
 })
 
@@ -915,59 +1406,65 @@ coll_rem <- silent_coll()
 
 test_that("realign_after_collisions fails if others is not a named list", {
     expect_error({
-        realigned <- realign_after_collisions(coll_rem$seqCount, 2)
+        realigned <- realign_after_collisions(coll_rem, 2)
     })
     expect_error({
-        realigned <- realign_after_collisions(coll_rem$seqCount, NULL)
+        realigned <- realign_after_collisions(coll_rem, NULL)
     })
     expect_error({
         realigned <- realign_after_collisions(
-            coll_rem$seqCount,
-            coll_rem$fragmentEstimate
+            coll_rem,
+            fe_m
         )
     })
 })
 
 test_that("realign_after_collisions fails if names not quant types", {
     expect_error({
-        realigned <- realign_after_collisions(coll_rem$seqCount, fe_m)
+        realigned <- realign_after_collisions(coll_rem, fe_m)
     })
     expect_error({
-        realigned <- realign_after_collisions(coll_rem$seqCount, list(a = fe_m))
+        realigned <- realign_after_collisions(coll_rem, list(a = fe_m))
     })
 })
 
 test_that("realign_after_collisions fails if list contains non-IS matrices", {
     fe1 <- fe_m %>% dplyr::select(-c(.data$CompleteAmplificationID))
-    expect_error({
-        realigned <- realign_after_collisions(
-            coll_rem$seqCount,
-            list(
-                fragmentEstimate =
-                    tibble::tibble(a = c(1,2,3))
+    expect_error(
+        {
+            realigned <- realign_after_collisions(
+                coll_rem$seqCount,
+                list(
+                    fragmentEstimate =
+                        tibble::tibble(a = c(1, 2, 3))
+                )
             )
-        )
-    }, regexp = .non_ISM_error())
-    expect_error({
-        realigned <- realign_after_collisions(
-            coll_rem$seqCount,
-            list(
-                fragmentEstimate = fe_m,
-                barcodeCount = fe1
+        },
+        regexp = .non_ISM_error()
+    )
+    expect_error(
+        {
+            realigned <- realign_after_collisions(
+                coll_rem,
+                list(
+                    fragmentEstimate = fe_m,
+                    barcodeCount = fe1
+                )
             )
-        )
-    }, regexp = .missing_complAmpID_error())
+        },
+        regexp = .missing_complAmpID_error()
+    )
 })
 
 test_that("realign_after_collisions correctly re-aligns", {
     realigned <- realign_after_collisions(
-        coll_rem$seqCount,
+        coll_rem,
         list(fragmentEstimate = fe_m)
     )
-    expect_true(nrow(coll_rem$seqCount) == nrow(realigned$fragmentEstimate))
-    expect_true(all(realigned$fragmentEstimate$chr %in% coll_rem$seqCount$chr))
+    expect_true(nrow(coll_rem) == nrow(realigned$fragmentEstimate))
+    expect_true(all(realigned$fragmentEstimate$chr %in% coll_rem$chr))
     expect_true(all(realigned$fragmentEstimate$integration_locus
-        %in% coll_rem$seqCount$integration_locus))
+        %in% coll_rem$integration_locus))
     expect_true(all(realigned$fragmentEstimate$CompleteAmplificationID
-        %in% coll_rem$seqCount$CompleteAmplificationID))
+        %in% coll_rem$CompleteAmplificationID))
 })

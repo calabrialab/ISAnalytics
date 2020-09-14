@@ -8,13 +8,15 @@ remove_collisions(
   x,
   association_file,
   date_col = "SequencingDate",
-  reads_ratio = 10
+  reads_ratio = 10,
+  seq_count_col = "seqCount"
 )
 }
 \arguments{
-\item{x}{A named list of matrices (names must be quantification types), or
+\item{x}{A named list of matrices (names must be quantification types),
 a single integration matrix representing the sequence count matrix of
-interest.}
+interest or a multi-quantification matrix obtained via
+\link{comparison_matrix}}
 
 \item{association_file}{The association file imported via
 \code{import_association_file}}
@@ -24,11 +26,15 @@ Must be one value in \code{date_columns_coll()}}
 
 \item{reads_ratio}{A single numeric value that represents the ratio that has
 to be considered when deciding between seqCount value.}
+
+\item{seq_count_col}{For support of multi-quantification matrix -
+the name of the sequence count values column}
 }
 \value{
 A list of tibbles with removed collisions
 }
 \description{
+\lifecycle{experimental}
 A collision is an integration (aka a unique combination of
 chr, integration_locus and strand) which is observed in more than one
 independent sample (a unique pair of ProjectID and SubjectID). The function

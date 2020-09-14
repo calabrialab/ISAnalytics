@@ -13,6 +13,7 @@ import_single_Vispa2Matrix(path)
 A tidy tibble
 }
 \description{
+\lifecycle{stable}
 This function allows to read and import an integration matrix
 produced as the output of Vispa2 pipeline and converts it to a tidy
 tibble.

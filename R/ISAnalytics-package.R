@@ -2,7 +2,8 @@
 #' identified from genomics next generation sequencing reads for
 #' clonal tracking studies
 #'
-#' @description In gene therapy, stem cells are modified using viral
+#' @description \lifecycle{maturing}
+#' In gene therapy, stem cells are modified using viral
 #' vectors to deliver the therapeutic transgene and replace functional
 #' properties since the genetic modification is stable and inherited in
 #' all cell progeny. The retrieval and mapping of the sequences flanking
@@ -37,10 +38,13 @@
 #'   * \code{\link{compute_near_integrations}}
 #' * Analysis functions:
 #'   * \code{\link{compute_abundance}}
+#'   * \code{\link{comparison_matrix}}
+#'   * \code{\link{separate_quant_matrices}}
 #' * Utility functions:
 #'   * \code{\link{generate_blank_association_file}}
 #'   * \code{\link{generate_Vispa2_launch_AF}}
 #'   * \code{\link{unzip_file_system}}
+#'   * \code{\link{as_sparse_matrix}}
 #'
 #' @section Vignettes:
 #' * \code{vignette("How to use import functions", package = "ISAnalytics")}
@@ -51,4 +55,9 @@
 #'
 #' @docType package
 #' @name ISAnalytics
+NULL
+
+## usethis namespace: start
+#' @import lifecycle
+## usethis namespace: end
 NULL

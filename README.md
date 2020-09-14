@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ISAnalytics
+# ISAnalytics <a href='https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html'><img src='man/figures/isanalytics_logo.png' align="right" height="250" /></a>
 
 <!-- badges: start -->
 
@@ -12,6 +12,8 @@ status](https://travis-ci.com/calabrialab/isanalytics.svg?branch=master)](https:
 bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
 [![R build
 status](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
+[![Lifecycle:
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
 ISAnalytics is an R package developed to analyze gene therapy vector
@@ -32,10 +34,19 @@ IS tracking (clonal abundance, clonal expansions and statistics for
 insertional mutagenesis, etc.), (3) providing basic biology insights of
 transduced stem cells in vivo.
 
-ISAnalytics is currently under development with the goal of being
-published on Bioconductor soon.
-
 # Installation
+
+To install the package from bioconductor:
+
+``` r
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("ISAnalytics")
+```
 
 To install the package from GitHub:
 
@@ -55,16 +66,37 @@ devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
   - Aggregation: more info with `vignette("Working with aggregate
     functions", package = "ISAnalytics")`
   - Re-calibration functions: `compute_near_integrations`
-  - Analysis functions: `compute_abundance`
+  - Analysis functions: `compute_abundance`, `comparison_matrix`,
+    `separate_quant_matrices`
   - Utility functions
 
 # NEWS
 
 # ISAnalytics News
 
-## Changes in version 0.99.8 (2020-08-12)
+## Changes in version 0.99.10 (2020-09-14)
 
-  - Submitted to Bioconductor
+ISanalytics is officially on bioconductor\!
+
+#### NEW FEATURES
+
+  - Added analysis functions `comparison_matrix` and
+    `separate_quant_matrices`
+  - Added utility function `as_sparse_matrix`
+  - Added package logo
+
+#### SIGNIFICANT USER-VISIBLE CHANGES
+
+  - Changed algorithm for `compute_near_integrations`
+  - Added support for multi-quantification matrices to
+    `remove_collisions`
+  - Added usage of lifecycle badges in documentation: users can now see
+    if a feature is experimental/maturing/stable etc
+
+#### MINOR FIXES
+
+  - Added fix for `import_single_Vispa2Matrix` to remove non significant
+    0 values
 
 ## Changes in version 0.99.9 (2020-09-01)
 
@@ -81,9 +113,14 @@ devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
     tibbles
   - Modified package documentation
 
+## Changes in version 0.99.8 (2020-08-12)
+
+  - Submitted to Bioconductor
+
 # TO DO in future updates
 
   - Add vignette for association file usage
+  - Add vignette for recalibration functionality
 
 # Getting help
 

@@ -224,9 +224,9 @@ is present for the collision removal process to take place.
 
 ## Process the collisions
 
-You can process the collisions in two different ways, the recommended way is to 
-pass the entire named list to the function, so it can realign other matrices 
-automatically:
+You can process the collisions in 3 different ways.
+
+### Pass the entire named list to the function
 
 ```{r removecoll1, R.options=options(ISAnalytics.widgets = FALSE)}
 # Pass the whole named list
@@ -238,11 +238,12 @@ matrices_processed <- remove_collisions(x = matrices,
 
 If you have the "widgets" option active, a report file is produced at the end
 that shows the before and after for each subject (and some other details). 
-This report is an html widget, so you can save it or export it for future 
-reference if you need it.
+This report is an HTML widget, so you can save it or export it for future 
+reference if you need it.  
+In this case, collision removal is done on the sequence 
+count matrix and other matrices are re-aligned automatically.
 
-The alternative way for using this function is to give only the sequence 
-count matrix as input:
+### Give only the sequence count matrix as input
 
 ```{r removecoll2, R.options=options(ISAnalytics.widgets = FALSE)}
 # Pass the sequence count matrix only
@@ -256,6 +257,28 @@ matrices_processed_single <- remove_collisions(x = matrices$seqCount,
 If you have the "verbose" option active, a console message will remind you to
 align other matrices if you have them at a later time.
 
+### Support for multi-quantification matrices
+
+If you'd like to avoid the re-alignment phase, you can call collision removal 
+on a multi-quantification matrix obtained via the function `comparison_matrix`:
+
+```{r removecoll3, R.options=options(ISAnalytics.widgets = FALSE)}
+# Obtain multi-quantification matrix
+multi <- comparison_matrix(matrices)
+multi
+matrices_processed_multi <- remove_collisions(x = multi,
+                                              association_file = 
+                                                 association_file, 
+                                               date_col = "SequencingDate", 
+                                               reads_ratio = 10, 
+                                              seq_count_col = "seqCount")
+```
+
+As you can see, `comparison_matrix` produces a single integration matrix 
+from the named list of single quantification matrices. This is the recommended
+approach if you don't have specific needs as it negates the necessity of 
+realigning matrices altogether.
+
 ## Re-align other matrices
 
 If you have opted for the second way, to realign other matrices you have 
@@ -265,12 +288,11 @@ to realign.
 **NOTE: the names in the list must be quantification types.**
 
 ```{r realign, R.options=options(ISAnalytics.widgets = FALSE)}
-seq_count_proc <- matrices_processed_single$seqCount
+seq_count_proc <- matrices_processed_single
 other_matrices <- matrices[!names(matrices) %in% "seqCount"] 
 # Select only matrices that are not relative to sequence count
 other_realigned <- realign_after_collisions(seq_count_proc, other_matrices)
 ```
-
 
 # Reproducibility
 

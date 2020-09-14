@@ -7,6 +7,7 @@
 identified from genomics next generation sequencing reads for
 clonal tracking studies}
 \description{
+\lifecycle{maturing}
 In gene therapy, stem cells are modified using viral
 vectors to deliver the therapeutic transgene and replace functional
 properties since the genetic modification is stable and inherited in
@@ -57,12 +58,15 @@ and Annotation of Vector Integration Sites}
 \item Analysis functions:
 \itemize{
 \item \code{\link{compute_abundance}}
+\item \code{\link{comparison_matrix}}
+\item \code{\link{separate_quant_matrices}}
 }
 \item Utility functions:
 \itemize{
 \item \code{\link{generate_blank_association_file}}
 \item \code{\link{generate_Vispa2_launch_AF}}
 \item \code{\link{unzip_file_system}}
+\item \code{\link{as_sparse_matrix}}
 }
 }
 }

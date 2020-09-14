@@ -7,27 +7,28 @@
 compute_near_integrations(
   x,
   threshold = 4,
-  keep_criteria = c("max_value", "keep_central", "keep_first"),
-  strand_specific = TRUE
+  keep_criteria = "keep_first",
+  strand_specific = TRUE,
+  max_value_column = "seqCount",
+  map_as_widget = TRUE,
+  map_as_file = TRUE,
+  file_path = "."
 )
 }
 \arguments{
-\item{x}{A single integration matrix}
+\item{x}{A single integration matrix, either with a single "Value"
+column or multiple value columns corresponding to different
+quantification types (obtained via \link{comparison_matrix})}
 
-\item{threshold}{A single numeric value, represents the number of bases
-under which two integrations are deemed "near"}
+\item{threshold}{A single integer that represents an absolute
+number of bases for which two integrations are considered distinct}
 
 \item{keep_criteria}{While scanning, which integration should be kept?
-The 3 possible choices for this parameter are:
+The 2 possible choices for this parameter are:
 \itemize{
 \item "max_value": keep the integration site which has the highest value
-(and collapse other values on that integration). It is highly reccomended,
-if you choose this criteria, to express a second preference in case
-values can't be compared, for example c("max_value", "keep_first")
-\item "keep_first": keeps the first integration in the considered
-window of 3
-\item "keep_central": keeps the central integration in the considered
-window of 3
+(and collapse other values on that integration).
+\item "keep_first": keeps the first integration
 }}
 
 \item{strand_specific}{Should strand be considered? If yes,
@@ -35,28 +36,54 @@ for example these two integration sites
 c(chr = "1", strand = "+", integration_locus = 14568) and
 c(chr = "1", strand = "-", integration_locus = 14568) are considered
 different and not grouped together.}
+
+\item{max_value_column}{The column that has to be considered for
+searching the maximum value}
+
+\item{map_as_widget}{Produce recalibration map as an HTML widget?}
+
+\item{map_as_file}{Produce recalibration map as a .tsv file?}
+
+\item{file_path}{String representing the path were the file will be
+saved. By default the function produces a folder in the current
+working directory and generates file names with time stamps.}
 }
 \value{
 An integration matrix with same or less number of rows
 }
 \description{
+\lifecycle{experimental}
 This function scans the input integration matrix to detect eventual
 integration sites that are too "near" to each other and merges them
-into single integration sites that have a value equal to the sum
-of values.
+into single integration sites adjusting their values if needed.
 }
 \details{
-The whole matrix is scanned with a sliding window mechanism,
-a window being a group of 3 integration sites (or rows which share
-the same chromosome and optionally strand). The distance between
-two integration sites that share the same chr (and strand optionally),
-is calculated in the window by comparing the 2 external integrations
-with the central one.
+The whole matrix is scanned with a sliding window mechanism:
+for each row in the integration matrix an interval is calculated
+based on the \code{threshold} value, then a "look ahead" operation is
+performed to detect subsequent rows which integration locuses fall
+in the interval. If CompleteAmplificationIDs of the near integrations
+are different only the locus value (and optionally
+GeneName and GeneStrand if the matrix is annotated) is modified,
+otherwise rows with the same id are aggregated and values are summed.
+If one of the map parameters is set to true the function will also
+produce a re-calibration map: this data frame contains the reference
+of pre-recalibration values for chr, strand and integration locus and
+the value to which that integration was changed to after.
+}
+\note{
+We do recommend to use this function in combination with
+\link{comparison_matrix} to automatically perform re-calibration on
+all quantification matrices.
 }
 \examples{
 path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-package = "ISAnalytics")
+    package = "ISAnalytics"
+)
 matrix <- import_single_Vispa2Matrix(path)
-near <- compute_near_integrations(matrix)
+near <- compute_near_integrations(matrix,
+    map_as_widget = FALSE,
+    map_as_file = FALSE
+)
 }
 \concept{Recalibration functions}

@@ -4,13 +4,16 @@
 \alias{.discriminate_by_seqCount}
 \title{Internal for sequence count discrimination in collision removal.}
 \usage{
-.discriminate_by_seqCount(nest, reads_ratio)
+.discriminate_by_seqCount(nest, reads_ratio, seqCount_col)
 }
 \arguments{
 \item{nest}{The nested table associated with a single integration}
 
 \item{reads_ratio}{The value of the ratio between sequence count values to
 check}
+
+\item{seqCount_col}{The name of the sequence count column (support
+for multi quantification matrix)}
 }
 \value{
 A named list with:

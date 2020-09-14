@@ -45,6 +45,59 @@
     )
 }
 
+#' @keywords internal
+.missing_num_cols_error <- function() {
+    paste("No numeric columns found")
+}
+
+#' @keywords internal
+.non_quant_cols_msg <- function(x) {
+    paste(c(
+        "Found numeric columns that are not quantification values:",
+        "these columns will be copied in all resulting matrices.",
+        "Found: ", x
+    ), collapse = "\n")
+}
+
+#' @keywords internal
+.non_quant_cols_error <- function() {
+    paste(
+        "No quantification values columns found. Did you set the function",
+        "parameters correctly?"
+    )
+}
+
+#' @keywords internal
+.max_val_col_warning <- function(x) {
+    paste0("Column for max value `", x, "` not found in numeric columns.")
+}
+
+#' @keywords internal
+.using_val_col_warning <- function(x) {
+    paste(c(
+        .max_val_col_warning(x),
+        "Using `Value` column as reference instead."
+    ), collapse = "\n")
+}
+
+#' @keywords internal
+.max_val_stop_error <- function(x) {
+    paste(c(
+        .max_val_col_warning(x),
+        "Did you set `max_value_column` parameter correctly?"
+    ),
+    collapse = "\n"
+    )
+}
+
+#' @keywords internal
+.nas_introduced_msg <- function() {
+    paste("NAs were introduced while producing the data frame.",
+        "The possible cause for this is:",
+        "some quantification matrices were not imported for all pools",
+        sep = "\n"
+    )
+}
 
 #### ---- Internals for checks on integration matrices----####
 
@@ -107,6 +160,47 @@
     }
 }
 
+#' Finds experimental columns in an integration matrix.
+#'
+#' The function checks if there are numeric columns which are not
+#' standard integration matrix columns, if there are returns their names.
+#'
+#' @param x A data.frame
+#' @importFrom purrr map_lgl
+#' @importFrom rlang expr eval_tidy
+#' @keywords internal
+#'
+#' @return A character vector of column names
+.find_exp_cols <- function(x) {
+    stopifnot(is.data.frame(x))
+    default_cols <- c(
+        mandatory_IS_vars(), annotation_IS_vars(),
+        "CompleteAmplificationID"
+    )
+    remaining <- colnames(x)[!colnames(x) %in% default_cols]
+    remaining_numeric <- purrr::map_lgl(remaining, function(y) {
+        exp <- rlang::expr(`$`(x, !!y))
+        exp <- rlang::eval_tidy(exp)
+        is.numeric(rlang::eval_tidy(exp)) | is.integer(rlang::eval_tidy(exp))
+    })
+    remaining[remaining_numeric]
+}
+
+#' Checks if the integration matrix is annotated or not.
+#'
+#' @param x A data.frame
+#' @keywords internal
+#'
+#' @return A logical value
+.is_annotated <- function(x) {
+    stopifnot(is.data.frame(x))
+    if (all(annotation_IS_vars() %in% colnames(x))) {
+        return(TRUE)
+    } else {
+        return(FALSE)
+    }
+}
+
 #### ---- Internals for matrix import ----####
 
 #---- USED IN : import_single_Vispa2Matrix ----
@@ -124,7 +218,7 @@
 #' @return a tidy tibble
 #' @importFrom rlang .data
 #' @importFrom tidyr pivot_longer
-#' @importFrom dplyr arrange all_of
+#' @importFrom dplyr arrange all_of filter
 #' @importFrom forcats fct_inseq as_factor
 .messy_to_tidy <- function(df) {
     exp_cols <- which(!(colnames(df) %in% c(
@@ -138,6 +232,7 @@
             values_to = "Value",
             values_drop_na = TRUE
         ) %>%
+        dplyr::filter(.data$Value > 0) %>%
         dplyr::arrange(forcats::fct_inseq(forcats::as_factor(.data$chr)))
     isadf_tidy
 }
@@ -1412,699 +1507,6 @@
     files_to_import
 }
 
-#### ---- Internals for HTML widgets construction ----####
-
-#' Builds the html widget for the checker table.
-#'
-#' @param checker_df Tibble obtained via `.check_file_system_alignment`
-#' @keywords internal
-#' @importFrom reactable reactable reactableTheme colDef
-#' @importFrom htmltools div span h2 css browsable
-#'
-#' @return An html widget
-.checker_widget <- function(checker_df) {
-    styled_df <- reactable::reactable(
-        checker_df,
-        striped = TRUE,
-        sortable = TRUE,
-        showSortable = TRUE,
-        bordered = FALSE,
-        outlined = TRUE,
-        searchable = TRUE,
-        pagination = TRUE,
-        paginationType = "simple",
-        showPageSizeOptions = TRUE,
-        pageSizeOptions = c(4, 8, 12),
-        defaultPageSize = 5,
-        showPagination = TRUE,
-        resizable = TRUE,
-        defaultSorted = list(Found = "asc"),
-        theme = reactable::reactableTheme(
-            style = list(
-                fontFamily = "Calibri"
-            ),
-            cellStyle = list(
-                display = "flex",
-                flexDirection = "column",
-                justifyContent = "center"
-            )
-        ),
-        defaultColDef = reactable::colDef(
-            headerStyle = list(fontSize = "18px", paddingLeft = "15px"),
-            align = "left"
-        ),
-        columns = list(
-            ProjectID = reactable::colDef(
-                align = "right",
-                style = list(
-                    color = "#9e9e9e",
-                    fontWeight = "800",
-                    borderRight = "2px solid #E6E6E6"
-                ),
-                minWidth = 60
-            ),
-            concatenatePoolIDSeqRun = reactable::colDef(
-                minWidth = 100,
-                style = list(paddingLeft = "15px")
-            ),
-            Found = reactable::colDef(
-                maxWidth = 100,
-                align = "center",
-                style = function(value) {
-                    color <- if (value == TRUE) {
-                        "#6afc21"
-                    } else {
-                        "#d61e1e"
-                    }
-                    list(
-                        color = color, paddingLeft = "15px",
-                        fontWeight = "bold"
-                    )
-                },
-                cell = function(value) {
-                    if (value == TRUE) "\u2713" else "\u2718"
-                }
-            ),
-            Path = reactable::colDef(
-                minWidth = 200,
-                style = list(paddingLeft = "15px")
-            )
-        )
-    )
-    widget <- htmltools::div(
-        htmltools::div(
-            htmltools::h2("ALIGNMENT RESULTS"),
-            htmltools::span(paste(
-                "Results of alignment between file system and",
-                "association file. If some folders are not found",
-                "they will be ignored until the problem is fixed",
-                "and the association file re-imported."
-            )),
-            style = htmltools::css(font.family = "Calibri"),
-            styled_df
-        )
-    )
-    htmltools::browsable(widget)
-}
-
-#' Builds the html widget for the files_found table.
-#'
-#' @param files_found Tibble obtained via `.lookup_matrices` or
-#' `.lookup_matrices_auto`
-#' @keywords internal
-#' @importFrom reactable reactable reactableTheme colDef
-#' @importFrom htmltools div span h2 css h3 browsable
-#' @importFrom dplyr select
-#' @importFrom rlang .data
-#'
-#' @return An html widget
-.files_found_widget <- function(files_found) {
-    main_cols <- files_found %>% dplyr::select(
-        .data$ProjectID,
-        .data$concatenatePoolIDSeqRun,
-        .data$Anomalies
-    )
-    styled_df <- reactable::reactable(
-        main_cols,
-        striped = TRUE,
-        sortable = TRUE,
-        showSortable = TRUE,
-        bordered = FALSE,
-        outlined = TRUE,
-        searchable = TRUE,
-        pagination = TRUE,
-        paginationType = "simple",
-        showPageSizeOptions = TRUE,
-        pageSizeOptions = c(4, 8, 12),
-        defaultPageSize = 5,
-        showPagination = TRUE,
-        resizable = TRUE,
-        theme = reactable::reactableTheme(
-            style = list(
-                fontFamily = "Calibri"
-            ),
-            cellStyle = list(
-                display = "flex",
-                flexDirection = "column",
-                justifyContent = "center"
-            )
-        ),
-        defaultColDef = reactable::colDef(
-            headerStyle = list(fontSize = "18px", paddingLeft = "15px"),
-            align = "left"
-        ),
-        columns = list(
-            ProjectID = reactable::colDef(
-                align = "right",
-                style = list(
-                    color = "#9e9e9e",
-                    fontWeight = "800",
-                    borderRight = "2px solid #E6E6E6"
-                ),
-                minWidth = 60
-            ),
-            concatenatePoolIDSeqRun = reactable::colDef(
-                minWidth = 100,
-                style = list(paddingLeft = "15px")
-            ),
-            Anomalies = reactable::colDef(
-                minWidth = 150,
-                align = "center",
-                style = function(value) {
-                    color <- if (value == TRUE) {
-                        "#f2cd29"
-                    } else {
-                        "#6afc21"
-                    }
-                    list(
-                        color = color, paddingLeft = "15px",
-                        fontWeight = "bold",
-                        fontSize = "20px"
-                    )
-                },
-                cell = function(value) {
-                    if (value == TRUE) "\u26A0" else "\u2713"
-                }
-            )
-        ),
-        details = function(index) {
-            files <- files_found$Files[[index]]
-            count <- files_found$Files_count[[index]]
-            styled_files <- reactable::reactable(
-                files,
-                bordered = FALSE,
-                outlined = TRUE,
-                resizable = TRUE,
-                striped = TRUE,
-                pagination = TRUE,
-                defaultPageSize = 4,
-                showPagination = TRUE,
-                paginationType = "simple",
-                defaultColDef = reactable::colDef(
-                    headerStyle = list(fontSize = "18px", paddingLeft = "15px"),
-                    align = "left",
-                    style = list(paddingLeft = "15px"),
-                    header = function(value) gsub("_", " ", value, fixed = TRUE)
-                ),
-                columns = list(
-                    Quantification_type = reactable::colDef(
-                        minWidth = 200,
-                        maxWidth = 200,
-                        filterable = TRUE
-                    )
-                )
-            )
-            styled_count <- reactable::reactable(
-                count,
-                bordered = FALSE,
-                outlined = TRUE,
-                resizable = TRUE,
-                striped = TRUE,
-                defaultColDef = reactable::colDef(
-                    headerStyle = list(fontSize = "18px", paddingLeft = "15px"),
-                    align = "left",
-                    style = list(paddingLeft = "15px")
-                ),
-                columns = list(
-                    Quantification_type = reactable::colDef(
-                        header = function(value) {
-                            gsub("_", " ", value,
-                                fixed = TRUE
-                            )
-                        }
-                    ),
-                    Found = reactable::colDef(
-                        cell = function(value) {
-                            if (value == 1) {
-                                value
-                            } else {
-                                if (value > 1) {
-                                    paste(value, "\u2691")
-                                } else {
-                                    paste(value, "\u2716")
-                                }
-                            }
-                        },
-                        style = function(value) {
-                            if (value == 1) {
-                                color <- "black"
-                                weight <- "normal"
-                            } else {
-                                if (value > 1) {
-                                    color <- "#f2cd29"
-                                    weight <- "bold"
-                                } else {
-                                    color <- "#d61e1e"
-                                    weight <- "bold"
-                                }
-                            }
-                            list(
-                                color = color, fontWeight = weight,
-                                paddingLeft = "15px"
-                            )
-                        }
-                    )
-                )
-            )
-            htmltools::div(
-                style = paste(
-                    "padding-left: 40px;",
-                    "padding-right: 40px;",
-                    "padding-bottom: 20px"
-                ),
-                htmltools::h3(paste(
-                    "Summary of files count for each",
-                    "quantification type"
-                )),
-                styled_count,
-                htmltools::h3(paste(
-                    "Summary of files found for each",
-                    "quantification type"
-                )),
-                styled_files
-            )
-        }
-    )
-    widget <- htmltools::div(
-        htmltools::h2("INTEGRATION MATRICES FOUND REPORT"),
-        htmltools::span(paste(
-            "Report of all files found for each quantification",
-            "type. Click on the arrow on the left side of each",
-            "row to see details."
-        )),
-        style = htmltools::css(font.family = "Calibri"),
-        styled_df
-    )
-    htmltools::browsable(widget)
-}
-
-#' Builds the html widget for the files_to_import table.
-#'
-#' @param files_to_import Tibble obtained via
-#' `.manage_anomalies_interactive` or
-#' `.manage_anomalies_auto`
-#' @keywords internal
-#' @importFrom reactable reactable reactableTheme colDef
-#' @importFrom htmltools div span h2 css browsable
-#'
-#' @return An html widget
-.files_to_import_widget <- function(files_to_import) {
-    styled_df <- reactable::reactable(
-        files_to_import,
-        striped = TRUE,
-        sortable = TRUE,
-        showSortable = TRUE,
-        bordered = FALSE,
-        outlined = TRUE,
-        searchable = TRUE,
-        pagination = TRUE,
-        paginationType = "simple",
-        showPageSizeOptions = TRUE,
-        pageSizeOptions = c(4, 8, 12),
-        defaultPageSize = 5,
-        showPagination = TRUE,
-        resizable = TRUE,
-        theme = reactable::reactableTheme(
-            style = list(
-                fontFamily = "Calibri"
-            ),
-            cellStyle = list(
-                display = "flex",
-                flexDirection = "column",
-                justifyContent = "center"
-            )
-        ),
-        defaultColDef = reactable::colDef(
-            headerStyle = list(
-                fontSize = "18px", paddingLeft = "15px",
-                display = "flex",
-                flexDirection = "column",
-                justifyContent = "center"
-            ),
-            style = list(paddingLeft = "15px"),
-            align = "left",
-            header = function(value) gsub("_", " ", value, fixed = TRUE)
-        ),
-        columns = list(
-            Files_chosen = reactable::colDef(
-                minWidth = 250
-            ),
-            ProjectID = reactable::colDef(
-                filterable = TRUE
-            ),
-            concatenatePoolIDSeqRun = reactable::colDef(
-                filterable = TRUE
-            ),
-            Quantification_type = reactable::colDef(
-                filterable = TRUE,
-                align = "center"
-            )
-        )
-    )
-    widget <- htmltools::div(
-        style = htmltools::css(font.family = "Calibri"),
-        htmltools::h2("SUMMARY OF FILES CHOSEN FOR IMPORT"),
-        htmltools::span("Here is a summary of all files chosen for import"),
-        styled_df
-    )
-    htmltools::browsable(widget)
-}
-
-#' Builds the html widget for the files_imported table.
-#'
-#' @param files_imported Tibble obtained via `.parallel_import_merge`
-#' @keywords internal
-#' @importFrom reactable reactable reactableTheme colDef
-#' @importFrom htmltools div span h2 css browsable
-#'
-#' @return An html widget
-.files_imported_widget <- function(files_imported) {
-    styled_df <- reactable::reactable(
-        files_imported,
-        striped = TRUE,
-        sortable = TRUE,
-        showSortable = TRUE,
-        bordered = FALSE,
-        outlined = TRUE,
-        searchable = TRUE,
-        pagination = TRUE,
-        paginationType = "simple",
-        showPageSizeOptions = TRUE,
-        pageSizeOptions = c(4, 8, 12),
-        defaultPageSize = 5,
-        showPagination = TRUE,
-        resizable = TRUE,
-        theme = reactable::reactableTheme(
-            style = list(
-                fontFamily = "Calibri"
-            ),
-            cellStyle = list(
-                display = "flex",
-                flexDirection = "column",
-                justifyContent = "center"
-            )
-        ),
-        defaultColDef = reactable::colDef(
-            headerStyle = list(
-                fontSize = "18px", paddingLeft = "15px",
-                display = "flex",
-                flexDirection = "column",
-                justifyContent = "center"
-            ),
-            style = list(paddingLeft = "15px"),
-            align = "left",
-            header = function(value) gsub("_", " ", value, fixed = TRUE)
-        ),
-        columns = list(
-            Files_chosen = reactable::colDef(
-                minWidth = 250
-            ),
-            ProjectID = reactable::colDef(
-                filterable = TRUE
-            ),
-            concatenatePoolIDSeqRun = reactable::colDef(
-                filterable = TRUE
-            ),
-            Quantification_type = reactable::colDef(
-                filterable = TRUE,
-                align = "center"
-            ),
-            Imported = reactable::colDef(
-                style = function(value) {
-                    color <- if (value == TRUE) {
-                        "#6afc21"
-                    } else {
-                        "#d61e1e"
-                    }
-                    list(
-                        paddingLeft = "15px",
-                        textTransform = "uppercase",
-                        color = color,
-                        fontWeight = "bold"
-                    )
-                },
-                align = "center"
-            )
-        )
-    )
-    widget <- htmltools::div(
-        style = htmltools::css(font.family = "Calibri"),
-        htmltools::h2("REPORT: FILES IMPORTED"),
-        htmltools::span("Here is a summary of all files actually imported for
-        each quantification type. If you see 'false' in the column Imported,
-        some errors might have occurred and the function was unable to import
-                        that matrix."),
-        styled_df
-    )
-    htmltools::browsable(widget)
-}
-
-#' Builds the html widget for the summary table.
-#'
-#' @param removed Number of removed collisions
-#' @param reassigned Number of re-assigned collisions
-#' @param summary Summary table
-#' @param tot_rows Total number rows of sequence count matrix before processing
-#' @param collision_rows Total number of rows of collisions
-#' @keywords internal
-#' @importFrom reactable reactable reactableTheme colDef
-#' @importFrom htmltools div h2 h4 css browsable
-#'
-#' @return A widget
-.summary_collisions_widget <- function(removed,
-    reassigned,
-    summary,
-    tot_rows,
-    collision_rows) {
-    theme <- reactable::reactableTheme(
-        style = list(
-            fontFamily = "Calibri"
-        ),
-        cellStyle = list(
-            display = "flex",
-            flexDirection = "column",
-            justifyContent = "center"
-        )
-    )
-
-    styled_df <- reactable::reactable(
-        summary,
-        striped = TRUE,
-        sortable = TRUE,
-        showSortable = TRUE,
-        bordered = FALSE,
-        outlined = TRUE,
-        searchable = TRUE,
-        pagination = TRUE,
-        paginationType = "simple",
-        showPageSizeOptions = TRUE,
-        pageSizeOptions = c(4, 8, 12),
-        defaultPageSize = 5,
-        showPagination = TRUE,
-        resizable = TRUE,
-        theme = theme,
-        defaultColDef = reactable::colDef(
-            headerStyle = list(
-                fontSize = "18px", paddingLeft = "15px",
-                display = "flex",
-                flexDirection = "column",
-                justifyContent = "center"
-            ),
-            style = list(paddingLeft = "15px"),
-            align = "left",
-            header = function(value) gsub("_", " ", value, fixed = TRUE),
-            filterable = TRUE
-        )
-    )
-
-    collisions_found <- tibble::tibble(
-        abs_number = collision_rows,
-        percentage_on_total =
-            collision_rows / tot_rows
-    )
-    collisions_removed <- tibble::tibble(
-        abs_number = removed,
-        percentage_on_collisions =
-            removed / collision_rows,
-        percentage_on_total =
-            removed / tot_rows
-    )
-    collisions_reassigned <- tibble::tibble(
-        abs_number = reassigned,
-        percentage_on_collisions =
-            reassigned / collision_rows,
-        percentage_on_total =
-            reassigned / tot_rows
-    )
-
-    collisions_found_styled <- reactable::reactable(
-        collisions_found,
-        fullWidth = FALSE,
-        bordered = FALSE,
-        outlined = TRUE,
-        theme = theme,
-        defaultColDef = reactable::colDef(
-            header = function(value) gsub("_", " ", value, fixed = TRUE)
-        ),
-        columns = list(
-            percentage_on_total = reactable::colDef(
-                format = reactable::colFormat(
-                    percent = TRUE,
-                    digits = 2
-                )
-            )
-        )
-    )
-
-    collisions_removed_styled <- reactable::reactable(
-        collisions_removed,
-        fullWidth = FALSE,
-        bordered = FALSE,
-        outlined = TRUE,
-        theme = theme,
-        defaultColDef = reactable::colDef(
-            header = function(value) gsub("_", " ", value, fixed = TRUE)
-        ),
-        columns = list(
-            percentage_on_total = reactable::colDef(
-                format = reactable::colFormat(
-                    percent = TRUE,
-                    digits = 2
-                )
-            ),
-            percentage_on_collisions = reactable::colDef(
-                format = reactable::colFormat(
-                    percent = TRUE,
-                    digits = 2
-                )
-            )
-        )
-    )
-
-    collisions_reassigned_styled <- reactable::reactable(
-        collisions_reassigned,
-        fullWidth = FALSE,
-        bordered = FALSE,
-        outlined = TRUE,
-        theme = theme,
-        defaultColDef = reactable::colDef(
-            header = function(value) gsub("_", " ", value, fixed = TRUE)
-        ),
-        columns = list(
-            percentage_on_total = reactable::colDef(
-                format = reactable::colFormat(
-                    percent = TRUE,
-                    digits = 2
-                )
-            ),
-            percentage_on_collisions = reactable::colDef(
-                format = reactable::colFormat(
-                    percent = TRUE,
-                    digits = 2
-                )
-            )
-        )
-    )
-
-    widget <- htmltools::div(
-        style = htmltools::css(font.family = "Calibri"),
-        htmltools::h2("COLLISION REMOVAL SUMMARY"),
-        htmltools::h4("TOTAL READS:"),
-        htmltools::div(tot_rows),
-        htmltools::h4("COLLISIONS FOUND:"),
-        collisions_found_styled,
-        htmltools::h4("REMOVED:"),
-        collisions_removed_styled,
-        htmltools::h4("REASSIGNED:"),
-        collisions_reassigned_styled,
-        htmltools::h4("SUMMARY:"),
-        styled_df
-    )
-    htmltools::browsable(widget)
-}
-
-#' Builds the html widget for the iss_import.
-#'
-#' @param report Table obtained via `import_stats_iss`
-#' @keywords internal
-#'
-#' @importFrom reactable reactable reactableTheme colDef
-#' @importFrom htmltools div h2 h4 css browsable
-#'
-#' @return A widget
-.iss_import_widget <- function(report) {
-    theme <- reactable::reactableTheme(
-        style = list(
-            fontFamily = "Calibri"
-        ),
-        cellStyle = list(
-            display = "flex",
-            flexDirection = "column",
-            justifyContent = "center"
-        )
-    )
-
-    styled_df <- reactable::reactable(
-        report,
-        striped = TRUE,
-        sortable = TRUE,
-        showSortable = TRUE,
-        bordered = FALSE,
-        outlined = TRUE,
-        searchable = TRUE,
-        pagination = TRUE,
-        paginationType = "simple",
-        showPageSizeOptions = TRUE,
-        pageSizeOptions = c(4, 8, 12),
-        defaultPageSize = 5,
-        showPagination = TRUE,
-        resizable = TRUE,
-        theme = theme,
-        defaultColDef = reactable::colDef(
-            headerStyle = list(
-                fontSize = "18px", paddingLeft = "15px",
-                display = "flex",
-                flexDirection = "column",
-                justifyContent = "center"
-            ),
-            style = list(paddingLeft = "15px"),
-            align = "left",
-            header = function(value) gsub("_", " ", value, fixed = TRUE)
-        ),
-        columns = list(
-            ProjectID = reactable::colDef(
-                filterable = TRUE
-            ),
-            Imported = reactable::colDef(
-                style = function(value) {
-                    color <- if (value == TRUE) {
-                        "#6afc21"
-                    } else {
-                        "#d61e1e"
-                    }
-                    list(
-                        paddingLeft = "15px",
-                        textTransform = "uppercase",
-                        color = color,
-                        fontWeight = "bold"
-                    )
-                },
-                align = "center"
-            )
-        )
-    )
-    widget <- htmltools::div(
-        style = htmltools::css(font.family = "Calibri"),
-        htmltools::h2("REPORT IMPORT VISPA2 STATS: FILES IMPORTED"),
-        htmltools::span("Here is a summary of all files actually imported.
-        If you see 'FALSE' in the column Imported, some errors might have
-        occurred and the function was unable to import the file or simply no
-                        path was found for that stats file."),
-        styled_df
-    )
-    htmltools::browsable(widget)
-}
-
 #### ---- Internals for collision removal ----####
 
 #---- USED IN : remove_collisions ----
@@ -2316,18 +1718,22 @@
 #' @param nest The nested table associated with a single integration
 #' @param reads_ratio The value of the ratio between sequence count values to
 #' check
+#' @param seqCount_col The name of the sequence count column (support
+#' for multi quantification matrix)
 #' @import dplyr
-#' @importFrom rlang .data
+#' @importFrom rlang .data eval_tidy expr
 #' @keywords internal
 #'
 #' @return A named list with:
 #' * $data: a tibble, containing the data (unmodified or modified)
 #' * $check: a logical value indicating whether the analysis was successful or
 #' not (and therefore there is the need to perform the next step)
-.discriminate_by_seqCount <- function(nest, reads_ratio) {
+.discriminate_by_seqCount <- function(nest, reads_ratio, seqCount_col) {
     temp <- nest %>%
         dplyr::group_by(.data$ProjectID, .data$SubjectID) %>%
-        dplyr::summarise(sum_seqCount = sum(.data$Value), .groups = "keep") %>%
+        dplyr::summarise(sum_seqCount = sum(
+            rlang::eval_tidy(rlang::expr(`$`(.data, !!seqCount_col)))
+        ), .groups = "keep") %>%
         dplyr::arrange(dplyr::desc(.data$sum_seqCount))
 
     ratio <- temp$sum_seqCount[1] / temp$sum_seqCount[2]
@@ -2356,6 +1762,8 @@
 #' @param date_col The date column to consider
 #' @param reads_ratio The value of the ratio between sequence count values to
 #' check
+#' @param seqCount_col The name of the sequence count column (support
+#' for multi quantification matrix)
 #' @keywords internal
 #'
 #' @importFrom tibble as_tibble tibble
@@ -2368,7 +1776,7 @@
 #' * $reassigned: 1 if the integration was successfully reassigned, 0 otherwise
 #' * $removed: 1 if the integration is removed entirely because no criteria was
 #' met, 0 otherwise
-.four_step_check <- function(..., date_col, reads_ratio) {
+.four_step_check <- function(..., date_col, reads_ratio, seqCount_col) {
     l <- list(...)
     current <- tibble::as_tibble(l[mandatory_IS_vars()])
     current_data <- tibble::as_tibble(purrr::flatten(l["data"]))
@@ -2401,7 +1809,7 @@
     }
     current_data <- result$data
     # If second check fails try to discriminate by seqCount
-    result <- .discriminate_by_seqCount(current_data, reads_ratio)
+    result <- .discriminate_by_seqCount(current_data, reads_ratio, seqCount_col)
     if (result$check == TRUE) {
         current_data <- result$data
         res <- tibble::tibble(
@@ -2423,17 +1831,20 @@
 #' @param date_col The date column to consider
 #' @param reads_ratio The value of the ratio between sequence count values to
 #' check
+#' @param seqCount_col The name of the sequence count column (support
+#' for multi quantification matrix)
 #' @keywords internal
 #' @importFrom purrr pmap reduce
 #' @importFrom dplyr bind_rows
 #' @return A list containing the updated collisions, a numeric value
 #' representing the number of integrations removed and a numeric value
 #' representing the number of integrations reassigned
-.coll_mapping <- function(x, date_col, reads_ratio) {
+.coll_mapping <- function(x, date_col, reads_ratio, seqCount_col) {
     result <- purrr::pmap(x,
         .f = .four_step_check,
         date_col = date_col,
-        reads_ratio = reads_ratio
+        reads_ratio = reads_ratio,
+        seqCount_col = seqCount_col
     )
     proc_collisions <- purrr::map(result, function(x) {
         x$data
@@ -2461,6 +1872,8 @@
 #' @param date_col The date column to consider
 #' @param reads_ratio The value of the ratio between sequence count values to
 #' check
+#' @param seqCount_col The name of the sequence count column (support
+#' for multi quantification matrix)
 #' @keywords internal
 #'
 #' @import BiocParallel
@@ -2470,7 +1883,8 @@
 #' @return A list containing the updated collisions, a numeric value
 #' representing the number of integrations removed and a numeric value
 #' representing the number of integrations reassigned
-.process_collisions <- function(collisions, date_col, reads_ratio) {
+.process_collisions <- function(collisions, date_col, reads_ratio,
+    seqCount_col) {
     # Obtain nested version of collisions
     nested <- .obtain_nested(collisions)
     # Register backend according to platform
@@ -2505,6 +1919,7 @@
                 FUN = .coll_mapping,
                 date_col = date_col,
                 reads_ratio = reads_ratio,
+                seqCount_col = seqCount_col,
                 BPPARAM = p
             )
         )
@@ -2972,339 +2387,279 @@
 
 #---- USED IN : compute_near_integrations ----
 
-#' Internal function that computes distance between two loci.
+#' Finds a unique maximum value in a vector of numbers.
 #'
-#' @param x First locus
-#' @param y Second locus
+#' Unlike the standard `max` function, this function returns a single maximum
+#' value if and only if a maximum exists, more in details that means:
+#' * It ignores NA values by default
+#' * If the identified maximum value is not unique in the vector, it returns
+#' an empty vector instead
+#'
+#' @param x A numeric or integer vector
+#' @importFrom purrr is_empty
+#'
+#' @return A single numeric value or an empty numeric vector
 #' @keywords internal
-#'
-#' @return The distance as the absolute value of x-y
-.locus_distance <- function(x, y) {
-    abs((x - y))
-}
-
-#' Internal function for keep criteria "keep_first".
-#'
-#' Returns the first value in a set to keep or returns values to drop if
-#' inverted is TRUE.
-#'
-#' @param x A tibble or a vector of numbers
-#' @param inverted Return the values to drop instead of the ones to keep?
-#' @importFrom tibble is_tibble
-#' @keywords internal
-#'
-#' @return If x is tibble returns a tibble otherwise returns a vector
-.keep_first <- function(x, inverted = TRUE) {
-    if (tibble::is_tibble(x)) {
-        sum_val <- sum(x$Value)
-        result <- x[1, ]
-        result$Value <- sum_val
-        return(result)
+.find_unique_max <- function(x) {
+    if (any(is.na(x))) {
+        x <- x[!is.na(x)]
     }
-    if (is.integer(x) | is.numeric(x)) {
-        if (inverted == TRUE) {
-            return(x[c(-1)])
+    uniques <- unique(x)
+    if (purrr::is_empty(uniques)) {
+        return(uniques)
+    }
+    if (length(uniques) == 1) {
+        if (length(x[x == uniques]) > 1) {
+            return(numeric(0))
         } else {
-            return(x[1])
+            return(uniques)
         }
     }
-}
-
-#' Internal function for keep criteria "keep_central".
-#'
-#' Returns the central value in a set to keep or returns values to drop if
-#' inverted is TRUE.
-#'
-#' @param x A tibble or a vector of numbers
-#' @param inverted Return the values to drop instead of the ones to keep?
-#' @importFrom tibble is_tibble
-#' @keywords internal
-#'
-#' @return If x is tibble returns a tibble otherwise returns a vector
-.keep_central <- function(x, inverted = TRUE) {
-    if (tibble::is_tibble(x)) {
-        sum_val <- sum(x$Value)
-        result <- x[2, ]
-        result$Value <- sum_val
-        return(result)
+    max_val <- max(uniques)
+    if (length(x[x == max_val]) > 1) {
+        return(numeric(0))
     }
-    if (is.integer(x) | is.numeric(x)) {
-        if (inverted == TRUE) {
-            return(x[c(-2)])
-        } else {
-            return(x[2])
-        }
-    }
-}
-
-#' Internal function for keep criteria "max_value".
-#'
-#' Returns the value in a set which has (or is) the max "Value" or returns
-#' values to drop if inverted is TRUE. If values aren't comparable (because
-#' they're equal), a second criteria is used for selection.
-#'
-#' @param x A tibble or a vector of numbers
-#' @param inverted Return the values to drop instead of the ones to keep?
-#' @param second_choice Second criteria to use if "max_value" is not applicable
-#' @importFrom tibble is_tibble
-#' @keywords internal
-#'
-#' @return If x is tibble returns a tibble otherwise returns a vector
-.keep_max_value <- function(x, second_choice, inverted = TRUE) {
-    if (tibble::is_tibble(x)) {
-        # Check if values are comparable (not equal)
-        if (length(unique(x$Value)) == length(x$Value)) {
-            sum_val <- sum(x$Value)
-            index_to_keep <- which(x$Value == max(x$Value))
-            result <- x[index_to_keep, ]
-            result$Value <- sum_val
-            return(result)
-        }
-        # If equal use second criteria
-        if (second_choice == "keep_central") {
-            return(.keep_central(x, inverted = FALSE))
-        }
-        if (second_choice == "keep_first") {
-            return(.keep_first(x, inverted = FALSE))
-        }
-    }
-    if (is.integer(x) | is.numeric(x)) {
-        # Check if values are comparable (not equal)
-        if (length(unique(x)) == length(x)) {
-            if (inverted == TRUE) {
-                to_drop <- which(x != max(x))
-                return(to_drop)
-            } else {
-                to_keep <- which(x == max(x))
-                return(to_keep)
-            }
-        }
-        # If equal use second criteria
-        if (second_choice == "keep_central") {
-            return(.keep_central(x, inverted = inverted))
-        }
-        if (second_choice == "keep_first") {
-            return(.keep_first(x, inverted = inverted))
-        }
-    }
-}
-
-
-#' Wrapper function for criteria evaluation inside `window` function.
-#'
-#' @param criterias The vector of criterias
-#' @param values The numeric vector containing values
-#' @param subset Integer vector with indexes of the values vector to pass to
-#' individual functions.
-#' @keywords internal
-#'
-#' @return Values to drop
-.check_window_criteria <- function(criterias, values, subset) {
-    if (criterias[1] == "max_value") {
-        if (is.null(subset)) {
-            to_drop <- .keep_max_value(values, criterias[2], inverted = TRUE)
-        } else {
-            to_drop <- .keep_max_value(values[subset], criterias[2],
-                inverted = TRUE
-            )
-        }
-        return(to_drop)
-    }
-    if (criterias[1] == "keep_first") {
-        if (is.null(subset)) {
-            to_drop <- .keep_first(values, inverted = TRUE)
-        } else {
-            to_drop <- .keep_first(values[subset], inverted = TRUE)
-        }
-        return(to_drop)
-    }
-    if (criterias[1] == "keep_central") {
-        if (is.null(subset)) {
-            to_drop <- .keep_central(values, inverted = TRUE)
-        } else {
-            to_drop <- .keep_central(values[subset], inverted = TRUE)
-        }
-        return(to_drop)
-    }
-}
-
-
-#' Internal for the construction of a window of width equal to 3 rows and
-#' computation of result on those values.
-#'
-#' NOTE: to use the function correctly, the parameters
-#' `indexes`, `loci` and
-#' `values` MUST be named vector with these names:
-#' c(first = ..., center = ..., last = ...)
-#'
-#' @param indexes The indexes of the rows in the window
-#' (named vector, see description)
-#' @param loci The actual value of the `integration_locus` variable
-#' for the rows (named vector, see description)
-#' @param values The actual value of the `Value` variable for the rows
-#' (named vector, see description)
-#' @param criterias The character vector containing the selection criterias
-#' @param treshold The numeric value representing the threshold for selection
-#' @keywords internal
-#'
-#' @return A named list with the indexes of rows to drop, the index
-#' of the row to collapse on and the value to assign.
-#' If no row needs to be dropped returns NULL instead.
-.window <- function(indexes, loci, values, criterias, threshold) {
-    # Compute distances from center
-    dist_x <- .locus_distance(loci["first"], loci["center"])
-    dist_y <- .locus_distance(loci["last"], loci["center"])
-    # If both above threshold
-    if (all(!c(dist_x, dist_y) < threshold)) {
-        ## Drop nothing
-        return(NULL)
-    }
-    # If both below threshold
-    if (all(c(dist_x, dist_y) < threshold)) {
-        ## Check criteria
-        to_drop <- .check_window_criteria(criterias, values, subset = NULL)
-        indexes_to_drop <- indexes[names(to_drop)]
-        collapse_on <- indexes[!names(indexes) %in%
-            names(indexes_to_drop)]
-        tot_value <- sum(values)
-        res <- list(
-            drop = indexes_to_drop, collapse_on = collapse_on,
-            value = tot_value
-        )
-        return(res)
-    }
-    # Only one below
-    if (dist_x < threshold) {
-        ## Check criteria
-        to_drop <- .check_window_criteria(criterias, values, subset = c(1, 2))
-        indexes_to_drop <- indexes[names(to_drop)]
-        collapse_on <- indexes[c(1, 2)]
-        collapse_on <- collapse_on[!names(collapse_on) %in%
-            names(indexes_to_drop)]
-        tot_value <- sum(values[c(1, 2)])
-        res <- list(
-            drop = indexes_to_drop, collapse_on = collapse_on,
-            value = tot_value
-        )
-        return(res)
-    }
-    if (dist_y < threshold) {
-        ## Check criteria
-        to_drop <- .check_window_criteria(criterias, values, subset = c(2, 3))
-        indexes_to_drop <- indexes[names(to_drop)]
-        collapse_on <- indexes[c(2, 3)]
-        collapse_on <- collapse_on[!names(collapse_on) %in%
-            names(indexes_to_drop)]
-        tot_value <- sum(values[c(2, 3)])
-        res <- list(
-            drop = indexes_to_drop, collapse_on = collapse_on,
-            value = tot_value
-        )
-        return(res)
-    }
-}
-
-#' Internal that represents the window moving and modifying the
-#' original table as it progresses.
-#'
-#' @param x The original tibble (subgroup)
-#' @param start The starting index from where the window should be built
-#' @param criterias The character vector with selecting criterias
-#' @param threshold The numeric value representing the threshold for selection
-#' @keywords internal
-#'
-#' @return A modified tibble with a number of rows less or equal than x.
-.window_slide <- function(x, start, criterias, threshold) {
-    repeat {
-        center <- start + 1
-        last <- start + 2
-        result <- .window(
-            indexes = c(
-                first = start,
-                center = center,
-                last = last
-            ),
-            loci = c(
-                first = x$integration_locus[start],
-                center = x$integration_locus[center],
-                last = x$integration_locus[last]
-            ),
-            values = c(
-                first = x$Value[start],
-                center = x$Value[center],
-                last = x$Value[last]
-            ),
-            criterias = criterias,
-            threshold = threshold
-        )
-        if (last == nrow(x)) {
-            if (!is.null(result)) {
-                x[result$collapse_on, ]$Value <- result$value
-                x <- x[-result$drop, ]
-            }
-            return(x)
-        } else {
-            if (!is.null(result)) {
-                x[result$collapse_on, ]$Value <- result$value
-                x <- x[-result$drop, ]
-            }
-            start <- if (is.null(result)) {
-                start + 1
-            } else {
-                start
-            }
-            next
-        }
-    }
+    max_val
 }
 
 #' Internal function that implements the sliding window algorithm.
 #'
-#' **NOTE: this function is meant to be called on a SINGLE GROUP, meaning a
-#' subset of an integration matrix in which all rows share the same chr and same
-#' strand.**
-#' Also note that is better to call this function on a group that has all
-#' distinct integration_locus values (this is ensured by calling function) and
-#' also it's not possible to call this function on groups with a single row.
+#' **NOTE: this function is meant to be called on a SINGLE GROUP,
+#' meaning a subset of an integration matrix in which all rows
+#' share the same chr (and optionally same strand).**
 #'
 #' @param x An integration matrix subset (see description)
-#' @param threshold The numeric value representing the threshold for selection
-#' @param keep_criteria The character vector with selecting criterias
-#' @importFrom dplyr arrange
+#' @param threshold The numeric value representing an absolute number
+#' of bases for which two integrations are considered distinct
+#' @param keep_criteria The string with selecting criteria
+#' @param annotated Is `x` annotated? Logical value
+#' @param num_cols A character vector with the names of the numeric columns
+#' @param max_val_col The column to consider if criteria is max_value
+#' @param produce_map Produce recalibration map?
+#' @importFrom tibble tibble tibble_row add_row
+#' @importFrom dplyr arrange bind_rows distinct
+#' @importFrom purrr is_empty map_dfr
+#' @importFrom rlang expr eval_tidy
 #' @keywords internal
 #'
-#' @return A modified tibble with a number of rows less or equal than x.
-.sliding_window <- function(x, threshold, keep_criteria) {
+#' @return A named list with recalibrated matrix and recalibration map.
+.sliding_window <- function(x,
+    threshold,
+    keep_criteria,
+    annotated,
+    num_cols,
+    max_val_col,
+    produce_map) {
     ## Order by integration_locus
     x <- x %>% dplyr::arrange(.data$integration_locus)
-    # ---- If group has only 2 rows ---- #
-    if (nrow(x) == 2) {
-        ## Compute distance
-        distance <- .locus_distance(
-            x$integration_locus[1],
-            x$integration_locus[2]
+    map_recalibr <- if (produce_map == TRUE) {
+        tibble::tibble(
+            chr_before = character(0),
+            integration_locus_before = integer(0),
+            strand_before = character(0),
+            chr_after = character(0),
+            integration_locus_after = integer(0),
+            strand_after = character(0)
         )
-        ## Is distance less than the treshold?
-        if (distance < threshold) {
-            ## If yes examine keep criterias
-            if (keep_criteria[1] == "max_value") {
-                return(.keep_max_value(x, keep_criteria[2]))
+    } else {
+        NULL
+    }
+    index <- 1
+    repeat {
+        # If index is the last row in the data frame return
+        if (index == nrow(x)) {
+            if (produce_map == TRUE) {
+                map_recalibr <- tibble::add_row(map_recalibr,
+                    chr_before = x$chr[index],
+                    integration_locus_before =
+                        x$integration_locus[index],
+                    strand_before = x$strand[index],
+                    chr_after = x$chr[index],
+                    integration_locus_after =
+                        x$integration_locus[index],
+                    strand_after = x$strand[index]
+                )
             }
-            if (keep_criteria[1] == "keep_first") {
-                return(.keep_first(x))
+            if (!is.null(map_recalibr)) {
+                map_recalibr <- dplyr::distinct(
+                    map_recalibr
+                )
             }
-            if (keep_criteria[1] == "keep_central") {
-                return(.keep_central(x))
+            return(list(recalibrated_matrix = x, map = map_recalibr))
+        }
+        ## Compute interval for row
+        interval <- x[index, ]$integration_locus + 1 + threshold
+        ## Look ahead for every integration that falls in the interval
+        near <- numeric()
+        k <- index
+        repeat {
+            if (k == nrow(x)) {
+                break
+            }
+            k <- k + 1
+            if (x[k, ]$integration_locus < interval) {
+                # Saves the indexes of the rows that are in the interval
+                near <- append(near, k)
+            } else {
+                break
+            }
+        }
+        window <- c(index, near)
+        if (!purrr::is_empty(near)) {
+            ## Change loci according to criteria
+            ######## CRITERIA PROCESSING
+            row_to_keep <- index
+            if (keep_criteria == "max_value") {
+                expr <- rlang::expr(`$`(x[window, ], !!max_val_col))
+                to_check <- rlang::eval_tidy(expr)
+                max <- .find_unique_max(to_check)
+                if (!purrr::is_empty(max)) {
+                    row_to_keep <- window[which(to_check == max)]
+                    near <- window[!window == row_to_keep]
+                }
+            }
+            # Fill map if needed
+            if (produce_map == TRUE) {
+                recalib_rows <- purrr::map_dfr(window, function(cur_row) {
+                    tibble::tibble_row(
+                        chr_before = x$chr[cur_row],
+                        integration_locus_before =
+                            x$integration_locus[cur_row],
+                        strand_before = x$strand[cur_row],
+                        chr_after = x$chr[row_to_keep],
+                        integration_locus_after =
+                            x$integration_locus[row_to_keep],
+                        strand_after = x$strand[row_to_keep]
+                    )
+                })
+                map_recalibr <- dplyr::bind_rows(map_recalibr, recalib_rows)
+            }
+            # Change loci and strand of near integrations
+            x[near, ]$integration_locus <- x[row_to_keep, ]$integration_locus
+            x[near, ]$strand <- x[row_to_keep, ]$strand
+
+            if (annotated == TRUE) {
+                x[near, ]$GeneName <- x[row_to_keep, ]$GeneName
+                x[near, ]$GeneStrand <- x[row_to_keep, ]$GeneStrand
+            }
+            ## Aggregate same IDs
+            starting_rows <- nrow(x)
+            repeat {
+                t <- x$CompleteAmplificationID[window]
+                d <- unique(t[duplicated(t)])
+                if (purrr::is_empty(d)) {
+                    break
+                }
+                dupl_indexes <- which(t == d[1])
+                values_sum <- colSums(x[window[dupl_indexes], num_cols],
+                    na.rm = TRUE
+                )
+                x[window[dupl_indexes[1]], num_cols] <- as.list(values_sum)
+                x <- x[-window[dupl_indexes[-1]], ]
+                to_drop <- seq(
+                    from = length(window),
+                    length.out = length(dupl_indexes[-1]),
+                    by = -1
+                )
+                window <- window[-to_drop]
+            }
+            ## Increment index
+            if (nrow(x) == starting_rows) {
+                index <- k
+            } else {
+                index <- tail(window, n = 1) + 1
             }
         } else {
-            ## If not return the input as is
-            return(x)
+            if (produce_map == TRUE) {
+                map_recalibr <- tibble::add_row(map_recalibr,
+                    chr_before = x$chr[index],
+                    integration_locus_before =
+                        x$integration_locus[index],
+                    strand_before = x$strand[index],
+                    chr_after = x$chr[index],
+                    integration_locus_after =
+                        x$integration_locus[index],
+                    strand_after = x$strand[index]
+                )
+            }
+            index <- index + 1
         }
     }
-    # ---- If group has 3 or more rows ---- #
-    x <- .window_slide(x,
-        start = 1, criterias = keep_criteria,
-        threshold = threshold
+    if (!is.null(map_recalibr)) {
+        map_recalibr <- dplyr::distinct(
+            map_recalibr
+        )
+    }
+    list(recalibrated_matrix = x, map = map_recalibr)
+}
+
+
+#' Generates a file name for recalibration maps.
+#'
+#' Unique file names include current date and timestamp.
+#' @keywords internal
+#' @importFrom stringr str_replace_all
+#'
+#' @return A string
+.generate_filename <- function() {
+    time <- as.character(Sys.time())
+    time <- stringr::str_replace_all(
+        string = time,
+        pattern = "-",
+        replacement = "_"
     )
-    return(x)
+    time <- stringr::str_replace_all(
+        string = time,
+        pattern = " ",
+        replacement = "_"
+    )
+    time <- stringr::str_replace_all(
+        string = time,
+        pattern = ":",
+        replacement = ""
+    )
+    filename <- paste0("recalibr_map_", time, ".tsv")
+    filename
+}
+
+#' Tries to write the recalibration map to a tsv file.
+#'
+#' @param map The recalibration map
+#' @param file_path The file path as a string
+#' @importFrom fs dir_create path_wd path
+#' @importFrom readr write_tsv
+#'
+#' @return Nothing
+.write_recalibr_map <- function(map, file_path) {
+    withRestarts(
+        {
+            if (file_path == ".") {
+                filename <- .generate_filename()
+                fs::dir_create(fs::path_wd("recalibration_maps"))
+                file_path <- fs::path_wd("recalibration_maps", filename)
+                readr::write_tsv(map, file_path)
+                if (getOption("ISAnalytics.verbose") == TRUE) {
+                    message(paste(
+                        "Recalibration map saved to: ",
+                        file_path
+                    ))
+                }
+            } else {
+                file_path <- fs::path(file_path)
+                readr::write_tsv(map, file_path)
+                if (getOption("ISAnalytics.verbose") == TRUE) {
+                    message(paste(
+                        "Recalibration map saved to: ",
+                        file_path
+                    ))
+                }
+            }
+        },
+        skip_write = function() {
+            message(paste(
+                "Could not write recalibration map file.",
+                "Skipping."
+            ))
+        }
+    )
 }

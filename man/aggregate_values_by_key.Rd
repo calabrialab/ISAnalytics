@@ -41,6 +41,7 @@ environment.}
 A list of tibbles or a single tibble according to input
 }
 \description{
+\lifecycle{experimental}
 Performs aggregation on values contained in the integration matrices based
 on the key and the specified lambda. For more details on how to use this
 function:

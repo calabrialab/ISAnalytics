@@ -115,3 +115,76 @@ test_that("generate_Vispa2_launch_AF works for multiple pair", {
     expect_true(ncol(df) == 11)
     expect_equal(df[, 1], df[, 2])
 })
+
+#------------------------------------------------------------------------------#
+# Tests as_sparse_matrix
+#------------------------------------------------------------------------------#
+smpl <- tibble::tibble(
+    chr = c(1, 2, 3), integration_locus = c(1354, 5634, 4765),
+    strand = c("+", "+", "+"),
+    GeneName = c("GENE1", "GENE2", "GENE3"),
+    GeneStrand = c("+", "+", "+"),
+    CompleteAmplificationID = c("ID1", "ID2", "ID3"),
+    Value = c(46, 546, 587)
+)
+
+smpl_multi <- tibble::tibble(
+    chr = c(1, 2, 3),
+    integration_locus = c(1354, 5634, 4765),
+    strand = c("+", "+", "+"),
+    GeneName = c("GENE1", "GENE2", "GENE3"),
+    GeneStrand = c("+", "+", "+"),
+    CompleteAmplificationID = c("ID1", "ID2", "ID3"),
+    seqCount = c(46, 546, 587),
+    fragmentEstimate = c(4234.5, 533.45, 5431.43),
+    barcodeCount = c(46, 6456, 456)
+)
+test_that("as_sparse_matrix works with single matrix", {
+    sparse <- as_sparse_matrix(smpl)
+    expect_true(tibble::is_tibble(sparse))
+    expect_true(all(c(
+        "chr", "integration_locus", "strand",
+        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+    ) %in%
+        colnames(sparse)))
+    expect_equal(nrow(sparse), 3)
+})
+
+test_that("as_sparse_matrix works with multi-quant matrix", {
+    sparse <- as_sparse_matrix(smpl_multi)
+    expect_true(!tibble::is_tibble(sparse) & is.list(sparse))
+    expect_equal(names(sparse), c(
+        "fragmentEstimate",
+        "seqCount",
+        "barcodeCount"
+    ))
+    expect_true(all(c(
+        "chr", "integration_locus", "strand",
+        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+    ) %in%
+        colnames(sparse$seqCount)))
+    expect_equal(nrow(sparse$seqCount), 3)
+    expect_true(all(c(
+        "chr", "integration_locus", "strand",
+        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+    ) %in%
+        colnames(sparse$fragmentEstimate)))
+    expect_equal(nrow(sparse$fragmentEstimate), 3)
+})
+
+test_that("as_sparse_matrix works with list of matrices", {
+    sparse <- as_sparse_matrix(list(smpl, smpl))
+    expect_true(!tibble::is_tibble(sparse) & is.list(sparse))
+    expect_true(all(c(
+        "chr", "integration_locus", "strand",
+        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+    ) %in%
+        colnames(sparse[[1]])))
+    expect_equal(nrow(sparse[[1]]), 3)
+    expect_true(all(c(
+        "chr", "integration_locus", "strand",
+        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+    ) %in%
+        colnames(sparse[[2]])))
+    expect_equal(nrow(sparse[[2]]), 3)
+})

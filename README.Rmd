@@ -13,22 +13,34 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ISAnalytics
+# ISAnalytics <a href='https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html'><img src='man/figures/isanalytics_logo.png' align="right" height="250" /></a>
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/calabrialab/isanalytics.svg?branch=master)](https://travis-ci.com/calabrialab/isanalytics)
 [![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
 [![R build status - bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
 [![R build status](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
+[![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
 
 ISAnalytics is an R package developed to analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies.
 
 In gene therapy, stem cells are modified using viral vectors to deliver the therapeutic transgene and replace functional properties since the genetic modification is stable and inherited in all cell progeny. The retrieval and mapping of the sequences flanking the virus-host DNA junctions allows the identification of insertion sites (IS), essential for monitoring the evolution of genetically modified cells in vivo. A comprehensive toolkit for the analysis of IS is required to foster clonal trackign studies and supporting the assessment of safety and long term efficacy in vivo. This package is aimed at (1) supporting automation of IS workflow, (2) performing base and advance analysis for IS tracking (clonal abundance, clonal expansions and statistics for insertional mutagenesis, etc.), (3) providing basic biology insights of transduced stem cells in vivo.
 
-ISAnalytics is currently under development with the goal of being published on Bioconductor soon.
-
 # Installation
+
+To install the package from bioconductor:
+
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("ISAnalytics")
+```
+
 
 To install the package from GitHub:
 
@@ -45,7 +57,7 @@ devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
 * Collision removal: more info with `vignette("Collision removal functionality", package = "ISAnalytics")`
 * Aggregation: more info with `vignette("Working with aggregate functions", package = "ISAnalytics")`
 * Re-calibration functions: `compute_near_integrations`
-* Analysis functions: `compute_abundance`
+* Analysis functions: `compute_abundance`, `comparison_matrix`, `separate_quant_matrices`
 * Utility functions
 
 # NEWS
@@ -58,6 +70,7 @@ devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
 # TO DO in future updates  
 
 * Add vignette for association file usage
+* Add vignette for re-calibration functionality
 
 # Getting help
 

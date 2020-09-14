@@ -5,7 +5,7 @@
 \title{Internal function to process collisions on multiple integrations,
 parallelized.}
 \usage{
-.process_collisions(collisions, date_col, reads_ratio)
+.process_collisions(collisions, date_col, reads_ratio, seqCount_col)
 }
 \arguments{
 \item{collisions}{The collision data frame}
@@ -14,6 +14,9 @@ parallelized.}
 
 \item{reads_ratio}{The value of the ratio between sequence count values to
 check}
+
+\item{seqCount_col}{The name of the sequence count column (support
+for multi quantification matrix)}
 }
 \value{
 A list containing the updated collisions, a numeric value

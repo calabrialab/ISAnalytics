@@ -55,6 +55,7 @@ options(op)
 }
 \seealso{
 Other Utility functions: 
+\code{\link{as_sparse_matrix}()},
 \code{\link{generate_blank_association_file}()},
 \code{\link{unzip_file_system}()}
 }

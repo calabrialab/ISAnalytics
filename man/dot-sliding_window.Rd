@@ -4,24 +4,38 @@
 \alias{.sliding_window}
 \title{Internal function that implements the sliding window algorithm.}
 \usage{
-.sliding_window(x, threshold, keep_criteria)
+.sliding_window(
+  x,
+  threshold,
+  keep_criteria,
+  annotated,
+  num_cols,
+  max_val_col,
+  produce_map
+)
 }
 \arguments{
 \item{x}{An integration matrix subset (see description)}
 
-\item{threshold}{The numeric value representing the threshold for selection}
+\item{threshold}{The numeric value representing an absolute number
+of bases for which two integrations are considered distinct}
 
-\item{keep_criteria}{The character vector with selecting criterias}
+\item{keep_criteria}{The string with selecting criteria}
+
+\item{annotated}{Is \code{x} annotated? Logical value}
+
+\item{num_cols}{A character vector with the names of the numeric columns}
+
+\item{max_val_col}{The column to consider if criteria is max_value}
+
+\item{produce_map}{Produce recalibration map?}
 }
 \value{
-A modified tibble with a number of rows less or equal than x.
+A named list with recalibrated matrix and recalibration map.
 }
 \description{
-\strong{NOTE: this function is meant to be called on a SINGLE GROUP, meaning a
-subset of an integration matrix in which all rows share the same chr and same
-strand.}
-Also note that is better to call this function on a group that has all
-distinct integration_locus values (this is ensured by calling function) and
-also it's not possible to call this function on groups with a single row.
+\strong{NOTE: this function is meant to be called on a SINGLE GROUP,
+meaning a subset of an integration matrix in which all rows
+share the same chr (and optionally same strand).}
 }
 \keyword{internal}

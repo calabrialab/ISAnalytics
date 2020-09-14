@@ -4,6 +4,7 @@
 
 #' Performs aggregation on metadata contained in the association file.
 #'
+#' \lifecycle{experimental}
 #' Groups metadata by grouping_keys and returns a summary of info for each
 #' group. For more details on how to use this function:
 #' \code{vignette("Working with aggregate functions", package = "ISAnalytics")}
@@ -31,8 +32,10 @@
 #' options(op)
 aggregate_metadata <- function(association_file,
     grouping_keys = c(
-        "SubjectID", "CellMarker",
-        "Tissue", "TimePoint"
+        "SubjectID",
+        "CellMarker",
+        "Tissue",
+        "TimePoint"
     ),
     import_stats = TRUE) {
     # Check parameters
@@ -78,6 +81,7 @@ aggregate_metadata <- function(association_file,
 
 #' Aggregates matrices values based on specified key.
 #'
+#' \lifecycle{experimental}
 #' Performs aggregation on values contained in the integration matrices based
 #' on the key and the specified lambda. For more details on how to use this
 #' function:
@@ -124,7 +128,8 @@ aggregate_metadata <- function(association_file,
 #'     key = "SubjectID", args = list(na.rm = TRUE)
 #' )
 #' options(op)
-aggregate_values_by_key <- function(x,
+aggregate_values_by_key <- function(
+    x,
     association_file,
     key = "SubjectID",
     lambda = "sum",
@@ -236,4 +241,3 @@ aggregate_values_by_key <- function(x,
     )
     agg_matrix
 }
-

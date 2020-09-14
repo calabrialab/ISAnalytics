@@ -114,33 +114,45 @@ test_that(".auto_detect_type detects malformed matrices", {
 # Tests import_single_Vispa2Matrix
 #------------------------------------------------------------------------------#
 test_that("import_single_Vispa2Matrix succeeds with standard annotated", {
-    expect_warning({
-        isadf <- import_single_Vispa2Matrix(example_path)
-    }, regexp = NA)
+    expect_warning(
+        {
+            isadf <- import_single_Vispa2Matrix(example_path)
+        },
+        regexp = NA
+    )
     expect_equal(nrow(isadf), 53)
     expect_equal(ncol(isadf), 7)
 })
 
 test_that("import_single_Vispa2Matrix succeeds with old", {
-    expect_warning({
-        isadf <- import_single_Vispa2Matrix(example_path2)
-    }, regexp = NA)
+    expect_warning(
+        {
+            isadf <- import_single_Vispa2Matrix(example_path2)
+        },
+        regexp = NA
+    )
     expect_equal(nrow(isadf), 49)
     expect_equal(ncol(isadf), 5)
 })
 
 test_that("import_single_Vispa2Matrix succeeds with new not annotated", {
-    expect_warning({
-        isadf <- import_single_Vispa2Matrix(example_path3)
-    }, regexp = NA)
+    expect_warning(
+        {
+            isadf <- import_single_Vispa2Matrix(example_path3)
+        },
+        regexp = NA
+    )
     expect_equal(nrow(isadf), 38)
     expect_equal(ncol(isadf), 5)
 })
 
 test_that("import_single_Vispa2Matrix fails with malformed matrix", {
-    expect_warning({
-        isadf <- import_single_Vispa2Matrix(example_path4)
-    }, regexp = .malformed_ISmatrix_warning())
+    expect_warning(
+        {
+            isadf <- import_single_Vispa2Matrix(example_path4)
+        },
+        regexp = .malformed_ISmatrix_warning()
+    )
 })
 
 test_that("import_single_Vispa2Matrix fails if file does not exist", {
@@ -271,11 +283,11 @@ test_that(".update_af_after_alignment updates correct fserr - with NAs", {
 #### OTHER VARS ####
 warning_update_after_alignment <-
     paste0("One or more projects were not found in the file",
-           "system starting from ", root_err, ", please check your",
-           "association file for errors and/or your file system.",
-           "Until you re-import the association file these ",
-           "missing files will be ignored.",
-           collapse = ""
+        "system starting from ", root_err, ", please check your",
+        "association file for errors and/or your file system.",
+        "Until you re-import the association file these ",
+        "missing files will be ignored.",
+        collapse = ""
     )
 
 #------------------------------------------------------------------------------#
@@ -319,24 +331,27 @@ test_that("import_association_file fails if padding is incorrect", {
     )
     # Padding is vector
     expect_error(
-        import_association_file(path_af, root_correct, tp_padding = c(1,2))
+        import_association_file(path_af, root_correct, tp_padding = c(1, 2))
     )
 })
 test_that("import_association_file fails if date format is incorrect", {
     # dates_format is not a character
     expect_error(
         import_association_file(path_af, root_correct,
-                                tp_padding = 4, dates_format = 1)
+            tp_padding = 4, dates_format = 1
+        )
     )
     # dates_format has not length 1
     expect_error(
         import_association_file(path_af, root_correct,
-                                tp_padding = 4, dates_format = c("dmy", "myd"))
+            tp_padding = 4, dates_format = c("dmy", "myd")
+        )
     )
     # dates_format is not one of the allowed
     expect_error(
         import_association_file(path_af, root_correct,
-                                tp_padding = 4, dates_format = "ggmmaaa")
+            tp_padding = 4, dates_format = "ggmmaaa"
+        )
     )
 })
 ## Testing results
@@ -487,8 +502,10 @@ test_that(".manage_association_file fails if association file is malformed", {
 #------------------------------------------------------------------------------#
 
 #### OTHER VARS ####
-as_file_correct <- .manage_association_file(path_af,
-                                            root_correct, 4, "dmy")[[1]]
+as_file_correct <- .manage_association_file(
+    path_af,
+    root_correct, 4, "dmy"
+)[[1]]
 suppressWarnings({
     as_file_err <- .manage_association_file(path_af, root_err, 4, "dmy")[[1]]
 })
@@ -831,8 +848,10 @@ test_that(".lookup_matrices finds all files for fs - no duplicates", {
     expect_true(all(files_found$Files_count[[3]]$Found == 1))
     expect_true(all(files_found$Files_count[[4]]$Found == 1))
 
-    files_found <- .lookup_matrices(as_file_correct, quant_types,
-                                    "not_annotated")
+    files_found <- .lookup_matrices(
+        as_file_correct, quant_types,
+        "not_annotated"
+    )
     expect_true(all(c(
         "ProjectID", "concatenatePoolIDSeqRun", "Anomalies",
         "Files", "Files_count"
@@ -1361,7 +1380,7 @@ test_that("import_parallel_Vispa2Matrices_interactive stops if padding
                 quant_types,
             matrix_type = "annotated",
             workers = 2,
-            tp_padding = c(1,2)
+            tp_padding = c(1, 2)
         )
     )
 })
@@ -2144,78 +2163,78 @@ test_that("import_parallel_Vispa2Matrices_auto stops if
 })
 test_that("import_parallel_Vispa2Matrices_auto stops if padding
           is incorrect", {
-              # Padding is not numeric or integer
-              expect_error(
-                  import_parallel_Vispa2Matrices_auto(
-                      association_file = path_af,
-                      root = root_correct,
-                      quantification_type =
-                          quant_types,
-                      matrix_type = "annotated",
-                      workers = 2,
-                      patterns = NULL,
-                      tp_padding = "3"
-                  )
-              )
-              # Padding is vector
-              expect_error(
-                  import_parallel_Vispa2Matrices_auto(
-                      association_file = path_af,
-                      root = root_correct,
-                      quantification_type =
-                          quant_types,
-                      matrix_type = "annotated",
-                      workers = 2,
-                      patterns = NULL,
-                      tp_padding = c(1, 2)
-                  )
-              )
-          })
+    # Padding is not numeric or integer
+    expect_error(
+        import_parallel_Vispa2Matrices_auto(
+            association_file = path_af,
+            root = root_correct,
+            quantification_type =
+                quant_types,
+            matrix_type = "annotated",
+            workers = 2,
+            patterns = NULL,
+            tp_padding = "3"
+        )
+    )
+    # Padding is vector
+    expect_error(
+        import_parallel_Vispa2Matrices_auto(
+            association_file = path_af,
+            root = root_correct,
+            quantification_type =
+                quant_types,
+            matrix_type = "annotated",
+            workers = 2,
+            patterns = NULL,
+            tp_padding = c(1, 2)
+        )
+    )
+})
 test_that("import_parallel_Vispa2Matrices_auto stops if date format
           is incorrect", {
-              # dates_format is not a character
-              expect_error(
-                  import_parallel_Vispa2Matrices_auto(
-                      association_file = path_af,
-                      root = root_correct,
-                      quantification_type =
-                          quant_types,
-                      matrix_type = "annotated",
-                      workers = 2,
-                      patterns = NULL,
-                      tp_padding = 4,
-                      dates_format = 1
-                  )
-              )
-              # dates_format has not length 1
-              expect_error(
-                  import_parallel_Vispa2Matrices_auto(
-                      association_file = path_af,
-                      root = root_correct,
-                      quantification_type =
-                          quant_types,
-                      matrix_type = "annotated",
-                      workers = 2,
-                      patterns = NULL,
-                      tp_padding = 4,
-                      dates_format = c("dmy", "mdy")
-                  )
-              )
-              # dates_format is not one of the allowed
-              expect_error(
-                  import_parallel_Vispa2Matrices_auto(
-                      association_file = path_af,
-                      root = root_correct,
-                      quantification_type =
-                          quant_types,
-                      matrix_type = "annotated",
-                      workers = 2,
-                      patterns = NULL,
-                      tp_padding = 4,
-                      dates_format = "ggmmaaaa"
-                  )
-              )
-          })
+    # dates_format is not a character
+    expect_error(
+        import_parallel_Vispa2Matrices_auto(
+            association_file = path_af,
+            root = root_correct,
+            quantification_type =
+                quant_types,
+            matrix_type = "annotated",
+            workers = 2,
+            patterns = NULL,
+            tp_padding = 4,
+            dates_format = 1
+        )
+    )
+    # dates_format has not length 1
+    expect_error(
+        import_parallel_Vispa2Matrices_auto(
+            association_file = path_af,
+            root = root_correct,
+            quantification_type =
+                quant_types,
+            matrix_type = "annotated",
+            workers = 2,
+            patterns = NULL,
+            tp_padding = 4,
+            dates_format = c("dmy", "mdy")
+        )
+    )
+    # dates_format is not one of the allowed
+    expect_error(
+        import_parallel_Vispa2Matrices_auto(
+            association_file = path_af,
+            root = root_correct,
+            quantification_type =
+                quant_types,
+            matrix_type = "annotated",
+            workers = 2,
+            patterns = NULL,
+            tp_padding = 4,
+            dates_format = "ggmmaaaa"
+        )
+    )
+})
 ## Testing results
 test_that("import_parallel_Vispa2Matrices_auto succeeds for fs - path", {
     matrices <- import_parallel_Vispa2Matrices_auto(path_af,

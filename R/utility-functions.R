@@ -107,6 +107,121 @@ generate_Vispa2_launch_AF <- function(association_file, project, pool, path) {
     })
 }
 
+
+#' Converts tidy integration matrices in the original sparse matrix
+#' form.
+#'
+#' \lifecycle{maturing}
+#' This function is particularly useful when a sparce matrix structure
+#' is needed by a specific function (mainly from other packages).
+#'
+#' @param x A single tidy integration matrix or a list of integration
+#' matrices. Supports also multi-quantification matrices
+#' obtained via \link{comparison_matrix}
+#' @param fragmentEstimate For multi-quantification matrix support:
+#' the name of the fragment estimate values column
+#' @param seqCount For multi-quantification matrix support:
+#' the name of the sequence count values column
+#' @param barcodeCount For multi-quantification matrix support:
+#' the name of the barcode count values column
+#' @param cellCount For multi-quantification matrix support:
+#' the name of the cell count values column
+#' @param ShsCount For multi-quantification matrix support:
+#' the name of the Shs Count values column
+#'
+#' @importFrom tidyr pivot_wider
+#' @importFrom purrr is_empty set_names walk map
+#' @importFrom dplyr select
+#'
+#' @family Utility functions
+#'
+#' @return Depending on input, 2 possible outputs:
+#' * A single sparce matrix (tibble) if input is a single quantification
+#' matrix
+#' * A list of sparce matrices divided by quantification if input
+#' is a single multi-quantification matrix or a list of matrices
+#' @export
+#'
+#' @examples
+#' path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
+#'     package = "ISAnalytics"
+#' )
+#' matrix <- import_single_Vispa2Matrix(path)
+#' sparse <- as_sparse_matrix(matrix)
+as_sparse_matrix <- function(x, fragmentEstimate = "fragmentEstimate",
+    seqCount = "seqCount",
+    barcodeCount = "barcodeCount",
+    cellCount = "cellCount",
+    ShsCount = "ShsCount") {
+    stopifnot(is.list(x))
+    if (is.data.frame(x)) {
+        ## SINGLE DATA FRAME
+        if (.check_mandatory_vars(x) == FALSE) {
+            stop(.non_ISM_error())
+        }
+        if (.check_complAmpID(x) == FALSE) {
+            stop(.missing_complAmpID_error())
+        }
+        num_cols <- .find_exp_cols(x)
+        if (purrr::is_empty(num_cols)) {
+            stop(.missing_num_cols_error())
+        }
+        ### SINGLE QUANT
+        if (all(num_cols == "Value")) {
+            sparse_m <- tidyr::pivot_wider(x,
+                names_from =
+                    .data$CompleteAmplificationID,
+                values_from =
+                    .data$Value
+            )
+            return(sparse_m)
+        }
+        ### MULTI QUANT
+        param_cols <- c(
+            fragmentEstimate, seqCount, barcodeCount, cellCount,
+            ShsCount
+        )
+        found <- param_cols[param_cols %in% num_cols]
+        if (purrr::is_empty(found)) {
+            stop(.non_quant_cols_error())
+        }
+        annot <- if (.is_annotated(x)) {
+            annotation_IS_vars()
+        } else {
+            character(0)
+        }
+        sparse_m <- purrr::map(found, function(quant) {
+            temp <- x %>% dplyr::select(
+                mandatory_IS_vars(),
+                .data$CompleteAmplificationID,
+                annot, quant
+            )
+            tidyr::pivot_wider(temp,
+                names_from = .data$CompleteAmplificationID,
+                values_from = quant
+            )
+        }) %>% purrr::set_names(found)
+        return(sparse_m)
+    } else {
+        ## LIST
+        purrr::walk(x, function(m) {
+            mand <- .check_mandatory_vars(m)
+            amp <- .check_complAmpID(m)
+            val <- .check_value_col(m)
+            if (any(c(mand, amp, val) == FALSE)) {
+                stop(.non_ISM_error())
+            }
+        })
+        sparse_m <- purrr::map(x, function(data) {
+            tidyr::pivot_wider(data,
+                names_from = .data$CompleteAmplificationID,
+                values_from = .data$Value
+            )
+        })
+        return(sparse_m)
+    }
+}
+
 #### ---- Utilities for tests and examples ----####
 #' A utility function to unzip and use example file systems included in the
 #' package

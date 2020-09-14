@@ -22,6 +22,7 @@ aggregate_metadata(
 A tibble
 }
 \description{
+\lifecycle{experimental}
 Groups metadata by grouping_keys and returns a summary of info for each
 group. For more details on how to use this function:
 \code{vignette("Working with aggregate functions", package = "ISAnalytics")}

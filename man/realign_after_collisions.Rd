@@ -19,6 +19,7 @@ must be quantification types (\code{quantification_types()}) except
 A named list with re-aligned matrices
 }
 \description{
+\lifecycle{experimental}
 This function should be used to keep data consistent among the same analysis:
 if for some reason you removed the collisions by passing only the sequence
 count matrix to the \code{remove_collisions} function, you should call this
@@ -44,7 +45,7 @@ matrices <- import_parallel_Vispa2Matrices_auto(
 )
 sc_matrix <- remove_collisions(matrices$seqCount, association_file)
 others <- matrices[!names(matrices) \%in\% "seqCount"]
-aligned_matrices <- realign_after_collisions(sc_matrix$seqCount, others)
+aligned_matrices <- realign_after_collisions(sc_matrix, others)
 options(op)
 }
 \seealso{
