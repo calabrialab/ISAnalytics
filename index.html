@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.10</span>
       </span>
     </div>
 
@@ -88,20 +88,30 @@
       </header><div class="row">
   <div class="contents col-md-9">
 
-<div id="isanalytics" class="section level1">
+<div id="isanalytics-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#isanalytics" class="anchor"></a>ISAnalytics</h1></div>
+<a href="#isanalytics-" class="anchor"></a>ISAnalytics <a href="https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html"><img src="reference/figures/isanalytics_logo.png" align="right" height="250"></a>
+</h1></div>
 <!-- badges: start -->
 
 <p>ISAnalytics is an R package developed to analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies.</p>
 <p>In gene therapy, stem cells are modified using viral vectors to deliver the therapeutic transgene and replace functional properties since the genetic modification is stable and inherited in all cell progeny. The retrieval and mapping of the sequences flanking the virus-host DNA junctions allows the identification of insertion sites (IS), essential for monitoring the evolution of genetically modified cells in vivo. A comprehensive toolkit for the analysis of IS is required to foster clonal trackign studies and supporting the assessment of safety and long term efficacy in vivo. This package is aimed at (1) supporting automation of IS workflow, (2) performing base and advance analysis for IS tracking (clonal abundance, clonal expansions and statistics for insertional mutagenesis, etc.), (3) providing basic biology insights of transduced stem cells in vivo.</p>
-<p>ISAnalytics is currently under development with the goal of being published on Bioconductor soon.</p>
 </div>
 <div id="installation" class="section level1">
 <h1 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h1>
-<p>To install the package from GitHub:</p>
+<p>To install the package from bioconductor:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, quietly = <span class="fl">TRUE</span>))
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)
+
+<span class="co"># The following initializes usage of Bioc devel</span>
+<span class="kw">BiocManager</span>::<span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(version=<span class="st">'devel'</span>)
+
+<span class="kw">BiocManager</span>::<span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"ISAnalytics"</span>)
+</pre></div>
+<p>To install the package from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="kw"><a href="https://devtools.r-lib.org">devtools</a></span>)) {
   <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"devtools"</span>)
 }
@@ -120,7 +130,7 @@
 </li>
 <li>Re-calibration functions: <code>compute_near_integrations</code>
 </li>
-<li>Analysis functions: <code>compute_abundance</code>
+<li>Analysis functions: <code>compute_abundance</code>, <code>comparison_matrix</code>, <code>separate_quant_matrices</code>
 </li>
 <li>Utility functions</li>
 </ul>
@@ -132,19 +142,46 @@
 <div id="isanalytics-news" class="section level1">
 <h1 class="hasAnchor">
 <a href="#isanalytics-news" class="anchor"></a>ISAnalytics News</h1>
-<div id="changes-in-version-0998-2020-08-12" class="section level2">
+<div id="changes-in-version-09910-2020-09-14" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-in-version-0998-2020-08-12" class="anchor"></a>Changes in version 0.99.8 (2020-08-12)</h2>
+<a href="#changes-in-version-09910-2020-09-14" class="anchor"></a>Changes in version 0.99.10 (2020-09-14)</h2>
+<p>ISanalytics is officially on bioconductor!</p>
+<div id="new-features" class="section level4">
+<h4 class="hasAnchor">
+<a href="#new-features" class="anchor"></a>NEW FEATURES</h4>
 <ul>
-<li>Submitted to Bioconductor</li>
+<li>Added analysis functions <code>comparison_matrix</code> and <code>separate_quant_matrices</code>
+</li>
+<li>Added utility function <code>as_sparse_matrix</code>
+</li>
+<li>Added package logo</li>
 </ul>
+</div>
+<div id="significant-user-visible-changes" class="section level4">
+<h4 class="hasAnchor">
+<a href="#significant-user-visible-changes" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h4>
+<ul>
+<li>Changed algorithm for <code>compute_near_integrations</code>
+</li>
+<li>Added support for multi-quantification matrices to <code>remove_collisions</code>
+</li>
+<li>Added usage of lifecycle badges in documentation: users can now see if a feature is experimental/maturing/stable etc</li>
+</ul>
+</div>
+<div id="minor-fixes" class="section level4">
+<h4 class="hasAnchor">
+<a href="#minor-fixes" class="anchor"></a>MINOR FIXES</h4>
+<ul>
+<li>Added fix for <code>import_single_Vispa2Matrix</code> to remove non significant 0 values</li>
+</ul>
+</div>
 </div>
 <div id="changes-in-version-0999-2020-09-01" class="section level2">
 <h2 class="hasAnchor">
 <a href="#changes-in-version-0999-2020-09-01" class="anchor"></a>Changes in version 0.99.9 (2020-09-01)</h2>
-<div id="new-features" class="section level4">
+<div id="new-features-1" class="section level4">
 <h4 class="hasAnchor">
-<a href="#new-features" class="anchor"></a>NEW FEATURES</h4>
+<a href="#new-features-1" class="anchor"></a>NEW FEATURES</h4>
 <ul>
 <li>Added functionality: aggregate functions</li>
 <li>Added vignette on aggregate functions</li>
@@ -152,14 +189,21 @@
 <li>Added first analysis function (compute_abundance)</li>
 </ul>
 </div>
-<div id="significant-user-visible-changes" class="section level4">
+<div id="significant-user-visible-changes-1" class="section level4">
 <h4 class="hasAnchor">
-<a href="#significant-user-visible-changes" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h4>
+<a href="#significant-user-visible-changes-1" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h4>
 <ul>
 <li>Dropped structure <code>ISADataFrame</code>: now the package only uses standard tibbles</li>
 <li>Modified package documentation</li>
 </ul>
 </div>
+</div>
+<div id="changes-in-version-0998-2020-08-12" class="section level2">
+<h2 class="hasAnchor">
+<a href="#changes-in-version-0998-2020-08-12" class="anchor"></a>Changes in version 0.99.8 (2020-08-12)</h2>
+<ul>
+<li>Submitted to Bioconductor</li>
+</ul>
 </div>
 </div>
 <div id="to-do-in-future-updates" class="section level1">
@@ -167,6 +211,7 @@
 <a href="#to-do-in-future-updates" class="anchor"></a>TO DO in future updates</h1>
 <ul>
 <li>Add vignette for association file usage</li>
+<li>Add vignette for recalibration functionality</li>
 </ul>
 </div>
 <div id="getting-help" class="section level1">
@@ -181,6 +226,8 @@
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
+<li>Download from BIOC at <br><a href="https://www.bioconductor.org/packages/ISAnalytics">https://​www.bioconductor.org/​packages/​ISAnalytics</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/calabrialab/ISAnalytics/">https://​github.com/​calabrialab/​ISAnalytics/​</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/calabrialab/ISAnalytics/issues">https://​github.com/​calabrialab/​ISAnalytics/​issues</a>
@@ -216,6 +263,7 @@
 <li><a href="https://codecov.io/gh/calabrialab/ISAnalytics"><img src="https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg" alt="codecov"></a></li>
 <li><a href="https://github.com/calabrialab/isanalytics/actions"><img src="https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg" alt="R build status - bioc"></a></li>
 <li><a href="https://github.com/calabrialab/isanalytics/actions"><img src="https://github.com/calabrialab/isanalytics/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://www.tidyverse.org/lifecycle/#maturing"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
 </ul>
 </div>
 </div>
@@ -227,7 +275,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

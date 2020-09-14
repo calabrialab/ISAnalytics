@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.10</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 class="date">1 September 2020</h4>
+            <h4 class="date">14 September 2020</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/master/vignettes/collision_removal.Rmd"><code>vignettes/collision_removal.Rmd</code></a></small>
       <div class="hidden name"><code>collision_removal.Rmd</code></div>
@@ -222,7 +222,10 @@
 <div id="process-the-collisions" class="section level2">
 <h2 class="hasAnchor">
 <a href="#process-the-collisions" class="anchor"></a>Process the collisions</h2>
-<p>You can process the collisions in two different ways, the recommended way is to pass the entire named list to the function, so it can realign other matrices automatically:</p>
+<p>You can process the collisions in 3 different ways.</p>
+<div id="pass-the-entire-named-list-to-the-function" class="section level3">
+<h3 class="hasAnchor">
+<a href="#pass-the-entire-named-list-to-the-function" class="anchor"></a>Pass the entire named list to the function</h3>
 <div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="co"># Pass the whole named list</span>
 <span class="kw">matrices_processed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span>(x = <span class="kw">matrices</span>, 
@@ -239,8 +242,12 @@
 <span class="co">#&gt; Realigning matrices...</span>
 <span class="co">#&gt; Finished!</span>
 </pre></div>
-<p>If you have the “widgets” option active, a report file is produced at the end that shows the before and after for each subject (and some other details). This report is an html widget, so you can save it or export it for future reference if you need it.</p>
-<p>The alternative way for using this function is to give only the sequence count matrix as input:</p>
+<p>If you have the “widgets” option active, a report file is produced at the end that shows the before and after for each subject (and some other details). This report is an HTML widget, so you can save it or export it for future reference if you need it.<br>
+In this case, collision removal is done on the sequence count matrix and other matrices are re-aligned automatically.</p>
+</div>
+<div id="give-only-the-sequence-count-matrix-as-input" class="section level3">
+<h3 class="hasAnchor">
+<a href="#give-only-the-sequence-count-matrix-as-input" class="anchor"></a>Give only the sequence count matrix as input</h3>
 <div class="sourceCode" id="cb9"><pre class="downlit">
 <span class="co"># Pass the sequence count matrix only</span>
 <span class="kw">matrices_processed_single</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span>(x = <span class="kw">matrices</span><span class="op">$</span><span class="kw">seqCount</span>, 
@@ -259,12 +266,53 @@
 </pre></div>
 <p>If you have the “verbose” option active, a console message will remind you to align other matrices if you have them at a later time.</p>
 </div>
+<div id="support-for-multi-quantification-matrices" class="section level3">
+<h3 class="hasAnchor">
+<a href="#support-for-multi-quantification-matrices" class="anchor"></a>Support for multi-quantification matrices</h3>
+<p>If you’d like to avoid the re-alignment phase, you can call collision removal on a multi-quantification matrix obtained via the function <code>comparison_matrix</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit">
+<span class="co"># Obtain multi-quantification matrix</span>
+<span class="kw">multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comparison_matrix.html">comparison_matrix</a></span>(<span class="kw">matrices</span>)
+<span class="kw">multi</span>
+<span class="co">#&gt; # A tibble: 5,904 x 8</span>
+<span class="co">#&gt;    chr   integration_loc… strand GeneName GeneStrand CompleteAmplifi…</span>
+<span class="co">#&gt;    &lt;chr&gt;            &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;           </span>
+<span class="co">#&gt;  1 1            100903226 +      CDC14A   +          CLOEXP_POOL6_LT…</span>
+<span class="co">#&gt;  2 1            101724095 -      S1PR1    +          CLOEXP_POOL6_LT…</span>
+<span class="co">#&gt;  3 1            108208779 +      VAV3     -          CLOEXP_POOL6_LT…</span>
+<span class="co">#&gt;  4 1            108412817 -      VAV3     -          CLOEXP_POOL6_LT…</span>
+<span class="co">#&gt;  5 1            108412817 -      VAV3     -          CLOEXP_POOL6_LT…</span>
+<span class="co">#&gt;  6 1            108511440 +      VAV3-AS1 +          CLOEXP_POOL6_LT…</span>
+<span class="co">#&gt;  7 1            109689050 +      KIAA1324 +          CLOEXP_POOL6_LT…</span>
+<span class="co">#&gt;  8 1            111411778 +      CD53     +          CLOEXP_POOL6_LT…</span>
+<span class="co">#&gt;  9 1            111411778 +      CD53     +          CLOEXP_POOL6_LT…</span>
+<span class="co">#&gt; 10 1            111466980 -      LRIF1    -          CLOEXP_POOL6_LT…</span>
+<span class="co">#&gt; # … with 5,894 more rows, and 2 more variables: fragmentEstimate &lt;dbl&gt;,</span>
+<span class="co">#&gt; #   seqCount &lt;int&gt;</span>
+<span class="kw">matrices_processed_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span>(x = <span class="kw">multi</span>,
+                                              association_file = 
+                                                 <span class="kw">association_file</span>, 
+                                               date_col = <span class="st">"SequencingDate"</span>, 
+                                               reads_ratio = <span class="fl">10</span>, 
+                                              seq_count_col = <span class="st">"seqCount"</span>)
+<span class="co">#&gt; Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span>
+<span class="co">#&gt; # A tibble: 1 x 3</span>
+<span class="co">#&gt;   ProjectID   PoolID       CompleteAmplificationID                              </span>
+<span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;                                                </span>
+<span class="co">#&gt; 1 PROJECT1101 ABY-LR-PL4-… PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14…</span>
+<span class="co">#&gt; Identifying collisions...</span>
+<span class="co">#&gt; Processing collisions...</span>
+<span class="co">#&gt; Finished!</span>
+</pre></div>
+<p>As you can see, <code>comparison_matrix</code> produces a single integration matrix from the named list of single quantification matrices. This is the recommended approach if you don’t have specific needs as it negates the necessity of realigning matrices altogether.</p>
+</div>
+</div>
 <div id="re-align-other-matrices" class="section level2">
 <h2 class="hasAnchor">
 <a href="#re-align-other-matrices" class="anchor"></a>Re-align other matrices</h2>
 <p>If you have opted for the second way, to realign other matrices you have to call the function <code>realign_after_collisions</code>, passing as input the processed sequence count matrix and the named list of other matrices to realign.<br><strong>NOTE: the names in the list must be quantification types.</strong></p>
-<div class="sourceCode" id="cb10"><pre class="downlit">
-<span class="kw">seq_count_proc</span> <span class="op">&lt;-</span> <span class="kw">matrices_processed_single</span><span class="op">$</span><span class="kw">seqCount</span>
+<div class="sourceCode" id="cb11"><pre class="downlit">
+<span class="kw">seq_count_proc</span> <span class="op">&lt;-</span> <span class="kw">matrices_processed_single</span>
 <span class="kw">other_matrices</span> <span class="op">&lt;-</span> <span class="kw">matrices</span>[<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">matrices</span>) <span class="op">%in%</span> <span class="st">"seqCount"</span>] 
 <span class="co"># Select only matrices that are not relative to sequence count</span>
 <span class="kw">other_realigned</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/realign_after_collisions.html">realign_after_collisions</a></span>(<span class="kw">seq_count_proc</span>, <span class="kw">other_matrices</span>)
@@ -294,7 +342,7 @@
 <p><code>R</code> session information.</p>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  setting  value                                      
-#&gt;  version  R version 4.0.2 Patched (2020-08-27 r79088)
+#&gt;  version  R version 4.0.2 Patched (2020-09-10 r79182)
 #&gt;  os       Ubuntu 20.04.1 LTS                         
 #&gt;  system   x86_64, linux-gnu                          
 #&gt;  ui       X11                                        
@@ -302,18 +350,19 @@
 #&gt;  collate  en_US.UTF-8                                
 #&gt;  ctype    en_US.UTF-8                                
 #&gt;  tz       UTC                                        
-#&gt;  date     2020-09-01                                 
+#&gt;  date     2020-09-14                                 
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  package       * version    date       lib source                        
 #&gt;  assertthat      0.2.1      2019-03-21 [2] RSPM (R 4.0.0)                
-#&gt;  backports       1.1.9      2020-08-24 [1] RSPM (R 4.0.2)                
+#&gt;  backports       1.1.9      2020-08-24 [2] RSPM (R 4.0.2)                
 #&gt;  bibtex          0.4.2.2    2020-01-02 [1] RSPM (R 4.0.0)                
 #&gt;  BiocManager     1.30.10    2019-11-16 [2] CRAN (R 4.0.2)                
 #&gt;  BiocParallel    1.23.2     2020-07-06 [1] Bioconductor                  
 #&gt;  BiocStyle     * 2.17.0     2020-04-27 [1] Bioconductor                  
 #&gt;  bookdown        0.20       2020-06-23 [1] RSPM (R 4.0.2)                
 #&gt;  cli             2.0.2      2020-02-28 [2] RSPM (R 4.0.0)                
+#&gt;  cpp11           0.2.1      2020-08-11 [1] RSPM (R 4.0.2)                
 #&gt;  crayon          1.3.4      2017-09-16 [2] RSPM (R 4.0.0)                
 #&gt;  desc            1.2.0      2018-05-01 [2] RSPM (R 4.0.0)                
 #&gt;  digest          0.6.25     2020-02-23 [2] RSPM (R 4.0.0)                
@@ -324,13 +373,13 @@
 #&gt;  forcats         0.5.0      2020-03-01 [1] RSPM (R 4.0.0)                
 #&gt;  fs              1.5.0      2020-07-31 [2] RSPM (R 4.0.2)                
 #&gt;  generics        0.0.2      2018-11-29 [1] RSPM (R 4.0.0)                
-#&gt;  glue            1.4.2      2020-08-27 [1] RSPM (R 4.0.2)                
+#&gt;  glue            1.4.2      2020-08-27 [2] RSPM (R 4.0.2)                
 #&gt;  hms             0.5.3      2020-01-08 [1] RSPM (R 4.0.0)                
 #&gt;  htmltools       0.5.0      2020-06-16 [2] RSPM (R 4.0.1)                
 #&gt;  htmlwidgets     1.5.1      2019-10-08 [2] RSPM (R 4.0.0)                
 #&gt;  httr            1.4.2      2020-07-20 [2] RSPM (R 4.0.2)                
-#&gt;  ISAnalytics   * 0.99.9     2020-09-01 [1] Bioconductor                  
-#&gt;  jsonlite        1.7.0      2020-06-25 [2] RSPM (R 4.0.2)                
+#&gt;  ISAnalytics   * 0.99.10    2020-09-14 [1] Bioconductor                  
+#&gt;  jsonlite        1.7.1      2020-09-07 [2] RSPM (R 4.0.2)                
 #&gt;  knitcitations * 1.0.10     2019-09-15 [1] RSPM (R 4.0.0)                
 #&gt;  knitr           1.29       2020-06-23 [2] RSPM (R 4.0.2)                
 #&gt;  lifecycle       0.2.0      2020-03-06 [2] RSPM (R 4.0.0)                
@@ -339,29 +388,29 @@
 #&gt;  memoise         1.1.0      2017-04-21 [2] RSPM (R 4.0.0)                
 #&gt;  pillar          1.4.6      2020-07-10 [2] RSPM (R 4.0.2)                
 #&gt;  pkgconfig       2.0.3      2019-09-22 [2] RSPM (R 4.0.0)                
-#&gt;  pkgdown         1.5.1.9000 2020-09-01 [1] Github (r-lib/pkgdown@ecce89e)
+#&gt;  pkgdown         1.6.1.9000 2020-09-14 [1] Github (r-lib/pkgdown@cc9c7b1)
 #&gt;  plyr            1.8.6      2020-03-03 [1] RSPM (R 4.0.2)                
 #&gt;  purrr           0.3.4      2020-04-17 [2] RSPM (R 4.0.0)                
 #&gt;  R6              2.4.1      2019-11-12 [2] RSPM (R 4.0.0)                
 #&gt;  ragg            0.3.1      2020-07-03 [1] RSPM (R 4.0.2)                
 #&gt;  Rcpp            1.0.5      2020-07-06 [2] RSPM (R 4.0.2)                
-#&gt;  reactable       0.2.0      2020-05-28 [1] RSPM (R 4.0.0)                
+#&gt;  reactable       0.2.1      2020-09-01 [1] RSPM (R 4.0.2)                
 #&gt;  readr           1.3.1      2018-12-21 [1] RSPM (R 4.0.2)                
 #&gt;  RefManageR      1.2.12     2019-04-03 [1] RSPM (R 4.0.0)                
 #&gt;  rlang           0.4.7      2020-07-09 [2] RSPM (R 4.0.2)                
 #&gt;  rmarkdown       2.3        2020-06-18 [1] RSPM (R 4.0.1)                
 #&gt;  rprojroot       1.3-2      2018-01-03 [2] RSPM (R 4.0.0)                
 #&gt;  sessioninfo   * 1.1.1      2018-11-05 [2] RSPM (R 4.0.0)                
-#&gt;  stringi         1.4.6      2020-02-17 [2] RSPM (R 4.0.0)                
+#&gt;  stringi         1.5.3      2020-09-09 [2] RSPM (R 4.0.2)                
 #&gt;  stringr         1.4.0      2019-02-10 [2] RSPM (R 4.0.0)                
-#&gt;  systemfonts     0.2.3      2020-06-09 [1] RSPM (R 4.0.0)                
+#&gt;  systemfonts     0.3.1      2020-09-08 [1] RSPM (R 4.0.2)                
 #&gt;  tibble          3.0.3      2020-07-10 [2] RSPM (R 4.0.2)                
 #&gt;  tidyr           1.1.2      2020-08-27 [1] RSPM (R 4.0.2)                
 #&gt;  tidyselect      1.1.0      2020-05-11 [1] RSPM (R 4.0.0)                
 #&gt;  utf8            1.1.4      2018-05-24 [2] RSPM (R 4.0.0)                
-#&gt;  vctrs           0.3.4      2020-08-29 [1] RSPM (R 4.0.2)                
+#&gt;  vctrs           0.3.4      2020-08-29 [2] RSPM (R 4.0.2)                
 #&gt;  withr           2.2.0      2020-04-20 [2] RSPM (R 4.0.0)                
-#&gt;  xfun            0.16       2020-07-24 [2] RSPM (R 4.0.2)                
+#&gt;  xfun            0.17       2020-09-09 [2] RSPM (R 4.0.2)                
 #&gt;  xml2            1.3.2      2020-04-23 [2] RSPM (R 4.0.0)                
 #&gt;  yaml            2.2.1      2020-02-01 [2] RSPM (R 4.0.0)                
 #&gt;  zip             2.1.1      2020-08-27 [1] RSPM (R 4.0.2)                
@@ -377,7 +426,7 @@
 <p>Citations made with <em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> (<a href="https://github.com/cboettig/knitcitations">Boettiger, 2019</a>).</p>
 <p>[1] J. Allaire, Y. Xie, J. McPherson, J. Luraschi, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.3. 2020. &lt;URL: <a href="https://github.com/rstudio/rmarkdown" class="uri">https://github.com/rstudio/rmarkdown</a>&gt;.</p>
 <p>[2] C. Boettiger. <em>knitcitations: Citations for ‘Knitr’ Markdown Files</em>. R package version 1.0.10. 2019. &lt;URL: <a href="https://github.com/cboettig/knitcitations" class="uri">https://github.com/cboettig/knitcitations</a>&gt;.</p>
-<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 0.99.9. 2020. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
+<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 0.99.10. 2020. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
 <p>[4] G. Csárdi, R. core, H. Wickham, W. Chang, et al. <em>sessioninfo: R Session Information</em>. R package version 1.1.1. 2018. &lt;URL: <a href="https://github.com/r-lib/sessioninfo#readme" class="uri">https://github.com/r-lib/sessioninfo#readme</a>&gt;.</p>
 <p>[5] A. Oleś, M. Morgan, and W. Huber. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.17.0. 2020. &lt;URL: <a href="https://github.com/Bioconductor/BiocStyle" class="uri">https://github.com/Bioconductor/BiocStyle</a>&gt;.</p>
 <p>[6] R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. R Foundation for Statistical Computing. Vienna, Austria, 2020. &lt;URL: <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>&gt;.</p>
@@ -401,7 +450,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

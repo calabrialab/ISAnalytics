@@ -40,7 +40,9 @@
 
 
 <meta property="og:title" content="Identifies and removes collisions based on the sequence count matrix. — remove_collisions" />
-<meta property="og:description" content="A collision is an integration (aka a unique combination of
+<meta property="og:description" content="
+
+A collision is an integration (aka a unique combination of
 chr, integration_locus and strand) which is observed in more than one
 independent sample (a unique pair of ProjectID and SubjectID). The function
 tries to decide to which subject an integration should be assigned and if no
@@ -77,7 +79,7 @@ frame." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.10</span>
       </span>
     </div>
 
@@ -140,7 +142,9 @@ frame." />
     </div>
 
     <div class="ref-description">
-    <p>A collision is an integration (aka a unique combination of
+    <p><a href='https://www.tidyverse.org/lifecycle/#experimental'><img src='figures/lifecycle-experimental.svg' alt='Experimental lifecycle'></a>
+
+A collision is an integration (aka a unique combination of
 chr, integration_locus and strand) which is observed in more than one
 independent sample (a unique pair of ProjectID and SubjectID). The function
 tries to decide to which subject an integration should be assigned and if no
@@ -152,7 +156,8 @@ frame.</p>
   <span class='kw'>x</span>,
   <span class='kw'>association_file</span>,
   date_col = <span class='st'>"SequencingDate"</span>,
-  reads_ratio = <span class='fl'>10</span>
+  reads_ratio = <span class='fl'>10</span>,
+  seq_count_col = <span class='st'>"seqCount"</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -160,9 +165,10 @@ frame.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A named list of matrices (names must be quantification types), or
+      <td><p>A named list of matrices (names must be quantification types),
 a single integration matrix representing the sequence count matrix of
-interest.</p></td>
+interest or a multi-quantification matrix obtained via
+<a href='comparison_matrix.html'>comparison_matrix</a></p></td>
     </tr>
     <tr>
       <th>association_file</th>
@@ -178,6 +184,11 @@ Must be one value in <code><a href='date_columns_coll.html'>date_columns_coll()<
       <th>reads_ratio</th>
       <td><p>A single numeric value that represents the ratio that has
 to be considered when deciding between seqCount value.</p></td>
+    </tr>
+    <tr>
+      <th>seq_count_col</th>
+      <td><p>For support of multi-quantification matrix -
+the name of the sequence count values column</p></td>
     </tr>
     </table>
 
@@ -231,7 +242,7 @@ For more details on how to use collision removal functionality:
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

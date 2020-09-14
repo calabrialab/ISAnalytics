@@ -40,12 +40,9 @@
 
 
 <meta property="og:title" content="Internal function that implements the sliding window algorithm. — .sliding_window" />
-<meta property="og:description" content="NOTE: this function is meant to be called on a SINGLE GROUP, meaning a
-subset of an integration matrix in which all rows share the same chr and same
-strand.
-Also note that is better to call this function on a group that has all
-distinct integration_locus values (this is ensured by calling function) and
-also it's not possible to call this function on groups with a single row." />
+<meta property="og:description" content="NOTE: this function is meant to be called on a SINGLE GROUP,
+meaning a subset of an integration matrix in which all rows
+share the same chr (and optionally same strand)." />
 
 
 
@@ -77,7 +74,7 @@ also it's not possible to call this function on groups with a single row." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.10</span>
       </span>
     </div>
 
@@ -140,15 +137,20 @@ also it's not possible to call this function on groups with a single row." />
     </div>
 
     <div class="ref-description">
-    <p><strong>NOTE: this function is meant to be called on a SINGLE GROUP, meaning a
-subset of an integration matrix in which all rows share the same chr and same
-strand.</strong>
-Also note that is better to call this function on a group that has all
-distinct integration_locus values (this is ensured by calling function) and
-also it's not possible to call this function on groups with a single row.</p>
+    <p><strong>NOTE: this function is meant to be called on a SINGLE GROUP,
+meaning a subset of an integration matrix in which all rows
+share the same chr (and optionally same strand).</strong></p>
     </div>
 
-    <pre class="usage"><span class='fu'>.sliding_window</span>(<span class='kw'>x</span>, <span class='kw'>threshold</span>, <span class='kw'>keep_criteria</span>)</pre>
+    <pre class="usage"><span class='fu'>.sliding_window</span>(
+  <span class='kw'>x</span>,
+  <span class='kw'>threshold</span>,
+  <span class='kw'>keep_criteria</span>,
+  <span class='kw'>annotated</span>,
+  <span class='kw'>num_cols</span>,
+  <span class='kw'>max_val_col</span>,
+  <span class='kw'>produce_map</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -159,17 +161,34 @@ also it's not possible to call this function on groups with a single row.</p>
     </tr>
     <tr>
       <th>threshold</th>
-      <td><p>The numeric value representing the threshold for selection</p></td>
+      <td><p>The numeric value representing an absolute number
+of bases for which two integrations are considered distinct</p></td>
     </tr>
     <tr>
       <th>keep_criteria</th>
-      <td><p>The character vector with selecting criterias</p></td>
+      <td><p>The string with selecting criteria</p></td>
+    </tr>
+    <tr>
+      <th>annotated</th>
+      <td><p>Is <code>x</code> annotated? Logical value</p></td>
+    </tr>
+    <tr>
+      <th>num_cols</th>
+      <td><p>A character vector with the names of the numeric columns</p></td>
+    </tr>
+    <tr>
+      <th>max_val_col</th>
+      <td><p>The column to consider if criteria is max_value</p></td>
+    </tr>
+    <tr>
+      <th>produce_map</th>
+      <td><p>Produce recalibration map?</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A modified tibble with a number of rows less or equal than x.</p>
+    <p>A named list with recalibrated matrix and recalibration map.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -186,7 +205,7 @@ also it's not possible to call this function on groups with a single row.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
