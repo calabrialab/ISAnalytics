@@ -44,3 +44,6 @@ reference:
   - matching_options
   - quantification_types
   - reduced_AF_columns
+- title: "Package overview"
+- contents:
+  - ISAnalytics
