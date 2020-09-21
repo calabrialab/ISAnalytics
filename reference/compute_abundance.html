@@ -12,8 +12,8 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
@@ -75,7 +75,7 @@ between the single value and the total value for the sample." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.11</span>
       </span>
     </div>
 
@@ -144,14 +144,20 @@ Abundance is obtained for every row by calculating the ratio
 between the single value and the total value for the sample.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>compute_abundance</span>(<span class='kw'>x</span>, percentage = <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>compute_abundance</span>(<span class='kw'>x</span>, columns = <span class='st'>"Value"</span>, percentage = <span class='fl'>TRUE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>An integration matrix</p></td>
+      <td><p>An integration matrix - aka a data frame that includes
+the <code><a href='mandatory_IS_vars.html'>mandatory_IS_vars()</a></code> as columns</p></td>
+    </tr>
+    <tr>
+      <th>columns</th>
+      <td><p>A character vector of column names to process,
+must be numeric or integer columns</p></td>
     </tr>
     <tr>
       <th>percentage</th>
@@ -162,11 +168,19 @@ between the single value and the total value for the sample.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>An integration matrix</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Abundance will be computed upon the user selected columns
+in the <code>columns</code> parameter. For each column a corresponding
+relative abundance column (and optionally a percentage abundance
+column) will be produced.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other Analysis functions: 
 <code><a href='comparison_matrix.html'>comparison_matrix</a>()</code>,
-<code><a href='separate_quant_matrices.html'>separate_quant_matrices</a>()</code></p></div>
+<code><a href='separate_quant_matrices.html'>separate_quant_matrices</a>()</code>,
+<code><a href='threshold_filter.html'>threshold_filter</a>()</code>,
+<code><a href='top_integrations.html'>top_integrations</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_annotated_ISMatrix.tsv.xz"</span>,
@@ -190,7 +204,7 @@ between the single value and the total value for the sample.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

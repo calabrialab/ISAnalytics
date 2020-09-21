@@ -12,8 +12,8 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.11</span>
       </span>
     </div>
 
@@ -142,7 +142,44 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
+          <h2 id="section-import-functions" class="hasAnchor"><a href="#section-import-functions" class="anchor"></a>Import functions</h2>
+          <p class="section-desc"><p>Importing integration matrices and metadata from files</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="import_association_file.html">import_association_file()</a></code> </p>
+        </td>
+        <td><p>Import the association file from disk</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="import_single_Vispa2Matrix.html">import_single_Vispa2Matrix()</a></code> </p>
+        </td>
+        <td><p>Import a single integration matrix from file</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_interactive()</a></code> </p>
+        </td>
+        <td><p>Import integration matrices based on the association file.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto()</a></code> </p>
+        </td>
+        <td><p>Import integration matrices based on the association file.</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-aggregating-functions" class="hasAnchor"><a href="#section-aggregating-functions" class="anchor"></a>Aggregating functions</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -154,14 +191,6 @@
       <tr>
         
         <td>
-          <p><code><a href="ISAnalytics.html">ISAnalytics</a></code> </p>
-        </td>
-        <td><p>ISAnalytics: Analyze gene therapy vector insertion sites data
-identified from genomics next generation sequencing reads for
-clonal tracking studies</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="aggregate_metadata.html">aggregate_metadata()</a></code> </p>
         </td>
         <td><p>Performs aggregation on metadata contained in the association file.</p></td>
@@ -171,25 +200,70 @@ clonal tracking studies</p></td>
           <p><code><a href="aggregate_values_by_key.html">aggregate_values_by_key()</a></code> </p>
         </td>
         <td><p>Aggregates matrices values based on specified key.</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-collision-removal-functions" class="hasAnchor"><a href="#section-collision-removal-functions" class="anchor"></a>Collision removal functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="remove_collisions.html">remove_collisions()</a></code> </p>
+        </td>
+        <td><p>Identifies and removes collisions based on the sequence count matrix.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="annotation_IS_vars.html">annotation_IS_vars()</a></code> </p>
+          <p><code><a href="realign_after_collisions.html">realign_after_collisions()</a></code> </p>
         </td>
-        <td><p>Names of the annotation variables for an integration matrix.</p></td>
-      </tr><tr>
+        <td><p>Re-aligns matrices of other quantification types based on the processed
+sequence count matrix.</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-recalibration-functions" class="hasAnchor"><a href="#section-recalibration-functions" class="anchor"></a>Recalibration functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
-          <p><code><a href="as_sparse_matrix.html">as_sparse_matrix()</a></code> </p>
+          <p><code><a href="compute_near_integrations.html">compute_near_integrations()</a></code> </p>
         </td>
-        <td><p>Converts tidy integration matrices in the original sparse matrix
-form.</p></td>
-      </tr><tr>
+        <td><p>Scans input matrix to find and merge near integration sites.</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-analysis-functions" class="hasAnchor"><a href="#section-analysis-functions" class="anchor"></a>Analysis functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
-          <p><code><a href="association_file_columns.html">association_file_columns()</a></code> </p>
+          <p><code><a href="compute_abundance.html">compute_abundance()</a></code> </p>
         </td>
-        <td><p>Names of the columns in the association file.</p></td>
+        <td><p>Computes the abundance of every integration in the sample.</p></td>
       </tr><tr>
         
         <td>
@@ -200,15 +274,87 @@ matrices.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="compute_abundance.html">compute_abundance()</a></code> </p>
+          <p><code><a href="separate_quant_matrices.html">separate_quant_matrices()</a></code> </p>
         </td>
-        <td><p>Computes the abundance of every integration in the sample.</p></td>
+        <td><p>Separate a multiple-quantification matrix into single quantification
+matrices.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="compute_near_integrations.html">compute_near_integrations()</a></code> </p>
+          <p><code><a href="threshold_filter.html">threshold_filter()</a></code> </p>
         </td>
-        <td><p>Scans input matrix to find and merge near integration sites.</p></td>
+        <td><p>Filter data frames with custom predicates</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="top_integrations.html">top_integrations()</a></code> </p>
+        </td>
+        <td><p>Sorts and keeps the top n integration sites in a data frame.</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-utility-functions" class="hasAnchor"><a href="#section-utility-functions" class="anchor"></a>Utility functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="as_sparse_matrix.html">as_sparse_matrix()</a></code> </p>
+        </td>
+        <td><p>Converts tidy integration matrices in the original sparse matrix
+form.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="generate_blank_association_file.html">generate_blank_association_file()</a></code> </p>
+        </td>
+        <td><p>Creates a blank association file.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="generate_Vispa2_launch_AF.html">generate_Vispa2_launch_AF()</a></code> </p>
+        </td>
+        <td><p>Creates a reduced association file for Vispa2 run,
+given project and pool</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="unzip_file_system.html">unzip_file_system()</a></code> </p>
+        </td>
+        <td><p>A utility function to unzip and use example file systems included in the
+package</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-exported-variables-and-helpers" class="hasAnchor"><a href="#section-exported-variables-and-helpers" class="anchor"></a>Exported variables and helpers</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="annotation_IS_vars.html">annotation_IS_vars()</a></code> </p>
+        </td>
+        <td><p>Names of the annotation variables for an integration matrix.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="association_file_columns.html">association_file_columns()</a></code> </p>
+        </td>
+        <td><p>Names of the columns in the association file.</p></td>
       </tr><tr>
         
         <td>
@@ -224,49 +370,6 @@ matrices.</p></td>
 <code>import_association_file</code>,
 <code>import_parallel_vispa2Matrices_interactive</code> and
 <code>import_parallel_vispa2Matrices_auto</code>.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dot-write_recalibr_map.html">.write_recalibr_map()</a></code> </p>
-        </td>
-        <td><p>Tries to write the recalibration map to a tsv file.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="generate_Vispa2_launch_AF.html">generate_Vispa2_launch_AF()</a></code> </p>
-        </td>
-        <td><p>Creates a reduced association file for Vispa2 run,
-given project and pool</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="generate_blank_association_file.html">generate_blank_association_file()</a></code> </p>
-        </td>
-        <td><p>Creates a blank association file.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="import_association_file.html">import_association_file()</a></code> </p>
-        </td>
-        <td><p>Import the association file from disk</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto()</a></code> </p>
-        </td>
-        <td><p>Import integration matrices based on the association file.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_interactive()</a></code> </p>
-        </td>
-        <td><p>Import integration matrices based on the association file.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="import_single_Vispa2Matrix.html">import_single_Vispa2Matrix()</a></code> </p>
-        </td>
-        <td><p>Import a single integration matrix from file</p></td>
       </tr><tr>
         
         <td>
@@ -288,37 +391,10 @@ given project and pool</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="realign_after_collisions.html">realign_after_collisions()</a></code> </p>
-        </td>
-        <td><p>Re-aligns matrices of other quantification types based on the processed
-sequence count matrix.</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="reduced_AF_columns.html">reduced_AF_columns()</a></code> </p>
         </td>
         <td><p>Names of the columns of the association file to consider for
 Vispa2 launch.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="remove_collisions.html">remove_collisions()</a></code> </p>
-        </td>
-        <td><p>Identifies and removes collisions based on the sequence count matrix.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="separate_quant_matrices.html">separate_quant_matrices()</a></code> </p>
-        </td>
-        <td><p>Separate a multiple-quantification matrix into single quantification
-matrices.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="unzip_file_system.html">unzip_file_system()</a></code> </p>
-        </td>
-        <td><p>A utility function to unzip and use example file systems included in the
-package</p></td>
       </tr>
     </tbody>
     </table>
@@ -338,7 +414,7 @@ package</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

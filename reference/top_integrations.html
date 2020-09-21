@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Creates a reduced association file for Vispa2 run,
-given project and pool — generate_Vispa2_launch_AF • ISAnalytics</title>
+<title>Sorts and keeps the top n integration sites in a data frame. — top_integrations • ISAnalytics</title>
 
 
 <!-- jquery -->
@@ -40,10 +39,18 @@ given project and pool — generate_Vispa2_launch_AF • ISAnalytics</title>
 
 
 
-<meta property="og:title" content="Creates a reduced association file for Vispa2 run,
-given project and pool — generate_Vispa2_launch_AF" />
-<meta property="og:description" content="The function selects the appropriate columns and prepares a file for the
-launch of Vispa2 pipeline for each project/pool pair specified." />
+<meta property="og:title" content="Sorts and keeps the top n integration sites in a data frame. — top_integrations" />
+<meta property="og:description" content="
+
+The input data frame will be sorted by the highest values in
+the columns specified and the top n rows will be returned as output.
+The user can choose to keep additional columns in the output
+by passing a vector of column names or passing 2 &quot;shortcuts&quot;:
+keep = &quot;everything&quot; keeps all columns in the original data frame
+keep = &quot;nothing&quot; only keeps the mandatory columns
+(mandatory_IS_vars()) plus the columns in the columns parameter.
+
+" />
 
 
 
@@ -132,79 +139,79 @@ launch of Vispa2 pipeline for each project/pool pair specified." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Creates a reduced association file for Vispa2 run,
-given project and pool</h1>
-    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/utility-functions.R'><code>R/utility-functions.R</code></a></small>
-    <div class="hidden name"><code>generate_Vispa2_launch_AF.Rd</code></div>
+    <h1>Sorts and keeps the top n integration sites in a data frame.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/analysis-functions.R'><code>R/analysis-functions.R</code></a></small>
+    <div class="hidden name"><code>top_integrations.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function selects the appropriate columns and prepares a file for the
-launch of Vispa2 pipeline for each project/pool pair specified.</p>
+    <p><a href='https://www.tidyverse.org/lifecycle/#experimental'><img src='figures/lifecycle-experimental.svg' alt='Experimental lifecycle'></a>
+
+The input data frame will be sorted by the highest values in
+the columns specified and the top n rows will be returned as output.
+The user can choose to keep additional columns in the output
+by passing a vector of column names or passing 2 "shortcuts":</p><ul>
+<li><p><code>keep</code> = "everything" keeps all columns in the original data frame</p></li>
+<li><p><code>keep</code> = "nothing" only keeps the mandatory columns
+(<code><a href='mandatory_IS_vars.html'>mandatory_IS_vars()</a></code>) plus the columns in the <code>columns</code> parameter.</p></li>
+</ul>
+
     </div>
 
-    <pre class="usage"><span class='fu'>generate_Vispa2_launch_AF</span>(<span class='kw'>association_file</span>, <span class='kw'>project</span>, <span class='kw'>pool</span>, <span class='kw'>path</span>)</pre>
+    <pre class="usage"><span class='fu'>top_integrations</span>(<span class='kw'>x</span>, n = <span class='fl'>50</span>, columns = <span class='st'>"RelAbundance"</span>, keep = <span class='st'>"everything"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>association_file</th>
-      <td><p>The imported association file (via
-<code>import_association_file</code>)</p></td>
+      <th>x</th>
+      <td><p>An integration matrix (data frame containing
+<code><a href='mandatory_IS_vars.html'>mandatory_IS_vars()</a></code>)</p></td>
     </tr>
     <tr>
-      <th>project</th>
-      <td><p>A vector of characters containing project names</p></td>
+      <th>n</th>
+      <td><p>How many rows should the output have? Must be numeric
+or integer and greater than 0</p></td>
     </tr>
     <tr>
-      <th>pool</th>
-      <td><p>A vector of characters containing pool names.
-<strong>NOTE: the names should refer to the values contained in the
-PoolID column of the association file and NOT the
-concatenatePoolIDSeqRun column!</strong></p></td>
+      <th>columns</th>
+      <td><p>Columns to use for the sorting. If more than a column
+is supplied primary ordering is done on the first column,
+secondary ordering on all other columns</p></td>
     </tr>
     <tr>
-      <th>path</th>
-      <td><p>A single string representing the path to the folder where files
-should be written. If the folder doesn't exist it will be created.</p></td>
+      <th>keep</th>
+      <td><p>Names of the columns to keep besides <code><a href='mandatory_IS_vars.html'>mandatory_IS_vars()</a></code>
+and <code>columns</code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>returns NULL</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Note: the function is vectorized, meaning you can specify more than
-one project and more than one pool as vectors of characters, but you must
-ensure that:</p><ul>
-<li><p>Both <code>project</code> and <code>pool</code> vectors have the same length</p></li>
-<li><p>You correclty type names in corresponding positions, for example
-c("CLOEXP", "PROJECT1100", "PROJECT1100") - c("POOL6", "ABX-LR-PL5-POOL14-1",
-"ABX-LR-PL6-POOL15-1"). If you type a pool in the position of a corresponding
-project that doesn't match no file will be produced since that pool doesn't
-exist in the corresponding project.</p></li>
-</ul>
-
+    <p>A data frame with <code>n</code> rows</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Utility functions: 
-<code><a href='as_sparse_matrix.html'>as_sparse_matrix</a>()</code>,
-<code><a href='generate_blank_association_file.html'>generate_blank_association_file</a>()</code>,
-<code><a href='unzip_file_system.html'>unzip_file_system</a>()</code></p></div>
+    <div class='dont-index'><p>Other Analysis functions: 
+<code><a href='comparison_matrix.html'>comparison_matrix</a>()</code>,
+<code><a href='compute_abundance.html'>compute_abundance</a>()</code>,
+<code><a href='separate_quant_matrices.html'>separate_quant_matrices</a>()</code>,
+<code><a href='threshold_filter.html'>threshold_filter</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span>(<span class='st'>"ISAnalytics.widgets"</span> = <span class='fl'>FALSE</span>)
-<span class='kw'>temp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>()
-<span class='kw'>path_af</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
-    package = <span class='st'>"ISAnalytics"</span>
+    <pre class="examples"><div class='input'><span class='kw'>smpl</span> <span class='op'>&lt;-</span> <span class='kw'>tibble</span>::<span class='fu'><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></span>(
+    chr = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"1"</span>, <span class='st'>"2"</span>, <span class='st'>"3"</span>, <span class='st'>"4"</span>, <span class='st'>"5"</span>, <span class='st'>"6"</span>),
+    integration_locus = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>14536</span>, <span class='fl'>14544</span>, <span class='fl'>14512</span>, <span class='fl'>14236</span>, <span class='fl'>14522</span>, <span class='fl'>14566</span>),
+    strand = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"+"</span>, <span class='st'>"+"</span>, <span class='st'>"-"</span>, <span class='st'>"+"</span>, <span class='st'>"-"</span>, <span class='st'>"+"</span>),
+    CompleteAmplificationID = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"ID1"</span>, <span class='st'>"ID2"</span>, <span class='st'>"ID1"</span>, <span class='st'>"ID1"</span>, <span class='st'>"ID3"</span>, <span class='st'>"ID2"</span>),
+    Value = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>10</span>, <span class='fl'>40</span>, <span class='fl'>2</span>, <span class='fl'>15</span>, <span class='fl'>150</span>),
+    Value2 = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>456</span>, <span class='fl'>87</span>, <span class='fl'>87</span>, <span class='fl'>9</span>, <span class='fl'>64</span>, <span class='fl'>96</span>),
+    Value3 = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='st'>"c"</span>, <span class='st'>"d"</span>, <span class='st'>"e"</span>, <span class='st'>"f"</span>)
 )
-<span class='kw'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package = <span class='st'>"ISAnalytics"</span>)
-<span class='kw'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span>(<span class='kw'>root_pth</span>, <span class='st'>"fs"</span>)
-<span class='kw'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span>(<span class='kw'>path_af</span>, <span class='kw'>root</span>)
-<span class='fu'>generate_Vispa2_launch_AF</span>(<span class='kw'>association_file</span>, <span class='st'>"CLOEXP"</span>, <span class='st'>"POOL6"</span>, <span class='kw'>temp</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span>(<span class='kw'>op</span>)
+<span class='kw'>top</span> <span class='op'>&lt;-</span> <span class='fu'>top_integrations</span>(<span class='kw'>smpl</span>,
+    n = <span class='fl'>3</span>,
+    columns = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Value"</span>, <span class='st'>"Value2"</span>),
+    keep = <span class='st'>"nothing"</span>
+)
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
