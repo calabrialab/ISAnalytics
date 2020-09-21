@@ -74,7 +74,7 @@ devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
 
 # ISAnalytics News
 
-## Changes in version 0.99.11 ()
+## Changes in version 0.99.11 (2020-09-21)
 
 #### NEW FEATURES
 
