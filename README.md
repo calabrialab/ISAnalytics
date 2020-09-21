@@ -66,13 +66,26 @@ devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
   - Aggregation: more info with `vignette("Working with aggregate
     functions", package = "ISAnalytics")`
   - Re-calibration functions: `compute_near_integrations`
-  - Analysis functions: `compute_abundance`, `comparison_matrix`,
+  - Analysis functions: `compute_abundance`, `comparison_matrix`, others
     `separate_quant_matrices`
   - Utility functions
 
 # NEWS
 
 # ISAnalytics News
+
+## Changes in version 0.99.11 ()
+
+#### NEW FEATURES
+
+  - Added analysis functions `threshold_filter`, `top_integrations`
+  - Added support for multi-quantification matrices in
+    `compute_abundance`
+
+#### MINOR FIXES
+
+  - Fixed bug in `comparison_matrix` that ignored custom column names
+  - Fixed issues in some documentation pages
 
 ## Changes in version 0.99.10 (2020-09-14)
 
@@ -119,8 +132,10 @@ ISanalytics is officially on bioconductor\!
 
 # TO DO in future updates
 
-  - Add vignette for association file usage
-  - Add vignette for recalibration functionality
+  - [ ] Add vignette for association file usage
+  - [ ] Add vignette for re-calibration functionality
+  - [ ] Add support for multi-quantification matrices to several
+    functions
 
 # Getting help
 

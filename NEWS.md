@@ -1,5 +1,17 @@
 # ISAnalytics News
 
+## Changes in version 0.99.11 (2020-09-21)
+
+#### NEW FEATURES
+
+* Added analysis functions `threshold_filter`, `top_integrations`
+* Added support for multi-quantification matrices in `compute_abundance`
+
+#### MINOR FIXES
+
+* Fixed bug in `comparison_matrix` that ignored custom column names
+* Fixed issues in some documentation pages
+
 ## Changes in version 0.99.10 (2020-09-14)
 
 ISanalytics is officially on bioconductor!

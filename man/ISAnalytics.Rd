@@ -60,6 +60,8 @@ and Annotation of Vector Integration Sites}
 \item \code{\link{compute_abundance}}
 \item \code{\link{comparison_matrix}}
 \item \code{\link{separate_quant_matrices}}
+\item \code{\link{threshold_filter}}
+\item \code{\link{top_integrations}}
 }
 \item Utility functions:
 \itemize{

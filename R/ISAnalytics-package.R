@@ -40,6 +40,8 @@
 #'   * \code{\link{compute_abundance}}
 #'   * \code{\link{comparison_matrix}}
 #'   * \code{\link{separate_quant_matrices}}
+#'   * \code{\link{threshold_filter}}
+#'   * \code{\link{top_integrations}}
 #' * Utility functions:
 #'   * \code{\link{generate_blank_association_file}}
 #'   * \code{\link{generate_Vispa2_launch_AF}}

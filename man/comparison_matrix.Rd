@@ -62,6 +62,8 @@ options(op)
 
 Other Analysis functions: 
 \code{\link{compute_abundance}()},
-\code{\link{separate_quant_matrices}()}
+\code{\link{separate_quant_matrices}()},
+\code{\link{threshold_filter}()},
+\code{\link{top_integrations}()}
 }
 \concept{Analysis functions}

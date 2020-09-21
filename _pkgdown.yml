@@ -1,0 +1,46 @@
+template:
+  params:
+    bootswatch: slate
+reference:
+- title: "Import functions"
+  desc: >
+    Importing integration matrices and metadata from files
+- contents:
+  - import_association_file
+  - import_single_Vispa2Matrix
+  - import_parallel_Vispa2Matrices_interactive
+  - import_parallel_Vispa2Matrices_auto
+- title: "Aggregating functions"
+- contents:
+  - aggregate_metadata
+  - aggregate_values_by_key
+- title: "Collision removal functions"
+- contents:
+  - remove_collisions
+  - realign_after_collisions
+- title: "Recalibration functions"
+- contents:
+  - compute_near_integrations
+- title: "Analysis functions"
+- contents:
+  - compute_abundance
+  - comparison_matrix
+  - separate_quant_matrices
+  - threshold_filter
+  - top_integrations
+- title: "Utility functions"
+- contents:
+  - as_sparse_matrix
+  - generate_blank_association_file
+  - generate_Vispa2_launch_AF
+  - unzip_file_system
+- title: "Exported variables and helpers"
+- contents:
+  - annotation_IS_vars
+  - association_file_columns
+  - date_columns_coll
+  - date_formats
+  - mandatory_IS_vars
+  - matching_options
+  - quantification_types
+  - reduced_AF_columns

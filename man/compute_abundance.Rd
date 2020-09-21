@@ -4,10 +4,14 @@
 \alias{compute_abundance}
 \title{Computes the abundance of every integration in the sample.}
 \usage{
-compute_abundance(x, percentage = TRUE)
+compute_abundance(x, columns = "Value", percentage = TRUE)
 }
 \arguments{
-\item{x}{An integration matrix}
+\item{x}{An integration matrix - aka a data frame that includes
+the \code{mandatory_IS_vars()} as columns}
+
+\item{columns}{A character vector of column names to process,
+must be numeric or integer columns}
 
 \item{percentage}{Add abundance as percentage?}
 }
@@ -19,6 +23,12 @@ An integration matrix
 Abundance is obtained for every row by calculating the ratio
 between the single value and the total value for the sample.
 }
+\details{
+Abundance will be computed upon the user selected columns
+in the \code{columns} parameter. For each column a corresponding
+relative abundance column (and optionally a percentage abundance
+column) will be produced.
+}
 \examples{
 path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
     package = "ISAnalytics"
@@ -29,6 +39,8 @@ abundance <- compute_abundance(matrix)
 \seealso{
 Other Analysis functions: 
 \code{\link{comparison_matrix}()},
-\code{\link{separate_quant_matrices}()}
+\code{\link{separate_quant_matrices}()},
+\code{\link{threshold_filter}()},
+\code{\link{top_integrations}()}
 }
 \concept{Analysis functions}

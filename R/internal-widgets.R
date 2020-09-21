@@ -1,13 +1,13 @@
 #### ---- Internals for HTML widgets construction ----####
 
-#' Builds the html widget for the checker table.
-#'
-#' @param checker_df Tibble obtained via `.check_file_system_alignment`
-#' @keywords internal
+# Builds the html widget for the checker table.
+#
+# @param checker_df Tibble obtained via `.check_file_system_alignment`
+# @keywords internal
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div span h2 css browsable
-#'
-#' @return An html widget
+#
+# @return An html widget
 .checker_widget <- function(checker_df) {
     styled_df <- reactable::reactable(
         checker_df,
@@ -93,17 +93,17 @@
     htmltools::browsable(widget)
 }
 
-#' Builds the html widget for the files_found table.
-#'
-#' @param files_found Tibble obtained via `.lookup_matrices` or
-#' `.lookup_matrices_auto`
-#' @keywords internal
+# Builds the html widget for the files_found table.
+#
+# @param files_found Tibble obtained via `.lookup_matrices` or
+# `.lookup_matrices_auto`
+# @keywords internal
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div span h2 css h3 browsable
 #' @importFrom dplyr select
 #' @importFrom rlang .data
-#'
-#' @return An html widget
+#
+# @return An html widget
 .files_found_widget <- function(files_found) {
     main_cols <- files_found %>% dplyr::select(
         .data$ProjectID,
@@ -284,16 +284,16 @@
     htmltools::browsable(widget)
 }
 
-#' Builds the html widget for the files_to_import table.
-#'
-#' @param files_to_import Tibble obtained via
-#' `.manage_anomalies_interactive` or
-#' `.manage_anomalies_auto`
-#' @keywords internal
+# Builds the html widget for the files_to_import table.
+#
+# @param files_to_import Tibble obtained via
+# `.manage_anomalies_interactive` or
+# `.manage_anomalies_auto`
+# @keywords internal
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div span h2 css browsable
-#'
-#' @return An html widget
+#
+# @return An html widget
 .files_to_import_widget <- function(files_to_import) {
     styled_df <- reactable::reactable(
         files_to_import,
@@ -356,14 +356,14 @@
     htmltools::browsable(widget)
 }
 
-#' Builds the html widget for the files_imported table.
-#'
-#' @param files_imported Tibble obtained via `.parallel_import_merge`
-#' @keywords internal
+# Builds the html widget for the files_imported table.
+#
+# @param files_imported Tibble obtained via `.parallel_import_merge`
+# @keywords internal
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div span h2 css browsable
-#'
-#' @return An html widget
+#
+# @return An html widget
 .files_imported_widget <- function(files_imported) {
     styled_df <- reactable::reactable(
         files_imported,
@@ -445,18 +445,18 @@
     htmltools::browsable(widget)
 }
 
-#' Builds the html widget for the summary table.
-#'
-#' @param removed Number of removed collisions
-#' @param reassigned Number of re-assigned collisions
-#' @param summary Summary table
-#' @param tot_rows Total number rows of sequence count matrix before processing
-#' @param collision_rows Total number of rows of collisions
-#' @keywords internal
+# Builds the html widget for the summary table.
+#
+# @param removed Number of removed collisions
+# @param reassigned Number of re-assigned collisions
+# @param summary Summary table
+# @param tot_rows Total number rows of sequence count matrix before processing
+# @param collision_rows Total number of rows of collisions
+# @keywords internal
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div h2 h4 css browsable
-#'
-#' @return A widget
+#
+# @return A widget
 .summary_collisions_widget <- function(removed,
     reassigned,
     summary,
@@ -609,15 +609,15 @@
     htmltools::browsable(widget)
 }
 
-#' Builds the html widget for the iss_import.
-#'
-#' @param report Table obtained via `import_stats_iss`
-#' @keywords internal
-#'
+# Builds the html widget for the iss_import.
+#
+# @param report Table obtained via `import_stats_iss`
+# @keywords internal
+#
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div h2 h4 css browsable
-#'
-#' @return A widget
+#
+# @return A widget
 .iss_import_widget <- function(report) {
     theme <- reactable::reactableTheme(
         style = list(
@@ -691,15 +691,15 @@
     htmltools::browsable(widget)
 }
 
-#' Builds the html widget for the recalibration map.
-#'
-#' @param map_rec Table obtained via `.sliding_window`
-#' @keywords internal
-#'
+# Builds the html widget for the recalibration map.
+#
+# @param map_rec Table obtained via `.sliding_window`
+# @keywords internal
+#
 #' @importFrom reactable reactable reactableTheme colDef
 #' @importFrom htmltools div h2 css browsable
-#'
-#' @return A widget
+#
+# @return A widget
 .recalibr_map_widget <- function(map_rec) {
     theme <- reactable::reactableTheme(
         style = list(
