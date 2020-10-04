@@ -157,7 +157,7 @@ ISanalytics is officially on bioconductor\!
   - [ ] Add vignette for association file usage
   - [ ] Add vignette for re-calibration functionality
   - [x] Add support for multi-quantification matrices to several
-    functions (ISAnalytics 0.9.12)
+    functions (ISAnalytics 0.99.12)
 
 # Getting help
 

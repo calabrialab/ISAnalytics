@@ -76,7 +76,7 @@ more at this link: [ISAnalytics Website](https://calabrialab.github.io/ISAnalyti
 
 - [ ] Add vignette for association file usage
 - [ ] Add vignette for re-calibration functionality
-- [X] Add support for multi-quantification matrices to several functions (ISAnalytics 0.9.12)
+- [X] Add support for multi-quantification matrices to several functions (ISAnalytics 0.99.12)
 
 # Getting help
 
