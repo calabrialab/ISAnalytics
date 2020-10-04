@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.12</span>
       </span>
     </div>
 
@@ -102,21 +102,24 @@
 <a href="#installation" class="anchor"></a>Installation</h1>
 <p>To install the package from bioconductor:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, quietly = <span class="fl">TRUE</span>))
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
 
 <span class="co"># The following initializes usage of Bioc devel</span>
-<span class="kw">BiocManager</span>::<span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(version=<span class="st">'devel'</span>)
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span>version<span class="op">=</span><span class="st">'devel'</span><span class="op">)</span>
 
-<span class="kw">BiocManager</span>::<span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"ISAnalytics"</span>)
-</pre></div>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></pre></div>
 <p>To install the package from GitHub:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="kw">devtools</span>)) {
-  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"devtools"</span>)
-}
-<span class="kw">devtools</span>::<span class="fu">install_github</span>(<span class="st">"calabrialab/ISAnalytics"</span>, build_vignettes = <span class="fl">TRUE</span>)
-</pre></div>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></pre></div>
+</div>
+<div id="visit-the-package-website" class="section level1">
+<h1 class="hasAnchor">
+<a href="#visit-the-package-website" class="anchor"></a>Visit the package website</h1>
+<p>You can visit the package website to view documentation, vignettes and more at this link: <a href="https://calabrialab.github.io/ISAnalytics/">ISAnalytics Website</a></p>
 </div>
 <div id="current-functionality" class="section level1">
 <h1 class="hasAnchor">
@@ -130,8 +133,7 @@
 </li>
 <li>Re-calibration functions: <code>compute_near_integrations</code>
 </li>
-<li>Analysis functions: <code>compute_abundance</code>, <code>comparison_matrix</code>, others <code>separate_quant_matrices</code>
-</li>
+<li>Analysis functions: <code>compute_abundance</code>, <code>comparison_matrix</code> <code>separate_quant_matrices</code>, others</li>
 <li>Utility functions</li>
 </ul>
 </div>
@@ -139,15 +141,41 @@
 <h1 class="hasAnchor">
 <a href="#news" class="anchor"></a>NEWS</h1>
 </div>
-<div id="isanalytics-news" class="section level1">
+<div id="isanalytics-09912-2020-10-04" class="section level1">
 <h1 class="hasAnchor">
-<a href="#isanalytics-news" class="anchor"></a>ISAnalytics News</h1>
-<div id="changes-in-version-09911-2020-09-21" class="section level2">
+<a href="#isanalytics-09912-2020-10-04" class="anchor"></a>ISAnalytics 0.99.12 (2020-10-04)</h1>
+<div id="new-features" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-in-version-09911-2020-09-21" class="anchor"></a>Changes in version 0.99.11 (2020-09-21)</h2>
-<div id="new-features" class="section level4">
-<h4 class="hasAnchor">
-<a href="#new-features" class="anchor"></a>NEW FEATURES</h4>
+<a href="#new-features" class="anchor"></a>NEW FEATURES</h2>
+<ul>
+<li>Added analysis function <code>sample_statistics</code>
+</li>
+</ul>
+</div>
+<div id="significant-user-visible-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#significant-user-visible-changes" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h2>
+<ul>
+<li>
+<code>aggregate_values_by_key</code> has a simplified interface and supports multi-quantification matrices</li>
+</ul>
+</div>
+<div id="minor-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes" class="anchor"></a>MINOR CHANGES</h2>
+<ul>
+<li>Updated vignettes</li>
+<li>
+<code>import_parallel_Vispa2Matrices_interactive</code> and <code>import_parallel_Vispa2Matrices_auto</code> now have an option to return a multi-quantification matrix directly after import instead of a list</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-09911-2020-09-21" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-09911-2020-09-21" class="anchor"></a>ISAnalytics 0.99.11 (2020-09-21)</h1>
+<div id="new-features-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-features-1" class="anchor"></a>NEW FEATURES</h2>
 <ul>
 <li>Added analysis functions <code>threshold_filter</code>, <code>top_integrations</code>
 </li>
@@ -155,22 +183,22 @@
 </li>
 </ul>
 </div>
-<div id="minor-fixes" class="section level4">
-<h4 class="hasAnchor">
-<a href="#minor-fixes" class="anchor"></a>MINOR FIXES</h4>
+<div id="minor-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-fixes" class="anchor"></a>MINOR FIXES</h2>
 <ul>
 <li>Fixed bug in <code>comparison_matrix</code> that ignored custom column names</li>
 <li>Fixed issues in some documentation pages</li>
 </ul>
 </div>
 </div>
-<div id="changes-in-version-09910-2020-09-14" class="section level2">
-<h2 class="hasAnchor">
-<a href="#changes-in-version-09910-2020-09-14" class="anchor"></a>Changes in version 0.99.10 (2020-09-14)</h2>
+<div id="isanalytics-09910-2020-09-14" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-09910-2020-09-14" class="anchor"></a>ISAnalytics 0.99.10 (2020-09-14)</h1>
 <p>ISanalytics is officially on bioconductor!</p>
-<div id="new-features-1" class="section level4">
-<h4 class="hasAnchor">
-<a href="#new-features-1" class="anchor"></a>NEW FEATURES</h4>
+<div id="new-features-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-features-2" class="anchor"></a>NEW FEATURES</h2>
 <ul>
 <li>Added analysis functions <code>comparison_matrix</code> and <code>separate_quant_matrices</code>
 </li>
@@ -179,9 +207,9 @@
 <li>Added package logo</li>
 </ul>
 </div>
-<div id="significant-user-visible-changes" class="section level4">
-<h4 class="hasAnchor">
-<a href="#significant-user-visible-changes" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h4>
+<div id="significant-user-visible-changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#significant-user-visible-changes-1" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h2>
 <ul>
 <li>Changed algorithm for <code>compute_near_integrations</code>
 </li>
@@ -190,20 +218,20 @@
 <li>Added usage of lifecycle badges in documentation: users can now see if a feature is experimental/maturing/stable etc</li>
 </ul>
 </div>
-<div id="minor-fixes-1" class="section level4">
-<h4 class="hasAnchor">
-<a href="#minor-fixes-1" class="anchor"></a>MINOR FIXES</h4>
+<div id="minor-fixes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-fixes-1" class="anchor"></a>MINOR FIXES</h2>
 <ul>
 <li>Added fix for <code>import_single_Vispa2Matrix</code> to remove non significant 0 values</li>
 </ul>
 </div>
 </div>
-<div id="changes-in-version-0999-2020-09-01" class="section level2">
+<div id="isanalytics-0999-2020-09-01" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-0999-2020-09-01" class="anchor"></a>ISAnalytics 0.99.9 (2020-09-01)</h1>
+<div id="new-features-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#changes-in-version-0999-2020-09-01" class="anchor"></a>Changes in version 0.99.9 (2020-09-01)</h2>
-<div id="new-features-2" class="section level4">
-<h4 class="hasAnchor">
-<a href="#new-features-2" class="anchor"></a>NEW FEATURES</h4>
+<a href="#new-features-3" class="anchor"></a>NEW FEATURES</h2>
 <ul>
 <li>Added functionality: aggregate functions</li>
 <li>Added vignette on aggregate functions</li>
@@ -211,22 +239,21 @@
 <li>Added first analysis function (compute_abundance)</li>
 </ul>
 </div>
-<div id="significant-user-visible-changes-1" class="section level4">
-<h4 class="hasAnchor">
-<a href="#significant-user-visible-changes-1" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h4>
+<div id="significant-user-visible-changes-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#significant-user-visible-changes-2" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h2>
 <ul>
 <li>Dropped structure <code>ISADataFrame</code>: now the package only uses standard tibbles</li>
 <li>Modified package documentation</li>
 </ul>
 </div>
 </div>
-<div id="changes-in-version-0998-2020-08-12" class="section level2">
-<h2 class="hasAnchor">
-<a href="#changes-in-version-0998-2020-08-12" class="anchor"></a>Changes in version 0.99.8 (2020-08-12)</h2>
+<div id="isanalytics-0998-2020-08-12" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-0998-2020-08-12" class="anchor"></a>ISAnalytics 0.99.8 (2020-08-12)</h1>
 <ul>
 <li>Submitted to Bioconductor</li>
 </ul>
-</div>
 </div>
 <div id="to-do-in-future-updates" class="section level1">
 <h1 class="hasAnchor">
@@ -239,8 +266,8 @@ Add vignette for association file usage</li>
 <input type="checkbox" disabled>
 Add vignette for re-calibration functionality</li>
 <li>
-<input type="checkbox" disabled>
-Add support for multi-quantification matrices to several functions</li>
+<input type="checkbox" disabled checked>
+Add support for multi-quantification matrices to several functions (ISAnalytics 0.9.12)</li>
 </ul>
 </div>
 <div id="getting-help" class="section level1">

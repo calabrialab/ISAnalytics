@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.12</span>
       </span>
     </div>
 
@@ -132,6 +132,120 @@
       <small>Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="isanalytics-09912-2020-10-04" class="section level1">
+<h1 class="page-header" data-toc-text="0.99.12">
+<a href="#isanalytics-09912-2020-10-04" class="anchor"></a>ISAnalytics 0.99.12 (2020-10-04)</h1>
+<div id="new-features" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-features" class="anchor"></a>NEW FEATURES</h2>
+<ul>
+<li>Added analysis function <code>sample_statistics</code>
+</li>
+</ul>
+</div>
+<div id="significant-user-visible-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#significant-user-visible-changes" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h2>
+<ul>
+<li>
+<code>aggregate_values_by_key</code> has a simplified interface and supports multi-quantification matrices</li>
+</ul>
+</div>
+<div id="minor-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes" class="anchor"></a>MINOR CHANGES</h2>
+<ul>
+<li>Updated vignettes</li>
+<li>
+<code>import_parallel_Vispa2Matrices_interactive</code> and <code>import_parallel_Vispa2Matrices_auto</code> now have an option to return a multi-quantification matrix directly after import instead of a list</li>
+</ul>
+</div>
+</div>
+    <div id="isanalytics-09911-2020-09-21" class="section level1">
+<h1 class="page-header" data-toc-text="0.99.11">
+<a href="#isanalytics-09911-2020-09-21" class="anchor"></a>ISAnalytics 0.99.11 (2020-09-21)</h1>
+<div id="new-features-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-features-1" class="anchor"></a>NEW FEATURES</h2>
+<ul>
+<li>Added analysis functions <code>threshold_filter</code>, <code>top_integrations</code>
+</li>
+<li>Added support for multi-quantification matrices in <code>compute_abundance</code>
+</li>
+</ul>
+</div>
+<div id="minor-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-fixes" class="anchor"></a>MINOR FIXES</h2>
+<ul>
+<li>Fixed bug in <code>comparison_matrix</code> that ignored custom column names</li>
+<li>Fixed issues in some documentation pages</li>
+</ul>
+</div>
+</div>
+    <div id="isanalytics-09910-2020-09-14" class="section level1">
+<h1 class="page-header" data-toc-text="0.99.10">
+<a href="#isanalytics-09910-2020-09-14" class="anchor"></a>ISAnalytics 0.99.10 (2020-09-14)</h1>
+<p>ISanalytics is officially on bioconductor!</p>
+<div id="new-features-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-features-2" class="anchor"></a>NEW FEATURES</h2>
+<ul>
+<li>Added analysis functions <code>comparison_matrix</code> and <code>separate_quant_matrices</code>
+</li>
+<li>Added utility function <code>as_sparse_matrix</code>
+</li>
+<li>Added package logo</li>
+</ul>
+</div>
+<div id="significant-user-visible-changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#significant-user-visible-changes-1" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h2>
+<ul>
+<li>Changed algorithm for <code>compute_near_integrations</code>
+</li>
+<li>Added support for multi-quantification matrices to <code>remove_collisions</code>
+</li>
+<li>Added usage of lifecycle badges in documentation: users can now see if a feature is experimental/maturing/stable etc</li>
+</ul>
+</div>
+<div id="minor-fixes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-fixes-1" class="anchor"></a>MINOR FIXES</h2>
+<ul>
+<li>Added fix for <code>import_single_Vispa2Matrix</code> to remove non significant 0 values</li>
+</ul>
+</div>
+</div>
+    <div id="isanalytics-0999-2020-09-01" class="section level1">
+<h1 class="page-header" data-toc-text="0.99.9">
+<a href="#isanalytics-0999-2020-09-01" class="anchor"></a>ISAnalytics 0.99.9 (2020-09-01)</h1>
+<div id="new-features-3" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-features-3" class="anchor"></a>NEW FEATURES</h2>
+<ul>
+<li>Added functionality: aggregate functions</li>
+<li>Added vignette on aggregate functions</li>
+<li>Added recalibration functions</li>
+<li>Added first analysis function (compute_abundance)</li>
+</ul>
+</div>
+<div id="significant-user-visible-changes-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#significant-user-visible-changes-2" class="anchor"></a>SIGNIFICANT USER-VISIBLE CHANGES</h2>
+<ul>
+<li>Dropped structure <code>ISADataFrame</code>: now the package only uses standard tibbles</li>
+<li>Modified package documentation</li>
+</ul>
+</div>
+</div>
+    <div id="isanalytics-0998-2020-08-12" class="section level1">
+<h1 class="page-header" data-toc-text="0.99.8">
+<a href="#isanalytics-0998-2020-08-12" class="anchor"></a>ISAnalytics 0.99.8 (2020-08-12)</h1>
+<ul>
+<li>Submitted to Bioconductor</li>
+</ul>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

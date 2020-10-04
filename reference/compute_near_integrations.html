@@ -76,7 +76,7 @@ into single integration sites adjusting their values if needed." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.12</span>
       </span>
     </div>
 
@@ -146,16 +146,16 @@ integration sites that are too "near" to each other and merges them
 into single integration sites adjusting their values if needed.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>compute_near_integrations</span>(
-  <span class='kw'>x</span>,
-  threshold = <span class='fl'>4</span>,
-  keep_criteria = <span class='st'>"keep_first"</span>,
-  strand_specific = <span class='fl'>TRUE</span>,
-  max_value_column = <span class='st'>"seqCount"</span>,
-  map_as_widget = <span class='fl'>TRUE</span>,
-  map_as_file = <span class='fl'>TRUE</span>,
-  file_path = <span class='st'>"."</span>
-)</pre>
+    <pre class="usage"><span class='fu'>compute_near_integrations</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  threshold <span class='op'>=</span> <span class='fl'>4</span>,
+  keep_criteria <span class='op'>=</span> <span class='st'>"keep_first"</span>,
+  strand_specific <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  max_value_column <span class='op'>=</span> <span class='st'>"seqCount"</span>,
+  map_as_widget <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  map_as_file <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  file_path <span class='op'>=</span> <span class='st'>"."</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -233,14 +233,14 @@ the value to which that integration was changed to after.</p>
 all quantification matrices.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_annotated_ISMatrix.tsv.xz"</span>,
-    package = <span class='st'>"ISAnalytics"</span>
-)
-<span class='kw'>matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a></span>(<span class='kw'>path</span>)
-<span class='kw'>near</span> <span class='op'>&lt;-</span> <span class='fu'>compute_near_integrations</span>(<span class='kw'>matrix</span>,
-    map_as_widget = <span class='fl'>FALSE</span>,
-    map_as_file = <span class='fl'>FALSE</span>
-)
+    <pre class="examples"><div class='input'><span class='va'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_annotated_ISMatrix.tsv.xz"</span>,
+    package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
+<span class='op'>)</span>
+<span class='va'>matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a></span><span class='op'>(</span><span class='va'>path</span><span class='op'>)</span>
+<span class='va'>near</span> <span class='op'>&lt;-</span> <span class='fu'>compute_near_integrations</span><span class='op'>(</span><span class='va'>matrix</span>,
+    map_as_widget <span class='op'>=</span> <span class='cn'>FALSE</span>,
+    map_as_file <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Using the following numeric columns:  Value</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |====                                                                  |   5%  |                                                                              |=======                                                               |  11%  |                                                                              |===========                                                           |  16%  |                                                                              |===============                                                       |  21%  |                                                                              |==================                                                    |  26%  |                                                                              |======================                                                |  32%  |                                                                              |==========================                                            |  37%  |                                                                              |=============================                                         |  42%  |                                                                              |=================================                                     |  47%  |                                                                              |=====================================                                 |  53%  |                                                                              |=========================================                             |  58%  |                                                                              |============================================                          |  63%  |                                                                              |================================================                      |  68%  |                                                                              |====================================================                  |  74%  |                                                                              |=======================================================               |  79%  |                                                                              |===========================================================           |  84%  |                                                                              |===============================================================       |  89%  |                                                                              |==================================================================    |  95%  |                                                                              |======================================================================| 100%
 #&gt; </div></pre>
   </div>

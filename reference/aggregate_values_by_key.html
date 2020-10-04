@@ -77,7 +77,7 @@ vignette(&quot;Working with aggregate functions&quot;, package = &quot;ISAnalyti
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.12</span>
       </span>
     </div>
 
@@ -148,16 +148,14 @@ function:
 <code>vignette("Working with aggregate functions", package = "ISAnalytics")</code></p>
     </div>
 
-    <pre class="usage"><span class='fu'>aggregate_values_by_key</span>(
-  <span class='kw'>x</span>,
-  <span class='kw'>association_file</span>,
-  key = <span class='st'>"SubjectID"</span>,
-  lambda = <span class='st'>"sum"</span>,
-  args = <span class='kw'>NULL</span>,
-  group = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='mandatory_IS_vars.html'>mandatory_IS_vars</a></span>(), <span class='fu'><a href='annotation_IS_vars.html'>annotation_IS_vars</a></span>()),
-  namespace = <span class='st'>"base"</span>,
-  env = <span class='kw'>.GlobalEnv</span>
-)</pre>
+    <pre class="usage"><span class='fu'>aggregate_values_by_key</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>association_file</span>,
+  value_cols <span class='op'>=</span> <span class='st'>"Value"</span>,
+  key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span>,
+  lambda <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>sum <span class='op'>=</span> <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>.x</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>,
+  group <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='mandatory_IS_vars.html'>mandatory_IS_vars</a></span><span class='op'>(</span><span class='op'>)</span>, <span class='fu'><a href='annotation_IS_vars.html'>annotation_IS_vars</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -172,62 +170,94 @@ integration matrices (tibble)</p></td>
       <td><p>The imported association file</p></td>
     </tr>
     <tr>
+      <th>value_cols</th>
+      <td><p>A character vector containing the names of the
+columns to apply the given lambdas. Must be numeric or integer
+columns.</p></td>
+    </tr>
+    <tr>
       <th>key</th>
       <td><p>A string or a character vector with column names of the
-association file to take as keys</p></td>
+association file to take as key</p></td>
     </tr>
     <tr>
       <th>lambda</th>
-      <td><p>The name of the aggregating function to apply to values</p></td>
-    </tr>
-    <tr>
-      <th>args</th>
-      <td><p>Other arguments to pass to lambda, can be set to NULL</p></td>
+      <td><p>A named list of functions or purrr-style lambdas.
+See details section.</p></td>
     </tr>
     <tr>
       <th>group</th>
       <td><p>Other variables to include in the grouping besides <code>key</code>,
 can be set to NULL</p></td>
     </tr>
-    <tr>
-      <th>namespace</th>
-      <td><p>The namespace that exports <code>lambda</code>. Can be set to NULL if
-lambda is not an exported object but rather a user-defined function in some
-environment.</p></td>
-    </tr>
-    <tr>
-      <th>env</th>
-      <td><p>The environment in which the function should look for symbols</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A list of tibbles or a single tibble according to input</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Setting the lambda parameter</h3>
+
+
+<p>The lambda parameter should always contain a named list of either
+functions or purrr-style lambdas.
+It is also possible to specify the namespace of the function in both
+ways, for example:<div class="r"></p><pre><span class='va'>lambda</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>sum <span class='op'>=</span> <span class='va'>sum</span>, desc <span class='op'>=</span> <span class='fu'>psych</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/psych/man/describe.html'>describe</a></span><span class='op'>)</span>
+</pre><p></div></p>
+<p>Using purrr-style lambdas allows to specify arguments for the functions,
+keeping in mind that the first parameter should always be <code>.x</code>:<div class="r"></p><pre><span class='va'>lambda</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>sum <span class='op'>=</span> <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>.x</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span>
+</pre><p></div></p>
+<p>It is also possible to use custom user-defined functions, keeping in
+mind that the symbol will be evaluated in the calling environment,
+for example if the function is called in the global environment
+and lambda contains "foo" as a function, "foo" will be evaluated in
+the global environment.<div class="r"></p><pre><span class='va'>foo</span> <span class='op'>&lt;-</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>{</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+<span class='va'>lambda</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>sum <span class='op'>=</span> <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>.x</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>, foo <span class='op'>=</span> <span class='va'>foo</span><span class='op'>)</span>
+
+<span class='co'># Or with lambda notation</span>
+<span class='va'>lambda</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>sum <span class='op'>=</span> <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>.x</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>, foo <span class='op'>=</span> <span class='op'>~</span><span class='fu'>foo</span><span class='op'>(</span><span class='va'>.x</span><span class='op'>)</span><span class='op'>)</span>
+</pre><p></div></p>
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Constraints on aggregation functions</h3>
+
+
+<p>Functions passed in the lambda parameters must respect a few constraints
+to properly work and it's the user responsibility to ensure this.</p><ul>
+<li><p>Functions have to accept as input a numeric or integer vector</p></li>
+<li><p>Function should return a single value or a list/data frame:
+if a list or a data frame is returned as a result, all the columns
+will be added to the final data frame.</p></li>
+</ul>
+
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other Aggregate functions: 
 <code><a href='aggregate_metadata.html'>aggregate_metadata</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span>(<span class='st'>"ISAnalytics.widgets"</span> = <span class='fl'>FALSE</span>)
-<span class='kw'>path_AF</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
-    package = <span class='st'>"ISAnalytics"</span>
-)
-<span class='kw'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package = <span class='st'>"ISAnalytics"</span>)
-<span class='kw'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span>(<span class='kw'>root_correct</span>, <span class='st'>"fs"</span>)
-<span class='kw'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span>(<span class='kw'>path_AF</span>, <span class='kw'>root_correct</span>)
-<span class='kw'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></span>(
-    association_file = <span class='kw'>association_file</span>, root = <span class='kw'>NULL</span>,
-    quantification_type = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span>),
-    matrix_type = <span class='st'>"annotated"</span>, workers = <span class='fl'>2</span>, matching_opt = <span class='st'>"ANY"</span>
-)
-<span class='kw'>agg</span> <span class='op'>&lt;-</span> <span class='fu'>aggregate_values_by_key</span>(
-    x = <span class='kw'>matrices</span><span class='op'>$</span><span class='kw'>seqCount</span>,
-    association_file = <span class='kw'>association_file</span>,
-    key = <span class='st'>"SubjectID"</span>, args = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(na.rm = <span class='fl'>TRUE</span>)
-)
-<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span>(<span class='kw'>op</span>)
+    <pre class="examples"><div class='input'><span class='va'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='st'>"ISAnalytics.widgets"</span> <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='va'>path_AF</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
+    package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
+<span class='op'>)</span>
+<span class='va'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
+<span class='va'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_correct</span>, <span class='st'>"fs"</span><span class='op'>)</span>
+<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>path_AF</span>, <span class='va'>root_correct</span><span class='op'>)</span>
+<span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></span><span class='op'>(</span>
+    association_file <span class='op'>=</span> <span class='va'>association_file</span>, root <span class='op'>=</span> <span class='cn'>NULL</span>,
+    quantification_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>,
+    matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>, workers <span class='op'>=</span> <span class='fl'>2</span>, matching_opt <span class='op'>=</span> <span class='st'>"ANY"</span>
+<span class='op'>)</span>
+<span class='va'>agg</span> <span class='op'>&lt;-</span> <span class='fu'>aggregate_values_by_key</span><span class='op'>(</span>
+    x <span class='op'>=</span> <span class='va'>matrices</span><span class='op'>$</span><span class='va'>seqCount</span>,
+    association_file <span class='op'>=</span> <span class='va'>association_file</span>
+<span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

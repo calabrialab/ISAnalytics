@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.12</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 class="date">22 September 2020</h4>
+            <h4 class="date">4 October 2020</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/master/vignettes/collision_removal.Rmd"><code>vignettes/collision_removal.Rmd</code></a></small>
       <div class="hidden name"><code>collision_removal.Rmd</code></div>
@@ -112,22 +112,19 @@
 <a href="#how-to-install-isanalytics" class="anchor"></a>How to install ISAnalytics</h2>
 <p>To install the package run the following code:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"BiocManager"</span>, quietly = <span class="fl">TRUE</span>)) {
-      <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)
-  }
-<span class="kw">BiocManager</span>::<span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="st">"ISAnalytics"</span>)
-</pre></div>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+      <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+  <span class="op">}</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></pre></div>
 <p>To install from GitHub:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co">if</span> (<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="kw">devtools</span>)) {
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"devtools"</span>)
-}
-<span class="kw">devtools</span>::<span class="fu">install_github</span>(<span class="st">"calabrialab/ISAnalytics"</span>, build_vignettes = <span class="fl">TRUE</span>)
-</pre></div>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com//calabrialab/isanalytics">ISAnalytics</a></span>)
-<span class="co">#&gt; Loading required package: magrittr</span>
-</pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com//calabrialab/isanalytics">ISAnalytics</a></span><span class="op">)</span>
+<span class="co">#&gt; Loading required package: magrittr</span></pre></div>
 </div>
 <div id="setting-options" class="section level2">
 <h2 class="hasAnchor">
@@ -135,19 +132,17 @@
 <p><code>ISAnalytics</code> has a verbose option that allows some functions to print additional information to the console while they’re executing. To disable this feature do:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit">
 <span class="co"># DISABLE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="st">"ISAnalytics.verbose"</span> = <span class="fl">FALSE</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="co"># ENABLE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="st">"ISAnalytics.verbose"</span> = <span class="fl">TRUE</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></pre></div>
 <p>Some functions also produce report in a user-friendly HTML format, to set this feature:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit">
 <span class="co"># DISABLE HTML REPORTS</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="st">"ISAnalytics.widgets"</span> = <span class="fl">FALSE</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.widgets"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="co"># ENABLE HTML REPORTS</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="st">"ISAnalytics.widgets"</span> = <span class="fl">TRUE</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.widgets"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></pre></div>
 </div>
 <div id="what-is-a-collision-and-why-should-you-care" class="section level2">
 <h2 class="hasAnchor">
@@ -187,17 +182,16 @@
 <a href="#import-the-association-file" class="anchor"></a>Import the association file</h2>
 <p>Import your association file:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span>(ISAnalytics.widgets = <span class="fl">FALSE</span>)
-<span class="kw">path_AF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ex_association_file.tsv"</span>,
-    package = <span class="st">"ISAnalytics"</span>
-)
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>ISAnalytics.widgets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">path_AF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ex_association_file.tsv"</span>,
+    package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
+<span class="op">)</span>
 
-<span class="kw">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>,
-    package = <span class="st">"ISAnalytics"</span>
-)
-<span class="kw">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span>(<span class="kw">root_correct</span>, <span class="st">"fs"</span>)
-<span class="kw">association_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span>(<span class="kw">path_AF</span>, <span class="kw">root_correct</span>)
-</pre></div>
+<span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>,
+    package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
+<span class="op">)</span>
+<span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_correct</span>, <span class="st">"fs"</span><span class="op">)</span>
+<span class="va">association_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">path_AF</span>, <span class="va">root_correct</span><span class="op">)</span></pre></div>
 <p>Important notes on the association file:</p>
 <ul>
 <li>You have to be sure your association file is properly filled out. The function requires you to specify a date column (by default “SequencingDate”), you have to ensure this column doesn’t contain NA values or incorrect values.</li>
@@ -210,13 +204,12 @@
 <a href="#import-the-matrices-for-your-analysis" class="anchor"></a>Import the matrices for your analysis</h2>
 <div class="sourceCode" id="cb7"><pre class="downlit">
 <span class="co"># This imports both sequence count and fragment estimate matrices</span>
-<span class="kw">matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto</a></span>(
-    association_file = <span class="kw">association_file</span>, root = <span class="kw">NULL</span>,
-    quantification_type = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"fragmentEstimate"</span>, <span class="st">"seqCount"</span>),
-    matrix_type = <span class="st">"annotated"</span>, workers = <span class="fl">2</span>, patterns = <span class="kw">NULL</span>,
-    matching_opt = <span class="st">"ANY"</span>
-)
-</pre></div>
+<span class="va">matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto</a></span><span class="op">(</span>
+    association_file <span class="op">=</span> <span class="va">association_file</span>, root <span class="op">=</span> <span class="cn">NULL</span>,
+    quantification_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"fragmentEstimate"</span>, <span class="st">"seqCount"</span><span class="op">)</span>,
+    matrix_type <span class="op">=</span> <span class="st">"annotated"</span>, workers <span class="op">=</span> <span class="fl">2</span>, patterns <span class="op">=</span> <span class="cn">NULL</span>,
+    matching_opt <span class="op">=</span> <span class="st">"ANY"</span>
+<span class="op">)</span></pre></div>
 <p>As stated in the introduction, it is fundamental that the sequence count matrix is present for the collision removal process to take place.</p>
 </div>
 <div id="process-the-collisions" class="section level2">
@@ -228,10 +221,10 @@
 <a href="#pass-the-entire-named-list-to-the-function" class="anchor"></a>Pass the entire named list to the function</h3>
 <div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="co"># Pass the whole named list</span>
-<span class="kw">matrices_processed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span>(x = <span class="kw">matrices</span>, 
-                                        association_file = <span class="kw">association_file</span>, 
-                                        date_col = <span class="st">"SequencingDate"</span>, 
-                                        reads_ratio = <span class="fl">10</span>)
+<span class="va">matrices_processed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">matrices</span>, 
+                                        association_file <span class="op">=</span> <span class="va">association_file</span>, 
+                                        date_col <span class="op">=</span> <span class="st">"SequencingDate"</span>, 
+                                        reads_ratio <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
 <span class="co">#&gt; Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span>
 <span class="co">#&gt; # A tibble: 1 x 3</span>
 <span class="co">#&gt;   ProjectID   PoolID       CompleteAmplificationID                              </span>
@@ -240,8 +233,7 @@
 <span class="co">#&gt; Identifying collisions...</span>
 <span class="co">#&gt; Processing collisions...</span>
 <span class="co">#&gt; Realigning matrices...</span>
-<span class="co">#&gt; Finished!</span>
-</pre></div>
+<span class="co">#&gt; Finished!</span></pre></div>
 <p>If you have the “widgets” option active, a report file is produced at the end that shows the before and after for each subject (and some other details). This report is an HTML widget, so you can save it or export it for future reference if you need it.<br>
 In this case, collision removal is done on the sequence count matrix and other matrices are re-aligned automatically.</p>
 </div>
@@ -250,11 +242,11 @@ In this case, collision removal is done on the sequence count matrix and other m
 <a href="#give-only-the-sequence-count-matrix-as-input" class="anchor"></a>Give only the sequence count matrix as input</h3>
 <div class="sourceCode" id="cb9"><pre class="downlit">
 <span class="co"># Pass the sequence count matrix only</span>
-<span class="kw">matrices_processed_single</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span>(x = <span class="kw">matrices</span><span class="op">$</span><span class="kw">seqCount</span>, 
-                                               association_file = 
-                                                 <span class="kw">association_file</span>, 
-                                               date_col = <span class="st">"SequencingDate"</span>, 
-                                               reads_ratio = <span class="fl">10</span>)
+<span class="va">matrices_processed_single</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">matrices</span><span class="op">$</span><span class="va">seqCount</span>, 
+                                               association_file <span class="op">=</span> 
+                                                 <span class="va">association_file</span>, 
+                                               date_col <span class="op">=</span> <span class="st">"SequencingDate"</span>, 
+                                               reads_ratio <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
 <span class="co">#&gt; Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span>
 <span class="co">#&gt; # A tibble: 1 x 3</span>
 <span class="co">#&gt;   ProjectID   PoolID       CompleteAmplificationID                              </span>
@@ -262,8 +254,7 @@ In this case, collision removal is done on the sequence count matrix and other m
 <span class="co">#&gt; 1 PROJECT1101 ABY-LR-PL4-… PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14…</span>
 <span class="co">#&gt; Identifying collisions...</span>
 <span class="co">#&gt; Processing collisions...</span>
-<span class="co">#&gt; Finished! You provided a single sequence count as matrix, to re-align other related matrices see ?realign_after_collisions</span>
-</pre></div>
+<span class="co">#&gt; Finished! You provided a single sequence count as matrix, to re-align other related matrices see ?realign_after_collisions</span></pre></div>
 <p>If you have the “verbose” option active, a console message will remind you to align other matrices if you have them at a later time.</p>
 </div>
 <div id="support-for-multi-quantification-matrices" class="section level3">
@@ -272,8 +263,8 @@ In this case, collision removal is done on the sequence count matrix and other m
 <p>If you’d like to avoid the re-alignment phase, you can call collision removal on a multi-quantification matrix obtained via the function <code>comparison_matrix</code>:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit">
 <span class="co"># Obtain multi-quantification matrix</span>
-<span class="kw">multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comparison_matrix.html">comparison_matrix</a></span>(<span class="kw">matrices</span>)
-<span class="kw">multi</span>
+<span class="va">multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comparison_matrix.html">comparison_matrix</a></span><span class="op">(</span><span class="va">matrices</span><span class="op">)</span>
+<span class="va">multi</span>
 <span class="co">#&gt; # A tibble: 5,904 x 8</span>
 <span class="co">#&gt;    chr   integration_loc… strand GeneName GeneStrand CompleteAmplifi…</span>
 <span class="co">#&gt;    &lt;chr&gt;            &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;           </span>
@@ -289,12 +280,12 @@ In this case, collision removal is done on the sequence count matrix and other m
 <span class="co">#&gt; 10 1            111466980 -      LRIF1    -          CLOEXP_POOL6_LT…</span>
 <span class="co">#&gt; # … with 5,894 more rows, and 2 more variables: fragmentEstimate &lt;dbl&gt;,</span>
 <span class="co">#&gt; #   seqCount &lt;int&gt;</span>
-<span class="kw">matrices_processed_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span>(x = <span class="kw">multi</span>,
-                                              association_file = 
-                                                 <span class="kw">association_file</span>, 
-                                               date_col = <span class="st">"SequencingDate"</span>, 
-                                               reads_ratio = <span class="fl">10</span>, 
-                                              seq_count_col = <span class="st">"seqCount"</span>)
+<span class="va">matrices_processed_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">multi</span>,
+                                              association_file <span class="op">=</span> 
+                                                 <span class="va">association_file</span>, 
+                                               date_col <span class="op">=</span> <span class="st">"SequencingDate"</span>, 
+                                               reads_ratio <span class="op">=</span> <span class="fl">10</span>, 
+                                              seq_count_col <span class="op">=</span> <span class="st">"seqCount"</span><span class="op">)</span>
 <span class="co">#&gt; Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span>
 <span class="co">#&gt; # A tibble: 1 x 3</span>
 <span class="co">#&gt;   ProjectID   PoolID       CompleteAmplificationID                              </span>
@@ -302,8 +293,7 @@ In this case, collision removal is done on the sequence count matrix and other m
 <span class="co">#&gt; 1 PROJECT1101 ABY-LR-PL4-… PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14…</span>
 <span class="co">#&gt; Identifying collisions...</span>
 <span class="co">#&gt; Processing collisions...</span>
-<span class="co">#&gt; Finished!</span>
-</pre></div>
+<span class="co">#&gt; Finished!</span></pre></div>
 <p>As you can see, <code>comparison_matrix</code> produces a single integration matrix from the named list of single quantification matrices. This is the recommended approach if you don’t have specific needs as it negates the necessity of realigning matrices altogether.</p>
 </div>
 </div>
@@ -312,11 +302,10 @@ In this case, collision removal is done on the sequence count matrix and other m
 <a href="#re-align-other-matrices" class="anchor"></a>Re-align other matrices</h2>
 <p>If you have opted for the second way, to realign other matrices you have to call the function <code>realign_after_collisions</code>, passing as input the processed sequence count matrix and the named list of other matrices to realign.<br><strong>NOTE: the names in the list must be quantification types.</strong></p>
 <div class="sourceCode" id="cb11"><pre class="downlit">
-<span class="kw">seq_count_proc</span> <span class="op">&lt;-</span> <span class="kw">matrices_processed_single</span>
-<span class="kw">other_matrices</span> <span class="op">&lt;-</span> <span class="kw">matrices</span>[<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="kw">matrices</span>) <span class="op">%in%</span> <span class="st">"seqCount"</span>] 
+<span class="va">seq_count_proc</span> <span class="op">&lt;-</span> <span class="va">matrices_processed_single</span>
+<span class="va">other_matrices</span> <span class="op">&lt;-</span> <span class="va">matrices</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">matrices</span><span class="op">)</span> <span class="op">%in%</span> <span class="st">"seqCount"</span><span class="op">]</span> 
 <span class="co"># Select only matrices that are not relative to sequence count</span>
-<span class="kw">other_realigned</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/realign_after_collisions.html">realign_after_collisions</a></span>(<span class="kw">seq_count_proc</span>, <span class="kw">other_matrices</span>)
-</pre></div>
+<span class="va">other_realigned</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/realign_after_collisions.html">realign_after_collisions</a></span><span class="op">(</span><span class="va">seq_count_proc</span>, <span class="va">other_matrices</span><span class="op">)</span></pre></div>
 </div>
 </div>
 <div id="reproducibility" class="section level1">
@@ -350,7 +339,7 @@ In this case, collision removal is done on the sequence count matrix and other m
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       UTC                         
-#&gt;  date     2020-09-22                  
+#&gt;  date     2020-10-04                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  package       * version date       lib source        
@@ -359,10 +348,9 @@ In this case, collision removal is done on the sequence count matrix and other m
 #&gt;  bibtex          0.4.2.3 2020-09-19 [1] CRAN (R 4.0.2)
 #&gt;  BiocManager     1.30.10 2019-11-16 [1] CRAN (R 4.0.2)
 #&gt;  BiocParallel    1.22.0  2020-04-27 [1] Bioconductor  
-#&gt;  BiocStyle     * 2.16.0  2020-04-27 [1] Bioconductor  
+#&gt;  BiocStyle     * 2.16.1  2020-09-25 [1] Bioconductor  
 #&gt;  bookdown        0.20    2020-06-23 [1] CRAN (R 4.0.2)
 #&gt;  cli             2.0.2   2020-02-28 [1] CRAN (R 4.0.2)
-#&gt;  cpp11           0.2.1   2020-08-11 [1] CRAN (R 4.0.2)
 #&gt;  crayon          1.3.4   2017-09-16 [1] CRAN (R 4.0.2)
 #&gt;  desc            1.2.0   2018-05-01 [1] CRAN (R 4.0.2)
 #&gt;  digest          0.6.25  2020-02-23 [1] CRAN (R 4.0.2)
@@ -376,12 +364,12 @@ In this case, collision removal is done on the sequence count matrix and other m
 #&gt;  glue            1.4.2   2020-08-27 [1] CRAN (R 4.0.2)
 #&gt;  hms             0.5.3   2020-01-08 [1] CRAN (R 4.0.2)
 #&gt;  htmltools       0.5.0   2020-06-16 [1] CRAN (R 4.0.2)
-#&gt;  htmlwidgets     1.5.1   2019-10-08 [1] CRAN (R 4.0.2)
+#&gt;  htmlwidgets     1.5.2   2020-10-03 [1] CRAN (R 4.0.2)
 #&gt;  httr            1.4.2   2020-07-20 [1] CRAN (R 4.0.2)
-#&gt;  ISAnalytics   * 0.99.11 2020-09-22 [1] Bioconductor  
+#&gt;  ISAnalytics   * 0.99.12 2020-10-04 [1] Bioconductor  
 #&gt;  jsonlite        1.7.1   2020-09-07 [1] CRAN (R 4.0.2)
 #&gt;  knitcitations * 1.0.10  2019-09-15 [1] CRAN (R 4.0.2)
-#&gt;  knitr           1.29    2020-06-23 [1] CRAN (R 4.0.2)
+#&gt;  knitr           1.30    2020-09-22 [1] CRAN (R 4.0.2)
 #&gt;  lifecycle       0.2.0   2020-03-06 [1] CRAN (R 4.0.2)
 #&gt;  lubridate       1.7.9   2020-06-08 [1] CRAN (R 4.0.2)
 #&gt;  magrittr      * 1.5     2014-11-22 [1] CRAN (R 4.0.2)
@@ -398,19 +386,19 @@ In this case, collision removal is done on the sequence count matrix and other m
 #&gt;  readr           1.3.1   2018-12-21 [1] CRAN (R 4.0.2)
 #&gt;  RefManageR      1.2.12  2019-04-03 [1] CRAN (R 4.0.2)
 #&gt;  rlang           0.4.7   2020-07-09 [1] CRAN (R 4.0.2)
-#&gt;  rmarkdown       2.3     2020-06-18 [1] CRAN (R 4.0.2)
+#&gt;  rmarkdown       2.4     2020-09-30 [1] CRAN (R 4.0.2)
 #&gt;  rprojroot       1.3-2   2018-01-03 [1] CRAN (R 4.0.2)
 #&gt;  sessioninfo   * 1.1.1   2018-11-05 [1] CRAN (R 4.0.2)
 #&gt;  stringi         1.5.3   2020-09-09 [1] CRAN (R 4.0.2)
 #&gt;  stringr         1.4.0   2019-02-10 [1] CRAN (R 4.0.2)
-#&gt;  systemfonts     0.3.1   2020-09-08 [1] CRAN (R 4.0.2)
+#&gt;  systemfonts     0.3.2   2020-09-29 [1] CRAN (R 4.0.2)
 #&gt;  tibble          3.0.3   2020-07-10 [1] CRAN (R 4.0.2)
 #&gt;  tidyr           1.1.2   2020-08-27 [1] CRAN (R 4.0.2)
 #&gt;  tidyselect      1.1.0   2020-05-11 [1] CRAN (R 4.0.2)
 #&gt;  utf8            1.1.4   2018-05-24 [1] CRAN (R 4.0.2)
 #&gt;  vctrs           0.3.4   2020-08-29 [1] CRAN (R 4.0.2)
-#&gt;  withr           2.2.0   2020-04-20 [1] CRAN (R 4.0.2)
-#&gt;  xfun            0.17    2020-09-09 [1] CRAN (R 4.0.2)
+#&gt;  withr           2.3.0   2020-09-22 [1] CRAN (R 4.0.2)
+#&gt;  xfun            0.18    2020-09-29 [1] CRAN (R 4.0.2)
 #&gt;  xml2            1.3.2   2020-04-23 [1] CRAN (R 4.0.2)
 #&gt;  yaml            2.2.1   2020-02-01 [1] CRAN (R 4.0.2)
 #&gt;  zip             2.1.1   2020-08-27 [1] CRAN (R 4.0.2)
@@ -423,14 +411,14 @@ In this case, collision removal is done on the sequence count matrix and other m
 <a href="#bibliography" class="anchor"></a>Bibliography</h1>
 <p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.11/BiocStyle">BiocStyle</a></em> (<a href="https://github.com/Bioconductor/BiocStyle">Oleś, Morgan, and Huber, 2020</a>) with <em><a href="https://CRAN.R-project.org/package=knitr">knitr</a></em> (<a href="https://yihui.org/knitr/">Xie, 2020</a>) and <em><a href="https://CRAN.R-project.org/package=rmarkdown">rmarkdown</a></em> (<a href="https://github.com/rstudio/rmarkdown">Allaire, Xie, McPherson, Luraschi, et al., 2020</a>) running behind the scenes.</p>
 <p>Citations made with <em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> (<a href="https://CRAN.R-project.org/package=knitcitations">Boettiger, 2019</a>).</p>
-<p>[1] J. Allaire, Y. Xie, J. McPherson, J. Luraschi, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.3. 2020. &lt;URL: <a href="https://github.com/rstudio/rmarkdown" class="uri">https://github.com/rstudio/rmarkdown</a>&gt;.</p>
+<p>[1] J. Allaire, Y. Xie, J. McPherson, J. Luraschi, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.4. 2020. &lt;URL: <a href="https://github.com/rstudio/rmarkdown" class="uri">https://github.com/rstudio/rmarkdown</a>&gt;.</p>
 <p>[2] C. Boettiger. <em>knitcitations: Citations for ‘Knitr’ Markdown Files</em>. R package version 1.0.10. 2019. &lt;URL: <a href="https://CRAN.R-project.org/package=knitcitations" class="uri">https://CRAN.R-project.org/package=knitcitations</a>&gt;.</p>
-<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 0.99.11. 2020. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
+<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 0.99.12. 2020. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
 <p>[4] G. Csárdi, R. core, H. Wickham, W. Chang, et al. <em>sessioninfo: R Session Information</em>. R package version 1.1.1. 2018. &lt;URL: <a href="https://CRAN.R-project.org/package=sessioninfo" class="uri">https://CRAN.R-project.org/package=sessioninfo</a>&gt;.</p>
-<p>[5] A. Oleś, M. Morgan, and W. Huber. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.16.0. 2020. &lt;URL: <a href="https://github.com/Bioconductor/BiocStyle" class="uri">https://github.com/Bioconductor/BiocStyle</a>&gt;.</p>
+<p>[5] A. Oleś, M. Morgan, and W. Huber. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.16.1. 2020. &lt;URL: <a href="https://github.com/Bioconductor/BiocStyle" class="uri">https://github.com/Bioconductor/BiocStyle</a>&gt;.</p>
 <p>[6] R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. R Foundation for Statistical Computing. Vienna, Austria, 2020. &lt;URL: <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>&gt;.</p>
 <p>[7] H. Wickham. “testthat: Get Started with Testing”. In: <em>The R Journal</em> 3 (2011), pp. 5-10. &lt;URL: <a href="https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf" class="uri">https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf</a>&gt;.</p>
-<p>[8] Y. Xie. <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.29. 2020. &lt;URL: <a href="https://yihui.org/knitr/" class="uri">https://yihui.org/knitr/</a>&gt;.</p>
+<p>[8] Y. Xie. <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.30. 2020. &lt;URL: <a href="https://yihui.org/knitr/" class="uri">https://yihui.org/knitr/</a>&gt;.</p>
 </div>
   </div>
 
