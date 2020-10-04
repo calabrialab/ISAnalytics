@@ -51,13 +51,18 @@ if (!require(devtools)) {
 devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
 ```
 
+# Visit the package website
+
+You can visit the package website to view documentation, vignettes and 
+more at this link: [ISAnalytics Website](https://calabrialab.github.io/ISAnalytics/)
+
 # Current functionality
 
 * Import integration matrices from files: more info with `vignette("How to use import functions", package = "ISAnalytics")`
 * Collision removal: more info with `vignette("Collision removal functionality", package = "ISAnalytics")`
 * Aggregation: more info with `vignette("Working with aggregate functions", package = "ISAnalytics")`
 * Re-calibration functions: `compute_near_integrations`
-* Analysis functions: `compute_abundance`, `comparison_matrix`, others `separate_quant_matrices`
+* Analysis functions: `compute_abundance`, `comparison_matrix` `separate_quant_matrices`, others
 * Utility functions
 
 # NEWS
@@ -71,7 +76,7 @@ devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
 
 - [ ] Add vignette for association file usage
 - [ ] Add vignette for re-calibration functionality
-- [ ] Add support for multi-quantification matrices to several functions
+- [X] Add support for multi-quantification matrices to several functions (ISAnalytics 0.9.12)
 
 # Getting help
 

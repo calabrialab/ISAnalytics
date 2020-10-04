@@ -522,3 +522,150 @@ top_integrations <- function(x, n = 50, columns = "RelAbundance",
         dplyr::select(dplyr::all_of(c(essential_cols, to_keep)))
     return(result)
 }
+
+
+#' Computes user specified functions on numerical columns and updates
+#' the metadata data frame accordingly.
+#'
+#' @description
+#' \lifecycle{experimental}
+#' The function operates on a data frame by grouping the content by
+#' the sample key and computing every function specified on every
+#' column in the `value_columns` parameter. After that the metadata
+#' data frame is updated by including the computed results as columns
+#' for the corresponding key.
+#' For this reason it's required that both `x` and `metadata` have the
+#' same sample key, and it's particularly important if the user is
+#' working with previously aggregated data.
+#' For example:
+#'
+#' ```r
+#' ### Importing association file and matrices
+#' path_AF <- system.file("extdata", "ex_association_file.tsv",
+#' package = "ISAnalytics")
+#' root_correct <- system.file("extdata", "fs.zip",
+#' package = "ISAnalytics")
+#' root_correct <- unzip_file_system(root_correct, "fs")
+#'
+#' association_file <- import_association_file(path_AF, root_correct)
+#' matrices <- import_parallel_Vispa2Matrices_auto(
+#' association_file = association_file , root = NULL,
+#' quantification_type = c("seqCount","fragmentEstimate"),
+#' matrix_type = "annotated", workers = 2, patterns = NULL,
+#' matching_opt = "ANY")
+#'
+#' ### Aggregating data (both by same key)
+#' aggreggated_x <- aggregate_values_by_key(matrices$seqCount,
+#' association_file)
+#' aggregated_meta <- aggregate_metadata(association_file)
+#'
+#' ### Sample statistics
+#' sample_stats <- sample_statistics(x = aggregated_x,
+#' metadata = aggregated_meta,
+#' sample_key = c("SubjectID", "CellMarker","Tissue", "TimePoint"))
+#'
+#' ```
+#' @param x A data frame
+#' @param metadata The metadata data frame
+#' @param sample_key Character vector representing the key for identifying
+#' a sample
+#' @param value_columns THe name of the columns to be computed,
+#' must be numeric or integer
+#' @param functions A named list of function or purrr-style lambdas
+#'
+#' @family Analysis functions
+#' @importFrom rlang eval_tidy expr
+#' @importFrom purrr is_function is_formula
+#' @import dplyr
+#' @importFrom magrittr `%>%`
+#'
+#' @return A list with modified x and metadata data frames
+#' @export
+#'
+#' @examples
+#' op <- options(ISAnalytics.widgets = FALSE)
+#'
+#' path_AF <- system.file("extdata", "ex_association_file.tsv",
+#'     package = "ISAnalytics"
+#' )
+#' root_correct <- system.file("extdata", "fs.zip",
+#'     package = "ISAnalytics"
+#' )
+#' root_correct <- unzip_file_system(root_correct, "fs")
+#'
+#' association_file <- import_association_file(path_AF, root_correct)
+#' matrices <- import_parallel_Vispa2Matrices_auto(
+#'     association_file = association_file, root = NULL,
+#'     quantification_type = c("seqCount", "fragmentEstimate"),
+#'     matrix_type = "annotated", workers = 2, patterns = NULL,
+#'     matching_opt = "ANY"
+#' )
+#'
+#' stats <- sample_statistics(matrices$seqCount, association_file)
+#' options(op)
+sample_statistics <- function(x, metadata,
+    sample_key = "CompleteAmplificationID",
+    value_columns = "Value",
+    functions = default_stats()) {
+    stopifnot(is.data.frame(x))
+    stopifnot(is.data.frame(metadata))
+    stopifnot(is.character(sample_key))
+    stopifnot(is.character(value_columns))
+    stopifnot(is.list(functions))
+    if (!all(sample_key %in% colnames(x))) {
+        stop(paste("Key columns not found in the data frame"))
+    }
+    if (!all(sample_key %in% colnames(metadata))) {
+        stop(paste("Key columns not found in metadata"))
+    }
+    if (!all(value_columns %in% colnames(x))) {
+        stop(paste("Value columns not found in the data frame"))
+    }
+    purrr::walk(value_columns, function(col) {
+        expr <- rlang::expr(`$`(x, !!col))
+        if (!is.numeric(rlang::eval_tidy(expr)) &&
+            !is.integer(rlang::eval_tidy(expr))) {
+            stop(paste("Some or all of value columns are not numeric"))
+        }
+    })
+    purrr::walk(functions, function(f) {
+        if (!(purrr::is_function(f) | purrr::is_formula(f))) {
+            stop(paste(
+                "The function parameter should contain a list",
+                "of either functions or formulas.",
+                "See ?sample_statistics for details"
+            ))
+        }
+    })
+    result <- x %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(sample_key))) %>%
+        dplyr::summarise(dplyr::across(
+            .cols = dplyr::all_of(value_columns),
+            .fns = functions
+        ),
+        .groups = "drop"
+        )
+
+    updated_meta <- metadata %>% dplyr::left_join(result, by = sample_key)
+    return(list(x = result, metadata = updated_meta))
+}
+
+
+#' A set of pre-defined functions for `sample_statistics`.
+#'
+#' @return A named list of functions/purrr-style lambdas
+#' @export
+#'
+#' @family Analysis functions helpers
+#'
+#'
+#' @examples
+#' default_stats()
+default_stats <- function() {
+    list(
+        diversity = vegan::diversity,
+        sum = ~ sum(.x, na.rm = TRUE),
+        count = length,
+        describe = psych::describe
+    )
+}

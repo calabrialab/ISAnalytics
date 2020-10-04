@@ -251,7 +251,9 @@ can be changed according to user preference.
 You can change the value of the parameter key as you see fit. This parameter 
 should contain one or multiple columns of the association file that you want 
 to include in the grouping when performing the aggregation. 
-The default value is set to "SubjectID".
+The default value is set to `c("SubjectID", "CellMarker",
+"Tissue", "TimePoint")` (same default key as the `aggregate_metadata` 
+function.
 
 ```{r}
 agg1 <- aggregate_values_by_key(
@@ -265,48 +267,75 @@ agg1 <- aggregate_values_by_key(
 knitr::kable(head(agg1))
 ```
 
-2. **Changing the `lambda` and `args` values**  
-The `lambda` parameter indicates the function to be applied to the values for 
-aggregation. By default this is set to "sum", but you can change it (together 
-with other parameters also), to apply other functions, both exported from 
-packages or fully customized to your needs.  
-The only important note is that this function should perform some kind of 
-aggregation on numeric values, this means in practical terms it has to accept 
-a vector of numeric/integer values as input and produce a SINGLE value as 
-output. Valid options for this purpose might be: `sum`, `mean`, `median`, `min`,
-`max` and so on.
-
-```{r eval=FALSE}
-agg2 <- aggregate_values_by_key(
-    x = matrices$seqCount,
-    association_file = association_file,
-    key = "SubjectID",
-    lambda = "mean"
-)
-```
-
-If the function you're using accepts other parameters than the input vector, 
-you can specify them in the `args` parameter as a named list:
+2. **Changing the `lambda` value**  
+The `lambda` parameter indicates the function(s) to be applied to the 
+values for aggregation. 
+`lambda` must be a named list of either functions or purrr-style lambdas:
+if you would like to specify additional parameters to the function 
+the second option is recommended.
+The only important note on functions is that they should perform some kind of 
+aggregation on numeric values: this means in practical terms they need
+to accept a vector of numeric/integer values as input and produce a 
+SINGLE value as output. Valid options for this purpose might be: `sum`, `mean`, 
+`median`, `min`, `max` and so on.
 
 ```{r}
 agg2 <- aggregate_values_by_key(
     x = matrices$seqCount,
     association_file = association_file,
     key = "SubjectID",
-    lambda = "mean",
-    args = list(na.rm = TRUE)
+    lambda = list(mean = ~mean(.x, na.rm = TRUE))
 )
 ```
-
-In this case the `mean` function accepts an additional parameter `na.rm` that 
-we want to set to TRUE. Note that the arguments must be in a named list, where 
-names are the names of the parameters to pass on to the function.
 
 ```{r echo=FALSE}
 knitr::kable(head(agg2))
 ```
 
-3. **Changing the `group` value**  
+Note that, when specifying purrr-style lambdas (formulas), the first 
+parameter needs to be set to `.x`, other parameters can be set as usual.
+
+You can also use in `lambda` functions that produce data frames or lists.
+In this case all variables from the produced data frame will be included
+in the final data frame. For example:
+
+```{r}
+agg3 <- aggregate_values_by_key(
+    x = matrices$seqCount,
+    association_file = association_file,
+    key = "SubjectID",
+    lambda = list(describe = psych::describe)
+)
+
+agg3
+```
+
+
+3. **Changing the `value_cols` value**  
+The `value_cols` parameter tells the function on which numeric columns 
+of x the functions should be applied. 
+NOte that every function contained in `lambda` will be applied to every
+column in `value_cols`: resulting columns will be named as 
+"original name_function applied".
+
+```{r}
+## Obtaining multi-quantification matrix
+comp <- comparison_matrix(matrices)
+
+agg4 <- aggregate_values_by_key(
+    x = comp,
+    association_file = association_file,
+    key = "SubjectID",
+    lambda = list(sum = sum, mean = mean),
+    value_cols = c("seqCount", "fragmentEstimate")
+)
+```
+
+```{r echo=FALSE}
+knitr::kable(head(agg4))
+```
+
+4. **Changing the `group` value**  
 The `group` parameter should contain all other variables to include in the 
 grouping besides `key`. By default this contains `c("chr", "integration_locus",
 "strand", "GeneName", "GeneStrand")`. You can change this grouping as you see 
@@ -314,111 +343,16 @@ fit, if you don't want to add any other variable to the key, just set it to
 NULL.
 
 ```{r}
-agg3 <- aggregate_values_by_key(
-    x = matrices$seqCount,
-    association_file = association_file,
-    key = "SubjectID",
-    lambda = "mean",
-    args = list(na.rm = TRUE),
-    group = c("chr", "integration_locus", "strand")
-)
-```
-
-```{r echo=FALSE}
-knitr::kable(head(agg3))
-```
-
-4. **Changing `namespace` and `env`**  
-As stated before, you can specify several different functions, for them to be 
-exported by the base package is not mandatory. If the function you're 
-interested in applying is exported by an installed package, you should specify 
-the name of the package in the `namespace` parameter.  
-It is also possible to apply a fully custom function (provided it respects the 
-restrictions stated before): this means you can write your own function in some
-environment (most commonly the global environment) and pass it in the function 
-as `lambda`. In this case you have to specify the environment in which the 
-function is defined and set `namespace` as NULL.
-
-```{r}
-foo <- function(x) {
-    sum(x)
-}
-env <- rlang::current_env()
-
-agg4 <- aggregate_values_by_key(
-    x = matrices$seqCount,
-    association_file = association_file,
-    key = "SubjectID",
-    lambda = "foo",
-    args = NULL,
-    namespace = NULL,
-    env = env
-)
-```
-
-```{r echo=FALSE}
-knitr::kable(head(agg4))
-```
-
-NOTE: when specifying `env`, note that also all other symbols (including those 
-passed in `args`) will be evaluated in `env`.
-
-```{r}
-foo <- function(x, y) {
-    sum(x, y)
-}
-c <- 2
-env <- rlang::current_env()
-
-agg4 <- aggregate_values_by_key(
-    x = matrices$seqCount,
-    association_file = association_file,
-    key = "SubjectID",
-    lambda = "foo",
-    args = list(y = c),
-    namespace = NULL,
-    env = env
-)
-```
-
-```{r echo=FALSE}
-knitr::kable(head(agg4))
-```
-
-### Using the function to obtain summaries for each group based on values
-
-As we've seen in the previous section, we can pass any lambda function to 
-`aggregate_values_by_key`, provided it takes as input a vector of integer or
-numeric values and produces a single value as output. This is true also for 
-other objects (S3/S4 etc): you can use this function for example to produce 
-summaries and include them in the tibble. A function we recommend is 
-`psych::describe`.
-
-```{r echo=FALSE}
-inst <- require("psych")
-```
-
-```{r eval=inst}
 agg5 <- aggregate_values_by_key(
     x = matrices$seqCount,
     association_file = association_file,
     key = "SubjectID",
-    lambda = "describe",
-    args = NULL,
-    namespace = "psych",
-    env = env
+    lambda = list(sum = sum, mean = mean),
+    group = c(mandatory_IS_vars())
 )
-head(agg5)
 ```
 
-To see all of the contents of the lists, use `tidyr::unnest`:
-
-```{r eval=inst}
-library(magrittr)
-agg5 <- agg5 %>% tidyr::unnest(.data$Aggregated_value)
-```
-
-```{r echo=FALSE, eval=inst}
+```{r echo=FALSE}
 knitr::kable(head(agg5))
 ```
 

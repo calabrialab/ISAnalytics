@@ -39,6 +39,7 @@ abundance <- compute_abundance(matrix)
 \seealso{
 Other Analysis functions: 
 \code{\link{comparison_matrix}()},
+\code{\link{sample_statistics}()},
 \code{\link{separate_quant_matrices}()},
 \code{\link{threshold_filter}()},
 \code{\link{top_integrations}()}

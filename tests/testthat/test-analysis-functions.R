@@ -1037,3 +1037,91 @@ test_that("top_integrations works correctly", {
     )
     expect_equal(top, expected)
 })
+
+#------------------------------------------------------------------------------#
+# Test sample_statistics
+#------------------------------------------------------------------------------#
+association_file <- import_association_file(path_AF, root_correct)
+## Test input
+test_that("sample_statistics stops if param incorrect", {
+    # x must be df
+    expect_error({
+        stats <- sample_statistics(matrices_correct,
+            metadata = association_file
+        )
+    })
+    # metadata must be df
+    expect_error({
+        stats <- sample_statistics(matrices_correct$seqCount,
+            metadata = 1
+        )
+    })
+    # Sample key
+    expect_error({
+        stats <- sample_statistics(matrices_correct$seqCount,
+            metadata = association_file,
+            sample_key = 1
+        )
+    })
+    expect_error(
+        {
+            stats <- sample_statistics(matrices_correct$seqCount,
+                metadata = association_file,
+                sample_key = c("sdgfs", "fwre")
+            )
+        },
+        regexp = "Key columns not found in the data frame"
+    )
+    # Value cols
+    expect_error(
+        {
+            stats <- sample_statistics(matrices_correct$seqCount,
+                metadata = association_file,
+                value_columns = c("x", "y")
+            )
+        },
+        regexp = "Value columns not found in the data frame"
+    )
+    expect_error(
+        {
+            stats <- sample_statistics(matrices_correct$seqCount,
+                metadata = association_file,
+                value_columns = "chr"
+            )
+        },
+        regexp = "Some or all of value columns are not numeric"
+    )
+    # Functions
+    expect_error({
+        stats <- sample_statistics(matrices_correct$seqCount,
+            metadata = association_file,
+            functions = c("sum")
+        )
+    })
+    expect_error(
+        {
+            stats <- sample_statistics(matrices_correct$seqCount,
+                metadata = association_file,
+                functions = list(sum = "sum")
+            )
+        },
+        regexp = paste(
+            "The function parameter should contain a list",
+            "of either functions or formulas.",
+            "See ?sample_statistics for details"
+        ),
+        fixed = TRUE
+    )
+})
+
+## Test values
+test_that("sample_statistics returns correctly", {
+    res <- sample_statistics(matrices_correct$seqCount,
+        metadata = association_file,
+        functions = list(sum = sum)
+    )
+    expect_true(is.list(res))
+    expect_true(all(c("CompleteAmplificationID", "Value_sum") %in%
+        colnames(res$x)))
+    expect_true("Value_sum" %in% colnames(res$metadata))
+})

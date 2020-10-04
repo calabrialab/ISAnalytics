@@ -273,9 +273,13 @@ after automatic filtering
 * Report on which files were actually imported, signaling potential errors 
 during the import phase  
 
-The functions both return a named list which names are the quantification types 
-specified in input and the elements are integration matrices, obtained by 
-binding rows of all imported matrices for the same quantification type.
+Both the functions, by default, return a named list which names are the
+quantification types specified in input and the elements are 
+integration matrices, obtained by binding rows of all imported matrices 
+for the same quantification type.
+If the parameter `multi_quant_matrix` is set to TRUE, the function will 
+automatically produce a single multi-quantification matrix via 
+`comparison_matrix` (see `?comparison_matrix` for details).
 
 ## Interactive version
 

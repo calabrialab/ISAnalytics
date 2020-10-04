@@ -55,6 +55,7 @@ top <- top_integrations(smpl,
 Other Analysis functions: 
 \code{\link{comparison_matrix}()},
 \code{\link{compute_abundance}()},
+\code{\link{sample_statistics}()},
 \code{\link{separate_quant_matrices}()},
 \code{\link{threshold_filter}()}
 }

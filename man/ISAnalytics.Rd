@@ -62,6 +62,7 @@ and Annotation of Vector Integration Sites}
 \item \code{\link{separate_quant_matrices}}
 \item \code{\link{threshold_filter}}
 \item \code{\link{top_integrations}}
+\item \code{\link{sample_statistics}}
 }
 \item Utility functions:
 \itemize{

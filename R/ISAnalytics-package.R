@@ -42,6 +42,7 @@
 #'   * \code{\link{separate_quant_matrices}}
 #'   * \code{\link{threshold_filter}}
 #'   * \code{\link{top_integrations}}
+#'   * \code{\link{sample_statistics}}
 #' * Utility functions:
 #'   * \code{\link{generate_blank_association_file}}
 #'   * \code{\link{generate_Vispa2_launch_AF}}

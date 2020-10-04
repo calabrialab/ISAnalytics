@@ -11,7 +11,9 @@ import_parallel_Vispa2Matrices_interactive(
   matrix_type = "annotated",
   workers = 2,
   tp_padding = 4,
-  dates_format = "dmy"
+  dates_format = "dmy",
+  multi_quant_matrix = FALSE,
+  ...
 )
 }
 \arguments{
@@ -37,6 +39,12 @@ specified (ex: 1 becomes 0001 with a tp_padding of 4)}
 
 \item{dates_format}{A single string indicating how dates should be parsed.
 Must be a value in: \code{date_formats()}}
+
+\item{multi_quant_matrix}{If set to TRUE will produce a
+multi-quantification matrix (data frame) through \code{comparison_matrix}
+instead of a list.}
+
+\item{...}{Additional arguments to pass to \code{comparison_matrix}}
 }
 \value{
 A named list of tibbles containing data from all imported integration
@@ -75,6 +83,8 @@ matrices <- import_parallel_Vispa2Matrices_interactive(
 }
 }
 \seealso{
+\code{\link{comparison_matrix}}
+
 Other Import functions: 
 \code{\link{import_association_file}()},
 \code{\link{import_parallel_Vispa2Matrices_auto}()},

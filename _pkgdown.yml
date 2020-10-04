@@ -28,6 +28,7 @@ reference:
   - separate_quant_matrices
   - threshold_filter
   - top_integrations
+  - sample_statistics
 - title: "Utility functions"
 - contents:
   - as_sparse_matrix
@@ -44,6 +45,7 @@ reference:
   - matching_options
   - quantification_types
   - reduced_AF_columns
+  - default_stats
 - title: "Package overview"
 - contents:
   - ISAnalytics

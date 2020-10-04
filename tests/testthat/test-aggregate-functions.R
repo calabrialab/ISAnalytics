@@ -32,7 +32,7 @@ suppressWarnings({
 })
 
 # Matrices
-matrices <- matrices <- import_parallel_Vispa2Matrices_auto(
+matrices <- import_parallel_Vispa2Matrices_auto(
     association_file = path_af, root = root_correct,
     quantification_type = c("seqCount", "fragmentEstimate"),
     matrix_type = "annotated", workers = 2, patterns = NULL,
@@ -263,116 +263,16 @@ test_that("aggregate_metadata succeeds if all params are correct", {
 })
 
 #------------------------------------------------------------------------------#
-# Tests .wrapper
-#------------------------------------------------------------------------------#
-test_that(".wrapper returns simple vector if atomic", {
-    res <- .wrapper(c(1, 2, 3),
-        lambda = "sum", args = NULL, namespace = "base",
-        env = .GlobalEnv
-    )
-    expect_false(is.list(res))
-    expect_true(is.numeric(res))
-    expect_true(length(res) == 1)
-})
-
-test_that(".wrapper returns list if not atomic", {
-    res <- .wrapper(c(1, 2, 3),
-        lambda = "summary", args = NULL, namespace = "base",
-        env = .GlobalEnv
-    )
-    expect_true(is.list(res))
-    expect_s3_class(res[[1]], "summaryDefault")
-    expect_true(length(res) == 1)
-    res <- .wrapper(c(1, 2, 3),
-        lambda = "as.data.frame",
-        args = NULL, namespace = "base",
-        env = .GlobalEnv
-    )
-    expect_true(is.list(res))
-    expect_true(tibble::is_tibble(res[[1]]))
-    expect_true(length(res) == 1)
-})
-
-#------------------------------------------------------------------------------#
-# Tests .aggregate_lambda
-#------------------------------------------------------------------------------#
-### OTHER VARS ###
-ex_matrix <- function() {
-    tibble::tibble(
-        chr = c(rep_len(1, 8)),
-        integration_locus = c(
-            rep_len(56382099, 4),
-            rep_len(57531752, 4)
-        ),
-        strand = c(
-            rep_len("-", 4),
-            rep_len("+", 4)
-        ),
-        GeneName = c(
-            rep_len("PLPP3", 4),
-            rep_len("DAB1", 4)
-        ),
-        GeneStrand = c(rep_len("-", 8)),
-        CompleteAmplificationID = c(paste("id", 1:8, sep = "_")),
-        Value = c(rep_len(4, 4), rep_len(1, 4))
-    )
-}
-
-ex_af <- function() {
-    tibble::tibble(
-        CompleteAmplificationID = c(paste("id", 1:8, sep = "_")),
-        SubjectID = c(rep_len("subj1", 4), rep_len("subj2", 4))
-    )
-}
-
-example_m <- ex_matrix()
-example_af <- ex_af()
-
-test_that(".aggregate_lambda produces correct output", {
-    agg <- .aggregate_lambda(
-        x = list(example_m), af = example_af,
-        key = "SubjectID", lambda = "sum",
-        group = c(
-            "chr", "integration_locus", "strand",
-            "GeneName", "GeneStrand"
-        ),
-        args = NULL, namespace = "base", envir = .GlobalEnv
-    )
-    expect_true((agg[[1]][1, ]$Aggregated_value == 16))
-    expect_true((agg[[1]][2, ]$Aggregated_value == 4))
-})
-
-test_that(".aggregate_lambda produces correct output - custom", {
-    foo <- function(x) {
-        sum(x)
-    }
-    env <- rlang::current_env()
-    agg <- .aggregate_lambda(
-        x = list(example_m), af = example_af,
-        key = "SubjectID", lambda = "foo",
-        group = c(
-            "chr", "integration_locus", "strand",
-            "GeneName", "GeneStrand"
-        ),
-        args = NULL, namespace = NULL, envir = env
-    )
-    expect_true((agg[[1]][1, ]$Aggregated_value == 16))
-    expect_true((agg[[1]][2, ]$Aggregated_value == 4))
-})
-
-#------------------------------------------------------------------------------#
 # Tests aggregate_values_by_key
 #------------------------------------------------------------------------------#
-### OTHER VARS ###
-path_sm <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-    package = "ISAnalytics"
-)
-isadf <- import_single_Vispa2Matrix(path_sm)
 
 # Test input
-test_that("aggregate_values_by_key stops if x is not a list or an IS matrix", {
+test_that("aggregate_values_by_key stops if x incorrect", {
     expect_error({
-        agg <- aggregate_values_by_key(x = 1, association_file = association_file)
+        agg <- aggregate_values_by_key(
+            x = 1,
+            association_file = association_file
+        )
     })
     expect_error(
         {
@@ -383,65 +283,92 @@ test_that("aggregate_values_by_key stops if x is not a list or an IS matrix", {
         },
         regexp = .non_ISM_error()
     )
-    isadf_mod1 <- isadf %>% dplyr::select(-c(.data$Value))
-    isadf_mod2 <- isadf %>% dplyr::mutate(Value = as.character(.data$Value))
     expect_error(
         {
-            agg <- aggregate_values_by_key(
-                x = isadf_mod1,
-                association_file = association_file
+            agg <- aggregate_values_by_key(matrices$seqCount, association_file,
+                value_cols = "x"
             )
         },
-        regexp = .missing_value_col_error()
+        regexp = .missing_user_cols_error()
+    )
+    expect_error(
+        {
+            agg <- aggregate_values_by_key(matrices$seqCount, association_file,
+                value_cols = c("chr")
+            )
+        },
+        regexp = .non_num_user_cols_error()
     )
     expect_error(
         {
             agg <- aggregate_values_by_key(
-                x = isadf_mod2,
-                association_file = association_file
+                matrices$seqCount %>%
+                    dplyr::select(-c("CompleteAmplificationID")),
+                association_file
             )
         },
-        regexp = .missing_value_col_error()
+        regexp = .missing_complAmpID_error()
     )
     expect_error(
         {
-            agg <- aggregate_values_by_key(
-                x = list(isadf_mod1, isadf),
-                association_file = association_file
+            agg <- aggregate_values_by_key(matrices, association_file,
+                value_cols = "x"
             )
         },
-        regexp = .missing_value_col_error()
+        regexp = .missing_user_cols_error()
+    )
+    expect_error(
+        {
+            agg <- aggregate_values_by_key(matrices, association_file,
+                value_cols = c("chr")
+            )
+        },
+        regexp = .non_num_user_cols_error()
+    )
+    mod_list <- purrr::map(matrices, function(m) {
+        m %>% dplyr::select(-c("CompleteAmplificationID"))
+    })
+    expect_error(
+        {
+            agg <- aggregate_values_by_key(
+                mod_list,
+                association_file
+            )
+        },
+        regexp = .missing_complAmpID_error()
     )
 })
 
-test_that("aggregate_values_by_key stops if af is not a tibble", {
-    expect_error({
-        agg <- aggregate_values_by_key(x = isadf, association_file = 1)
-    })
-})
 test_that("aggregate_values_by_key stops if key is incorrect", {
     expect_error({
         agg <- aggregate_values_by_key(
-            x = isadf,
+            x = matrices$seqCount,
             association_file = association_file,
             key = 1
         )
     })
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "x"
-        )
-    })
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = c("SubjectID", "x")
-        )
-    })
+    expect_error(
+        {
+            agg <- aggregate_values_by_key(
+                x = matrices$seqCount,
+                association_file = association_file,
+                key = "x"
+            )
+        },
+        regexp = "Key fields are missing from association file"
+    )
+    expect_error(
+        {
+            agg <- aggregate_values_by_key(
+                x = matrices$seqCount,
+                association_file = association_file,
+                key = c("SubjectID", "x")
+            )
+        },
+        regexp = "Key fields are missing from association file"
+    )
 })
+
 test_that("aggregate_values_by_key stops if lambda is incorrect", {
     expect_error({
         agg <- aggregate_values_by_key(
@@ -468,182 +395,25 @@ test_that("aggregate_values_by_key stops if lambda is incorrect", {
         )
     })
 })
-test_that("aggregate_values_by_key stops if args is incorrect", {
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "SubjectID",
-            lambda = "sum",
-            args = c(1, 2)
-        )
-    })
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "SubjectID",
-            lambda = "sum",
-            args = list(1, 2)
-        )
-    })
-    expect_error(
-        {
-            agg <- aggregate_values_by_key(
-                x = isadf,
-                association_file = association_file,
-                key = "SubjectID",
-                lambda = "sum",
-                args = NULL
-            )
-        },
-        regexp = NA
-    )
-})
+
 test_that("aggregate_values_by_key stops if group is incorrect", {
     expect_error({
         agg <- aggregate_values_by_key(
-            x = isadf,
+            x = matrices$seqCount,
             association_file = association_file,
-            key = "SubjectID",
-            lambda = "sum",
-            args = NULL,
             group = c(1, 2)
         )
     })
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "SubjectID",
-            lambda = "sum",
-            args = NULL,
-            group = c("xfsf", "fwre")
-        )
-    })
     expect_error(
         {
             agg <- aggregate_values_by_key(
-                x = isadf,
+                x = matrices$seqCount,
                 association_file = association_file,
-                key = "SubjectID",
-                lambda = "sum",
-                args = NULL,
-                group = NULL
+                group = c("xfsf", "fwre")
             )
         },
-        regexp = NA
+        regexp = "Grouping variables not found"
     )
-})
-test_that("aggregate_values_by_key stops if namespace is incorrect", {
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "SubjectID",
-            lambda = "sum",
-            args = list(na.rm = TRUE),
-            namespace = 1
-        )
-    })
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "SubjectID",
-            lambda = "sum",
-            args = list(na.rm = TRUE),
-            namespace = c("base", "ISAnalytics")
-        )
-    })
-    expect_error(
-        {
-            foo <- function(x) {
-                sum(x)
-            }
-            env <- rlang::current_env()
-            agg <- aggregate_values_by_key(
-                x = isadf,
-                association_file = association_file,
-                key = "SubjectID",
-                lambda = "foo",
-                args = NULL,
-                namespace = NULL,
-                env = env
-            )
-        },
-        regexp = NA
-    )
-})
-test_that("aggregate_values_by_key stops if env is incorrect", {
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "SubjectID",
-            lambda = "sum",
-            args = list(na.rm = TRUE),
-            namespace = "base",
-            env = NULL
-        )
-    })
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "SubjectID",
-            lambda = "sum",
-            args = list(na.rm = TRUE),
-            namespace = "base",
-            env = "global"
-        )
-    })
-})
-test_that("aggregate_values_by_key stops if problems with function chosen", {
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "SubjectID",
-            lambda = "sum",
-            args = list(na.rm = TRUE),
-            namespace = "ertfweg"
-        )
-    })
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "SubjectID",
-            lambda = "seefwegfe",
-            args = list(na.rm = TRUE),
-            namespace = "base"
-        )
-    })
-    env <- rlang::current_env()
-    n <- 4
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "SubjectID",
-            lambda = "foo",
-            args = list(na.rm = TRUE),
-            namespace = NULL,
-            env = env
-        )
-    })
-    expect_error({
-        agg <- aggregate_values_by_key(
-            x = isadf,
-            association_file = association_file,
-            key = "SubjectID",
-            lambda = "n",
-            args = list(na.rm = TRUE),
-            namespace = NULL,
-            env = env
-        )
-    })
 })
 
 # Test Values
@@ -657,7 +427,19 @@ test_that("aggregate_values_by_key succeeds for single IS matrix", {
     expect_true(all(c(
         "chr", "integration_locus", "strand", "GeneName",
         "GeneStrand", "SubjectID",
-        "Aggregated_value"
+        "Value_sum"
+    ) %in% colnames(agg)))
+    comp <- comparison_matrix(matrices)
+    agg <- aggregate_values_by_key(comp, association_file,
+        value_cols = c(
+            "fragmentEstimate",
+            "seqCount"
+        )
+    )
+    expect_true(all(c(
+        "chr", "integration_locus", "strand", "GeneName",
+        "GeneStrand", "SubjectID",
+        "fragmentEstimate_sum", "seqCount_sum"
     ) %in% colnames(agg)))
 })
 
@@ -671,11 +453,11 @@ test_that("aggregate_values_by_key succeeds for list of IS matrices", {
     expect_true(all(c(
         "chr", "integration_locus", "strand", "GeneName",
         "GeneStrand", "SubjectID",
-        "Aggregated_value"
+        "Value_sum"
     ) %in% colnames(agg[[1]])))
     expect_true(all(c(
         "chr", "integration_locus", "strand", "GeneName",
         "GeneStrand", "SubjectID",
-        "Aggregated_value"
+        "Value_sum"
     ) %in% colnames(agg[[2]])))
 })

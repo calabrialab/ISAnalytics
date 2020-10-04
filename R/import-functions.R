@@ -169,6 +169,13 @@ import_association_file <- function(path,
 #' specified (ex: 1 becomes 0001 with a tp_padding of 4)
 #' @param dates_format A single string indicating how dates should be parsed.
 #' Must be a value in: \code{date_formats()}
+#' @param multi_quant_matrix If set to TRUE will produce a
+#' multi-quantification matrix (data frame) through `comparison_matrix`
+#' instead of a list.
+#' @param ... Additional arguments to pass to `comparison_matrix`
+#'
+#' @seealso \code{\link{comparison_matrix}}
+#'
 #' @importFrom htmltools browsable tagList
 #' @importFrom tibble is_tibble
 #' @family Import functions
@@ -191,7 +198,9 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
     matrix_type = "annotated",
     workers = 2,
     tp_padding = 4,
-    dates_format = "dmy") {
+    dates_format = "dmy",
+    multi_quant_matrix = FALSE,
+    ...) {
     # Check parameters
     stopifnot(!missing(association_file))
     stopifnot(is.character(association_file) |
@@ -213,6 +222,7 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
     stopifnot((is.numeric(tp_padding) |
         is.integer(tp_padding)) & length(tp_padding) == 1)
     stopifnot(length(dates_format) == 1 & dates_format %in% date_formats())
+    stopifnot(is.logical(multi_quant_matrix) & length(multi_quant_matrix) == 1)
 
     # Manage association file
     association_file <- .manage_association_file(
@@ -290,6 +300,9 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
         }
     }
     matrices <- matrices[[1]]
+    if (multi_quant_matrix == TRUE) {
+        matrices <- comparison_matrix(matrices, ...)
+    }
     matrices
 }
 
@@ -339,7 +352,9 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
     patterns = NULL,
     matching_opt = matching_options(),
     tp_padding = 4,
-    dates_format = "dmy") {
+    dates_format = "dmy",
+    multi_quant_matrix = FALSE,
+    ...) {
     # Check parameters
     stopifnot(!missing(association_file))
     stopifnot(is.character(association_file) |
@@ -364,6 +379,7 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
     stopifnot((is.numeric(tp_padding) |
         is.integer(tp_padding)) & length(tp_padding) == 1)
     stopifnot(length(dates_format) == 1 & dates_format %in% date_formats())
+    stopifnot(is.logical(multi_quant_matrix) & length(multi_quant_matrix) == 1)
 
     ### Evaluate matching_opt
     matching_option <- match.arg(matching_opt)
@@ -448,6 +464,9 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
         }
     }
     matrices <- matrices[[1]]
+    if (multi_quant_matrix == TRUE) {
+        matrices <- comparison_matrix(matrices, ...)
+    }
     matrices
 }
 

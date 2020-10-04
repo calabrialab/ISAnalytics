@@ -2224,8 +2224,7 @@
 # @keywords internal
 #
 # @return A list of tibbles with aggregated values
-.aggregate_lambda <- function(x, af, key, lambda, group,
-    args, namespace, envir) {
+.aggregate_lambda <- function(x, af, key, value_cols, lambda, group) {
     # Vectorize
     aggregated_matrices <- purrr::map(x, function(y) {
         cols <- c(colnames(y), key)
@@ -2233,60 +2232,15 @@
             dplyr::left_join(af, by = "CompleteAmplificationID") %>%
             dplyr::select(dplyr::all_of(cols)) %>%
             dplyr::group_by(dplyr::across(dplyr::all_of(c(group, key)))) %>%
-            dplyr::summarise(Aggregated_value = .wrapper(
-                x = .data$Value,
-                lambda, args,
-                namespace, envir
-            )) %>%
-            dplyr::ungroup()
+            dplyr::summarise(dplyr::across(
+                .cols = dplyr::all_of(value_cols),
+                .fns = lambda
+            ), .groups = "drop")
         agg
     })
     aggregated_matrices
 }
 
-
-# Wrapper function to call in summarise.
-#
-# This function tests for the type of result obtained by calling the lambda on
-# the grouped `Value` column: if its an atomic type (and not a list or a
-# vector) simply returns the result, otherwise encapsulates the result in a
-# list to produce a list column that can be unnested with tidyr. Data frames
-# are automatically converted to tibbles to improve performance.
-#
-# This function actually improves both performance and flexibility of the
-# aggregate function since every object of any class can be included in a list
-# and therefore in the aggregated_value column.
-#
-# @param x The numeric vector to which the lambda is applied
-# @param lambda The name of the function to call
-# @param args Additional arguments to pass to lambda
-# @param namespace The namespace that exports lambda (or NULL)
-# @param env The environment where symbols are evaluated
-#' @importFrom tibble as_tibble
-# @keywords internal
-#
-# @return An atomic type or a list
-.wrapper <- function(x, lambda, args, namespace, env) {
-    fun <- if (is.null(namespace)) {
-        lambda
-    } else {
-        getExportedValue(ns = namespace, name = lambda)
-    }
-    res <- do.call(
-        what = fun, args = append(list(x), args), quote = TRUE,
-        envir = env
-    )
-    # Check result type, if is anything else than basic types put it in a list
-    if (is.atomic(res) & !is.list(res) & length(res) == 1) {
-        return(res)
-    } else {
-        if (is.data.frame(res)) {
-            res <- tibble::as_tibble(res)
-            return(list(res))
-        }
-        return(list(res))
-    }
-}
 
 #### ---- Internals for re-calibration functions ----####
 
