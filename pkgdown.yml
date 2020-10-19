@@ -1,9 +1,9 @@
 pandoc: 2.7.3
-pkgdown: 1.6.1
-pkgdown_sha: ~
+pkgdown: 1.6.1.9000
+pkgdown_sha: e1e46f2e13c7efdb17bc4eae40bc3779c2b0b517
 articles:
   aggregate_function_usage: aggregate_function_usage.html
   collision_removal: collision_removal.html
   how_to_import_functions: how_to_import_functions.html
-last_built: 2020-10-19T19:07Z
+last_built: 2020-10-19T19:14Z
 

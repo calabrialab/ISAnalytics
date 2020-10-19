@@ -38,12 +38,6 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -129,10 +123,10 @@ document.addEventListener("DOMContentLoaded", function() {
 <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></pre></div>
 <p>To install from GitHub:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
   <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
 <span class="op">}</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></pre></div>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com//calabrialab/isanalytics">ISAnalytics</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: magrittr</span></pre></div>
@@ -201,7 +195,7 @@ An example on how to access them:</p>
 <span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>
 <span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_correct</span>, <span class="st">"fs"</span><span class="op">)</span>
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="http://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span><span class="op">(</span><span class="va">root_correct</span><span class="op">)</span>
-<span class="co">#&gt; /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//Rtmpz9NTaf/fs</span>
+<span class="co">#&gt; /tmp/RtmpQMizaB/fs</span>
 <span class="co">#&gt; ├── PROJECT1100</span>
 <span class="co">#&gt; │   ├── bam</span>
 <span class="co">#&gt; │   ├── bcmuxall</span>
@@ -581,7 +575,7 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="va">root_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fserr.zip"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>
 <span class="va">root_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_err</span>, <span class="st">"fserr"</span><span class="op">)</span>
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="http://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span><span class="op">(</span><span class="va">root_err</span><span class="op">)</span>
-<span class="co">#&gt; /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//Rtmpz9NTaf/fserr</span>
+<span class="co">#&gt; /tmp/RtmpQMizaB/fserr</span>
 <span class="co">#&gt; ├── PROJECT1100</span>
 <span class="co">#&gt; │   ├── bam</span>
 <span class="co">#&gt; │   ├── bcmuxall</span>
@@ -618,9 +612,9 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt;         └── report</span>
 <span class="va">association_file_fserr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">path_as_file</span>, <span class="va">root_err</span><span class="op">)</span>
 <span class="co">#&gt; Warning: One or more projects were not found in the filesystem starting from /</span>
-<span class="co">#&gt; var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//Rtmpz9NTaf/fserr, please check</span>
-<span class="co">#&gt; yourassociation file for errors and/or your file system.Until you re-import the</span>
-<span class="co">#&gt; association file these missing files will be ignored.</span>
+<span class="co">#&gt; tmp/RtmpQMizaB/fserr, please check yourassociation file for errors and/or your</span>
+<span class="co">#&gt; file system.Until you re-import the association file these missing files will be</span>
+<span class="co">#&gt; ignored.</span>
 <span class="va">refined_af_err</span> <span class="op">&lt;-</span> <span class="va">association_file_fserr</span> <span class="op">%&gt;%</span> 
   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">ProjectID</span> <span class="op">==</span> <span class="st">"CLOEXP"</span><span class="op">)</span>
 <span class="va">matrices_auto2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto</a></span><span class="op">(</span>
@@ -671,119 +665,120 @@ Both functions rely on the association file and some basic parameters, most nota
 <div id="reproducibility" class="section level1">
 <h1 class="hasAnchor">
 <a href="#reproducibility" class="anchor"></a>Reproducibility</h1>
-<p>The <em><a href="https://bioconductor.org/packages/3.11/ISAnalytics">ISAnalytics</a></em> package <a id="cite-calabrialab_2020"></a>(<a href="http://www.bioconductor.org/packages/ISAnalytics">calabrialab, 2020</a>) was made possible thanks to:</p>
+<p>The <em><a href="https://bioconductor.org/packages/3.12/ISAnalytics">ISAnalytics</a></em> package <a id="cite-calabrialab_2020"></a>(<a href="http://www.bioconductor.org/packages/ISAnalytics">calabrialab, 2020</a>) was made possible thanks to:</p>
 <ul>
 <li>R <a id="cite-R_Core_Team_2020"></a>(<a href="https://www.R-project.org/">R Core Team, 2020</a>)</li>
 <li>
-<em><a href="https://bioconductor.org/packages/3.11/BiocStyle">BiocStyle</a></em> <a id="cite-Oles_2020"></a>(<a href="https://github.com/Bioconductor/BiocStyle">Oleś, Morgan, and Huber, 2020</a>)</li>
+<em><a href="https://bioconductor.org/packages/3.12/BiocStyle">BiocStyle</a></em> <a id="cite-Oles_2020"></a>(<a href="https://github.com/Bioconductor/BiocStyle">Oleś, Morgan, and Huber, 2020</a>)</li>
 <li>
-<em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> <a id="cite-Boettiger_2019"></a>(<a href="https://CRAN.R-project.org/package=knitcitations">Boettiger, 2019</a>)</li>
+<em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> <a id="cite-Boettiger_2019"></a>(<a href="https://github.com/cboettig/knitcitations">Boettiger, 2019</a>)</li>
 <li>
 <em><a href="https://CRAN.R-project.org/package=knitr">knitr</a></em> <a id="cite-Xie_2020"></a>(<a href="https://yihui.org/knitr/">Xie, 2020</a>)</li>
 <li>
 <em><a href="https://CRAN.R-project.org/package=rmarkdown">rmarkdown</a></em> <a id="cite-Allaire_2020"></a>(<a href="https://github.com/rstudio/rmarkdown">Allaire, Xie, McPherson, Luraschi, et al., 2020</a>)</li>
 <li>
-<em><a href="https://CRAN.R-project.org/package=sessioninfo">sessioninfo</a></em> <a id="cite-Csardi_2018"></a>(<a href="https://CRAN.R-project.org/package=sessioninfo">Csárdi, core, Wickham, Chang, et al., 2018</a>)</li>
+<em><a href="https://CRAN.R-project.org/package=sessioninfo">sessioninfo</a></em> <a id="cite-Csardi_2018"></a>(<a href="https://github.com/r-lib/sessioninfo#readme">Csárdi, core, Wickham, Chang, et al., 2018</a>)</li>
 <li>
 <em><a href="https://CRAN.R-project.org/package=testthat">testthat</a></em> <a id="cite-Wickham_2011"></a>(<a href="https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf">Wickham, 2011</a>)</li>
 </ul>
 <p>This package was developed using <em><a href="https://github.com/lcolladotor/biocthis">biocthis</a></em>.</p>
 <p><code>R</code> session information.</p>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt;  setting  value                       
-#&gt;  version  R version 4.0.3 (2020-10-10)
-#&gt;  os       macOS Catalina 10.15.7      
-#&gt;  system   x86_64, darwin17.0          
-#&gt;  ui       X11                         
-#&gt;  language (EN)                        
-#&gt;  collate  en_US.UTF-8                 
-#&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       UTC                         
-#&gt;  date     2020-10-19                  
+#&gt;  setting  value                                      
+#&gt;  version  R version 4.0.3 Patched (2020-10-13 r79342)
+#&gt;  os       Ubuntu 20.04.1 LTS                         
+#&gt;  system   x86_64, linux-gnu                          
+#&gt;  ui       X11                                        
+#&gt;  language (EN)                                       
+#&gt;  collate  en_US.UTF-8                                
+#&gt;  ctype    en_US.UTF-8                                
+#&gt;  tz       Etc/UTC                                    
+#&gt;  date     2020-10-19                                 
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt;  package       * version date       lib source        
-#&gt;  assertthat      0.2.1   2019-03-21 [1] CRAN (R 4.0.2)
-#&gt;  backports       1.1.10  2020-09-15 [1] CRAN (R 4.0.2)
-#&gt;  bibtex          0.4.2.3 2020-09-19 [1] CRAN (R 4.0.2)
-#&gt;  BiocManager     1.30.10 2019-11-16 [1] CRAN (R 4.0.2)
-#&gt;  BiocParallel    1.22.0  2020-04-27 [1] Bioconductor  
-#&gt;  BiocStyle     * 2.16.1  2020-09-25 [1] Bioconductor  
-#&gt;  bookdown        0.21    2020-10-13 [1] CRAN (R 4.0.3)
-#&gt;  cli             2.1.0   2020-10-12 [1] CRAN (R 4.0.2)
-#&gt;  colorspace      1.4-1   2019-03-18 [1] CRAN (R 4.0.2)
-#&gt;  crayon          1.3.4   2017-09-16 [1] CRAN (R 4.0.2)
-#&gt;  desc            1.2.0   2018-05-01 [1] CRAN (R 4.0.2)
-#&gt;  digest          0.6.26  2020-10-17 [1] CRAN (R 4.0.2)
-#&gt;  dplyr           1.0.2   2020-08-18 [1] CRAN (R 4.0.2)
-#&gt;  ellipsis        0.3.1   2020-05-15 [1] CRAN (R 4.0.2)
-#&gt;  evaluate        0.14    2019-05-28 [1] CRAN (R 4.0.1)
-#&gt;  fansi           0.4.1   2020-01-08 [1] CRAN (R 4.0.2)
-#&gt;  forcats         0.5.0   2020-03-01 [1] CRAN (R 4.0.2)
-#&gt;  fs              1.5.0   2020-07-31 [1] CRAN (R 4.0.2)
-#&gt;  generics        0.0.2   2018-11-29 [1] CRAN (R 4.0.2)
-#&gt;  ggplot2         3.3.2   2020-06-19 [1] CRAN (R 4.0.2)
-#&gt;  ggrepel         0.8.2   2020-03-08 [1] CRAN (R 4.0.2)
-#&gt;  glue            1.4.2   2020-08-27 [1] CRAN (R 4.0.2)
-#&gt;  gtable          0.3.0   2019-03-25 [1] CRAN (R 4.0.2)
-#&gt;  highr           0.8     2019-03-20 [1] CRAN (R 4.0.2)
-#&gt;  hms             0.5.3   2020-01-08 [1] CRAN (R 4.0.2)
-#&gt;  htmltools       0.5.0   2020-06-16 [1] CRAN (R 4.0.2)
-#&gt;  htmlwidgets     1.5.2   2020-10-03 [1] CRAN (R 4.0.2)
-#&gt;  httr            1.4.2   2020-07-20 [1] CRAN (R 4.0.2)
-#&gt;  ISAnalytics   * 0.99.13 2020-10-19 [1] Bioconductor  
-#&gt;  jsonlite        1.7.1   2020-09-07 [1] CRAN (R 4.0.2)
-#&gt;  knitcitations * 1.0.10  2019-09-15 [1] CRAN (R 4.0.2)
-#&gt;  knitr           1.30    2020-09-22 [1] CRAN (R 4.0.2)
-#&gt;  lifecycle       0.2.0   2020-03-06 [1] CRAN (R 4.0.2)
-#&gt;  lubridate       1.7.9   2020-06-08 [1] CRAN (R 4.0.2)
-#&gt;  magrittr      * 1.5     2014-11-22 [1] CRAN (R 4.0.2)
-#&gt;  memoise         1.1.0   2017-04-21 [1] CRAN (R 4.0.2)
-#&gt;  munsell         0.5.0   2018-06-12 [1] CRAN (R 4.0.2)
-#&gt;  pillar          1.4.6   2020-07-10 [1] CRAN (R 4.0.2)
-#&gt;  pkgconfig       2.0.3   2019-09-22 [1] CRAN (R 4.0.2)
-#&gt;  pkgdown         1.6.1   2020-09-12 [1] CRAN (R 4.0.2)
-#&gt;  plyr            1.8.6   2020-03-03 [1] CRAN (R 4.0.2)
-#&gt;  purrr           0.3.4   2020-04-17 [1] CRAN (R 4.0.2)
-#&gt;  R6              2.4.1   2019-11-12 [1] CRAN (R 4.0.2)
-#&gt;  ragg            0.4.0   2020-10-05 [1] CRAN (R 4.0.2)
-#&gt;  Rcpp            1.0.5   2020-07-06 [1] CRAN (R 4.0.2)
-#&gt;  reactable       0.2.3   2020-10-04 [1] CRAN (R 4.0.2)
-#&gt;  readr           1.4.0   2020-10-05 [1] CRAN (R 4.0.2)
-#&gt;  RefManageR      1.2.12  2019-04-03 [1] CRAN (R 4.0.2)
-#&gt;  rlang           0.4.8   2020-10-08 [1] CRAN (R 4.0.2)
-#&gt;  rmarkdown       2.4     2020-09-30 [1] CRAN (R 4.0.3)
-#&gt;  rprojroot       1.3-2   2018-01-03 [1] CRAN (R 4.0.2)
-#&gt;  scales          1.1.1   2020-05-11 [1] CRAN (R 4.0.2)
-#&gt;  sessioninfo   * 1.1.1   2018-11-05 [1] CRAN (R 4.0.2)
-#&gt;  stringi         1.5.3   2020-09-09 [1] CRAN (R 4.0.2)
-#&gt;  stringr         1.4.0   2019-02-10 [1] CRAN (R 4.0.2)
-#&gt;  systemfonts     0.3.2   2020-09-29 [1] CRAN (R 4.0.2)
-#&gt;  textshaping     0.1.2   2020-10-08 [1] CRAN (R 4.0.2)
-#&gt;  tibble          3.0.4   2020-10-12 [1] CRAN (R 4.0.2)
-#&gt;  tidyr           1.1.2   2020-08-27 [1] CRAN (R 4.0.2)
-#&gt;  tidyselect      1.1.0   2020-05-11 [1] CRAN (R 4.0.2)
-#&gt;  utf8            1.1.4   2018-05-24 [1] CRAN (R 4.0.2)
-#&gt;  vctrs           0.3.4   2020-08-29 [1] CRAN (R 4.0.2)
-#&gt;  withr           2.3.0   2020-09-22 [1] CRAN (R 4.0.2)
-#&gt;  xfun            0.18    2020-09-29 [1] CRAN (R 4.0.2)
-#&gt;  xml2            1.3.2   2020-04-23 [1] CRAN (R 4.0.2)
-#&gt;  yaml            2.2.1   2020-02-01 [1] CRAN (R 4.0.2)
-#&gt;  zip             2.1.1   2020-08-27 [1] CRAN (R 4.0.2)
+#&gt;  package       * version    date       lib source                        
+#&gt;  assertthat      0.2.1      2019-03-21 [2] RSPM (R 4.0.0)                
+#&gt;  backports       1.1.10     2020-09-15 [2] RSPM (R 4.0.2)                
+#&gt;  bibtex          0.4.2.3    2020-09-19 [1] RSPM (R 4.0.2)                
+#&gt;  BiocManager     1.30.10    2019-11-16 [2] CRAN (R 4.0.3)                
+#&gt;  BiocParallel    1.23.3     2020-10-17 [1] Bioconductor                  
+#&gt;  BiocStyle     * 2.17.1     2020-09-24 [1] Bioconductor                  
+#&gt;  bookdown        0.20       2020-06-23 [1] RSPM (R 4.0.2)                
+#&gt;  cli             2.1.0      2020-10-12 [2] RSPM (R 4.0.2)                
+#&gt;  colorspace      1.4-1      2019-03-18 [1] RSPM (R 4.0.0)                
+#&gt;  crayon          1.3.4      2017-09-16 [2] RSPM (R 4.0.0)                
+#&gt;  desc            1.2.0      2018-05-01 [2] RSPM (R 4.0.0)                
+#&gt;  digest          0.6.25     2020-02-23 [2] RSPM (R 4.0.0)                
+#&gt;  dplyr           1.0.2      2020-08-18 [1] RSPM (R 4.0.2)                
+#&gt;  ellipsis        0.3.1      2020-05-15 [2] RSPM (R 4.0.0)                
+#&gt;  evaluate        0.14       2019-05-28 [2] RSPM (R 4.0.0)                
+#&gt;  fansi           0.4.1      2020-01-08 [2] RSPM (R 4.0.0)                
+#&gt;  forcats         0.5.0      2020-03-01 [1] RSPM (R 4.0.0)                
+#&gt;  fs              1.5.0      2020-07-31 [2] RSPM (R 4.0.2)                
+#&gt;  generics        0.0.2      2018-11-29 [1] RSPM (R 4.0.0)                
+#&gt;  ggplot2         3.3.2      2020-06-19 [1] RSPM (R 4.0.1)                
+#&gt;  ggrepel         0.8.2      2020-03-08 [1] RSPM (R 4.0.2)                
+#&gt;  glue            1.4.2      2020-08-27 [2] RSPM (R 4.0.2)                
+#&gt;  gtable          0.3.0      2019-03-25 [1] RSPM (R 4.0.0)                
+#&gt;  highr           0.8        2019-03-20 [2] RSPM (R 4.0.0)                
+#&gt;  hms             0.5.3      2020-01-08 [1] RSPM (R 4.0.0)                
+#&gt;  htmltools       0.5.0      2020-06-16 [2] RSPM (R 4.0.1)                
+#&gt;  htmlwidgets     1.5.2      2020-10-03 [2] RSPM (R 4.0.2)                
+#&gt;  httr            1.4.2      2020-07-20 [2] RSPM (R 4.0.2)                
+#&gt;  ISAnalytics   * 0.99.13    2020-10-19 [1] Bioconductor                  
+#&gt;  jsonlite        1.7.1      2020-09-07 [2] RSPM (R 4.0.2)                
+#&gt;  knitcitations * 1.0.10     2019-09-15 [1] RSPM (R 4.0.0)                
+#&gt;  knitr           1.30       2020-09-22 [2] RSPM (R 4.0.2)                
+#&gt;  lifecycle       0.2.0      2020-03-06 [2] RSPM (R 4.0.0)                
+#&gt;  lubridate       1.7.9      2020-06-08 [1] RSPM (R 4.0.2)                
+#&gt;  magrittr      * 1.5        2014-11-22 [2] RSPM (R 4.0.0)                
+#&gt;  memoise         1.1.0      2017-04-21 [2] RSPM (R 4.0.0)                
+#&gt;  munsell         0.5.0      2018-06-12 [1] RSPM (R 4.0.0)                
+#&gt;  pillar          1.4.6      2020-07-10 [2] RSPM (R 4.0.2)                
+#&gt;  pkgconfig       2.0.3      2019-09-22 [2] RSPM (R 4.0.0)                
+#&gt;  pkgdown         1.6.1.9000 2020-10-19 [1] Github (r-lib/pkgdown@e1e46f2)
+#&gt;  plyr            1.8.6      2020-03-03 [1] RSPM (R 4.0.2)                
+#&gt;  purrr           0.3.4      2020-04-17 [2] RSPM (R 4.0.0)                
+#&gt;  R6              2.4.1      2019-11-12 [2] RSPM (R 4.0.0)                
+#&gt;  ragg            0.4.0      2020-10-05 [1] RSPM (R 4.0.2)                
+#&gt;  Rcpp            1.0.5      2020-07-06 [2] RSPM (R 4.0.2)                
+#&gt;  reactable       0.2.3      2020-10-04 [1] RSPM (R 4.0.2)                
+#&gt;  readr           1.4.0      2020-10-05 [1] RSPM (R 4.0.2)                
+#&gt;  RefManageR      1.2.12     2019-04-03 [1] RSPM (R 4.0.0)                
+#&gt;  rlang           0.4.8      2020-10-08 [2] RSPM (R 4.0.2)                
+#&gt;  rmarkdown       2.4        2020-09-30 [1] RSPM (R 4.0.2)                
+#&gt;  rprojroot       1.3-2      2018-01-03 [2] RSPM (R 4.0.0)                
+#&gt;  scales          1.1.1      2020-05-11 [1] RSPM (R 4.0.0)                
+#&gt;  sessioninfo   * 1.1.1      2018-11-05 [2] RSPM (R 4.0.0)                
+#&gt;  stringi         1.5.3      2020-09-09 [2] RSPM (R 4.0.2)                
+#&gt;  stringr         1.4.0      2019-02-10 [2] RSPM (R 4.0.0)                
+#&gt;  systemfonts     0.3.2      2020-09-29 [1] RSPM (R 4.0.2)                
+#&gt;  textshaping     0.1.2      2020-10-08 [1] RSPM (R 4.0.2)                
+#&gt;  tibble          3.0.4      2020-10-12 [2] RSPM (R 4.0.2)                
+#&gt;  tidyr           1.1.2      2020-08-27 [1] RSPM (R 4.0.2)                
+#&gt;  tidyselect      1.1.0      2020-05-11 [1] RSPM (R 4.0.0)                
+#&gt;  utf8            1.1.4      2018-05-24 [2] RSPM (R 4.0.0)                
+#&gt;  vctrs           0.3.4      2020-08-29 [2] RSPM (R 4.0.2)                
+#&gt;  withr           2.3.0      2020-09-22 [2] RSPM (R 4.0.2)                
+#&gt;  xfun            0.18       2020-09-29 [2] RSPM (R 4.0.2)                
+#&gt;  xml2            1.3.2      2020-04-23 [2] RSPM (R 4.0.0)                
+#&gt;  yaml            2.2.1      2020-02-01 [2] RSPM (R 4.0.0)                
+#&gt;  zip             2.1.1      2020-08-27 [1] RSPM (R 4.0.2)                
 #&gt; 
-#&gt; [1] /Users/runner/work/_temp/Library
-#&gt; [2] /Library/Frameworks/R.framework/Versions/4.0/Resources/library</code></pre>
+#&gt; [1] /usr/local/lib/R/host-site-library
+#&gt; [2] /usr/local/lib/R/site-library
+#&gt; [3] /usr/local/lib/R/library</code></pre>
 </div>
 <div id="bibliography" class="section level1">
 <h1 class="hasAnchor">
 <a href="#bibliography" class="anchor"></a>Bibliography</h1>
-<p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.11/BiocStyle">BiocStyle</a></em> (<a href="https://github.com/Bioconductor/BiocStyle">Oleś, Morgan, and Huber, 2020</a>) with <em><a href="https://CRAN.R-project.org/package=knitr">knitr</a></em> (<a href="https://yihui.org/knitr/">Xie, 2020</a>) and <em><a href="https://CRAN.R-project.org/package=rmarkdown">rmarkdown</a></em> (<a href="https://github.com/rstudio/rmarkdown">Allaire, Xie, McPherson, Luraschi, et al., 2020</a>) running behind the scenes.</p>
-<p>Citations made with <em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> (<a href="https://CRAN.R-project.org/package=knitcitations">Boettiger, 2019</a>).</p>
+<p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.12/BiocStyle">BiocStyle</a></em> (<a href="https://github.com/Bioconductor/BiocStyle">Oleś, Morgan, and Huber, 2020</a>) with <em><a href="https://CRAN.R-project.org/package=knitr">knitr</a></em> (<a href="https://yihui.org/knitr/">Xie, 2020</a>) and <em><a href="https://CRAN.R-project.org/package=rmarkdown">rmarkdown</a></em> (<a href="https://github.com/rstudio/rmarkdown">Allaire, Xie, McPherson, Luraschi, et al., 2020</a>) running behind the scenes.</p>
+<p>Citations made with <em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> (<a href="https://github.com/cboettig/knitcitations">Boettiger, 2019</a>).</p>
 <p>[1] J. Allaire, Y. Xie, J. McPherson, J. Luraschi, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.4. 2020. &lt;URL: <a href="https://github.com/rstudio/rmarkdown" class="uri">https://github.com/rstudio/rmarkdown</a>&gt;.</p>
-<p>[2] C. Boettiger. <em>knitcitations: Citations for ‘Knitr’ Markdown Files</em>. R package version 1.0.10. 2019. &lt;URL: <a href="https://CRAN.R-project.org/package=knitcitations" class="uri">https://CRAN.R-project.org/package=knitcitations</a>&gt;.</p>
+<p>[2] C. Boettiger. <em>knitcitations: Citations for ‘Knitr’ Markdown Files</em>. R package version 1.0.10. 2019. &lt;URL: <a href="https://github.com/cboettig/knitcitations" class="uri">https://github.com/cboettig/knitcitations</a>&gt;.</p>
 <p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 0.99.13. 2020. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
-<p>[4] G. Csárdi, R. core, H. Wickham, W. Chang, et al. <em>sessioninfo: R Session Information</em>. R package version 1.1.1. 2018. &lt;URL: <a href="https://CRAN.R-project.org/package=sessioninfo" class="uri">https://CRAN.R-project.org/package=sessioninfo</a>&gt;.</p>
-<p>[5] A. Oleś, M. Morgan, and W. Huber. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.16.1. 2020. &lt;URL: <a href="https://github.com/Bioconductor/BiocStyle" class="uri">https://github.com/Bioconductor/BiocStyle</a>&gt;.</p>
+<p>[4] G. Csárdi, R. core, H. Wickham, W. Chang, et al. <em>sessioninfo: R Session Information</em>. R package version 1.1.1. 2018. &lt;URL: <a href="https://github.com/r-lib/sessioninfo#readme" class="uri">https://github.com/r-lib/sessioninfo#readme</a>&gt;.</p>
+<p>[5] A. Oleś, M. Morgan, and W. Huber. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.17.1. 2020. &lt;URL: <a href="https://github.com/Bioconductor/BiocStyle" class="uri">https://github.com/Bioconductor/BiocStyle</a>&gt;.</p>
 <p>[6] R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. R Foundation for Statistical Computing. Vienna, Austria, 2020. &lt;URL: <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>&gt;.</p>
 <p>[7] H. Wickham. “testthat: Get Started with Testing”. In: <em>The R Journal</em> 3 (2011), pp. 5-10. &lt;URL: <a href="https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf" class="uri">https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf</a>&gt;.</p>
 <p>[8] Y. Xie. <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.30. 2020. &lt;URL: <a href="https://yihui.org/knitr/" class="uri">https://yihui.org/knitr/</a>&gt;.</p>
@@ -805,7 +800,7 @@ Both functions rely on the association file and some basic parameters, most nota
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
