@@ -61,8 +61,10 @@ options(op)
 \link{quantification_types}
 
 Other Analysis functions: 
+\code{\link{CIS_grubbs}()},
 \code{\link{comparison_matrix}()},
 \code{\link{compute_abundance}()},
+\code{\link{cumulative_count_union}()},
 \code{\link{sample_statistics}()},
 \code{\link{threshold_filter}()},
 \code{\link{top_integrations}()}

@@ -1125,3 +1125,143 @@ test_that("sample_statistics returns correctly", {
         colnames(res$x)))
     expect_true("Value_sum" %in% colnames(res$metadata))
 })
+
+#------------------------------------------------------------------------------#
+# Test CIS_grubbs
+#------------------------------------------------------------------------------#
+test_that("CIS_grubbs fails if x is not standard matrix", {
+    wrong <- tibble::tibble(a = c(1, 2, 3), b = c(4, 5, 6))
+    expect_error(
+        {
+            CIS_grubbs(wrong)
+        },
+        regexp = .non_ISM_error()
+    )
+    expect_error(
+        {
+            CIS_grubbs(smpl)
+        },
+        regexp = .missing_annot()
+    )
+})
+
+test_that("CIS_grubbs fails if file doesn't exist", {
+    expect_error({
+        CIS_grubbs(matrices_correct$seqCount,
+            genomic_annotation_file = "myfile.tsv"
+        )
+    })
+})
+
+test_that("CIS_grubbs produces correct df", {
+    output_cols <- c(
+        "GeneName", "GeneStrand", "chr", "n_IS_perGene",
+        "min_bp_integration_locus", "max_bp_integration_locus",
+        "IS_span_bp", "avg_bp_integration_locus",
+        "median_bp_integration_locus", "distinct_orientations",
+        "describe", "average_TxLen", "geneIS_frequency_byHitIS",
+        "raw_gene_integration_frequency",
+        "integration_frequency_withtolerance",
+        "minus_log2_integration_freq_withtolerance",
+        "zscore_minus_log2_int_freq_tolerance",
+        "neg_zscore_minus_log2_int_freq_tolerance", "t_z_mlif",
+        "tdist2t", "tdist_pt", "tdist_bonferroni_default",
+        "tdist_bonferroni", "tdist_fdr", "tdist_benjamini",
+        "tdist_positive_and_corrected", "tdist_positive",
+        "tdist_positive_and_correctedEM"
+    )
+    result <- CIS_grubbs(matrices_correct$seqCount)
+    expect_true(ncol(result) == 28)
+    expect_true(all(output_cols %in% colnames(result)))
+    result <- CIS_grubbs(matrices_correct$seqCount,
+        add_standard_padjust = FALSE
+    )
+    expect_true(ncol(result) == 25)
+    expect_true(all(output_cols[!output_cols %in% c(
+        "tdist_bonferroni",
+        "tdist_fdr",
+        "tdist_benjamini"
+    )] %in%
+        colnames(result)))
+})
+
+#------------------------------------------------------------------------------#
+# Test cumulative_count_union
+#------------------------------------------------------------------------------#
+minimal_agg_example <- tibble::tibble(
+    chr = c(1, 2, 2, 5, 5, 3, 3, 10, 11),
+    integration_locus = c(
+        14505,
+        1005,
+        15513,
+        4561,
+        10167,
+        5247,
+        10951,
+        23403,
+        25611
+    ),
+    strand = c(
+        "+", "-", "+", "+", "-", "-",
+        "+", "-", "-"
+    ),
+    SubjectID = c(
+        rep_len("S1", 5),
+        rep_len("S2", 4)
+    ),
+    CellMarker = c(
+        rep_len("CM1", 5),
+        rep_len("CM2", 4)
+    ),
+    Tissue = c(
+        rep_len("T1", 5),
+        rep_len("T2", 4)
+    ),
+    TimePoint = c(
+        rep_len("0001", 3),
+        "0010", "0015",
+        rep_len("0001", 2),
+        rep_len("0020", 2)
+    ),
+    Value_sum = c(
+        50, 80, 650, 46, 79, 633,
+        875, 99, 123
+    )
+)
+
+test_that("cumulative_count_union stops if tp not in key", {
+    expect_error(
+        {
+            cumulative_count_union(minimal_agg_example, key = c(
+                "SubjectID",
+                "CellMarker",
+                "Tissue"
+            ))
+        },
+        regexp = .key_without_tp_err()
+    )
+})
+
+test_that("cumulative_count_union produces correct output", {
+    cum_count <- cumulative_count_union(minimal_agg_example)
+    expected <- tibble::tibble(
+        SubjectID = c(
+            rep_len("S1", 3),
+            rep_len("S2", 2)
+        ),
+        CellMarker = c(
+            rep_len("CM1", 3),
+            rep_len("CM2", 2)
+        ),
+        Tissue = c(
+            rep_len("T1", 3),
+            rep_len("T2", 2)
+        ),
+        TimePoint = c(
+            "0001", "0010", "0015",
+            "0001", "0020"
+        ),
+        count = c(3, 4, 5, 2, 4)
+    )
+    expect_equal(cum_count, expected)
+})

@@ -1,0 +1,287 @@
+#------------------------------------------------------------------------------#
+# Plotting functions
+#------------------------------------------------------------------------------#
+
+#' Trace volcano plot for computed CIS data.
+#'
+#' \lifecycle{experimental}
+#' Traces a volcano plot for IS frequency and CIS results.
+#'
+#' @details
+#' ## Input data frame
+#' Users can supply as `x` either a simple integration matrix or a
+#' data frame resulting from the call to \link{CIS_grubbs}
+#' with `add_standard_padjust = TRUE`. In the first case an internal call to
+#' the function `CIS_grubbs` is performed.
+#'
+#' ## Oncogene and tumor suppressor genes files
+#' These files are included in the package for user convenience and are
+#' simply UniProt files with gene annotations for human and mouse.
+#' For more details on how this files were generated use the help `?filname`
+#' function.
+#'
+#' ## Known oncogenes
+#' The default values are contained in a data frame exported by this package,
+#' it can be accessed by doing:
+#'
+#' ```{r}
+#' head(known_clinical_oncogenes())
+#'
+#' ```
+#' If the user wants to change this parameter the input data frame must
+#' preserve the column structure. The same goes for the `suspicious_genes`
+#' parameter (DOIReference column is optional):
+#'
+#' ```{r}
+#' head(clinical_relevant_suspicious_genes())
+#'
+#' ```
+#' @family Plotting functions
+#'
+#' @param x Either a simple integration matrix or a data frame resulting
+#' from the call to \link{CIS_grubbs} with `add_standard_padjust = TRUE`
+#' @param onco_db_file Uniprot file for proto-oncogenes (see details)
+#' @param tumor_suppressors_db_file Uniprot file for tumor-suppressor genes
+#' @param species One between "human", "mouse" and "all"
+#' @param known_onco Data frame with known oncogenes. See details.
+#' @param suspicious_genes Data frame with clinical relevant suspicious
+#' genes. See details.
+#' @param significance_threshold The significance threshold
+#' @param annotation_threshold_ontots Value above which genes are annotated
+#' @param facet_rows Column names to pass to the faceting function as rows
+#' (NULL for no faceting)
+#' @param facet_cols Column names to pass to the faceting function as columns
+#' (NULL for no faceting)
+#'
+#' @import ggplot2
+#' @importFrom ggrepel geom_label_repel
+#' @importFrom dplyr filter
+#'
+#' @return A plot
+#' @export
+#'
+#' @examples
+#' op <- options(ISAnalytics.widgets = FALSE)
+#'
+#' path_AF <- system.file("extdata", "ex_association_file.tsv",
+#'     package = "ISAnalytics"
+#' )
+#' root_correct <- system.file("extdata", "fs.zip",
+#'     package = "ISAnalytics"
+#' )
+#' root_correct <- unzip_file_system(root_correct, "fs")
+#'
+#' matrices <- import_parallel_Vispa2Matrices_auto(
+#'     association_file = path_AF, root = root_correct,
+#'     quantification_type = c("seqCount", "fragmentEstimate"),
+#'     matrix_type = "annotated", workers = 2, patterns = NULL,
+#'     matching_opt = "ANY"
+#' )
+#'
+#' cis <- CIS_grubbs(matrices$seqCount)
+#' plot <- CIS_volcano_plot(cis)
+#' options(op)
+CIS_volcano_plot <- function(x,
+    onco_db_file = system.file("extdata",
+        "201806_uniprot-Proto-oncogene.tsv.xz",
+        package = "ISAnalytics"
+    ),
+    tumor_suppressors_db_file = system.file("extdata",
+        "201806_uniprot-Tumor-suppressor.tsv.xz",
+        package = "ISAnalytics"
+    ),
+    species = "human",
+    known_onco = known_clinical_oncogenes(),
+    suspicious_genes =
+        clinical_relevant_suspicious_genes(),
+    significance_threshold = 0.05,
+    annotation_threshold_ontots = 0.1,
+    facet_rows = NULL,
+    facet_cols = NULL) {
+    stopifnot(is.data.frame(x))
+    stopifnot(is.character(onco_db_file) & length(onco_db_file) == 1)
+    stopifnot(is.character(tumor_suppressors_db_file) &
+        length(tumor_suppressors_db_file) == 1)
+    stopifnot(is.character(species))
+    stopifnot(is.data.frame(known_onco))
+    stopifnot(is.data.frame(suspicious_genes))
+    stopifnot(is.numeric(significance_threshold) |
+        is.integer(significance_threshold) &
+            length(significance_threshold) == 1)
+    stopifnot(is.numeric(annotation_threshold_ontots) |
+        is.integer(annotation_threshold_ontots) &
+            length(annotation_threshold_ontots) == 1)
+    ## Load onco and ts
+    oncots_to_use <- .load_onco_ts_genes(
+        onco_db_file,
+        tumor_suppressors_db_file,
+        species
+    )
+    ## Check if CIS function was already called
+    min_cis_col <- c(
+        "tdist_bonferroni_default", "tdist_fdr",
+        "neg_zscore_minus_log2_int_freq_tolerance"
+    )
+    cis_grubbs_df <- if (!all(min_cis_col %in% colnames(x))) {
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            message(paste("Calculating CIS_grubbs for x..."))
+        }
+        CIS_grubbs(x)
+    } else {
+        x
+    }
+    ## Join all dfs by gene
+    cis_grubbs_df <- cis_grubbs_df %>%
+        dplyr::left_join(oncots_to_use, by = "GeneName") %>%
+        dplyr::left_join(known_onco, by = "GeneName") %>%
+        dplyr::left_join(suspicious_genes, by = "GeneName")
+
+    ## Add infos to CIS
+    cis_grubbs_df <- cis_grubbs_df %>%
+        dplyr::mutate(minus_log_p = -log(.data$tdist_bonferroni_default,
+            base = 10
+        ))
+    cis_grubbs_df <- cis_grubbs_df %>%
+        dplyr::mutate(
+            minus_log_p_fdr = -log(.data$tdist_fdr, base = 10),
+            positive_outlier_and_significant = ifelse(
+                test = !is.na(.data$tdist_fdr) &
+                    .data$tdist_fdr < significance_threshold,
+                yes = TRUE,
+                no = FALSE
+            )
+        )
+    cis_grubbs_df <- cis_grubbs_df %>%
+        dplyr::mutate(
+            KnownGeneClass = ifelse(
+                is.na(.data$Onco1_TS2),
+                yes = "Other",
+                no = ifelse(.data$Onco1_TS2 == 1,
+                    yes = "OncoGene",
+                    no = "TumSuppressor"
+                )
+            ),
+            CriticalForInsMut = ifelse(!is.na(.data$KnownClonalExpansion),
+                yes = TRUE, no = FALSE
+            )
+        )
+    significance_threshold_minus_log_p <- -log(significance_threshold,
+        base = 10
+    )
+    annotation_threshold_ontots_log <- -log(annotation_threshold_ontots,
+        base = 10
+    )
+    ## Trace plot
+    plot_cis_fdr_slice <- ggplot2::ggplot(
+        data = cis_grubbs_df,
+        ggplot2::aes(
+            y = .data$minus_log_p_fdr,
+            x = .data$neg_zscore_minus_log2_int_freq_tolerance,
+            color = .data$KnownGeneClass,
+            fill = .data$KnownGeneClass
+        ),
+        na.rm = TRUE, se = TRUE
+    ) +
+        ggplot2::geom_point(alpha = .5, size = 3) +
+        ggplot2::geom_hline(
+            yintercept = significance_threshold_minus_log_p,
+            color = "black", size = 1, show.legend = TRUE, linetype = "dashed"
+        ) +
+        ggplot2::scale_y_continuous(limits = c(0, max(c(
+            (significance_threshold_minus_log_p + 0.5),
+            max(.data$minus_log_p_fdr, na.rm = TRUE)
+        )))) +
+        ggplot2::scale_x_continuous(breaks = seq(-4, 4, 2)) +
+        ggplot2::facet_grid(rows = {{ facet_rows }}, cols = {{ facet_cols }}) +
+        ggrepel::geom_label_repel(
+            data = dplyr::filter(cis_grubbs_df,
+                          .data$tdist_fdr < significance_threshold),
+            ggplot2::aes(label = .data$GeneName),
+            box.padding = ggplot2::unit(0.35, "lines"),
+            point.padding = ggplot2::unit(0.3, "lines"),
+            color = "white",
+            segment.color = "black"
+        ) +
+        ggplot2::theme(
+            strip.text.y = ggplot2::element_text(
+                size = 16,
+                colour = "blue",
+                angle = 270
+            ),
+            strip.text.x = ggplot2::element_text(
+                size = 16,
+                colour = "blue",
+                angle = 0
+            )
+        ) +
+        ggplot2::theme(strip.text = ggplot2::element_text(
+            face = "bold",
+            size = 16
+        )) +
+        ggplot2::theme(
+            axis.text.x = ggplot2::element_text(size = 16),
+            axis.text.y = ggplot2::element_text(size = 16),
+            axis.title = ggplot2::element_text(size = 16),
+            plot.title = ggplot2::element_text(size = 20)
+        ) +
+        ggplot2::labs(list(
+            title = paste(
+                .data$ProjectID,
+                "- Volcano plot of IS gene frequency and",
+                "CIS results"
+            ),
+            y = "P-value Grubbs test (-log10(p))",
+            x = "Integration frequency (log2)",
+            size = "Avg Transcr. Len",
+            color = "Onco TumSupp Genes",
+            subtitle = paste0(
+                "Significance threshold for annotation",
+                " labeling: P-value < ", significance_threshold,
+                "(FDR adjusted;",
+                "-log = ", (round(-log(significance_threshold, base = 10), 3)),
+                ").\nOnco/TS genes source: UniProt (other genes",
+                "labeled as 'Other'). Annotated if P-value > ",
+                round(annotation_threshold_ontots_log, 3)
+            )
+        ))
+    return(plot_cis_fdr_slice)
+}
+
+#' Known clinical oncogenes (for mouse and human).
+#'
+#' @return A data frame
+#' @importFrom tibble tibble
+#'
+#' @family Plotting function helpers
+#' @export
+#'
+#' @examples
+#' known_clinical_oncogenes()
+known_clinical_oncogenes <- function() {
+    tibble::tibble(
+        GeneName = c("MECOM", "CCND2", "TAL1", "LMO2", "HMGA2"),
+        KnownClonalExpansion = TRUE
+    )
+}
+
+#' Clinical relevant suspicious genes (for mouse and human).
+#'
+#' @return A data frame
+#' @importFrom tibble tibble
+#'
+#' @family Plotting function helpers
+#' @export
+#'
+#' @examples
+#' clinical_relevant_suspicious_genes()
+clinical_relevant_suspicious_genes <- function() {
+    tibble::tibble(
+        GeneName = c(
+            "DNMT3A", "TET2", "ASXL1",
+            "JAK2", "CBL", "TP53"
+        ),
+        ClinicalRelevance = TRUE,
+        DOIReference =
+            "https://doi.org/10.1182/blood-2018-01-829937"
+    )
+}

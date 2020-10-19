@@ -18,7 +18,7 @@
 # @keywords internal
 .missing_value_col_error <- function() {
     paste(
-        "The `Value` column is missing or it contains non-numeric data.",
+        "The value column is missing or it contains non-numeric data.",
         "The column is needed for this operation.",
         "Aborting."
     )
@@ -190,4 +190,35 @@
         "`cols_to_compare` or `comparators` miss elements.",
         "See ?threshold_filter for details"
     )
+}
+
+#---- USED IN : CIS_grubbs ----
+.missing_annot <- function() {
+    paste(
+        "Annotation columns are missing but are required for",
+        "the function correct execution"
+    )
+}
+
+.non_standard_annotation_structure <- function() {
+    paste(
+        "The genomic annotation file must have the standard UCSC format,",
+        "see ?CIS_grubbs for details"
+    )
+}
+
+#---- USED IN : cumulative_count_union ----
+.agg_with_null_meta_err <- function() {
+    paste(
+        "Matrix aggregation can't be performed without the ",
+        "association file, please specify one in the `metadata` parameter"
+    )
+}
+
+.key_without_tp_err <- function() {
+    paste("The sample key must contain the time point column")
+}
+
+.key_not_found <- function() {
+    paste("One or more columns in the sample keys were not found in x")
 }

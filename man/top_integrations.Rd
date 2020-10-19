@@ -53,8 +53,10 @@ top <- top_integrations(smpl,
 }
 \seealso{
 Other Analysis functions: 
+\code{\link{CIS_grubbs}()},
 \code{\link{comparison_matrix}()},
 \code{\link{compute_abundance}()},
+\code{\link{cumulative_count_union}()},
 \code{\link{sample_statistics}()},
 \code{\link{separate_quant_matrices}()},
 \code{\link{threshold_filter}()}

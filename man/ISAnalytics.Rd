@@ -63,6 +63,12 @@ and Annotation of Vector Integration Sites}
 \item \code{\link{threshold_filter}}
 \item \code{\link{top_integrations}}
 \item \code{\link{sample_statistics}}
+\item \code{\link{CIS_grubbs}}
+\item \code{\link{cumulative_count_union}}
+}
+\item Plotting functions:
+\itemize{
+\item \code{\link{CIS_volcano_plot}}
 }
 \item Utility functions:
 \itemize{

@@ -2525,6 +2525,14 @@
 }
 
 #### ---- Internals for analysis functions ----####
+#---- USED IN : CIS_grubbs ----
+### link to article in documentation
+.lentiviral_CIS_paper <- function() {
+    paste0(
+        "https://ashpublications.org/blood/article/117/20/5332/21206/",
+        "Lentiviral-vector-common-integration-sites-in"
+    )
+}
 
 #---- USED IN : threshold_filter ----
 
@@ -2883,4 +2891,105 @@
         }
     })
     return(filtered)
+}
+
+#---- USED IN : CIS_volcano_plot ----
+#' @importFrom rlang arg_match
+#' @importFrom utils read.delim
+.load_onco_ts_genes <- function(onco_db_file,
+    tumor_suppressors_db_file,
+    species) {
+    if (!file.exists(onco_db_file)) {
+        stop(paste(
+            "`onco_db_file` was not found, check you provided the",
+            "correct path for the file"
+        ))
+    }
+    if (!file.exists(tumor_suppressors_db_file)) {
+        stop(paste(
+            "`tumor_suppressors_db_file` was not found,",
+            "check you provided the",
+            "correct path for the file"
+        ))
+    }
+    specie <- rlang::arg_match(species, values = c("human", "mouse", "all"))
+    specie_name <- switch(specie,
+        "human" = "Homo sapiens (Human)",
+        "mouse" = "Mus musculus (Mouse)",
+        "all" = c(
+            "Homo sapiens (Human)",
+            "Mus musculus (Mouse)"
+        )
+    )
+    # Acquire DB
+    onco_db <- utils::read.delim(
+        file = onco_db_file, header = TRUE,
+        fill = TRUE, sep = "\t", check.names = FALSE
+    )
+    tumsup_db <- utils::read.delim(
+        file = tumor_suppressors_db_file,
+        header = TRUE,
+        fill = TRUE, sep = "\t",
+        check.names = FALSE
+    )
+    if (getOption("ISAnalytics.verbose") == TRUE) {
+        message(paste(c(
+            "Loading annotated genes -  species selected: ",
+            paste(c(specie_name), collapse = ", ")
+        )))
+    }
+    # Filter and merge
+    onco_df <- .filter_db(onco_db, specie_name, "OncoGene")
+    tumsup_df <- .filter_db(tumsup_db, specie_name, "TumorSuppressor")
+    oncots_df_to_use <- .merge_onco_tumsup(onco_df, tumsup_df)
+    if (getOption("ISAnalytics.verbose") == TRUE) {
+        message(paste(c(
+            "Loading annotated genes -  done"
+        )))
+    }
+    return(oncots_df_to_use)
+}
+
+#' @import dplyr
+#' @importFrom rlang .data
+#' @importFrom magrittr `%>%`
+.filter_db <- function(onco_db, species, output_col_name) {
+    filtered_db <- onco_db %>%
+        dplyr::filter(.data$Organism %in% species) %>%
+        dplyr::filter(.data$Status == "reviewed" &
+            !is.na(.data$`Gene names`)) %>%
+        dplyr::select(.data$`Gene names`) %>%
+        dplyr::distinct()
+
+    filtered_db <- filtered_db %>%
+        dplyr::mutate(`Gene names` = stringr::str_split(
+            .data$`Gene names`, " "
+        )) %>%
+        tidyr::unnest("Gene names") %>%
+        dplyr::mutate({{ output_col_name }} := .data$`Gene names`) %>%
+        dplyr::rename("GeneName" = "Gene names")
+
+    return(filtered_db)
+}
+
+#' @import dplyr
+#' @importFrom rlang .data
+#' @importFrom magrittr `%>%`
+.merge_onco_tumsup <- function(onco_df, tum_df) {
+    onco_tumsup <- onco_df %>%
+        dplyr::full_join(tum_df, by = "GeneName") %>%
+        dplyr::mutate(Onco1_TS2 = ifelse(
+            !is.na(.data$OncoGene) & !is.na(.data$TumorSuppressor),
+            yes = 3,
+            no = ifelse(!is.na(.data$OncoGene),
+                yes = 1,
+                no = ifelse(!is.na(.data$TumorSuppressor),
+                    yes = 2,
+                    no = NA
+                )
+            )
+        )) %>%
+        dplyr::select(-c("OncoGene", "TumorSuppressor")) %>%
+        dplyr::distinct()
+    return(onco_tumsup)
 }

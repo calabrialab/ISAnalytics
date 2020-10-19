@@ -29,6 +29,11 @@ reference:
   - threshold_filter
   - top_integrations
   - sample_statistics
+  - CIS_grubbs
+  - cumulative_count_union
+- title: "Plotting functions"
+- contents:
+  - CIS_volcano_plot
 - title: "Utility functions"
 - contents:
   - as_sparse_matrix
@@ -46,6 +51,8 @@ reference:
   - quantification_types
   - reduced_AF_columns
   - default_stats
+  - clinical_relevant_suspicious_genes
+  - known_clinical_oncogenes
 - title: "Package overview"
 - contents:
   - ISAnalytics

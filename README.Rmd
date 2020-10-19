@@ -63,6 +63,7 @@ more at this link: [ISAnalytics Website](https://calabrialab.github.io/ISAnalyti
 * Aggregation: more info with `vignette("Working with aggregate functions", package = "ISAnalytics")`
 * Re-calibration functions: `compute_near_integrations`
 * Analysis functions: `compute_abundance`, `comparison_matrix` `separate_quant_matrices`, others
+* Plotting functions: `CIS_volcano_plot`
 * Utility functions
 
 # NEWS

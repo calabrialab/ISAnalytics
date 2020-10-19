@@ -43,6 +43,10 @@
 #'   * \code{\link{threshold_filter}}
 #'   * \code{\link{top_integrations}}
 #'   * \code{\link{sample_statistics}}
+#'   * \code{\link{CIS_grubbs}}
+#'   * \code{\link{cumulative_count_union}}
+#' * Plotting functions:
+#'   * \code{\link{CIS_volcano_plot}}
 #' * Utility functions:
 #'   * \code{\link{generate_blank_association_file}}
 #'   * \code{\link{generate_Vispa2_launch_AF}}

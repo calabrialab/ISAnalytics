@@ -1,5 +1,12 @@
 \title{ISAnalytics News}
 
+# ISAnalytics 0.99.13 (2020-10-19)
+
+## NEW FEATURES
+
+* Added analysis functions `CIS_grubbs` and `cumulative_count_union`
+* Added plotting functions `CIS_volcano_plot`
+
 # ISAnalytics 0.99.12 (2020-10-04)
 
 ## NEW FEATURES
