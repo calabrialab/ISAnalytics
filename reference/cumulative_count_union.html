@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Computes user specified functions on numerical columns and updates
-the metadata data frame accordingly. — sample_statistics • ISAnalytics</title>
+<title>Integrations cumulative count in time by sample — cumulative_count_union • ISAnalytics</title>
 
 
 <!-- jquery -->
@@ -40,43 +39,13 @@ the metadata data frame accordingly. — sample_statistics • ISAnalytics</titl
 
 
 
-<meta property="og:title" content="Computes user specified functions on numerical columns and updates
-the metadata data frame accordingly. — sample_statistics" />
+<meta property="og:title" content="Integrations cumulative count in time by sample — cumulative_count_union" />
 <meta property="og:description" content="
 
-The function operates on a data frame by grouping the content by
-the sample key and computing every function specified on every
-column in the value_columns parameter. After that the metadata
-data frame is updated by including the computed results as columns
-for the corresponding key.
-For this reason it's required that both x and metadata have the
-same sample key, and it's particularly important if the user is
-working with previously aggregated data.
-For example:### Importing association file and matrices
-path_AF &amp;lt;- system.file(&quot;extdata&quot;, &quot;ex_association_file.tsv&quot;,
-package = &quot;ISAnalytics&quot;)
-root_correct &amp;lt;- system.file(&quot;extdata&quot;, &quot;fs.zip&quot;,
-package = &quot;ISAnalytics&quot;)
-root_correct &amp;lt;- unzip_file_system(root_correct, &quot;fs&quot;)
-
-association_file &amp;lt;- import_association_file(path_AF, root_correct)
-matrices &amp;lt;- import_parallel_Vispa2Matrices_auto(
-association_file = association_file , root = NULL,
-quantification_type = c(&quot;seqCount&quot;,&quot;fragmentEstimate&quot;),
-matrix_type = &quot;annotated&quot;, workers = 2, patterns = NULL,
-matching_opt = &quot;ANY&quot;)
-
-### Aggregating data (both by same key)
-aggreggated_x &amp;lt;- aggregate_values_by_key(matrices$seqCount,
-association_file)
-aggregated_meta &amp;lt;- aggregate_metadata(association_file)
-
-### Sample statistics
-sample_stats &amp;lt;- sample_statistics(x = aggregated_x,
-metadata = aggregated_meta,
-sample_key = c(&quot;SubjectID&quot;, &quot;CellMarker&quot;,&quot;Tissue&quot;, &quot;TimePoint&quot;))
-
-" />
+This function computes the cumulative number of integrations
+observed in each sample at different time points by assuming that
+if an integration is observed at time point &quot;t&quot; then it is also observed in
+time point &quot;t+1&quot;." />
 
 
 
@@ -165,56 +134,29 @@ sample_key = c(&quot;SubjectID&quot;, &quot;CellMarker&quot;,&quot;Tissue&quot;,
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Computes user specified functions on numerical columns and updates
-the metadata data frame accordingly.</h1>
+    <h1>Integrations cumulative count in time by sample</h1>
     <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/analysis-functions.R'><code>R/analysis-functions.R</code></a></small>
-    <div class="hidden name"><code>sample_statistics.Rd</code></div>
+    <div class="hidden name"><code>cumulative_count_union.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p><a href='https://www.tidyverse.org/lifecycle/#experimental'><img src='figures/lifecycle-experimental.svg' alt='Experimental lifecycle'></a>
 
-The function operates on a data frame by grouping the content by
-the sample key and computing every function specified on every
-column in the <code>value_columns</code> parameter. After that the metadata
-data frame is updated by including the computed results as columns
-for the corresponding key.
-For this reason it's required that both <code>x</code> and <code>metadata</code> have the
-same sample key, and it's particularly important if the user is
-working with previously aggregated data.
-For example:<div class="r"></p><pre><span class='co'>### Importing association file and matrices</span>
-<span class='va'>path_AF</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
-package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
-<span class='va'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>,
-package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
-<span class='va'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_correct</span>, <span class='st'>"fs"</span><span class='op'>)</span>
-
-<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>path_AF</span>, <span class='va'>root_correct</span><span class='op'>)</span>
-<span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></span><span class='op'>(</span>
-association_file <span class='op'>=</span> <span class='va'>association_file</span> , root <span class='op'>=</span> <span class='cn'>NULL</span>,
-quantification_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>,<span class='st'>"fragmentEstimate"</span><span class='op'>)</span>,
-matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>, workers <span class='op'>=</span> <span class='fl'>2</span>, patterns <span class='op'>=</span> <span class='cn'>NULL</span>,
-matching_opt <span class='op'>=</span> <span class='st'>"ANY"</span><span class='op'>)</span>
-
-<span class='co'>### Aggregating data (both by same key)</span>
-<span class='va'>aggreggated_x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span><span class='va'>matrices</span><span class='op'>$</span><span class='va'>seqCount</span>,
-<span class='va'>association_file</span><span class='op'>)</span>
-<span class='va'>aggregated_meta</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_metadata.html'>aggregate_metadata</a></span><span class='op'>(</span><span class='va'>association_file</span><span class='op'>)</span>
-
-<span class='co'>### Sample statistics</span>
-<span class='va'>sample_stats</span> <span class='op'>&lt;-</span> <span class='fu'>sample_statistics</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>aggregated_x</span>,
-metadata <span class='op'>=</span> <span class='va'>aggregated_meta</span>,
-sample_key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>,<span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span><span class='op'>)</span>
-
-</pre><p></div></p>
+This function computes the cumulative number of integrations
+observed in each sample at different time points by assuming that
+if an integration is observed at time point "t" then it is also observed in
+time point "t+1".</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sample_statistics</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>cumulative_count_union</span><span class='op'>(</span>
   <span class='va'>x</span>,
-  <span class='va'>metadata</span>,
-  sample_key <span class='op'>=</span> <span class='st'>"CompleteAmplificationID"</span>,
-  value_columns <span class='op'>=</span> <span class='st'>"Value"</span>,
-  functions <span class='op'>=</span> <span class='fu'><a href='default_stats.html'>default_stats</a></span><span class='op'>(</span><span class='op'>)</span>
+  association_file <span class='op'>=</span> <span class='cn'>NULL</span>,
+  timepoint_column <span class='op'>=</span> <span class='st'>"TimePoint"</span>,
+  key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span>,
+  include_tp_zero <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  zero <span class='op'>=</span> <span class='st'>"0000"</span>,
+  aggregate <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -222,38 +164,81 @@ sample_key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A data frame</p></td>
+      <td><p>A simple integration matrix or an aggregated matrix (see details)</p></td>
     </tr>
     <tr>
-      <th>metadata</th>
-      <td><p>The metadata data frame</p></td>
+      <th>association_file</th>
+      <td><p>NULL or the association file for x if <code>aggregate</code>
+is set to TRUE</p></td>
     </tr>
     <tr>
-      <th>sample_key</th>
-      <td><p>Character vector representing the key for identifying
-a sample</p></td>
+      <th>timepoint_column</th>
+      <td><p>What is the name of the time point column?</p></td>
     </tr>
     <tr>
-      <th>value_columns</th>
-      <td><p>THe name of the columns to be computed,
-must be numeric or integer</p></td>
+      <th>key</th>
+      <td><p>The aggregation key - must always contain the <code>timepoint_column</code></p></td>
     </tr>
     <tr>
-      <th>functions</th>
-      <td><p>A named list of function or purrr-style lambdas</p></td>
+      <th>include_tp_zero</th>
+      <td><p>Include timepoint 0?</p></td>
+    </tr>
+    <tr>
+      <th>zero</th>
+      <td><p>How is 0 coded in the data frame?</p></td>
+    </tr>
+    <tr>
+      <th>aggregate</th>
+      <td><p>Should x be aggregated?</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional parameters to pass to <code>aggregate_values_by_key</code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list with modified x and metadata data frames</p>
+    <p>A data frame</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Input data frame</h3>
+
+
+<p>The user can provide as input for the <code>x</code> parameter both a simple
+integration matrix AND setting the <code>aggregate</code> parameter to TRUE,
+or provide an already aggregated matrix via
+<a href='aggregate_values_by_key.html'>aggregate_values_by_key</a>.
+If the user supplies a matrix to be aggregated the <code>association_file</code>
+parameter must not be NULL: aggregation will be done by an internal
+call to the aggregation function.
+If the user supplies an already aggregated matrix, the <code>key</code> parameter
+is the key used for aggregation -
+<strong>NOTE: for this operation is mandatory
+that the time point column is included in the key.</strong></p>
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Assumptions on time point format</h3>
+
+
+<p>By using the functions provided by this package, when imported,
+an association file will be correctly formatted for future usage.
+In the formatting process there is also a padding operation performed on
+time points: this means the functions expects the time point column to
+be of type character and to be correctly padded with 0s. If the
+chosen column for time point is detected as numeric the function will
+attempt the conversion to character and automatic padding.
+If you choose to import the association file not using the
+<a href='import_association_file.html'>import_association_file</a> function, be sure to check the format of
+the chosen column to avoid undesired results.</p>
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other Analysis functions: 
 <code><a href='CIS_grubbs.html'>CIS_grubbs</a>()</code>,
 <code><a href='comparison_matrix.html'>comparison_matrix</a>()</code>,
 <code><a href='compute_abundance.html'>compute_abundance</a>()</code>,
-<code><a href='cumulative_count_union.html'>cumulative_count_union</a>()</code>,
+<code><a href='sample_statistics.html'>sample_statistics</a>()</code>,
 <code><a href='separate_quant_matrices.html'>separate_quant_matrices</a>()</code>,
 <code><a href='threshold_filter.html'>threshold_filter</a>()</code>,
 <code><a href='top_integrations.html'>top_integrations</a>()</code></p></div>
@@ -277,7 +262,16 @@ must be numeric or integer</p></td>
     matching_opt <span class='op'>=</span> <span class='st'>"ANY"</span>
 <span class='op'>)</span>
 
-<span class='va'>stats</span> <span class='op'>&lt;-</span> <span class='fu'>sample_statistics</span><span class='op'>(</span><span class='va'>matrices</span><span class='op'>$</span><span class='va'>seqCount</span>, <span class='va'>association_file</span><span class='op'>)</span>
+<span class='co'>#### EXTERNAL AGGREGATION</span>
+<span class='va'>aggregated</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span><span class='va'>matrices</span><span class='op'>$</span><span class='va'>seqCount</span>, <span class='va'>association_file</span><span class='op'>)</span>
+<span class='va'>cumulative_count</span> <span class='op'>&lt;-</span> <span class='fu'>cumulative_count_union</span><span class='op'>(</span><span class='va'>aggregated</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>All time points zeros were excluded, the data frame is empty.</span></div><div class='input'>
+<span class='co'>#### INTERNAL AGGREGATION</span>
+<span class='va'>cumulative_count_2</span> <span class='op'>&lt;-</span> <span class='fu'>cumulative_count_union</span><span class='op'>(</span><span class='va'>matrices</span><span class='op'>$</span><span class='va'>seqCount</span>,
+    <span class='va'>association_file</span>,
+    aggregate <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>All time points zeros were excluded, the data frame is empty.</span></div><div class='input'>
 <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
 </div></pre>
   </div>
