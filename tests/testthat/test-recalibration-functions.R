@@ -489,31 +489,20 @@ test_that("compute_near_integrations stops if max_col not found", {
 })
 ## TEST VALUES
 test_that("compute_near_integrations produces warning for max col", {
-    temp_file <- tempfile(fileext = ".tsv")
-    on.exit({
-        file.remove(temp_file)
-    })
     expect_warning(invisible(capture.output({
         res <- compute_near_integrations(
             x = sample_group1,
             keep_criteria = "max_value",
             max_value_column = "seqCount",
-            map_as_file = TRUE,
-            file_path = temp_file
+            map_as_file = FALSE,
+            file_path = NULL
         )
     })), regexp = .using_val_col_warning("seqCount"))
-    expect_true(file.exists(temp_file))
-    content <- readr::read_tsv(temp_file, col_types = "cdccdc")
-    expect_equivalent(content, recalibr_map_smpl1_kf)
     expect_equal(res, expected_for_smpl1_kf)
 })
 test_that("compute_near_integrations produces correct output for total", {
     total_simple <- sample_group1 %>% dplyr::bind_rows(sample_group2)
     total_mult <- sample_group_mult1 %>% dplyr::bind_rows(sample_group_mult2)
-    temp_file <- tempfile(fileext = ".tsv")
-    on.exit({
-        file.remove(temp_file)
-    })
     expect_warning(
         {
             invisible(capture.output({
@@ -521,20 +510,16 @@ test_that("compute_near_integrations produces correct output for total", {
                     x = total_simple,
                     keep_criteria = "keep_first",
                     max_value_column = "seqCount",
-                    map_as_file = TRUE,
-                    file_path = temp_file
+                    map_as_file = FALSE
                 )
             }))
         },
         regexp = NA
     )
-    expect_true(file.exists(temp_file))
-    content <- readr::read_tsv(temp_file, col_types = "cdccdc")
     expected_simple <- expected_for_smpl1_kf %>%
         dplyr::bind_rows(expected_for_smpl2_kf)
     map_simple_exp <- recalibr_map_smpl1_kf %>%
         dplyr::bind_rows(recalibr_map_smpl2_kf)
-    expect_equivalent(content, map_simple_exp)
     expect_equal(res, expected_simple)
     expect_warning(
         {
@@ -543,17 +528,13 @@ test_that("compute_near_integrations produces correct output for total", {
                     x = total_mult,
                     keep_criteria = "keep_first",
                     max_value_column = "seqCount",
-                    map_as_file = TRUE,
-                    file_path = temp_file
+                    map_as_file = FALSE
                 )
             }))
         },
         regexp = NA
     )
-    expect_true(file.exists(temp_file))
-    content <- readr::read_tsv(temp_file, col_types = "cdccdc")
     expected_mult <- expected_for_smplmult1_kf %>%
         dplyr::bind_rows(expected_for_smplmult2_kf)
-    expect_equivalent(content, map_simple_exp)
     expect_equal(res, expected_mult)
 })

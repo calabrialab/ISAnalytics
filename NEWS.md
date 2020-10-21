@@ -1,5 +1,9 @@
 \title{ISAnalytics News}
 
+# ISAnalytics 0.99.1 (2020-10-21)
+
+* Minor fixes in tests
+
 # ISAnalytics 0.99.13 (2020-10-19)
 
 ## NEW FEATURES
