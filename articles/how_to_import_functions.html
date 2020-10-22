@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.14</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.99.15</span>
       </span>
     </div>
 
@@ -89,7 +89,7 @@
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 class="date">21 October 2020</h4>
+            <h4 class="date">22 October 2020</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/master/vignettes/how_to_import_functions.Rmd"><code>vignettes/how_to_import_functions.Rmd</code></a></small>
       <div class="hidden name"><code>how_to_import_functions.Rmd</code></div>
@@ -195,7 +195,7 @@ An example on how to access them:</p>
 <span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>
 <span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_correct</span>, <span class="st">"fs"</span><span class="op">)</span>
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="http://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span><span class="op">(</span><span class="va">root_correct</span><span class="op">)</span>
-<span class="co">#&gt; /tmp/RtmpTHvxuH/fs</span>
+<span class="co">#&gt; /tmp/RtmpWcN7d0/fs</span>
 <span class="co">#&gt; ├── PROJECT1100</span>
 <span class="co">#&gt; │   ├── bam</span>
 <span class="co">#&gt; │   ├── bcmuxall</span>
@@ -575,7 +575,7 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="va">root_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fserr.zip"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>
 <span class="va">root_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_err</span>, <span class="st">"fserr"</span><span class="op">)</span>
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="http://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span><span class="op">(</span><span class="va">root_err</span><span class="op">)</span>
-<span class="co">#&gt; /tmp/RtmpTHvxuH/fserr</span>
+<span class="co">#&gt; /tmp/RtmpWcN7d0/fserr</span>
 <span class="co">#&gt; ├── PROJECT1100</span>
 <span class="co">#&gt; │   ├── bam</span>
 <span class="co">#&gt; │   ├── bcmuxall</span>
@@ -612,7 +612,7 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt;         └── report</span>
 <span class="va">association_file_fserr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">path_as_file</span>, <span class="va">root_err</span><span class="op">)</span>
 <span class="co">#&gt; Warning: One or more projects were not found in the filesystem starting from /</span>
-<span class="co">#&gt; tmp/RtmpTHvxuH/fserr, please check yourassociation file for errors and/or your</span>
+<span class="co">#&gt; tmp/RtmpWcN7d0/fserr, please check yourassociation file for errors and/or your</span>
 <span class="co">#&gt; file system.Until you re-import the association file these missing files will be</span>
 <span class="co">#&gt; ignored.</span>
 <span class="va">refined_af_err</span> <span class="op">&lt;-</span> <span class="va">association_file_fserr</span> <span class="op">%&gt;%</span> 
@@ -693,7 +693,7 @@ Both functions rely on the association file and some basic parameters, most nota
 #&gt;  collate  en_US.UTF-8                                
 #&gt;  ctype    en_US.UTF-8                                
 #&gt;  tz       Etc/UTC                                    
-#&gt;  date     2020-10-21                                 
+#&gt;  date     2020-10-22                                 
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  package       * version    date       lib source                        
@@ -725,7 +725,7 @@ Both functions rely on the association file and some basic parameters, most nota
 #&gt;  htmltools       0.5.0      2020-06-16 [2] RSPM (R 4.0.1)                
 #&gt;  htmlwidgets     1.5.2      2020-10-03 [2] RSPM (R 4.0.2)                
 #&gt;  httr            1.4.2      2020-07-20 [2] RSPM (R 4.0.2)                
-#&gt;  ISAnalytics   * 0.99.14    2020-10-21 [1] Bioconductor                  
+#&gt;  ISAnalytics   * 0.99.15    2020-10-22 [1] Bioconductor                  
 #&gt;  jsonlite        1.7.1      2020-09-07 [2] RSPM (R 4.0.2)                
 #&gt;  knitcitations * 1.0.10     2019-09-15 [1] RSPM (R 4.0.0)                
 #&gt;  knitr           1.30       2020-09-22 [2] RSPM (R 4.0.2)                
@@ -776,7 +776,7 @@ Both functions rely on the association file and some basic parameters, most nota
 <p>Citations made with <em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> (<a href="https://github.com/cboettig/knitcitations">Boettiger, 2019</a>).</p>
 <p>[1] J. Allaire, Y. Xie, J. McPherson, J. Luraschi, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.4. 2020. &lt;URL: <a href="https://github.com/rstudio/rmarkdown" class="uri">https://github.com/rstudio/rmarkdown</a>&gt;.</p>
 <p>[2] C. Boettiger. <em>knitcitations: Citations for ‘Knitr’ Markdown Files</em>. R package version 1.0.10. 2019. &lt;URL: <a href="https://github.com/cboettig/knitcitations" class="uri">https://github.com/cboettig/knitcitations</a>&gt;.</p>
-<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 0.99.14. 2020. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
+<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 0.99.15. 2020. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
 <p>[4] G. Csárdi, R. core, H. Wickham, W. Chang, et al. <em>sessioninfo: R Session Information</em>. R package version 1.1.1. 2018. &lt;URL: <a href="https://github.com/r-lib/sessioninfo#readme" class="uri">https://github.com/r-lib/sessioninfo#readme</a>&gt;.</p>
 <p>[5] A. Oleś, M. Morgan, and W. Huber. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.17.1. 2020. &lt;URL: <a href="https://github.com/Bioconductor/BiocStyle" class="uri">https://github.com/Bioconductor/BiocStyle</a>&gt;.</p>
 <p>[6] R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. R Foundation for Statistical Computing. Vienna, Austria, 2020. &lt;URL: <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>&gt;.</p>
