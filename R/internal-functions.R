@@ -197,7 +197,8 @@
     stopifnot(file.exists(path))
     as_file <- read.csv(path,
         header = TRUE, check.names = FALSE,
-        stringsAsFactors = FALSE, sep = "\t"
+        stringsAsFactors = FALSE, sep = "\t",
+        na.strings = c("NONE", "NA", "NULL", "NaN", "")
     )
     as_file <- tibble::as_tibble(as_file)
     # Checks if association file is correct
