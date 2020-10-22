@@ -10,8 +10,6 @@ status](https://travis-ci.com/calabrialab/isanalytics.svg?branch=master)](https:
 [![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
 [![R build status -
 bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
-[![R build
-status](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 <!-- badges: end -->
@@ -79,7 +77,12 @@ Website](https://calabrialab.github.io/ISAnalytics/)
 
 # NEWS
 
-# ISAnalytics 0.99.1 (2020-10-21)
+# ISAnalytics 0.99.15 (2020-10-22)
+
+  - Minor fix in import\_association\_file file function: added multiple
+    strings to be translated as NA
+
+# ISAnalytics 0.99.14 (2020-10-21)
 
   - Minor fixes in tests
 

@@ -1,6 +1,11 @@
 \title{ISAnalytics News}
 
-# ISAnalytics 0.99.1 (2020-10-21)
+# ISAnalytics 0.99.15 (2020-10-22)
+
+* Minor fix in import_association_file file function: added multiple strings
+to be translated as NA
+
+# ISAnalytics 0.99.14 (2020-10-21)
 
 * Minor fixes in tests
 

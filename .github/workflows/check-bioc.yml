@@ -260,7 +260,7 @@ jobs:
       - name: Test coverage
         if: github.ref == 'refs/heads/master' && env.run_covr == 'true'
         run: |
-          covr::codecov()
+          covr::codecov(line_exclusions = "R/internal-widgets.R")
         shell: Rscript {0}
 
       - name: Install pkgdown
