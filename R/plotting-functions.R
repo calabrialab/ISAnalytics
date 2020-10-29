@@ -194,8 +194,10 @@ CIS_volcano_plot <- function(x,
         ggplot2::scale_x_continuous(breaks = seq(-4, 4, 2)) +
         ggplot2::facet_grid(rows = {{ facet_rows }}, cols = {{ facet_cols }}) +
         ggrepel::geom_label_repel(
-            data = dplyr::filter(cis_grubbs_df,
-                          .data$tdist_fdr < significance_threshold),
+            data = dplyr::filter(
+                cis_grubbs_df,
+                .data$tdist_fdr < significance_threshold
+            ),
             ggplot2::aes(label = .data$GeneName),
             box.padding = ggplot2::unit(0.35, "lines"),
             point.padding = ggplot2::unit(0.3, "lines"),

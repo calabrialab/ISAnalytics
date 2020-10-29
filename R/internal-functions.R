@@ -136,8 +136,7 @@
             values_to = "Value",
             values_drop_na = TRUE
         ) %>%
-        dplyr::filter(.data$Value > 0) %>%
-        dplyr::arrange(forcats::fct_inseq(forcats::as_factor(.data$chr)))
+        dplyr::filter(.data$Value > 0)
     isadf_tidy
 }
 
@@ -1866,7 +1865,7 @@
 # @return A tibble with a summary containing for each SubjectID the number of
 # integrations found before and after, the sum of the value of the sequence
 # count for each subject before and after and the corresponding deltas.
-.summary_table <- function(before, after, association_file) {
+.summary_table <- function(before, after, association_file, seqCount_col) {
     after_matr <- after %>%
         dplyr::left_join(association_file,
             by = c("CompleteAmplificationID")
@@ -1879,7 +1878,7 @@
     sumReads_after <- after_matr %>%
         dplyr::group_by(.data$SubjectID) %>%
         dplyr::summarise(
-            sumSeqReads_after = sum(.data$Value),
+            sumSeqReads_after = sum(.data[[seqCount_col]]),
             .groups = "drop_last"
         )
     temp_aft <- n_int_after %>% dplyr::left_join(sumReads_after,
@@ -1894,7 +1893,7 @@
     sumReads_before <- before_matr %>%
         dplyr::group_by(.data$SubjectID) %>%
         dplyr::summarise(
-            sumSeqReads_before = sum(.data$Value),
+            sumSeqReads_before = sum(.data[[seqCount_col]]),
             .groups = "drop_last"
         )
     temp_bef <- n_int_before %>% dplyr::left_join(sumReads_before,

@@ -748,3 +748,127 @@
     )
     htmltools::browsable(widget)
 }
+
+# Builds the html widget for the missing info in collisions.
+#
+# @param map_rec Table obtained in remove_collisions
+# @keywords internal
+#
+#' @importFrom reactable reactable reactableTheme colDef
+#' @importFrom htmltools div h2 css browsable span
+#
+# @return A widget
+.missing_info_widget <- function(missing) {
+    theme <- reactable::reactableTheme(
+        style = list(
+            fontFamily = "Calibri"
+        ),
+        cellStyle = list(
+            display = "flex",
+            flexDirection = "column",
+            justifyContent = "center"
+        )
+    )
+
+    styled_df <- reactable::reactable(
+        missing,
+        striped = TRUE,
+        sortable = TRUE,
+        showSortable = TRUE,
+        bordered = FALSE,
+        outlined = TRUE,
+        searchable = TRUE,
+        pagination = TRUE,
+        paginationType = "simple",
+        showPageSizeOptions = TRUE,
+        pageSizeOptions = c(5, 10, 15),
+        defaultPageSize = 5,
+        showPagination = TRUE,
+        resizable = TRUE,
+        theme = theme,
+        defaultColDef = reactable::colDef(
+            headerStyle = list(
+                fontSize = "18px", paddingLeft = "15px",
+                display = "flex",
+                flexDirection = "column",
+                justifyContent = "center"
+            ),
+            style = list(paddingLeft = "15px"),
+            align = "left",
+            header = function(value) gsub("_", " ", value, fixed = TRUE),
+            filterable = TRUE
+        )
+    )
+    widget <- htmltools::div(
+        style = htmltools::css(font.family = "Calibri"),
+        htmltools::h2("MISSING INFORMATION"),
+        htmltools::span(paste(
+            "All samples in this table are removed from",
+            "the matrix"
+        )),
+        styled_df
+    )
+    htmltools::browsable(widget)
+}
+
+# Builds the html widget for the additional info in collisions.
+#
+# @param map_rec Table obtained in remove_collisions
+# @keywords internal
+#
+#' @importFrom reactable reactable reactableTheme colDef
+#' @importFrom htmltools div h2 css browsable span
+#
+# @return A widget
+.add_info_widget <- function(additional) {
+    theme <- reactable::reactableTheme(
+        style = list(
+            fontFamily = "Calibri"
+        ),
+        cellStyle = list(
+            display = "flex",
+            flexDirection = "column",
+            justifyContent = "center"
+        )
+    )
+
+    styled_df <- reactable::reactable(
+        additional,
+        striped = TRUE,
+        sortable = TRUE,
+        showSortable = TRUE,
+        bordered = FALSE,
+        outlined = TRUE,
+        searchable = TRUE,
+        pagination = TRUE,
+        paginationType = "simple",
+        showPageSizeOptions = TRUE,
+        pageSizeOptions = c(5, 10, 15),
+        defaultPageSize = 5,
+        showPagination = TRUE,
+        resizable = TRUE,
+        theme = theme,
+        defaultColDef = reactable::colDef(
+            headerStyle = list(
+                fontSize = "18px", paddingLeft = "15px",
+                display = "flex",
+                flexDirection = "column",
+                justifyContent = "center"
+            ),
+            style = list(paddingLeft = "15px"),
+            align = "left",
+            header = function(value) gsub("_", " ", value, fixed = TRUE),
+            filterable = TRUE
+        )
+    )
+    widget <- htmltools::div(
+        style = htmltools::css(font.family = "Calibri"),
+        htmltools::h2("ADDITIONAL INFO FOUND"),
+        htmltools::span(paste(
+            "Additional info found in metadata that",
+            "is not included in provided matrix"
+        )),
+        styled_df
+    )
+    htmltools::browsable(widget)
+}

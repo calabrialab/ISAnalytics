@@ -52,7 +52,9 @@ To install the package from GitHub:
 if (!require(devtools)) {
   install.packages("devtools")
 }
-devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
+devtools::install_github("calabrialab/ISAnalytics", 
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
 ```
 
 # Visit the package website
@@ -76,6 +78,11 @@ Website](https://calabrialab.github.io/ISAnalytics/)
   - Utility functions
 
 # NEWS
+
+# ISAnalytics 1.0.1 (2020-10-29)
+
+  - ISAnalytics is finally in release on bioconductor\!
+  - Bug fixes: fixed a few bugs in importing and recalibration functions
 
 # ISAnalytics 0.99.15 (2020-10-22)
 

@@ -1,5 +1,10 @@
 \title{ISAnalytics News}
 
+# ISAnalytics 1.0.1 (2020-10-29)
+
+* ISAnalytics is finally in release on bioconductor!
+* Bug fixes: fixed a few bugs in importing and recalibration functions
+
 # ISAnalytics 0.99.15 (2020-10-22)
 
 * Minor fix in import_association_file file function: added multiple strings

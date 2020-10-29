@@ -1350,8 +1350,8 @@ test_that("remove_collisions stops if there's no seqCount matrix", {
     )
 })
 
-test_that("remove_collisions stops if missing info from af", {
-    expect_error(
+test_that("remove_collisions throws warning info from af", {
+    expect_warning(
         {
             invisible(capture.output({
                 rc <- remove_collisions(
@@ -1360,7 +1360,11 @@ test_that("remove_collisions stops if missing info from af", {
                 )
             }))
         },
-        regexp = "The association file is missing needed info on some experiments"
+        regexp = paste(
+            "The association file is missing needed info",
+            "on some experiments. Missing samples will be removed",
+            "from the matrices."
+        )
     )
 })
 

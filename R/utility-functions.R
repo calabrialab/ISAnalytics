@@ -31,7 +31,7 @@ generate_blank_association_file <- function(path) {
     if (!fs::dir_exists(dir)) {
         fs::dir_create(dir, recurse = TRUE)
     }
-    readr::write_tsv(af, path = path)
+    readr::write_tsv(af, file = path)
 }
 
 #' Creates a reduced association file for Vispa2 run,
