@@ -136,8 +136,7 @@
             values_to = "Value",
             values_drop_na = TRUE
         ) %>%
-        dplyr::filter(.data$Value > 0) %>%
-        dplyr::arrange(forcats::fct_inseq(forcats::as_factor(.data$chr)))
+        dplyr::filter(.data$Value > 0)
     isadf_tidy
 }
 
@@ -250,7 +249,7 @@
         dplyr::distinct()
     tree_struct <- fs::dir_ls(
         path = root_folder, recurse = TRUE,
-        type = "directory"
+        type = "directory", fail = FALSE
     )
     root_regexp <- stringr::str_replace_all(root_folder, "\\/", "\\\\/")
     results_df <- purrr::pmap(
@@ -309,14 +308,8 @@
     # If some some folders are missing a warning is thrown
     not_found <- checks %>% dplyr::filter(.data$Found == FALSE)
     if (nrow(not_found) > 0) {
-        warning(paste0("One or more projects were not found in the file",
-            "system starting from ", root, ", please check your",
-            "association file for errors and/or your file system.",
-            "Until you re-import the association file these ",
-            "missing files will be ignored.",
-            collapse = ""
-        ),
-        immediate. = TRUE, call. = FALSE
+        warning(.warning_update_after_alignment(root),
+            immediate. = TRUE, call. = FALSE
         )
     }
     # Finally import modified association file
@@ -1866,7 +1859,7 @@
 # @return A tibble with a summary containing for each SubjectID the number of
 # integrations found before and after, the sum of the value of the sequence
 # count for each subject before and after and the corresponding deltas.
-.summary_table <- function(before, after, association_file) {
+.summary_table <- function(before, after, association_file, seqCount_col) {
     after_matr <- after %>%
         dplyr::left_join(association_file,
             by = c("CompleteAmplificationID")
@@ -1879,7 +1872,7 @@
     sumReads_after <- after_matr %>%
         dplyr::group_by(.data$SubjectID) %>%
         dplyr::summarise(
-            sumSeqReads_after = sum(.data$Value),
+            sumSeqReads_after = sum(.data[[seqCount_col]]),
             .groups = "drop_last"
         )
     temp_aft <- n_int_after %>% dplyr::left_join(sumReads_after,
@@ -1894,7 +1887,7 @@
     sumReads_before <- before_matr %>%
         dplyr::group_by(.data$SubjectID) %>%
         dplyr::summarise(
-            sumSeqReads_before = sum(.data$Value),
+            sumSeqReads_before = sum(.data[[seqCount_col]]),
             .groups = "drop_last"
         )
     temp_bef <- n_int_before %>% dplyr::left_join(sumReads_before,

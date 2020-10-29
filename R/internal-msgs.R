@@ -1,5 +1,9 @@
 ### Convenience functions for errors and warnings ###
 
+.widgets_error <- function() {
+    paste("Unable to produce widget report, skipping this step")
+}
+
 # @keywords internal
 .malformed_ISmatrix_warning <- function() {
     paste(c(
@@ -30,6 +34,16 @@
         "The `CompleteAmplificationID` column is missing.",
         "The column is needed for this operation.",
         "Aborting."
+    )
+}
+
+.warning_update_after_alignment <- function(root) {
+    paste0("One or more projects were not found in the file ",
+        "system starting from ", root, ", please check your ",
+        "association file for errors and/or your file system.",
+        "Until you re-import the association file these ",
+        "missing files will be ignored.",
+        collapse = ""
     )
 }
 

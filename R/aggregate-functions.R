@@ -61,16 +61,46 @@ aggregate_metadata <- function(association_file,
     stats <- NULL
     if (import_stats == TRUE) {
         stats <- .import_stats_iss(association_file)
-        if (is.null(stats) & getOption("ISAnalytics.verbose") == TRUE) {
-            message(paste("No Vispa2 stats files found for import,
+        if (is.null(stats)) {
+            if (getOption("ISAnalytics.verbose") == TRUE) {
+                message(paste("No Vispa2 stats files found for import,
                     ignoring this step"))
+            }
         } else {
             if (getOption("ISAnalytics.widgets") == TRUE) {
-                report <- stats[[2]]
-                stats <- stats[[1]]
-                widg <- .iss_import_widget(report)
-                print(widg)
+                withCallingHandlers(
+                    {
+                        report <- stats[[2]]
+                        stats <- stats[[1]]
+                        widg <- .iss_import_widget(report)
+                        print(widg)
+                    },
+                    error = function(cnd) {
+                        message(conditionMessage(cnd))
+                        message(.widgets_error())
+                        if (getOption("ISAnalytics.verbose") == TRUE) {
+                            print(paste0(
+                                "--- REPORT IMPORT VISPA2",
+                                "STATS: FILES IMPORTED ---"
+                            ))
+                            print(stats[[2]],
+                                width = Inf,
+                                n = nrow(stats[[2]])
+                            )
+                        }
+                    }
+                )
             } else {
+                if (getOption("ISAnalytics.verbose") == TRUE) {
+                    print(paste0(
+                        "--- REPORT IMPORT VISPA2",
+                        "STATS: FILES IMPORTED ---"
+                    ))
+                    print(stats[[2]],
+                        width = Inf,
+                        n = nrow(stats[[2]])
+                    )
+                }
                 stats <- stats[[1]]
             }
         }

@@ -214,7 +214,15 @@ compute_near_integrations <- function(x,
 
     if (map_as_widget == TRUE & getOption("ISAnalytics.widgets") == TRUE) {
         ## Produce widget
-        print(.recalibr_map_widget(result$map))
+        withCallingHandlers(
+            {
+                print(.recalibr_map_widget(result$map))
+            },
+            error = function(cnd) {
+                message(conditionMessage(cnd))
+                message(.widgets_error())
+            }
+        )
     }
 
     if (map_as_file == TRUE) {

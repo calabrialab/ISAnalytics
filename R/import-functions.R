@@ -126,8 +126,21 @@ import_association_file <- function(path,
     # Checks if the association file and the file system are aligned
     checks <- .check_file_system_alignment(as_file, root_folder = root)
     if (getOption("ISAnalytics.widgets") == TRUE) {
-        widg <- .checker_widget(checks)
-        print(widg)
+        withCallingHandlers(
+            expr = {
+                widg <- .checker_widget(checks)
+                print(widg)
+            },
+            error = function(cnd) {
+                message(conditionMessage(cnd))
+                message(.widgets_error())
+                if (getOption("ISAnalytics.verbose") == TRUE) {
+                    print(checks, n = nrow(checks))
+                }
+            }
+        )
+    } else if (getOption("ISAnalytics.verbose") == TRUE) {
+        print(checks, n = nrow(checks), width = Inf)
     }
     as_file <- .update_af_after_alignment(as_file, checks, root)
     as_file
@@ -178,6 +191,8 @@ import_association_file <- function(path,
 #'
 #' @importFrom htmltools browsable tagList
 #' @importFrom tibble is_tibble
+#' @importFrom tidyr unnest
+#' @importFrom dplyr select
 #' @family Import functions
 #'
 #' @return A named list of tibbles containing data from all imported integration
@@ -229,13 +244,7 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
         association_file, root,
         tp_padding, dates_format
     )
-    if (getOption("ISAnalytics.widgets") == TRUE) {
-        checker_widg <- association_file[[2]]
-        if (!is.null(checker_widg)) {
-            checker_widg <- .checker_widget(checker_widg)
-            print(checker_widg)
-        }
-    }
+    checker_widg <- association_file[[2]]
     association_file <- association_file[[1]]
     ## User selects projects to keep
     association_file <- .interactive_select_projects_import(association_file)
@@ -246,34 +255,9 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
         association_file, quantification_type,
         matrix_type
     )
-    if (getOption("ISAnalytics.widgets") == TRUE) {
-        ff_widget <- .files_found_widget(files_found)
-        if (!is.null(checker_widg)) {
-            print(htmltools::browsable(htmltools::tagList(
-                ff_widget,
-                checker_widg
-            )))
-        } else {
-            print(ff_widget)
-        }
-    }
     ## Manage missing files and duplicates
     files_to_import <- .manage_anomalies_interactive(files_found)
-    if (getOption("ISAnalytics.widgets") == TRUE) {
-        fimp_widget <- .files_to_import_widget(files_to_import)
-        if (!is.null(checker_widg)) {
-            print(htmltools::browsable(htmltools::tagList(
-                fimp_widget,
-                ff_widget,
-                checker_widg
-            )))
-        } else {
-            print(htmltools::browsable(htmltools::tagList(
-                fimp_widget,
-                ff_widget
-            )))
-        }
-    }
+
     ## If files to import are 0 just terminate
     if (nrow(files_to_import) == 0) {
         stop("No files to import")
@@ -281,22 +265,74 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
 
     ## Import
     matrices <- .parallel_import_merge(files_to_import, workers)
+    fimported_widg <- matrices[[2]]
     if (getOption("ISAnalytics.widgets") == TRUE) {
-        fimported_widg <- matrices[[2]]
-        fimported_widg <- .files_imported_widget(fimported_widg)
+        withCallingHandlers(
+            {
+                if (!is.null(checker_widg)) {
+                    checker_widg <- .checker_widget(checker_widg)
+                }
+                ff_widget <- .files_found_widget(files_found)
+                fimp_widget <- .files_to_import_widget(files_to_import)
+                fimported_widg <- .files_imported_widget(fimported_widg)
+                if (!is.null(checker_widg)) {
+                    print(htmltools::browsable(htmltools::tagList(
+                        fimported_widg,
+                        fimp_widget,
+                        ff_widget,
+                        checker_widg
+                    )))
+                } else {
+                    print(htmltools::browsable(htmltools::tagList(
+                        fimported_widg,
+                        fimp_widget,
+                        ff_widget
+                    )))
+                }
+            },
+            error = function(cnd) {
+                message(conditionMessage(cnd))
+                message(.widgets_error())
+                if (getOption("ISAnalytics.verbose") == TRUE) {
+                    print("--- REPORT: FILES IMPORTED ---")
+                    print(fimported_widg, width = Inf)
+                    print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
+                    print(files_to_import, width = Inf)
+                    print("--- INTEGRATION MATRICES FOUND REPORT ---")
+                    unnested <- tidyr::unnest(files_found %>%
+                        dplyr::select(
+                            -.data$Files_count
+                        ),
+                    cols = c(.data$Files)
+                    )
+                    print(unnested,
+                        n = nrow(unnested), width = Inf
+                    )
+                    if (!is.null(checker_widg)) {
+                        print("--- ALIGNMENT RESULTS ---")
+                        print(checker_widg, n = nrow(checker_widg), width = Inf)
+                    }
+                }
+            }
+        )
+    } else if (getOption("ISAnalytics.verbose") == TRUE) {
+        print("--- REPORT: FILES IMPORTED ---")
+        print(fimported_widg, width = Inf)
+        print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
+        print(files_to_import, width = Inf)
+        print("--- INTEGRATION MATRICES FOUND REPORT ---")
+        unnested <- tidyr::unnest(files_found %>%
+            dplyr::select(
+                -.data$Files_count
+            ),
+        cols = c(.data$Files)
+        )
+        print(unnested,
+            n = nrow(unnested), width = Inf
+        )
         if (!is.null(checker_widg)) {
-            print(htmltools::browsable(htmltools::tagList(
-                fimported_widg,
-                fimp_widget,
-                ff_widget,
-                checker_widg
-            )))
-        } else {
-            print(htmltools::browsable(htmltools::tagList(
-                fimported_widg,
-                fimp_widget,
-                ff_widget
-            )))
+            print("--- ALIGNMENT RESULTS ---")
+            print(checker_widg, n = nrow(checker_widg), width = Inf)
         }
     }
     matrices <- matrices[[1]]
@@ -329,6 +365,8 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
 #' @family Import functions
 #' @importFrom htmltools browsable tagList
 #' @importFrom tibble is_tibble
+#' @importFrom tidyr unnest
+#' @importFrom dplyr select
 #'
 #' @export
 #'
@@ -390,13 +428,7 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
         association_file, root,
         tp_padding, dates_format
     )
-    if (getOption("ISAnalytics.widgets") == TRUE) {
-        checker_widg <- association_file[[2]]
-        if (!is.null(checker_widg)) {
-            checker_widg <- .checker_widget(checker_widg)
-            print(checker_widg)
-        }
-    }
+    checker_widg <- association_file[[2]]
     association_file <- association_file[[1]]
 
     # Automatic workflow - limited options
@@ -410,34 +442,8 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
         association_file, quantification_type,
         matrix_type, patterns, matching_option
     )
-    if (getOption("ISAnalytics.widgets") == TRUE) {
-        ff_widget <- .files_found_widget(files_found)
-        if (!is.null(checker_widg)) {
-            print(htmltools::browsable(htmltools::tagList(
-                ff_widget,
-                checker_widg
-            )))
-        } else {
-            print(ff_widget)
-        }
-    }
     ## Manage missing files and duplicates
     files_to_import <- .manage_anomalies_auto(files_found)
-    if (getOption("ISAnalytics.widgets") == TRUE) {
-        fimp_widget <- .files_to_import_widget(files_to_import)
-        if (!is.null(checker_widg)) {
-            print(htmltools::browsable(htmltools::tagList(
-                fimp_widget,
-                ff_widget,
-                checker_widg
-            )))
-        } else {
-            print(htmltools::browsable(htmltools::tagList(
-                fimp_widget,
-                ff_widget
-            )))
-        }
-    }
     ## If files to import are 0 just terminate
     if (nrow(files_to_import) == 0) {
         stop("No files to import")
@@ -445,22 +451,74 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
 
     ## Import
     matrices <- .parallel_import_merge(files_to_import, workers)
+    fimported_widg <- matrices[[2]]
     if (getOption("ISAnalytics.widgets") == TRUE) {
-        fimported_widg <- matrices[[2]]
-        fimported_widg <- .files_imported_widget(fimported_widg)
+        withCallingHandlers(
+            {
+                if (!is.null(checker_widg)) {
+                    checker_widg <- .checker_widget(checker_widg)
+                }
+                ff_widget <- .files_found_widget(files_found)
+                fimp_widget <- .files_to_import_widget(files_to_import)
+                fimported_widg <- .files_imported_widget(fimported_widg)
+                if (!is.null(checker_widg)) {
+                    print(htmltools::browsable(htmltools::tagList(
+                        fimported_widg,
+                        fimp_widget,
+                        ff_widget,
+                        checker_widg
+                    )))
+                } else {
+                    print(htmltools::browsable(htmltools::tagList(
+                        fimported_widg,
+                        fimp_widget,
+                        ff_widget
+                    )))
+                }
+            },
+            error = function(cnd) {
+                message(conditionMessage(cnd))
+                message(.widgets_error())
+                if (getOption("ISAnalytics.verbose") == TRUE) {
+                    print("--- REPORT: FILES IMPORTED ---")
+                    print(fimported_widg, width = Inf)
+                    print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
+                    print(files_to_import, width = Inf)
+                    print("--- INTEGRATION MATRICES FOUND REPORT ---")
+                    unnested <- tidyr::unnest(files_found %>%
+                        dplyr::select(
+                            -.data$Files_count
+                        ),
+                    cols = c(.data$Files)
+                    )
+                    print(unnested,
+                        n = nrow(unnested), width = Inf
+                    )
+                    if (!is.null(checker_widg)) {
+                        print("--- ALIGNMENT RESULTS ---")
+                        print(checker_widg, n = nrow(checker_widg), width = Inf)
+                    }
+                }
+            }
+        )
+    } else if (getOption("ISAnalytics.verbose") == TRUE) {
+        print("--- REPORT: FILES IMPORTED ---")
+        print(fimported_widg, width = Inf)
+        print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
+        print(files_to_import, width = Inf)
+        print("--- INTEGRATION MATRICES FOUND REPORT ---")
+        unnested <- tidyr::unnest(files_found %>%
+            dplyr::select(
+                -.data$Files_count
+            ),
+        cols = c(.data$Files)
+        )
+        print(unnested,
+            n = nrow(unnested), width = Inf
+        )
         if (!is.null(checker_widg)) {
-            print(htmltools::browsable(htmltools::tagList(
-                fimported_widg,
-                fimp_widget,
-                ff_widget,
-                checker_widg
-            )))
-        } else {
-            print(htmltools::browsable(htmltools::tagList(
-                fimported_widg,
-                fimp_widget,
-                ff_widget
-            )))
+            print("--- ALIGNMENT RESULTS ---")
+            print(checker_widg, n = nrow(checker_widg), width = Inf)
         }
     }
     matrices <- matrices[[1]]

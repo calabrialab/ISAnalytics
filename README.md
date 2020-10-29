@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ISAnalytics <a href='https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html'><img src='man/figures/isanalytics_logo.png' align="right" height="250" /></a>
+# ISAnalytics <a href='https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html'><img src='man/figures/logo.png' align="right" height="250" /></a>
 
 <!-- badges: start -->
 
@@ -12,6 +12,8 @@ status](https://travis-ci.com/calabrialab/isanalytics.svg?branch=master)](https:
 bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![BioC
+status](http://www.bioconductor.org/shields/build/release/bioc/ISAnalytics.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics)
 <!-- badges: end -->
 
 ISAnalytics is an R package developed to analyze gene therapy vector
@@ -34,7 +36,17 @@ transduced stem cells in vivo.
 
 # Installation
 
-To install the package from bioconductor:
+## Installation from bioconductor
+
+RELEASE version:
+
+``` r
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ISAnalytics")
+```
+
+DEVEL version:
 
 ``` r
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -46,13 +58,44 @@ BiocManager::install(version='devel')
 BiocManager::install("ISAnalytics")
 ```
 
-To install the package from GitHub:
+## Installation from GitHub
+
+IMPORTANT NOTE: as of today the package `knitcitations` which is used in
+our vignettes, is temporarily unavailable through CRAN and can lead to
+the failure of package installation. This issue should be solved in the
+near future, in the meantime please use the safer option (you have to
+install suggested dependencies manually).
+
+RELEASE:
 
 ``` r
 if (!require(devtools)) {
   install.packages("devtools")
 }
-devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "RELEASE_3_12",
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
+
+## Safer option for vignette building issue
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "RELEASE_3_12")
+```
+
+DEVEL:
+
+``` r
+if (!require(devtools)) {
+  install.packages("devtools")
+}
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "master",
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
+
+## Safer option for vignette building issue
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = master)
 ```
 
 # Visit the package website
@@ -77,10 +120,26 @@ Website](https://calabrialab.github.io/ISAnalytics/)
 
 # NEWS
 
-# ISAnalytics 0.99.15 (2020-10-22)
+# ISAnalytics 1.1.1 (2020-11-04)
 
+## FIXES
+
+  - Functions that make use of widgets do not interrupt execution
+    anymore if errors are thrown while producing or printing the widgets
+  - Optimized widget printing for importing functions
+  - If widgets can’t be printed and verbose option is active, reports
+    are now displayed on console instead (needed for usage in
+    environments that do not have access to a browser)
+  - Other minor fixes (typos)
+  - Bug fixes: fixed a few bugs in importing and recalibration functions
   - Minor fix in import\_association\_file file function: added multiple
     strings to be translated as NA
+
+## IMPORTANT NOTES
+
+  - Vignette building might fail due to the fact that package
+    “knitcitations” is temporarily unavailable through CRAN
+  - ISAnalytics is finally in release on bioconductor\!
 
 # ISAnalytics 0.99.14 (2020-10-21)
 
