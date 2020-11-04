@@ -1,5 +1,22 @@
 \title{ISAnalytics News}
 
+# ISAnalytics 1.0.2 (2020-11-04)
+
+## FIXES
+
+* Functions that make use of widgets do not interrupt execution anymore if 
+errors are thrown while producing or printing the widgets
+* Optimized widget printing for importing functions
+* If widgets can't be printed and verbose option is active, reports are now 
+displayed on console instead (needed for usage in environments that do not 
+have access to a browser)
+* Other minor fixes (typos)
+
+## IMPORTANT NOTES
+
+* Vignette building might fail due to the fact that package "knitcitations" 
+is temporarily unavailable through CRAN
+
 # ISAnalytics 1.0.1 (2020-10-29)
 
 * ISAnalytics is finally in release on bioconductor!

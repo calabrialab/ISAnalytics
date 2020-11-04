@@ -146,25 +146,38 @@ remove_collisions <- function(x,
     ## Check if association file contains all info relative to content the of
     ## the matrix
     missing_widg <- NULL
+    verbose <- getOption("ISAnalytics.verbose")
     all_contained <- all(seq_count_df$CompleteAmplificationID %in%
         association_file$CompleteAmplificationID)
     if (!all_contained) {
         missing <- which(!seq_count_df$CompleteAmplificationID %in%
             association_file$CompleteAmplificationID)
-        cat("Missing info for these observations: ", sep = "\n")
-        print(seq_count_df[missing, ])
-        seq_count_df <- seq_count_df[-missing, ]
-        if (getOption("ISAnalytics.widgets") == TRUE) {
-            missing_widg <- .missing_info_widget(seq_count_df[missing, ])
-        }
         warning(paste(
             "The association file is missing needed info",
             "on some experiments. Missing samples will be removed",
             "from the matrices."
         ), immediate. = TRUE)
+        if (verbose == TRUE) {
+            cat("Missing info for these observations: ", sep = "\n")
+            print(seq_count_df[missing, ],
+                width = Inf,
+                n = nrow(seq_count_df[missing, ])
+            )
+        }
+        if (getOption("ISAnalytics.widgets") == TRUE) {
+            withCallingHandlers(
+                {
+                    missing_widg <- .missing_info_widget(seq_count_df[missing, ])
+                },
+                error = function(cnd) {
+                    message(conditionMessage(cnd))
+                    message(.widgets_error())
+                }
+            )
+        }
+        seq_count_df <- seq_count_df[-missing, ]
     }
     ## Check if association file contains more info than matrix
-    verbose <- getOption("ISAnalytics.verbose")
     add_widget <- NULL
     if (verbose == TRUE) {
         not_included <- .check_same_info(association_file, seq_count_df)
@@ -174,9 +187,17 @@ remove_collisions <- function(x,
                 "Here is a summary",
                 collapse = "\n"
             ))
-            print(not_included)
+            print(not_included, n = nrow(not_included), width = Inf)
             if (getOption("ISAnalytics.widgets") == TRUE) {
-                add_widget <- .add_info_widget(not_included)
+                withCallingHandlers(
+                    {
+                        add_widget <- .add_info_widget(not_included)
+                    },
+                    error = function(cnd) {
+                        message(conditionMessage(cnd))
+                        message(.widgets_error())
+                    }
+                )
             }
         }
     }
@@ -204,36 +225,52 @@ remove_collisions <- function(x,
     final_matr <- fixed_collisions %>%
         dplyr::bind_rows(splitted_df$non_collisions) %>%
         dplyr::select(dplyr::all_of(colnames(seq_count_df)))
+    summary_tbl <- .summary_table(
+        before = joined, after = final_matr,
+        association_file = association_file,
+        seqCount_col = seq_count_col
+    )
     if (getOption("ISAnalytics.widgets") == TRUE) {
-        summary_tbl <- .summary_table(
-            before = joined, after = final_matr,
-            association_file = association_file,
-            seqCount_col = seq_count_col
-        )
-        widget_summary <- .summary_collisions_widget(removed, reassigned,
-            summary_tbl,
-            tot_rows = nrow(joined),
-            collision_rows = nrow(
-                splitted_df$collisions
-            )
-        )
-        widget <- if (!is.null(missing_widg)) {
-            if (!is.null(add_widget)) {
-                htmltools::browsable(htmltools::tagList(
-                    widget_summary,
-                    add_widget,
-                    missing_widg
-                ))
-            } else {
-                htmltools::browsable(htmltools::tagList(
-                    widget_summary,
-                    missing_widg
-                ))
+        withCallingHandlers(
+            {
+                widget_summary <- .summary_collisions_widget(removed,
+                    reassigned,
+                    summary_tbl,
+                    tot_rows = nrow(joined),
+                    collision_rows = nrow(
+                        splitted_df$collisions
+                    )
+                )
+                widget <- if (!is.null(missing_widg)) {
+                    if (!is.null(add_widget)) {
+                        htmltools::browsable(htmltools::tagList(
+                            widget_summary,
+                            add_widget,
+                            missing_widg
+                        ))
+                    } else {
+                        htmltools::browsable(htmltools::tagList(
+                            widget_summary,
+                            missing_widg
+                        ))
+                    }
+                } else {
+                    widget_summary
+                }
+                print(widget)
+            },
+            error = function(cnd) {
+                message(conditionMessage(cnd))
+                message(.widgets_error())
+                if (verbose == TRUE) {
+                    print("--- SUMMARY ---")
+                    print(summary_tbl, width = Inf, n = nrow(summary_tbl))
+                }
             }
-        } else {
-            widget_summary
-        }
-        print(widget)
+        )
+    } else if (verbose == TRUE) {
+        print("--- SUMMARY ---")
+        print(summary_tbl, width = Inf, n = nrow(summary_tbl))
     }
     ## Align other matrices if present
     if (mode == "LIST") {

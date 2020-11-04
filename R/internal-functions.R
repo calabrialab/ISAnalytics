@@ -249,7 +249,7 @@
         dplyr::distinct()
     tree_struct <- fs::dir_ls(
         path = root_folder, recurse = TRUE,
-        type = "directory"
+        type = "directory", fail = FALSE
     )
     root_regexp <- stringr::str_replace_all(root_folder, "\\/", "\\\\/")
     results_df <- purrr::pmap(
@@ -308,14 +308,8 @@
     # If some some folders are missing a warning is thrown
     not_found <- checks %>% dplyr::filter(.data$Found == FALSE)
     if (nrow(not_found) > 0) {
-        warning(paste0("One or more projects were not found in the file",
-            "system starting from ", root, ", please check your",
-            "association file for errors and/or your file system.",
-            "Until you re-import the association file these ",
-            "missing files will be ignored.",
-            collapse = ""
-        ),
-        immediate. = TRUE, call. = FALSE
+        warning(.warning_update_after_alignment(root),
+            immediate. = TRUE, call. = FALSE
         )
     }
     # Finally import modified association file

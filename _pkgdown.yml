@@ -1,3 +1,5 @@
+development:
+  mode: release
 template:
   params:
     bootswatch: slate

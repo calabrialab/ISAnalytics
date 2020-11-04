@@ -13,13 +13,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-# ISAnalytics <a href='https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html'><img src='man/figures/isanalytics_logo.png' align="right" height="250" /></a>
+# ISAnalytics <a href='https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html'><img src='man/figures/logo.png' align="right" height="250" /></a>
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/calabrialab/isanalytics.svg?branch=master)](https://travis-ci.com/calabrialab/isanalytics)
 [![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
 [![R build status - bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
 [![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![BioC status](http://www.bioconductor.org/shields/build/release/bioc/ISAnalytics.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics)
 <!-- badges: end -->
 
 ISAnalytics is an R package developed to analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies.
@@ -28,8 +29,16 @@ In gene therapy, stem cells are modified using viral vectors to deliver the ther
 
 # Installation
 
-To install the package from bioconductor:
+## Installation from bioconductor
 
+RELEASE version:
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ISAnalytics")
+```
+
+DEVEL version:
 ```{r eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
@@ -40,16 +49,40 @@ BiocManager::install(version='devel')
 BiocManager::install("ISAnalytics")
 ```
 
+## Installation from GitHub
 
-To install the package from GitHub:
+IMPORTANT NOTE: as of today the package `knitcitations` which is used in our vignettes,
+is temporarily unavailable through CRAN and can lead to the failure of package installation. This issue should be solved in the near future, in the meantime
+please use the safer option (you have to install suggested dependencies manually).
 
+RELEASE:
 ```{r eval=FALSE}
 if (!require(devtools)) {
   install.packages("devtools")
 }
-devtools::install_github("calabrialab/ISAnalytics", 
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "RELEASE_3_12",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
+
+## Safer option for vignette building issue
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "RELEASE_3_12")
+```
+
+DEVEL:
+```{r eval=FALSE}
+if (!require(devtools)) {
+  install.packages("devtools")
+}
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "master",
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
+
+## Safer option for vignette building issue
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = master)
 ```
 
 # Visit the package website

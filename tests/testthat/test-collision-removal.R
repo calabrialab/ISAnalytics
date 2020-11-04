@@ -5,7 +5,7 @@ library(ISAnalytics)
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
-op <- options(ISAnalytics.widgets = FALSE)
+op <- options(ISAnalytics.widgets = FALSE, ISAnalytics.verbose = FALSE)
 on.exit(options(op))
 
 # Path to example association file

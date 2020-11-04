@@ -2,7 +2,7 @@ context("Importing IS from files")
 
 library(ISAnalytics)
 
-op <- options("ISAnalytics.widgets" = FALSE)
+op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
 on.exit(options(op))
 
 #------------------------------------------------------------------------------#
@@ -371,7 +371,7 @@ test_that("import_association_file imports af with warnings for fserr", {
         {
             af <- import_association_file(path_af, root_err)
         },
-        regexp = warning_update_after_alignment
+        regexp = .warning_update_after_alignment(root_err)
     )
     expect_equal(colnames(af), c(association_file_columns(), "Path"))
     expect_false(all(!is.na(af$Path)))
@@ -433,7 +433,7 @@ test_that(".manage_association_file succeeds with fserr - path version", {
         {
             af <- .manage_association_file(path_af, root_err, 4, "dmy")
         },
-        regexp = warning_update_after_alignment
+        regexp = .warning_update_after_alignment(root_err)
     )
     expect_true(all(!is.na(af[[1]]$Path)))
     expect_true(!is.null(af[[2]]))
@@ -453,7 +453,7 @@ test_that(".manage_association_file succeeds with fserr - tibble version", {
         {
             af <- import_association_file(path_af, root_err)
         },
-        regexp = warning_update_after_alignment
+        regexp = .warning_update_after_alignment(root_err)
     )
     expect_warning(
         {
