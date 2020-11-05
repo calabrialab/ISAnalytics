@@ -167,13 +167,20 @@ remove_collisions <- function(x,
         if (getOption("ISAnalytics.widgets") == TRUE) {
             withCallingHandlers(
                 {
-                    missing_widg <- .missing_info_widget(
-                        seq_count_df[missing, ]
+                    withRestarts(
+                        {
+                            missing_widg <- .missing_info_widget(
+                                seq_count_df[missing, ]
+                            )
+                        },
+                        widg_err = function() {
+                            message(.widgets_error())
+                        }
                     )
                 },
                 error = function(cnd) {
                     message(conditionMessage(cnd))
-                    message(.widgets_error())
+                    invokeRestart("widg_err")
                 }
             )
         }
@@ -193,11 +200,18 @@ remove_collisions <- function(x,
             if (getOption("ISAnalytics.widgets") == TRUE) {
                 withCallingHandlers(
                     {
-                        add_widget <- .add_info_widget(not_included)
+                        withRestarts(
+                            {
+                                add_widget <- .add_info_widget(not_included)
+                            },
+                            widg_err = function() {
+                                message(.widgets_error())
+                            }
+                        )
                     },
                     error = function(cnd) {
                         message(conditionMessage(cnd))
-                        message(.widgets_error())
+                        invokeRestart("widg_err")
                     }
                 )
             }
@@ -235,39 +249,47 @@ remove_collisions <- function(x,
     if (getOption("ISAnalytics.widgets") == TRUE) {
         withCallingHandlers(
             {
-                widget_summary <- .summary_collisions_widget(removed,
-                    reassigned,
-                    summary_tbl,
-                    tot_rows = nrow(joined),
-                    collision_rows = nrow(
-                        splitted_df$collisions
-                    )
-                )
-                widget <- if (!is.null(missing_widg)) {
-                    if (!is.null(add_widget)) {
-                        htmltools::browsable(htmltools::tagList(
-                            widget_summary,
-                            add_widget,
-                            missing_widg
-                        ))
-                    } else {
-                        htmltools::browsable(htmltools::tagList(
-                            widget_summary,
-                            missing_widg
-                        ))
+                withRestarts(
+                    {
+                        widget_summary <- .summary_collisions_widget(removed,
+                            reassigned,
+                            summary_tbl,
+                            tot_rows = nrow(joined),
+                            collision_rows = nrow(
+                                splitted_df$collisions
+                            )
+                        )
+                        widget <- if (!is.null(missing_widg)) {
+                            if (!is.null(add_widget)) {
+                                htmltools::browsable(htmltools::tagList(
+                                    widget_summary,
+                                    add_widget,
+                                    missing_widg
+                                ))
+                            } else {
+                                htmltools::browsable(htmltools::tagList(
+                                    widget_summary,
+                                    missing_widg
+                                ))
+                            }
+                        } else {
+                            widget_summary
+                        }
+                        print(widget)
+                    },
+                    print_err = function() {
+                        message(.widgets_error())
+                        if (verbose == TRUE) {
+                            print("--- SUMMARY ---")
+                            print(summary_tbl, width = Inf,
+                                  n = nrow(summary_tbl))
+                        }
                     }
-                } else {
-                    widget_summary
-                }
-                print(widget)
+                )
             },
             error = function(cnd) {
                 message(conditionMessage(cnd))
-                message(.widgets_error())
-                if (verbose == TRUE) {
-                    print("--- SUMMARY ---")
-                    print(summary_tbl, width = Inf, n = nrow(summary_tbl))
-                }
+                invokeRestart("print_err")
             }
         )
     } else if (verbose == TRUE) {

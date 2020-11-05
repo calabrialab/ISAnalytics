@@ -216,11 +216,18 @@ compute_near_integrations <- function(x,
         ## Produce widget
         withCallingHandlers(
             {
-                print(.recalibr_map_widget(result$map))
+                withRestarts(
+                    {
+                        print(.recalibr_map_widget(result$map))
+                    },
+                    print_err = function() {
+                        message(.widgets_error())
+                    }
+                )
             },
             error = function(cnd) {
                 message(conditionMessage(cnd))
-                message(.widgets_error())
+                invokeRestart("print_err")
             }
         )
     }
