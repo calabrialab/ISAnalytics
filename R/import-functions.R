@@ -334,7 +334,7 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
         )
     } else if (getOption("ISAnalytics.verbose") == TRUE) {
         print("--- REPORT: FILES IMPORTED ---")
-        print(fimported_widg, width = Inf)
+        print(fimported, width = Inf)
         print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
         print(files_to_import, width = Inf)
         print("--- INTEGRATION MATRICES FOUND REPORT ---")
@@ -530,7 +530,7 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
         )
     } else if (getOption("ISAnalytics.verbose") == TRUE) {
         print("--- REPORT: FILES IMPORTED ---")
-        print(fimported_widg, width = Inf)
+        print(fimported, width = Inf)
         print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
         print(files_to_import, width = Inf)
         print("--- INTEGRATION MATRICES FOUND REPORT ---")
