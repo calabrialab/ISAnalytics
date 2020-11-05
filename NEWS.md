@@ -1,5 +1,11 @@
 \title{ISAnalytics News}
 
+# ISAnalytics 1.0.3 (2020-11-05)
+
+## FIXES
+
+* Fixed missing restarts for non-blocking widgets
+
 # ISAnalytics 1.0.2 (2020-11-04)
 
 ## FIXES

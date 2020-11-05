@@ -70,24 +70,31 @@ aggregate_metadata <- function(association_file,
             if (getOption("ISAnalytics.widgets") == TRUE) {
                 withCallingHandlers(
                     {
-                        report <- stats[[2]]
-                        stats <- stats[[1]]
-                        widg <- .iss_import_widget(report)
-                        print(widg)
+                        withRestarts(
+                            {
+                                report <- stats[[2]]
+                                stats <- stats[[1]]
+                                widg <- .iss_import_widget(report)
+                                print(widg)
+                            },
+                            print_err = function(cnd) {
+                                message(.widgets_error())
+                                if (getOption("ISAnalytics.verbose") == TRUE) {
+                                    print(paste0(
+                                        "--- REPORT IMPORT VISPA2",
+                                        "STATS: FILES IMPORTED ---"
+                                    ))
+                                    print(stats[[2]],
+                                        width = Inf,
+                                        n = nrow(stats[[2]])
+                                    )
+                                }
+                            }
+                        )
                     },
                     error = function(cnd) {
                         message(conditionMessage(cnd))
-                        message(.widgets_error())
-                        if (getOption("ISAnalytics.verbose") == TRUE) {
-                            print(paste0(
-                                "--- REPORT IMPORT VISPA2",
-                                "STATS: FILES IMPORTED ---"
-                            ))
-                            print(stats[[2]],
-                                width = Inf,
-                                n = nrow(stats[[2]])
-                            )
-                        }
+                        invokeRestart("print_err")
                     }
                 )
             } else {
