@@ -82,7 +82,7 @@ devtools::install_github("calabrialab/ISAnalytics",
 
 ## Safer option for vignette building issue
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = master)
+                         ref = "master")
 ```
 
 # Visit the package website

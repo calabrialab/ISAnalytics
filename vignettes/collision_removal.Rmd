@@ -65,19 +65,47 @@ write.bibtex(bib, file = "collision_removal.bib")
 To install the package run the following code:
 
 ```{r installBioc, eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-      install.packages("BiocManager")
-  }
+## For release version
+if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ISAnalytics")
+
+## For devel version
+if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
 BiocManager::install("ISAnalytics")
 ```
 
 To install from GitHub:
 
 ```{r installGitHub, eval=FALSE}
+# For release version
 if (!require(devtools)) {
-    install.packages("devtools")
+  install.packages("devtools")
 }
-devtools::install_github("calabrialab/ISAnalytics", build_vignettes = TRUE)
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "RELEASE_3_12",
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
+
+## Safer option for vignette building issue
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "RELEASE_3_12")
+
+# For devel version
+if (!require(devtools)) {
+  install.packages("devtools")
+}
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "master",
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
+
+## Safer option for vignette building issue
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "master")
 ```
 ```{r}
 library(ISAnalytics)

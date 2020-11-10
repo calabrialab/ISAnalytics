@@ -9,7 +9,8 @@ remove_collisions(
   association_file,
   date_col = "SequencingDate",
   reads_ratio = 10,
-  seq_count_col = "seqCount"
+  seq_count_col = "seqCount",
+  max_rows_reports = 5000
 )
 }
 \arguments{
@@ -29,6 +30,12 @@ to be considered when deciding between seqCount value.}
 
 \item{seq_count_col}{For support of multi-quantification matrix -
 the name of the sequence count values column}
+
+\item{max_rows_reports}{A numeric value, represents the maximum number of
+rows of the reports data frames that can be printed on console
+if the option \code{ISAnalytics.verbose} is active. If the data frames are too
+large they won't be printed on console - we recommend using widgets for
+detailed and more accessible info.}
 }
 \value{
 A list of tibbles with removed collisions
