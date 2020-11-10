@@ -2,8 +2,7 @@
 
 language: R
 r: r-devel
-r_github_packages: |
-  cboettig/knitcitations
+r_github_packages: cboettig/knitcitations
 cache: packages
 after_success:
   - Rscript -e 'covr::codecov(line_exclusions = "R/internal-widgets.R")'
