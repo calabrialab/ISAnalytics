@@ -33,11 +33,9 @@ on:
   push:
     branches:
       - master
-      - 'RELEASE_*'
   pull_request:
     branches:
       - master
-      - 'RELEASE_*'
 
 name: R-CMD-check-bioc
 
@@ -201,6 +199,9 @@ jobs:
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
           deps <- remotes::dev_package_deps(dependencies = TRUE, repos = BiocManager::repositories())
           BiocManager::install(deps$package[deps$diff != 0])
+
+          ## TO REMOVE AFTER knitcitations is back on CRAN
+          install_github("cboettig/knitcitations", upgrade = "always")
 
           ## For running the checks
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
@@ -400,6 +401,9 @@ jobs:
           message(paste('****', Sys.time(), 'pass number 2 at installing dependencies: any remaining dependencies ****'))
           deps <- remotes::dev_package_deps(dependencies = TRUE, repos = BiocManager::repositories())
           BiocManager::install(deps$package[deps$diff != 0])
+
+          ## TO REMOVE AFTER knitcitations is back on CRAN
+          install_github("cboettig/knitcitations", upgrade = "always")
 
           ## For running the checks
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))

@@ -1,5 +1,16 @@
 \title{ISAnalytics News}
 
+# ISAnalytics 1.1.3 (2020-11-10)
+
+## FIXES
+
+* Further fixes for printing reports when widgets not available
+* Added progress bar to collision processing in `remove_collisions`
+* Updated vignettes
+
+## NEW
+
+* Added vignette "Using ISAnalytics without RStudio support"
 
 # ISAnalytics 1.1.2 (2020-11-05)
 

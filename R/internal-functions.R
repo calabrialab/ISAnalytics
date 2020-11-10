@@ -1787,9 +1787,17 @@
     nested <- .obtain_nested(collisions)
     # Register backend according to platform
     if (.Platform$OS.type == "windows") {
-        p <- BiocParallel::SnowParam(stop.on.error = FALSE)
+        p <- BiocParallel::SnowParam(
+            stop.on.error = FALSE,
+            progressbar = TRUE,
+            tasks = 20
+        )
     } else {
-        p <- BiocParallel::MulticoreParam(stop.on.error = FALSE)
+        p <- BiocParallel::MulticoreParam(
+            stop.on.error = FALSE,
+            progressbar = TRUE,
+            tasks = 20
+        )
     }
     # Split the data frame in chunks according to number of workers
     workers <- BiocParallel::bpworkers(p)

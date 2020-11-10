@@ -1,0 +1,235 @@
+---
+title: "Using ISAnalytics without RStudio support"
+author: 
+  - name: Giulia Pais
+    affiliation: | 
+     San Raffaele Telethon Institute for Gene Therapy - SR-Tiget, 
+     Via Olgettina 60, 20132 Milano - Italia
+    email: giuliapais1@gmail.com, calabria.andrea@hsr.it
+output: 
+  BiocStyle::html_document:
+    self_contained: yes
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    code_folding: show
+date: "`r doc_date()`"
+package: "`r pkg_ver('ISAnalytics')`"
+vignette: >
+  %\VignetteIndexEntry{Using ISAnalytics without RStudio support}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}  
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    crop = NULL 
+    ## Related to 
+    ## https://stat.ethz.ch/pipermail/bioc-devel/2020-April/016656.html
+)
+```
+
+
+```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
+## Track time spent on making the vignette
+startTime <- Sys.time()
+
+## Bib setup
+library("knitcitations")
+
+## Load knitcitations with a clean bibliography
+cleanbib()
+cite_options(hyperlink = "to.doc", citation_format = "text", style = "html")
+
+## Write bibliography information
+bib <- c(
+    R = citation(),
+    BiocStyle = citation("BiocStyle")[1],
+    knitcitations = citation("knitcitations")[1],
+    knitr = citation("knitr")[1],
+    rmarkdown = citation("rmarkdown")[1],
+    sessioninfo = citation("sessioninfo")[1],
+    testthat = citation("testthat")[1],
+    ISAnalytics = citation("ISAnalytics")[1]
+)
+
+write.bibtex(bib, file = "no_rstudio_usage.bib")
+```
+
+
+# Introduction
+
+In this vignette we offer support for users that wish to use our package 
+outside of RStudio and optionally in remote servers.
+
+## How to install ISAnalytics
+
+To install the package run the following code:
+
+```{r installBioc, eval=FALSE}
+## For release version
+if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ISAnalytics")
+
+## For devel version
+if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+BiocManager::install("ISAnalytics")
+```
+
+To install from GitHub:
+
+```{r installGitHub, eval=FALSE}
+# For release version
+if (!require(devtools)) {
+  install.packages("devtools")
+}
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "RELEASE_3_12",
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
+
+## Safer option for vignette building issue
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "RELEASE_3_12")
+
+# For devel version
+if (!require(devtools)) {
+  install.packages("devtools")
+}
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "master",
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
+
+## Safer option for vignette building issue
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "master")
+```
+```{r}
+library(ISAnalytics)
+```
+
+## Setting options
+
+`ISAnalytics` has a verbose option that allows some functions to print 
+additional information to the console while they're executing. 
+To disable this feature do:
+
+```{r OptVerbose, eval=FALSE}
+# DISABLE
+options("ISAnalytics.verbose" = FALSE)
+
+# ENABLE
+options("ISAnalytics.verbose" = TRUE)
+
+```
+
+Some functions also produce report in a user-friendly HTML format, 
+to set this feature:
+
+```{r OptWidg, eval=FALSE}
+# DISABLE HTML REPORTS
+options("ISAnalytics.widgets" = FALSE)
+
+# ENABLE HTML REPORTS
+options("ISAnalytics.widgets" = TRUE)
+```
+
+# Recommendations
+
+We highly encourage the use of widgets because some of the functions included 
+in this package produce extensive and detailed reports that are made easy
+to explore via HTML format: we are talking, usually, about potentially very 
+large data frames which are highly impractical to print on console.
+
+Since we are aware that not all users can or want to use RStudio, here we 
+present a few proposed solutions to maintain widget functionality.
+
+## Running the package on a client machine
+
+If code is run on the user machine but from R gui or console, user should not
+encounter problems, since widgets will be visualized in your preferred 
+browser. If that's not the case try:
+
+```{r eval=FALSE}
+options(browser = "firefox")
+```
+
+of course "firefox" can be replaced with whatever is needed.
+
+## Running code on a remote machine via VPN
+
+Users can visualize widgets even if they're running code on a remote machine 
+via VPN with the use of X11.
+
+Provided the server machine has a browser installed (for example firefox), 
+you can enable X11 via ssh by doing:
+
+```{bash eval=FALSE}
+ssh YOUR_USERNAME@server_address -X -Y
+```
+
+On the client side, users must have an X11 client such as XQuartz to allow X11
+forwarding.
+
+If users are working from a Windows machine the procedure is a bit more 
+complicated, since the operating system is not Unix-like.
+
+1. Download Xming here: http://www.straightrunning.com/XmingNotes/ and 
+puTTY here: https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
+2. Once installed, run Xming and puTTY
+3. In puTTY configurations, on the left side, find "SSH" -> "X11"
+4. Check the option "Enable X11 forwarding"
+5. Back in the "Session" panel enter the IP address and as connection type 
+select "SSH"
+6. Finally open a connection and try opening the browser from console
+
+Once connected, open R and set the browser option, then load ISAnalytics:
+
+```{r eval=FALSE}
+options(browser = "firefox")
+library(ISAnalytics)
+```
+
+# Reproducibility
+
+The `r Biocpkg("ISAnalytics")` package `r citep(bib[["ISAnalytics"]])` was made possible thanks to:
+
+* R `r citep(bib[["R"]])`
+* `r Biocpkg("BiocStyle")` `r citep(bib[["BiocStyle"]])`
+* `r CRANpkg("knitcitations")` `r citep(bib[["knitcitations"]])`
+* `r CRANpkg("knitr")` `r citep(bib[["knitr"]])`
+* `r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])`
+* `r CRANpkg("sessioninfo")` `r citep(bib[["sessioninfo"]])`
+* `r CRANpkg("testthat")` `r citep(bib[["testthat"]])`
+
+This package was developed using `r BiocStyle::Githubpkg("lcolladotor/biocthis")`.
+
+`R` session information.
+
+```{r reproduce3, echo=FALSE}
+## Session info
+library("sessioninfo")
+options(width = 120)
+session_info()
+```
+
+
+
+# Bibliography
+
+This vignette was generated using `r Biocpkg("BiocStyle")` `r citep(bib[["BiocStyle"]])`
+with `r CRANpkg("knitr")` `r citep(bib[["knitr"]])` and `r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])` running behind the scenes.
+
+Citations made with `r CRANpkg("knitcitations")` `r citep(bib[["knitcitations"]])`.
+
+```{r vignetteBiblio, results = "asis", echo = FALSE, warning = FALSE, message = FALSE}
+## Print bibliography
+bibliography()
+```

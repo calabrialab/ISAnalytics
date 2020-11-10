@@ -31,6 +31,12 @@
 #' to be considered when deciding between seqCount value.
 #' @param seq_count_col For support of multi-quantification matrix -
 #' the name of the sequence count values column
+#' @param max_rows_reports A numeric value, represents the maximum number of
+#' rows of the reports data frames that can be printed on console
+#' if the option `ISAnalytics.verbose` is active. If the data frames are too
+#' large they won't be printed on console - we recommend using widgets for
+#' detailed and more accessible info.
+#'
 #' @family Collision removal
 #' @importFrom dplyr bind_rows all_of select
 #' @importFrom tibble is_tibble
@@ -58,7 +64,8 @@ remove_collisions <- function(x,
     association_file,
     date_col = "SequencingDate",
     reads_ratio = 10,
-    seq_count_col = "seqCount") {
+    seq_count_col = "seqCount",
+    max_rows_reports = 5000) {
     # Check basic parameter correctness
     stopifnot(is.list(x) & !is.null(names(x)))
     mode <- NULL
@@ -158,11 +165,18 @@ remove_collisions <- function(x,
             "from the matrices."
         ), immediate. = TRUE)
         if (verbose == TRUE) {
-            cat("Missing info for these observations: ", sep = "\n")
-            print(seq_count_df[missing, ],
-                width = Inf,
-                n = nrow(seq_count_df[missing, ])
-            )
+            if (nrow(missing) > max_rows_reports) {
+                message(paste(
+                    "Missing info data frame is too big",
+                    "to be printed, skipping"
+                ))
+            } else {
+                cat("Missing info for these observations: ", sep = "\n")
+                print(seq_count_df[missing, ],
+                    width = Inf,
+                    n = nrow(seq_count_df[missing, ])
+                )
+            }
         }
         if (getOption("ISAnalytics.widgets") == TRUE) {
             withCallingHandlers(
@@ -281,8 +295,18 @@ remove_collisions <- function(x,
                         message(.widgets_error())
                         if (verbose == TRUE) {
                             print("--- SUMMARY ---")
-                            print(summary_tbl, width = Inf,
-                                  n = nrow(summary_tbl))
+                            if (nrow(summary_tbl) > max_rows_reports) {
+                                message(paste(
+                                    "Summary data frame is too",
+                                    "big and won't be printed",
+                                    ", skipping"
+                                ))
+                            } else {
+                                print(summary_tbl,
+                                    width = Inf,
+                                    n = nrow(summary_tbl)
+                                )
+                            }
                         }
                     }
                 )
@@ -294,7 +318,14 @@ remove_collisions <- function(x,
         )
     } else if (verbose == TRUE) {
         print("--- SUMMARY ---")
-        print(summary_tbl, width = Inf, n = nrow(summary_tbl))
+        if (nrow(summary_tbl) > max_rows_reports) {
+            message(paste(
+                "Summary data frame is too big and won't be printed",
+                ", skipping"
+            ))
+        } else {
+            print(summary_tbl, width = Inf, n = nrow(summary_tbl))
+        }
     }
     ## Align other matrices if present
     if (mode == "LIST") {

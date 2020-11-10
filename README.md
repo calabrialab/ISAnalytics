@@ -95,7 +95,7 @@ devtools::install_github("calabrialab/ISAnalytics",
 
 ## Safer option for vignette building issue
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = master)
+                         ref = "master")
 ```
 
 # Visit the package website
@@ -119,6 +119,18 @@ Website](https://calabrialab.github.io/ISAnalytics/)
   - Utility functions
 
 # NEWS
+
+# ISAnalytics 1.1.3 (2020-11-10)
+
+## FIXES
+
+  - Further fixes for printing reports when widgets not available
+  - Added progress bar to collision processing in `remove_collisions`
+  - Updated vignettes
+
+## NEW
+
+  - Added vignette “Using ISAnalytics without RStudio support”
 
 # ISAnalytics 1.1.2 (2020-11-05)
 
