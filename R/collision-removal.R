@@ -65,10 +65,12 @@ remove_collisions <- function(x,
     date_col = "SequencingDate",
     reads_ratio = 10,
     seq_count_col = "seqCount",
-    max_rows_reports = 5000) {
+    max_rows_reports = 50) {
     # Check basic parameter correctness
     stopifnot(is.list(x) & !is.null(names(x)))
+
     mode <- NULL
+    quantifications_cols <- NULL
     if (tibble::is_tibble(x)) {
         if (.check_mandatory_vars(x) == FALSE) {
             stop(.non_ISM_error())
@@ -79,7 +81,7 @@ remove_collisions <- function(x,
         ### SUPPORT FOR MULTI-QUANTIFICATION MATRIX
         ## Check if it contains the "Value" column. If not find all numeric
         ## columns that are not default columns
-        num_cols <- if (.check_value_col(x) == FALSE) {
+        quantifications_cols <- if (.check_value_col(x) == FALSE) {
             found <- .find_exp_cols(x)
             if (purrr::is_empty(found)) {
                 stop(.missing_num_cols_error())
@@ -112,6 +114,7 @@ remove_collisions <- function(x,
         if (.check_value_col(x$seqCount) == FALSE) {
             stop(.missing_value_col_error())
         }
+        quantifications_cols <- "Value"
         mode <- "LIST"
     }
     stopifnot(tibble::is_tibble(association_file))
@@ -124,7 +127,7 @@ remove_collisions <- function(x,
         seq_count_col <- "Value"
     }
     if (mode == "MULTI") {
-        if (!seq_count_col %in% num_cols) {
+        if (!seq_count_col %in% quantifications_cols) {
             stop(paste(
                 "Sequence count column name not found in the data",
                 "frame"
@@ -145,19 +148,20 @@ remove_collisions <- function(x,
     }
 
     # Check imported matrices vs association file
-    seq_count_df <- if (mode == "LIST") {
+    seq_count_df_pre <- if (mode == "LIST") {
         x$seqCount
     } else {
         x
     }
     ## Check if association file contains all info relative to content the of
     ## the matrix
-    missing_widg <- NULL
+    missing <- numeric(0)
     verbose <- getOption("ISAnalytics.verbose")
-    all_contained <- all(seq_count_df$CompleteAmplificationID %in%
+    all_contained <- all(seq_count_df_pre$CompleteAmplificationID %in%
         association_file$CompleteAmplificationID)
+    seq_count_df <- NULL
     if (!all_contained) {
-        missing <- which(!seq_count_df$CompleteAmplificationID %in%
+        missing <- which(!seq_count_df_pre$CompleteAmplificationID %in%
             association_file$CompleteAmplificationID)
         warning(paste(
             "The association file is missing needed info",
@@ -165,43 +169,25 @@ remove_collisions <- function(x,
             "from the matrices."
         ), immediate. = TRUE)
         if (verbose == TRUE) {
-            if (nrow(missing) > max_rows_reports) {
+            if (length(missing) > max_rows_reports) {
                 message(paste(
                     "Missing info data frame is too big",
                     "to be printed, skipping"
                 ))
             } else {
                 cat("Missing info for these observations: ", sep = "\n")
-                print(seq_count_df[missing, ],
+                print(seq_count_df_pre[missing, ],
                     width = Inf,
-                    n = nrow(seq_count_df[missing, ])
+                    n = nrow(seq_count_df_pre[missing, ])
                 )
             }
         }
-        if (getOption("ISAnalytics.widgets") == TRUE) {
-            withCallingHandlers(
-                {
-                    withRestarts(
-                        {
-                            missing_widg <- .missing_info_widget(
-                                seq_count_df[missing, ]
-                            )
-                        },
-                        widg_err = function() {
-                            message(.widgets_error())
-                        }
-                    )
-                },
-                error = function(cnd) {
-                    message(conditionMessage(cnd))
-                    invokeRestart("widg_err")
-                }
-            )
-        }
-        seq_count_df <- seq_count_df[-missing, ]
+        seq_count_df <- seq_count_df_pre[-missing, ]
+    } else {
+        seq_count_df <- seq_count_df_pre
     }
     ## Check if association file contains more info than matrix
-    add_widget <- NULL
+    not_included <- NULL
     if (verbose == TRUE) {
         not_included <- .check_same_info(association_file, seq_count_df)
         if (nrow(not_included) > 0) {
@@ -210,24 +196,13 @@ remove_collisions <- function(x,
                 "Here is a summary",
                 collapse = "\n"
             ))
-            print(not_included, n = nrow(not_included), width = Inf)
-            if (getOption("ISAnalytics.widgets") == TRUE) {
-                withCallingHandlers(
-                    {
-                        withRestarts(
-                            {
-                                add_widget <- .add_info_widget(not_included)
-                            },
-                            widg_err = function() {
-                                message(.widgets_error())
-                            }
-                        )
-                    },
-                    error = function(cnd) {
-                        message(conditionMessage(cnd))
-                        invokeRestart("widg_err")
-                    }
-                )
+            if (nrow(not_included) > max_rows_reports) {
+                message(paste(
+                    "Additional info data frame is too big",
+                    "to be printed, skipping"
+                ))
+            } else {
+                print(not_included, n = nrow(not_included), width = Inf)
             }
         }
     }
@@ -261,34 +236,26 @@ remove_collisions <- function(x,
         seqCount_col = seq_count_col
     )
     if (getOption("ISAnalytics.widgets") == TRUE) {
+        if (verbose == TRUE) {
+            message("Producing report...")
+        }
         withCallingHandlers(
             {
                 withRestarts(
                     {
-                        widget_summary <- .summary_collisions_widget(removed,
-                            reassigned,
-                            summary_tbl,
-                            tot_rows = nrow(joined),
-                            collision_rows = nrow(
-                                splitted_df$collisions
-                            )
+                        widget <- .collisions_widget(
+                            input_df = seq_count_df_pre,
+                            quant_cols = quantifications_cols,
+                            input_joined_df = joined,
+                            association_file = association_file,
+                            missing = missing,
+                            add_info = not_included,
+                            collision_df = splitted_df$collisions,
+                            after_df = final_matr,
+                            summary = summary_tbl,
+                            removed = removed,
+                            reassigned = reassigned
                         )
-                        widget <- if (!is.null(missing_widg)) {
-                            if (!is.null(add_widget)) {
-                                htmltools::browsable(htmltools::tagList(
-                                    widget_summary,
-                                    add_widget,
-                                    missing_widg
-                                ))
-                            } else {
-                                htmltools::browsable(htmltools::tagList(
-                                    widget_summary,
-                                    missing_widg
-                                ))
-                            }
-                        } else {
-                            widget_summary
-                        }
                         print(widget)
                     },
                     print_err = function() {

@@ -281,21 +281,19 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
                         if (!is.null(checker_widg)) {
                             checker_widg <- .checker_widget(checker_widg)
                         }
-                        ff_widget <- .files_found_widget(files_found)
-                        fimp_widget <- .files_to_import_widget(files_to_import)
-                        fimported_widg <- .files_imported_widget(fimported)
+                        import_widget <- .import_report_widget(
+                            files_found,
+                            files_to_import,
+                            fimported
+                        )
                         if (!is.null(checker_widg)) {
                             print(htmltools::browsable(htmltools::tagList(
-                                fimported_widg,
-                                fimp_widget,
-                                ff_widget,
+                                import_widget,
                                 checker_widg
                             )))
                         } else {
                             print(htmltools::browsable(htmltools::tagList(
-                                fimported_widg,
-                                fimp_widget,
-                                ff_widget
+                                import_widget
                             )))
                         }
                     },
@@ -477,21 +475,19 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
                         if (!is.null(checker_widg)) {
                             checker_widg <- .checker_widget(checker_widg)
                         }
-                        ff_widget <- .files_found_widget(files_found)
-                        fimp_widget <- .files_to_import_widget(files_to_import)
-                        fimported_widg <- .files_imported_widget(fimported)
+                        import_widget <- .import_report_widget(
+                            files_found,
+                            files_to_import,
+                            fimported
+                        )
                         if (!is.null(checker_widg)) {
                             print(htmltools::browsable(htmltools::tagList(
-                                fimported_widg,
-                                fimp_widget,
-                                ff_widget,
+                                import_widget,
                                 checker_widg
                             )))
                         } else {
                             print(htmltools::browsable(htmltools::tagList(
-                                fimported_widg,
-                                fimp_widget,
-                                ff_widget
+                                import_widget
                             )))
                         }
                     },
