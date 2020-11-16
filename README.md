@@ -120,6 +120,13 @@ Website](https://calabrialab.github.io/ISAnalytics/)
 
 # NEWS
 
+# ISAnalytics 1.0.5 (2020-11-16)
+
+## UPGRADES
+
+  - Greatly improved reports for collision removal functionality
+  - General improvements for all widget reports
+
 # ISAnalytics 1.0.4 (2020-11-10)
 
 ## FIXES

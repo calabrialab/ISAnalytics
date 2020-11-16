@@ -10,7 +10,7 @@ remove_collisions(
   date_col = "SequencingDate",
   reads_ratio = 10,
   seq_count_col = "seqCount",
-  max_rows_reports = 5000
+  max_rows_reports = 50
 )
 }
 \arguments{
