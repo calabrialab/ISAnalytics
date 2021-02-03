@@ -51,7 +51,8 @@ root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 root <- unzip_file_system(root_pth, "fs")
 matrices <- import_parallel_Vispa2Matrices_auto(
     path, root,
-    c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
+    c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY",
+    dates_format = "dmy"
 )
 total_matrix <- comparison_matrix(matrices)
 separated_matrix <- separate_quant_matrices(total_matrix)

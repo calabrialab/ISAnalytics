@@ -1,7 +1,32 @@
 ### Convenience functions for errors and warnings ###
 
+.af_correctness_warning <- function() {
+    paste("Columns found in the imported association file differ from",
+          "the default values in 'association_file_columns()' ",
+          "problems may arise in some functions")
+}
+
+.af_missing_path_warning <- function(alignment) {
+    if (alignment) {
+        paste("Column 'PathToFolderProjectID' is missing, can't proceed",
+              "with file system alignment")
+    } else {
+        paste("Column 'PathToFolderProjectID' is missing")
+    }
+}
+
+.af_missing_path_error <- function() {
+    paste("Column 'Path' not found in the association file,",
+          "file system alignment is necessary for this step. Please",
+          "re-import the association file with the alignment feature")
+}
+
 .widgets_error <- function() {
     paste("Unable to produce widget report, skipping this step")
+}
+
+.widgets_save_error <- function() {
+    paste("Unable to save widget to file, skipping this step")
 }
 
 # @keywords internal

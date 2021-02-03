@@ -17,7 +17,7 @@ path_root_correct <- system.file("extdata", "fs.zip",
     package = "ISAnalytics"
 )
 root_correct <- unzip_file_system(path_root_correct, "fs")
-as_file <- import_association_file(path_af, root_correct)
+as_file <- import_association_file(path_af, root_correct, dates_format = "dmy")
 
 #------------------------------------------------------------------------------#
 # Tests generate_blank_association_file

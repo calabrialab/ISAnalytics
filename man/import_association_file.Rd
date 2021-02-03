@@ -4,12 +4,18 @@
 \alias{import_association_file}
 \title{Import the association file from disk}
 \usage{
-import_association_file(path, root, tp_padding = 4, dates_format = "dmy")
+import_association_file(
+  path,
+  root = NULL,
+  tp_padding = 4,
+  dates_format = "ymd",
+  export_widget_path = NULL
+)
 }
 \arguments{
 \item{path}{The path on disk to the association file.}
 
-\item{root}{The path on disk of the root folder of Vispa2 output.
+\item{root}{The path on disk of the root folder of Vispa2 output or NULL.
 See details.}
 
 \item{tp_padding}{Timepoint padding, indicates the number of digits of the
@@ -18,6 +24,9 @@ specified (ex: 1 becomes 0001 with a tp_padding of 4)}
 
 \item{dates_format}{A single string indicating how dates should be parsed.
 Must be a value in: \code{date_formats()}}
+
+\item{export_widget_path}{A path on disk to save produced widgets or NULL
+if the user doesn't wish to save the html file}
 }
 \value{
 A tibble with the contents of the association file plus a column
@@ -59,7 +68,8 @@ For each ProjectID there may be several nested PoolIDs. The alignment
 function only looks for PoolIDs in the quantification folder, since it's
 the location of the matrices to import.
 For more details on how to properly use these functions, refer to the
-vignette - vignette("how_to_import_functions")
+vignette - vignette("how_to_import_functions").\cr
+If 'NULL' the file system alignment step is skipped.
 }
 \examples{
 op <- options("ISAnalytics.widgets" = FALSE)
@@ -68,7 +78,7 @@ path <- system.file("extdata", "ex_association_file.tsv",
 )
 root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 root <- unzip_file_system(root_pth, "fs")
-association_file <- import_association_file(path, root)
+association_file <- import_association_file(path, root, dates_format = "dmy")
 options(op)
 }
 \seealso{

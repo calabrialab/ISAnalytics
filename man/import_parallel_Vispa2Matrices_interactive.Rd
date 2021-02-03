@@ -11,7 +11,7 @@ import_parallel_Vispa2Matrices_interactive(
   matrix_type = "annotated",
   workers = 2,
   tp_padding = 4,
-  dates_format = "dmy",
+  dates_format = "ymd",
   multi_quant_matrix = FALSE,
   ...
 )
@@ -78,7 +78,7 @@ shown in html format.
 # Can't run because it's interactive and requires user input
 matrices <- import_parallel_Vispa2Matrices_interactive(
     association_file,
-    root, quantification_type, matrix_type, workers
+    root, quantification_type, matrix_type, workers, dates_format = "dmy"
 )
 }
 }

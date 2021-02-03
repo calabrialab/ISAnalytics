@@ -47,7 +47,8 @@ af_no_prob <- function(af) {
         )
 }
 
-association_file_more <- import_association_file(path_af, root_correct)
+association_file_more <- import_association_file(path_af, root_correct,
+                                                 dates_format = "dmy")
 association_file_np <- af_no_prob(association_file_more)
 association_file_miss <- af_missing_info(association_file_more)
 
@@ -59,7 +60,7 @@ import_matr_silent <- function() {
         association_file = path_af, root = root_correct,
         quantification_type = c("fragmentEstimate", "seqCount"),
         matrix_type = "annotated", workers = 2, patterns = NULL,
-        matching_opt = "ANY"
+        matching_opt = "ANY", dates_format = "dmy"
     )
     matrices
 }

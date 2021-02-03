@@ -51,7 +51,7 @@ matrices <- import_parallel_Vispa2Matrices_auto(
 association_file = association_file , root = NULL,
 quantification_type = c("seqCount","fragmentEstimate"),
 matrix_type = "annotated", workers = 2, patterns = NULL,
-matching_opt = "ANY")
+matching_opt = "ANY", dates_format = "dmy")
 
 ### Aggregating data (both by same key)
 aggreggated_x <- aggregate_values_by_key(matrices$seqCount,
@@ -76,7 +76,8 @@ root_correct <- system.file("extdata", "fs.zip",
 )
 root_correct <- unzip_file_system(root_correct, "fs")
 
-association_file <- import_association_file(path_AF, root_correct)
+association_file <- import_association_file(path_AF, root_correct,
+    dates_format = "dmy")
 matrices <- import_parallel_Vispa2Matrices_auto(
     association_file = association_file, root = NULL,
     quantification_type = c("seqCount", "fragmentEstimate"),

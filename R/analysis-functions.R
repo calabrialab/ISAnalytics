@@ -140,7 +140,8 @@ compute_abundance <- function(x, columns = "Value", percentage = TRUE) {
 #' root <- unzip_file_system(root_pth, "fs")
 #' matrices <- import_parallel_Vispa2Matrices_auto(
 #'     path, root,
-#'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
+#'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY",
+#'     dates_format = "dmy"
 #' )
 #' total_matrix <- comparison_matrix(matrices)
 #' options(op)
@@ -226,7 +227,8 @@ comparison_matrix <- function(x,
 #' root <- unzip_file_system(root_pth, "fs")
 #' matrices <- import_parallel_Vispa2Matrices_auto(
 #'     path, root,
-#'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
+#'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY",
+#'     dates_format = "dmy"
 #' )
 #' total_matrix <- comparison_matrix(matrices)
 #' separated_matrix <- separate_quant_matrices(total_matrix)
@@ -552,7 +554,7 @@ top_integrations <- function(x, n = 50, columns = "RelAbundance",
 #' association_file = association_file , root = NULL,
 #' quantification_type = c("seqCount","fragmentEstimate"),
 #' matrix_type = "annotated", workers = 2, patterns = NULL,
-#' matching_opt = "ANY")
+#' matching_opt = "ANY", dates_format = "dmy")
 #'
 #' ### Aggregating data (both by same key)
 #' aggreggated_x <- aggregate_values_by_key(matrices$seqCount,
@@ -593,7 +595,8 @@ top_integrations <- function(x, n = 50, columns = "RelAbundance",
 #' )
 #' root_correct <- unzip_file_system(root_correct, "fs")
 #'
-#' association_file <- import_association_file(path_AF, root_correct)
+#' association_file <- import_association_file(path_AF, root_correct,
+#'     dates_format = "dmy")
 #' matrices <- import_parallel_Vispa2Matrices_auto(
 #'     association_file = association_file, root = NULL,
 #'     quantification_type = c("seqCount", "fragmentEstimate"),
@@ -716,7 +719,8 @@ sample_statistics <- function(x, metadata,
 #'     association_file = path_AF, root = root_correct,
 #'     quantification_type = c("seqCount", "fragmentEstimate"),
 #'     matrix_type = "annotated", workers = 2, patterns = NULL,
-#'     matching_opt = "ANY"
+#'     matching_opt = "ANY",
+#'     dates_format = "dmy"
 #' )
 #'
 #' cis <- CIS_grubbs(matrices$seqCount)
@@ -976,7 +980,8 @@ CIS_grubbs <- function(x,
 #' )
 #' root_correct <- unzip_file_system(root_correct, "fs")
 #'
-#' association_file <- import_association_file(path_AF, root_correct)
+#' association_file <- import_association_file(path_AF, root_correct,
+#'     dates_format = "dmy")
 #' matrices <- import_parallel_Vispa2Matrices_auto(
 #'     association_file = association_file, root = NULL,
 #'     quantification_type = c("seqCount", "fragmentEstimate"),
