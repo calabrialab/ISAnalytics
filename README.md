@@ -120,6 +120,15 @@ Website](https://calabrialab.github.io/ISAnalytics/)
 
 # NEWS
 
+# ISAnalytics 1.1.5 (2020-02-03)
+
+## UPGRADES
+
+  - Upgraded import\_association\_file function: now file alignment is
+    not mandatory anymore and it is possible to save the html report to
+    file
+  - Updated vignettes and documentation
+
 # ISAnalytics 1.1.4 (2020-11-16)
 
 ## UPGRADES
