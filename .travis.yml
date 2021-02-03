@@ -2,10 +2,6 @@
 
 language: R
 r: devel
-install:
-  - Rscript -e "if (!require('devtools')) install.packages('devtools')"
-  - Rscript -e "devtools::install_deps(dep = TRUE)"
-  - Rscript -e "devtools::install_github('cboettig/knitcitations')"
 cache: packages
 after_success:
   - Rscript -e 'covr::codecov(line_exclusions = "R/internal-widgets.R")'
