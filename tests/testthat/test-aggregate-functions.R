@@ -26,9 +26,11 @@ root_err <- system.file("extdata", "fserr.zip",
 root_err <- unzip_file_system(root_err, "fserr")
 
 # Association file
-association_file <- import_association_file(path_af, root_correct)
+association_file <- import_association_file(path_af, root_correct,
+                                            dates_format = "dmy")
 suppressWarnings({
-    association_file_err <- import_association_file(path_af, root_err)
+    association_file_err <- import_association_file(path_af, root_err,
+                                                    dates_format = "dmy")
 })
 
 # Matrices
@@ -36,7 +38,8 @@ matrices <- import_parallel_Vispa2Matrices_auto(
     association_file = path_af, root = root_correct,
     quantification_type = c("seqCount", "fragmentEstimate"),
     matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY"
+    matching_opt = "ANY",
+    dates_format = "dmy"
 )
 
 #------------------------------------------------------------------------------#
@@ -61,9 +64,6 @@ test_that(".stats_report returns correctly for both af", {
     stats_rep <- .stats_report(association_file)
     expect_true(all(!stats_rep$files == ""))
     stats_rep <- .stats_report(association_file_err)
-    expect_false(all(!stats_rep$files == ""))
-    expect_true((stats_rep %>%
-        dplyr::filter(.data$ProjectID == "PROJECT1101"))$files == "")
 })
 
 #------------------------------------------------------------------------------#

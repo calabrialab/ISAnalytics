@@ -220,7 +220,7 @@ root_correct <- system.file("extdata", "fs.zip",
     package = "ISAnalytics"
 )
 root_correct <- unzip_file_system(root_correct, "fs")
-association_file <- import_association_file(path_AF, root_correct)
+association_file <- import_association_file(path_AF, root_correct, dates_format = "dmy")
 ```
 
 Important notes on the association file:  

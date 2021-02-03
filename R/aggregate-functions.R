@@ -27,7 +27,8 @@
 #' )
 #' root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root_correct <- unzip_file_system(root_correct, "fs")
-#' association_file <- import_association_file(path_AF, root_correct)
+#' association_file <- import_association_file(path_AF, root_correct,
+#'     dates_format = "dmy")
 #' aggregated_meta <- aggregate_metadata(association_file, import_stats = FALSE)
 #' options(op)
 aggregate_metadata <- function(association_file,
@@ -190,7 +191,8 @@ aggregate_metadata <- function(association_file,
 #' )
 #' root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root_correct <- unzip_file_system(root_correct, "fs")
-#' association_file <- import_association_file(path_AF, root_correct)
+#' association_file <- import_association_file(path_AF, root_correct,
+#'     dates_format = "dmy")
 #' matrices <- import_parallel_Vispa2Matrices_auto(
 #'     association_file = association_file, root = NULL,
 #'     quantification_type = c("fragmentEstimate", "seqCount"),

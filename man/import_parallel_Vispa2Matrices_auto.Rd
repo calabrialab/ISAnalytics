@@ -13,7 +13,7 @@ import_parallel_Vispa2Matrices_auto(
   patterns = NULL,
   matching_opt = matching_options(),
   tp_padding = 4,
-  dates_format = "dmy",
+  dates_format = "ymd",
   multi_quant_matrix = FALSE,
   ...
 )
@@ -105,7 +105,8 @@ root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 root <- unzip_file_system(root_pth, "fs")
 matrices <- import_parallel_Vispa2Matrices_auto(
     path, root,
-    c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
+    c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY",
+    dates_format = "dmy"
 )
 options(op)
 }

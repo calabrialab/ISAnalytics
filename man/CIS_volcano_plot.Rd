@@ -112,7 +112,8 @@ matrices <- import_parallel_Vispa2Matrices_auto(
     association_file = path_AF, root = root_correct,
     quantification_type = c("seqCount", "fragmentEstimate"),
     matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY"
+    matching_opt = "ANY",
+    dates_format = "dmy"
 )
 
 cis <- CIS_grubbs(matrices$seqCount)

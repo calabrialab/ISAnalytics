@@ -186,28 +186,15 @@ test_that(".check_af_correctness returns FALSE for malformed file", {
 })
 
 #------------------------------------------------------------------------------#
-# Tests .read_and_correctness_af
+# Tests .read_af
 #------------------------------------------------------------------------------#
-test_that(".read_and_correctness_af succeeds when association file is correct", {
-    af <- .read_and_correctness_af(path_af, 4, "dmy")
+test_that(".read_af succeeds when association file is correct", {
+    af <- .read_af(path_af, 4, "dmy")
     expect_s3_class(af, "tbl_df")
 })
 
-test_that(".read_and_correctness_af fails when association file is incorrect", {
-    af <- tibble::as_tibble(read.csv(path_af,
-        check.names = FALSE, sep = "\t",
-        stringsAsFactors = FALSE
-    ))
-    af <- af %>% dplyr::select(-c(.data$ProjectID)) # Missing a column
-    temp_path <- tempfile(fileext = ".tsv")
-    readr::write_tsv(af, temp_path)
-    expect_error({
-        af <- .read_and_correctness_af(temp_path, 4, "dmy")
-    })
-})
-
 #### OTHER VARS ####
-af_df <- .read_and_correctness_af(path_af, 4, "dmy")
+af_df <- .read_af(path_af, 4, "dmy")
 missing_project <- list(
     ProjectID = "PROJECT1101",
     concatenatePoolIDSeqRun = "ABY-LR-PL4-POOL54-2"
@@ -358,7 +345,8 @@ test_that("import_association_file fails if date format is incorrect", {
 test_that("import_association_file imports af with no warnings for fs", {
     expect_warning(
         {
-            af <- import_association_file(path_af, root_correct)
+            af <- import_association_file(path_af, root_correct,
+                                          dates_format = "dmy")
         },
         regexp = NA
     )
@@ -369,12 +357,12 @@ test_that("import_association_file imports af with no warnings for fs", {
 test_that("import_association_file imports af with warnings for fserr", {
     expect_warning(
         {
-            af <- import_association_file(path_af, root_err)
+            af <- import_association_file(path_af, root_err,
+                                          dates_format = "dmy")
         },
         regexp = .warning_update_after_alignment(root_err)
     )
     expect_equal(colnames(af), c(association_file_columns(), "Path"))
-    expect_false(all(!is.na(af$Path)))
     missing <- af %>% dplyr::filter(
         .data$ProjectID == missing_project$ProjectID,
         .data$concatenatePoolIDSeqRun ==
@@ -412,7 +400,8 @@ test_that(".manage_association_file succeeds with fs - path version", {
 test_that(".manage_association_file succeeds with fs - tibble version", {
     expect_warning(
         {
-            af <- import_association_file(path_af, root_correct)
+            af <- import_association_file(path_af, root_correct,
+                                          dates_format = "dmy")
         },
         regexp = NA
     )
@@ -435,11 +424,7 @@ test_that(".manage_association_file succeeds with fserr - path version", {
         },
         regexp = .warning_update_after_alignment(root_err)
     )
-    expect_true(all(!is.na(af[[1]]$Path)))
     expect_true(!is.null(af[[2]]))
-    expect_true(all(!missing_project$ProjectID %in% af[[1]]$ProjectID))
-    expect_true(all(!missing_project$concatenatePoolIDSeqRun %in%
-        af[[1]]$concatenatePoolIDSeqRun))
     not_missing_proj <- all_proj_pools$ProjectID[!all_proj_pools$ProjectID %in%
         missing_project$ProjectID]
     not_missing_pool <- all_proj_pools$PoolID[!all_proj_pools$PoolID %in%
@@ -474,10 +459,12 @@ test_that(".manage_association_file succeeds with fserr - tibble version", {
     expect_true(all(not_missing_pool %in% af[[1]]$concatenatePoolIDSeqRun))
 })
 
-test_that(".manage_association_file fails if association file is malformed", {
+test_that(".manage_association_file throws warning if association file
+          is malformed", {
     expect_warning(
         {
-            af <- import_association_file(path_af, root_correct)
+            af <- import_association_file(path_af, root_correct,
+                                          dates_format = "dmy")
         },
         regexp = NA
     )
@@ -487,12 +474,13 @@ test_that(".manage_association_file fails if association file is malformed", {
     })
     expect_warning(
         {
-            af <- import_association_file(path_af, root_correct)
+            af <- import_association_file(path_af, root_correct,
+                                          dates_format = "dmy")
         },
         regexp = NA
     )
     af <- af %>% dplyr::select(-c("ProjectID"))
-    expect_error({
+    expect_warning({
         af <- .manage_association_file(af, NULL, 4, "dmy")
     })
 })
@@ -1455,7 +1443,7 @@ test_that("import_parallel_Vispa2Matrices_interactive succeeds for fs - path", {
                 root_correct,
                 quantification_type =
                     quant_types,
-                "annotated", 2
+                "annotated", 2, dates_format = "dmy"
             )
     }))
     expect_equal(nrow(matrices$fragmentEstimate), 4 * 1476)
@@ -1475,7 +1463,7 @@ test_that("import_parallel_Vispa2Matrices_interactive succeeds for fs - path", {
                 root_correct,
                 quantification_type =
                     quant_types,
-                "not_annotated", 2
+                "not_annotated", 2, dates_format = "dmy"
             )
     }))
     expect_equal(nrow(matrices$fragmentEstimate), 4 * 1476)
@@ -2243,7 +2231,7 @@ test_that("import_parallel_Vispa2Matrices_auto succeeds for fs - path", {
         "annotated",
         2,
         patterns = NULL,
-        matching_opt = "ANY"
+        matching_opt = "ANY", dates_format = "dmy"
     )
     expect_true(nrow(matrices$fragmentEstimate) == 4 * 1476)
     expect_true(nrow(matrices$seqCount) == 4 * 1476)

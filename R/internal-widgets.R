@@ -213,11 +213,12 @@
                     "they will be ignored until the problem is fixed",
                     "and the association file re-imported.",
                     id = "subtitle"
-                ),
-                styled_df
-            )
+                )
+            ),
+            styled_df
         )
     )
+
     htmltools::browsable(widget)
 }
 

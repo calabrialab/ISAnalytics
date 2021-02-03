@@ -63,13 +63,15 @@ import_single_Vispa2Matrix <- function(path) {
 #' the file system starting from the root to assess the alignment between the
 #' two.
 #' @param path The path on disk to the association file.
-#' @param root The path on disk of the root folder of Vispa2 output.
+#' @param root The path on disk of the root folder of Vispa2 output or NULL.
 #' See details.
 #' @param tp_padding Timepoint padding, indicates the number of digits of the
 #' "Timepoint" column once imported. Fills the content with 0s up to the length
 #' specified (ex: 1 becomes 0001 with a tp_padding of 4)
 #' @param dates_format A single string indicating how dates should be parsed.
 #' Must be a value in: \code{date_formats()}
+#' @param export_widget_path A path on disk to save produced widgets or NULL
+#' if the user doesn't wish to save the html file
 #' @family Import functions
 #' @return A tibble with the contents of the association file plus a column
 #' containing the path in the file system for every project and pool if found.
@@ -96,8 +98,12 @@ import_single_Vispa2Matrix <- function(path) {
 #' function only looks for PoolIDs in the quantification folder, since it's
 #' the location of the matrices to import.
 #' For more details on how to properly use these functions, refer to the
-#' vignette - vignette("how_to_import_functions")
+#' vignette - vignette("how_to_import_functions").\cr
+#' If 'NULL' the file system alignment step is skipped.
 #' @export
+#'
+#' @importFrom fs is_dir path
+#' @importFrom htmltools save_html
 #'
 #' @seealso \code{\link{date_formats}}
 #' @examples
@@ -107,49 +113,66 @@ import_single_Vispa2Matrix <- function(path) {
 #' )
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
-#' association_file <- import_association_file(path, root)
+#' association_file <- import_association_file(path, root, dates_format = "dmy")
 #' options(op)
 import_association_file <- function(path,
-    root, tp_padding = 4, dates_format = "dmy") {
+    root = NULL, tp_padding = 4, dates_format = "ymd",
+    export_widget_path = NULL) {
     # Check parameters
     stopifnot(is.character(path) & length(path) == 1)
-    stopifnot(is.character(root) & length(root) == 1)
+    stopifnot((is.character(root) & length(root) == 1) || (is.null(root)))
     stopifnot(file.exists(path))
-    stopifnot(file.exists(root))
+    if (!is.null(root)) {
+        stopifnot(file.exists(root))
+    }
     stopifnot((is.numeric(tp_padding) |
         is.integer(tp_padding)) & length(tp_padding) == 1)
     stopifnot(length(dates_format) == 1 & dates_format %in% date_formats())
 
     # Read file and check the correctness
-    as_file <- .read_and_correctness_af(path, tp_padding, dates_format)
+    af_checks <- .manage_association_file(path, root, tp_padding, dates_format)
+    as_file <- af_checks$af
+    checks <- af_checks$check
 
-    # Checks if the association file and the file system are aligned
-    checks <- .check_file_system_alignment(as_file, root_folder = root)
-    if (getOption("ISAnalytics.widgets") == TRUE) {
-        withCallingHandlers(
-            expr = {
-                withRestarts(
-                    {
-                        widg <- .checker_widget(checks)
-                        print(widg)
-                    },
-                    print_err = function() {
-                        message(.widgets_error())
-                        if (getOption("ISAnalytics.verbose") == TRUE) {
-                            print(checks, n = nrow(checks))
+    if (!is.null(checks)) {
+        # Checks if the association file and the file system are aligned
+        if (getOption("ISAnalytics.widgets") == TRUE) {
+            withCallingHandlers(
+                expr = {
+                    withRestarts(
+                        {
+                            widg <- .checker_widget(checks)
+                            print(widg)
+                        },
+                        print_err = function() {
+                            message(.widgets_error())
+                            if (getOption("ISAnalytics.verbose") == TRUE) {
+                                print(checks, n = nrow(checks))
+                            }
                         }
-                    }
-                )
-            },
-            error = function(cnd) {
-                message(conditionMessage(cnd))
-                invokeRestart("print_err")
+                    )
+                },
+                error = function(cnd) {
+                    message(conditionMessage(cnd))
+                    invokeRestart("print_err")
+                }
+            )
+            if (!is.null(export_widget_path)) {
+                if (fs::is_dir(export_widget_path)) {
+                    export_widget_path <- fs::path(export_widget_path,
+                                                   "af_import_report.html")
+                }
+                withCallingHandlers(expr = {
+                    htmltools::save_html(widg, export_widget_path)
+                },
+                error = function(cnd) {
+                    warning(.widgets_save_error())
+                })
             }
-        )
-    } else if (getOption("ISAnalytics.verbose") == TRUE) {
-        print(checks, n = nrow(checks), width = Inf)
+        } else if (getOption("ISAnalytics.verbose") == TRUE) {
+            print(checks, n = nrow(checks), width = Inf)
+        }
     }
-    as_file <- .update_af_after_alignment(as_file, checks, root)
     as_file
 }
 
@@ -211,7 +234,7 @@ import_association_file <- function(path,
 #' # Can't run because it's interactive and requires user input
 #' matrices <- import_parallel_Vispa2Matrices_interactive(
 #'     association_file,
-#'     root, quantification_type, matrix_type, workers
+#'     root, quantification_type, matrix_type, workers, dates_format = "dmy"
 #' )
 #' }
 import_parallel_Vispa2Matrices_interactive <- function(association_file,
@@ -220,18 +243,16 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
     matrix_type = "annotated",
     workers = 2,
     tp_padding = 4,
-    dates_format = "dmy",
+    dates_format = "ymd",
     multi_quant_matrix = FALSE,
     ...) {
     # Check parameters
     stopifnot(!missing(association_file))
     stopifnot(is.character(association_file) |
-        tibble::is_tibble(association_file))
+                  is.data.frame(association_file))
+    stopifnot((is.character(root) && length(root) == 1) | is.null(root))
     if (is.character(association_file)) {
         stopifnot(length(association_file) == 1)
-        stopifnot(!missing(root) && is.character(root) && length(root) == 1)
-    } else {
-        root <- NULL
     }
     stopifnot(is.numeric(workers) & length(workers) == 1)
     workers <- floor(workers)
@@ -394,7 +415,8 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
 #' root <- unzip_file_system(root_pth, "fs")
 #' matrices <- import_parallel_Vispa2Matrices_auto(
 #'     path, root,
-#'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
+#'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY",
+#'     dates_format = "dmy"
 #' )
 #' options(op)
 import_parallel_Vispa2Matrices_auto <- function(association_file,
@@ -405,18 +427,16 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
     patterns = NULL,
     matching_opt = matching_options(),
     tp_padding = 4,
-    dates_format = "dmy",
+    dates_format = "ymd",
     multi_quant_matrix = FALSE,
     ...) {
     # Check parameters
     stopifnot(!missing(association_file))
     stopifnot(is.character(association_file) |
-        tibble::is_tibble(association_file))
+        is.data.frame(association_file))
+    stopifnot((is.character(root) && length(root) == 1) | is.null(root))
     if (is.character(association_file)) {
         stopifnot(length(association_file) == 1)
-        stopifnot(!missing(root) && is.character(root) && length(root) == 1)
-    } else {
-        root <- NULL
     }
     stopifnot(is.numeric(workers) & length(workers) == 1)
     workers <- floor(workers)

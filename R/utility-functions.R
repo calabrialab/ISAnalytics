@@ -77,7 +77,8 @@ generate_blank_association_file <- function(path) {
 #' )
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
-#' association_file <- import_association_file(path_af, root)
+#' association_file <- import_association_file(path_af, root,
+#'     dates_format = "dmy")
 #' generate_Vispa2_launch_AF(association_file, "CLOEXP", "POOL6", temp)
 #' options(op)
 generate_Vispa2_launch_AF <- function(association_file, project, pool, path) {

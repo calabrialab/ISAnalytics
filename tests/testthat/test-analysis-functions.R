@@ -25,7 +25,7 @@ matrices_correct <- import_parallel_Vispa2Matrices_auto(
     association_file = path_AF, root = root_correct,
     quantification_type = c("seqCount", "fragmentEstimate"),
     matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY"
+    matching_opt = "ANY", dates_format = "dmy"
 )
 
 matrices_incorr <- suppressWarnings({
@@ -33,7 +33,7 @@ matrices_incorr <- suppressWarnings({
         association_file = path_AF, root = root_error,
         quantification_type = c("fragmentEstimate", "seqCount"),
         matrix_type = "annotated", workers = 2, patterns = NULL,
-        matching_opt = "ANY"
+        matching_opt = "ANY", dates_format = "dmy"
     )
 })
 
@@ -1041,7 +1041,8 @@ test_that("top_integrations works correctly", {
 #------------------------------------------------------------------------------#
 # Test sample_statistics
 #------------------------------------------------------------------------------#
-association_file <- import_association_file(path_AF, root_correct)
+association_file <- import_association_file(path_AF, root_correct,
+                                            dates_format = "dmy")
 ## Test input
 test_that("sample_statistics stops if param incorrect", {
     # x must be df

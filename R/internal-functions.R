@@ -178,44 +178,29 @@
 }
 
 
-# Reads association file and checks if it's correct or not.
-#
-# @param path The path to the association file on disk
-# @param padding The padding for TimePoint field
-# @param date_format The date format of date columns
-# @keywords internal
+# Imports association file from disk and converts dates and pads timepoints.
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr mutate across contains
 #' @importFrom rlang .data
 #' @importFrom stringr str_pad
 #' @import lubridate
-#
-# @return A tibble containing the association file.
-.read_and_correctness_af <- function(path, padding, date_format) {
-    stopifnot(is.character(path))
-    stopifnot(file.exists(path))
+.read_af <- function(path, padding, date_format) {
     as_file <- read.csv(path,
-        header = TRUE, check.names = FALSE,
-        stringsAsFactors = FALSE, sep = "\t",
-        na.strings = c("NONE", "NA", "NULL", "NaN", "")
+                        header = TRUE, check.names = FALSE,
+                        stringsAsFactors = FALSE, sep = "\t",
+                        na.strings = c("NONE", "NA", "NULL", "NaN", "")
     )
     as_file <- tibble::as_tibble(as_file)
-    # Checks if association file is correct
-    correct <- .check_af_correctness(as_file)
-    if (!correct) {
-        stop(paste(
-            "Malformed association file, could not import.",
-            "Check the file or generate a new blank one with",
-            "generate_blank_association_file()"
-        ), call. = FALSE)
+    if ("TimePoint" %in% colnames(as_file)) {
+        as_file <- as_file %>%
+            dplyr::mutate(TimePoint = stringr::str_pad(
+                as.character(.data$TimePoint),
+                padding,
+                side = "left",
+                pad = "0"
+            ))
     }
     as_file <- as_file %>%
-        dplyr::mutate(TimePoint = stringr::str_pad(
-            as.character(.data$TimePoint),
-            padding,
-            side = "left",
-            pad = "0"
-        )) %>%
         dplyr::mutate(dplyr::across(dplyr::contains("Date"), ~ do.call(
             getExportedValue("lubridate", date_format),
             list(.x),
@@ -343,29 +328,43 @@
     # Manage association file
     if (is.character(association_file)) {
         # If it's a path to file import the association file
-        association_file <- .read_and_correctness_af(
+        association_file <- .read_af(
             association_file,
             padding, format
         )
-        checks <- .check_file_system_alignment(association_file, root)
-        association_file <- .update_af_after_alignment(
-            association_file,
-            checks, root
-        )
-        association_file <- association_file %>% dplyr::filter(!is.na(
-            .data$Path
-        ))
-        res <- list(association_file, checks)
+        is_af_correct <- .check_af_correctness(association_file)
+        if (!is_af_correct) {
+            warning(.af_correctness_warning())
+            if (is.null(root) & getOption("ISAnalytics.verbose") == TRUE) {
+                if (!"PathToFolderProjectID" %in% colnames(association_file)) {
+                    warning(.af_missing_path_warning(FALSE))
+                }
+            } else if (!is.null(root) & !"PathToFolderProjectID"
+                       %in% colnames(association_file)) {
+                stop(.af_missing_path_warning(TRUE))
+            }
+        }
+        checks <- NULL
+        if (!is.null(root)) {
+            checks <- .check_file_system_alignment(association_file, root)
+            association_file <- .update_af_after_alignment(
+                association_file,
+                checks, root
+            )
+            association_file <- association_file %>% dplyr::filter(!is.na(
+                .data$Path
+            ))
+        }
+        res <- list(af = association_file, check = checks)
         return(res)
     } else {
         # If it's a tibble (file already imported) check the correctness
-        correct <- ifelse(.check_af_correctness(association_file),
-            ifelse("Path" %in% colnames(association_file), TRUE,
-                FALSE
-            ), FALSE
-        )
-        if (isFALSE(correct)) {
-            stop(paste("Malformed association file"))
+        is_af_correct <- .check_af_correctness(association_file)
+        if (!is_af_correct) {
+            warning(.af_correctness_warning())
+        }
+        if (!"Path" %in% colnames(association_file)) {
+            stop(.af_missing_path_error())
         }
         association_file <- association_file %>% dplyr::filter(!is.na(
             .data$Path
