@@ -186,9 +186,9 @@
 #' @import lubridate
 .read_af <- function(path, padding, date_format) {
     as_file <- read.csv(path,
-                        header = TRUE, check.names = FALSE,
-                        stringsAsFactors = FALSE, sep = "\t",
-                        na.strings = c("NONE", "NA", "NULL", "NaN", "")
+        header = TRUE, check.names = FALSE,
+        stringsAsFactors = FALSE, sep = "\t",
+        na.strings = c("NONE", "NA", "NULL", "NaN", "")
     )
     as_file <- tibble::as_tibble(as_file)
     if ("TimePoint" %in% colnames(as_file)) {
@@ -340,7 +340,7 @@
                     warning(.af_missing_path_warning(FALSE))
                 }
             } else if (!is.null(root) & !"PathToFolderProjectID"
-                       %in% colnames(association_file)) {
+            %in% colnames(association_file)) {
                 stop(.af_missing_path_warning(TRUE))
             }
         }
@@ -2993,4 +2993,26 @@
         dplyr::select(-c("OncoGene", "TumorSuppressor")) %>%
         dplyr::distinct()
     return(onco_tumsup)
+}
+
+#' @importFrom fs is_dir dir_exists dir_create path
+#' @importFrom htmltools save_html
+.export_widget_file <- function(widget, path, def_file_name) {
+    if (fs::is_dir(path)) {
+        if (!fs::dir_exists(path)) {
+            fs::dir_create(path)
+        }
+        export_widget_path <- fs::path(
+            path,
+            def_file_name
+        )
+    }
+    withCallingHandlers(
+        expr = {
+            htmltools::save_html(widget, export_widget_path)
+        },
+        error = function(cnd) {
+            warning(.widgets_save_error())
+        }
+    )
 }

@@ -48,7 +48,8 @@ af_no_prob <- function(af) {
 }
 
 association_file_more <- import_association_file(path_af, root_correct,
-                                                 dates_format = "dmy")
+    dates_format = "dmy"
+)
 association_file_np <- af_no_prob(association_file_more)
 association_file_miss <- af_missing_info(association_file_more)
 
@@ -1295,18 +1296,6 @@ test_that("remove_collisions stops if reads_ratio is not a single number", {
     })
 })
 
-test_that("remove_collisions stops if af is malformed", {
-    af <- association_file_np %>% dplyr::select(-c(.data$ProjectID))
-    expect_error(
-        {
-            rc <- remove_collisions(
-                list(seqCount = seq_count_m),
-                af
-            )
-        },
-        regexp = "Malformed association file: one or more columns are missing"
-    )
-})
 
 test_that("remove_collisions stops if date_col contains NA", {
     expect_error(

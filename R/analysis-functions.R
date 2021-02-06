@@ -596,7 +596,8 @@ top_integrations <- function(x, n = 50, columns = "RelAbundance",
 #' root_correct <- unzip_file_system(root_correct, "fs")
 #'
 #' association_file <- import_association_file(path_AF, root_correct,
-#'     dates_format = "dmy")
+#'     dates_format = "dmy"
+#' )
 #' matrices <- import_parallel_Vispa2Matrices_auto(
 #'     association_file = association_file, root = NULL,
 #'     quantification_type = c("seqCount", "fragmentEstimate"),
@@ -648,6 +649,24 @@ sample_statistics <- function(x, metadata,
         ),
         .groups = "drop"
         )
+
+    ## Flatten nested data frames
+    df_cols <- purrr::map_lgl(result, ~ is.data.frame(.x))
+    if (any(df_cols == TRUE)) {
+        df_cols <- df_cols[df_cols]
+        df_cols <- names(df_cols)
+        dfss <- purrr::map(df_cols, function(col) {
+            exp <- rlang::expr(`$`(result, !!col))
+            df <- rlang::eval_tidy(exp)
+            df <- df %>% dplyr::rename_with(.fn = ~ paste0(col, "_", .x))
+            df
+        }) %>% purrr::set_names(df_cols)
+        for (dfc in df_cols) {
+            result <- result %>%
+                dplyr::select(-dplyr::all_of(dfc)) %>%
+                dplyr::bind_cols(dfss[[dfc]])
+        }
+    }
 
     updated_meta <- metadata %>% dplyr::left_join(result, by = sample_key)
     return(list(x = result, metadata = updated_meta))
@@ -981,7 +1000,8 @@ CIS_grubbs <- function(x,
 #' root_correct <- unzip_file_system(root_correct, "fs")
 #'
 #' association_file <- import_association_file(path_AF, root_correct,
-#'     dates_format = "dmy")
+#'     dates_format = "dmy"
+#' )
 #' matrices <- import_parallel_Vispa2Matrices_auto(
 #'     association_file = association_file, root = NULL,
 #'     quantification_type = c("seqCount", "fragmentEstimate"),
@@ -1137,6 +1157,6 @@ default_stats <- function() {
         diversity = vegan::diversity,
         sum = ~ sum(.x, na.rm = TRUE),
         count = length,
-        describe = psych::describe
+        describe = ~ tibble::as_tibble(psych::describe(.x))
     )
 }

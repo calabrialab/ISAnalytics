@@ -27,10 +27,12 @@ root_err <- unzip_file_system(root_err, "fserr")
 
 # Association file
 association_file <- import_association_file(path_af, root_correct,
-                                            dates_format = "dmy")
+    dates_format = "dmy"
+)
 suppressWarnings({
     association_file_err <- import_association_file(path_af, root_err,
-                                                    dates_format = "dmy")
+        dates_format = "dmy"
+    )
 })
 
 # Matrices

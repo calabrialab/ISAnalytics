@@ -12,7 +12,8 @@ compute_near_integrations(
   max_value_column = "seqCount",
   map_as_widget = TRUE,
   map_as_file = TRUE,
-  file_path = "."
+  file_path = ".",
+  export_widget_path = NULL
 )
 }
 \arguments{
@@ -47,6 +48,9 @@ searching the maximum value}
 \item{file_path}{String representing the path were the file will be
 saved. By default the function produces a folder in the current
 working directory and generates file names with time stamps.}
+
+\item{export_widget_path}{A path on disk to save produced widgets or NULL
+if the user doesn't wish to save the html file}
 }
 \value{
 An integration matrix with same or less number of rows

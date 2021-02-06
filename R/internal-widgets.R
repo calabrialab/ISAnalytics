@@ -376,7 +376,8 @@
             htmltools::h2("INTEGRATION MATRICES FOUND REPORT"),
             htmltools::div(
                 id = "section-content",
-                htmltools::div("Report of all files found for each quantification",
+                htmltools::div("Report of all files found for
+                               each quantification",
                     "type. Click on the arrow on the left side of each",
                     "row to see details.",
                     id = "subtitle"
@@ -418,7 +419,8 @@
             htmltools::h2("SUMMARY OF FILES CHOSEN FOR IMPORT"),
             htmltools::div(
                 id = "section-content",
-                htmltools::div("Here is a summary of all files chosen for import",
+                htmltools::div("Here is a summary of all files
+                               chosen for import",
                     id = "subtitle"
                 ),
                 styled_df
@@ -472,7 +474,8 @@
             htmltools::h2("REPORT: FILES IMPORTED"),
             htmltools::div(
                 id = "section-content",
-                htmltools::div("Here is a summary of all files actually imported for
+                htmltools::div("Here is a summary of all files
+                actually imported for
         each quantification type. If you see 'false' in the column Imported,
         some errors might have occurred and the function was unable to import
         that matrix.", id = "subtitle"),
@@ -484,7 +487,8 @@
 }
 
 #' @importFrom htmltools tags h1 h2 browsable
-.import_report_widget <- function(files_found, files_to_import, files_imported) {
+.import_report_widget <- function(files_found, files_to_import,
+    files_imported) {
     files_found_styled <- .files_found_widget(files_found)
     files_toimp_styled <- .files_to_import_widget(files_to_import)
     files_imported_styled <- .files_imported_widget(files_imported)
@@ -733,7 +737,8 @@
             htmltools::h2("ADDITIONAL INFORMATION"),
             htmltools::div(
                 id = "section-content",
-                htmltools::div("Information that is found in the association file
+                htmltools::div("Information that is found in
+                the association file
                        but not in the input matrix,
                        which is related to the projects of interest",
                     id = "subtitle"
@@ -1159,7 +1164,8 @@
             htmltools::h1("REPORT IMPORT VISPA2 STATS: FILES IMPORTED"),
             htmltools::div(
                 id = "section-content",
-                htmltools::div("Here is a summary of all files actually imported.
+                htmltools::div("Here is a summary of all files actually
+                imported.
         If you see 'FALSE' in the column Imported, some errors might have
         occurred and the function was unable to import the file or simply no
         path was found for that stats file.",
