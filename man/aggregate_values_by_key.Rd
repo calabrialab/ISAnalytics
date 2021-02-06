@@ -90,7 +90,8 @@ path_AF <- system.file("extdata", "ex_association_file.tsv",
 root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 root_correct <- unzip_file_system(root_correct, "fs")
 association_file <- import_association_file(path_AF, root_correct,
-    dates_format = "dmy")
+    dates_format = "dmy"
+)
 matrices <- import_parallel_Vispa2Matrices_auto(
     association_file = association_file, root = NULL,
     quantification_type = c("fragmentEstimate", "seqCount"),

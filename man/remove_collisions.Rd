@@ -10,7 +10,8 @@ remove_collisions(
   date_col = "SequencingDate",
   reads_ratio = 10,
   seq_count_col = "seqCount",
-  max_rows_reports = 50
+  max_rows_reports = 50,
+  save_widget_path = NULL
 )
 }
 \arguments{
@@ -36,6 +37,10 @@ rows of the reports data frames that can be printed on console
 if the option \code{ISAnalytics.verbose} is active. If the data frames are too
 large they won't be printed on console - we recommend using widgets for
 detailed and more accessible info.}
+
+\item{save_widget_path}{Either NULL or a path where the html report file
+should be saved. If NULL the report is visualized via browser ONLY (not
+saved on disk).}
 }
 \value{
 A list of tibbles with removed collisions
@@ -65,7 +70,8 @@ path <- system.file("extdata", "ex_association_file.tsv",
 root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 root <- unzip_file_system(root_pth, "fs")
 association_file <- import_association_file(path, root,
-    dates_format = "dmy")
+    dates_format = "dmy"
+)
 matrices <- import_parallel_Vispa2Matrices_auto(
     association_file, NULL,
     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"

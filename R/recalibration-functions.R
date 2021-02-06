@@ -47,7 +47,8 @@
 #' @param file_path String representing the path were the file will be
 #' saved. By default the function produces a folder in the current
 #' working directory and generates file names with time stamps.
-#'
+#' @param export_widget_path A path on disk to save produced widgets or NULL
+#' if the user doesn't wish to save the html file
 #' @importFrom magrittr `%>%`
 #' @importFrom tibble is_tibble tibble_row
 #' @importFrom dplyr group_by group_split bind_rows
@@ -76,7 +77,8 @@ compute_near_integrations <- function(x,
     max_value_column = "seqCount",
     map_as_widget = TRUE,
     map_as_file = TRUE,
-    file_path = ".") {
+    file_path = ".",
+    export_widget_path = NULL) {
     # Check parameters
     stopifnot(tibble::is_tibble(x))
     ## Check tibble is an integration matrix
@@ -218,7 +220,15 @@ compute_near_integrations <- function(x,
             {
                 withRestarts(
                     {
-                        print(.recalibr_map_widget(result$map))
+                        widget <- .recalibr_map_widget(result$map)
+                        print(widget)
+                        if (!is.null(export_widget_path)) {
+                            .export_widget_file(
+                                widget,
+                                export_widget_path,
+                                "recalibration_map.html"
+                            )
+                        }
                     },
                     print_err = function() {
                         message(.widgets_error())

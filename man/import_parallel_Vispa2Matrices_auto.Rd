@@ -15,6 +15,7 @@ import_parallel_Vispa2Matrices_auto(
   tp_padding = 4,
   dates_format = "ymd",
   multi_quant_matrix = FALSE,
+  export_widget_path = NULL,
   ...
 )
 }
@@ -51,6 +52,9 @@ Must be a value in: \code{date_formats()}}
 \item{multi_quant_matrix}{If set to TRUE will produce a
 multi-quantification matrix (data frame) through \code{comparison_matrix}
 instead of a list.}
+
+\item{export_widget_path}{A path on disk to save produced widgets or NULL
+if the user doesn't wish to save the html file}
 
 \item{...}{Additional arguments to pass to \code{comparison_matrix}}
 }

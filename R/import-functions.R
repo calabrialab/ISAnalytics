@@ -102,9 +102,6 @@ import_single_Vispa2Matrix <- function(path) {
 #' If 'NULL' the file system alignment step is skipped.
 #' @export
 #'
-#' @importFrom fs is_dir path
-#' @importFrom htmltools save_html
-#'
 #' @seealso \code{\link{date_formats}}
 #' @examples
 #' op <- options("ISAnalytics.widgets" = FALSE)
@@ -158,16 +155,10 @@ import_association_file <- function(path,
                 }
             )
             if (!is.null(export_widget_path)) {
-                if (fs::is_dir(export_widget_path)) {
-                    export_widget_path <- fs::path(export_widget_path,
-                                                   "af_import_report.html")
-                }
-                withCallingHandlers(expr = {
-                    htmltools::save_html(widg, export_widget_path)
-                },
-                error = function(cnd) {
-                    warning(.widgets_save_error())
-                })
+                .export_widget_file(
+                    widg,
+                    export_widget_path, "af_import_report.html"
+                )
             }
         } else if (getOption("ISAnalytics.verbose") == TRUE) {
             print(checks, n = nrow(checks), width = Inf)
@@ -215,6 +206,8 @@ import_association_file <- function(path,
 #' @param multi_quant_matrix If set to TRUE will produce a
 #' multi-quantification matrix (data frame) through `comparison_matrix`
 #' instead of a list.
+#' @param export_widget_path A path on disk to save produced widgets or NULL
+#' if the user doesn't wish to save the html file
 #' @param ... Additional arguments to pass to `comparison_matrix`
 #'
 #' @seealso \code{\link{comparison_matrix}}
@@ -234,7 +227,8 @@ import_association_file <- function(path,
 #' # Can't run because it's interactive and requires user input
 #' matrices <- import_parallel_Vispa2Matrices_interactive(
 #'     association_file,
-#'     root, quantification_type, matrix_type, workers, dates_format = "dmy"
+#'     root, quantification_type, matrix_type, workers,
+#'     dates_format = "dmy"
 #' )
 #' }
 import_parallel_Vispa2Matrices_interactive <- function(association_file,
@@ -245,11 +239,12 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
     tp_padding = 4,
     dates_format = "ymd",
     multi_quant_matrix = FALSE,
+    export_widget_path = NULL,
     ...) {
     # Check parameters
     stopifnot(!missing(association_file))
     stopifnot(is.character(association_file) |
-                  is.data.frame(association_file))
+        is.data.frame(association_file))
     stopifnot((is.character(root) && length(root) == 1) | is.null(root))
     if (is.character(association_file)) {
         stopifnot(length(association_file) == 1)
@@ -316,6 +311,13 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
                             print(htmltools::browsable(htmltools::tagList(
                                 import_widget
                             )))
+                        }
+                        if (!is.null(export_widget_path)) {
+                            .export_widget_file(
+                                import_widget,
+                                export_widget_path,
+                                "matrices_import_report.html"
+                            )
                         }
                     },
                     print_err = function() {
@@ -429,6 +431,7 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
     tp_padding = 4,
     dates_format = "ymd",
     multi_quant_matrix = FALSE,
+    export_widget_path = NULL,
     ...) {
     # Check parameters
     stopifnot(!missing(association_file))
@@ -509,6 +512,13 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
                             print(htmltools::browsable(htmltools::tagList(
                                 import_widget
                             )))
+                        }
+                        if (!is.null(export_widget_path)) {
+                            .export_widget_file(
+                                import_widget,
+                                export_widget_path,
+                                "matrices_import_report.html"
+                            )
                         }
                     },
                     print_err = function() {

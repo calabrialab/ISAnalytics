@@ -1042,7 +1042,8 @@ test_that("top_integrations works correctly", {
 # Test sample_statistics
 #------------------------------------------------------------------------------#
 association_file <- import_association_file(path_AF, root_correct,
-                                            dates_format = "dmy")
+    dates_format = "dmy"
+)
 ## Test input
 test_that("sample_statistics stops if param incorrect", {
     # x must be df

@@ -346,7 +346,8 @@ test_that("import_association_file imports af with no warnings for fs", {
     expect_warning(
         {
             af <- import_association_file(path_af, root_correct,
-                                          dates_format = "dmy")
+                dates_format = "dmy"
+            )
         },
         regexp = NA
     )
@@ -358,7 +359,8 @@ test_that("import_association_file imports af with warnings for fserr", {
     expect_warning(
         {
             af <- import_association_file(path_af, root_err,
-                                          dates_format = "dmy")
+                dates_format = "dmy"
+            )
         },
         regexp = .warning_update_after_alignment(root_err)
     )
@@ -401,7 +403,8 @@ test_that(".manage_association_file succeeds with fs - tibble version", {
     expect_warning(
         {
             af <- import_association_file(path_af, root_correct,
-                                          dates_format = "dmy")
+                dates_format = "dmy"
+            )
         },
         regexp = NA
     )
@@ -464,7 +467,8 @@ test_that(".manage_association_file throws warning if association file
     expect_warning(
         {
             af <- import_association_file(path_af, root_correct,
-                                          dates_format = "dmy")
+                dates_format = "dmy"
+            )
         },
         regexp = NA
     )
@@ -475,7 +479,8 @@ test_that(".manage_association_file throws warning if association file
     expect_warning(
         {
             af <- import_association_file(path_af, root_correct,
-                                          dates_format = "dmy")
+                dates_format = "dmy"
+            )
         },
         regexp = NA
     )

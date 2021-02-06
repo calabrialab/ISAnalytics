@@ -36,6 +36,9 @@
 #' if the option `ISAnalytics.verbose` is active. If the data frames are too
 #' large they won't be printed on console - we recommend using widgets for
 #' detailed and more accessible info.
+#' @param save_widget_path Either NULL or a path where the html report file
+#' should be saved. If NULL the report is visualized via browser ONLY (not
+#' saved on disk).
 #'
 #' @family Collision removal
 #' @importFrom dplyr bind_rows all_of select
@@ -54,7 +57,8 @@
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
 #' association_file <- import_association_file(path, root,
-#'     dates_format = "dmy")
+#'     dates_format = "dmy"
+#' )
 #' matrices <- import_parallel_Vispa2Matrices_auto(
 #'     association_file, NULL,
 #'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
@@ -66,7 +70,8 @@ remove_collisions <- function(x,
     date_col = "SequencingDate",
     reads_ratio = 10,
     seq_count_col = "seqCount",
-    max_rows_reports = 50) {
+    max_rows_reports = 50,
+    save_widget_path = NULL) {
     # Check basic parameter correctness
     stopifnot(is.list(x) & !is.null(names(x)))
 
@@ -136,8 +141,19 @@ remove_collisions <- function(x,
         }
     }
     # Check association file correctness
-    if (.check_af_correctness(association_file) == FALSE) {
-        stop("Malformed association file: one or more columns are missing")
+    needed_af_cols <- c(
+        "SubjectID", "ProjectID", "PoolID",
+        "ReplicateNumber", date_col
+    )
+
+    if (any(!needed_af_cols %in% colnames(association_file))) {
+        missing_af_cols <- needed_af_cols[!needed_af_cols %in%
+            colnames(association_file)]
+        msg <- paste0(c(
+            "Missing needed columns in the association file: ",
+            paste0(missing_af_cols, collapse = ", ")
+        ))
+        stop(msg)
     }
 
     # Check date_col
@@ -216,6 +232,11 @@ remove_collisions <- function(x,
     }
     splitted_df <- .identify_independent_samples(joined)
 
+    if (nrow(splitted_df$collisions) == 0) {
+        message(.no_collisions_msg())
+        return(NULL)
+    }
+
     # Remove collisions
     if (verbose == TRUE) {
         message("Processing collisions...")
@@ -258,6 +279,17 @@ remove_collisions <- function(x,
                             reassigned = reassigned
                         )
                         print(widget)
+                        ## Export widget if requested
+                        if (!is.null(save_widget_path)) {
+                            if (verbose == TRUE) {
+                                message("Saving report to file...")
+                            }
+                            .export_widget_file(
+                                widget,
+                                save_widget_path,
+                                "collision_report.html"
+                            )
+                        }
                     },
                     print_err = function() {
                         message(.widgets_error())
@@ -295,6 +327,7 @@ remove_collisions <- function(x,
             print(summary_tbl, width = Inf, n = nrow(summary_tbl))
         }
     }
+
     ## Align other matrices if present
     if (mode == "LIST") {
         if (length(x) > 1) {
@@ -370,7 +403,8 @@ remove_collisions <- function(x,
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
 #' association_file <- import_association_file(path, root,
-#'     dates_format = "dmy")
+#'     dates_format = "dmy"
+#' )
 #' matrices <- import_parallel_Vispa2Matrices_auto(
 #'     association_file, NULL,
 #'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"

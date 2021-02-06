@@ -39,7 +39,8 @@ path <- system.file("extdata", "ex_association_file.tsv",
 root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 root <- unzip_file_system(root_pth, "fs")
 association_file <- import_association_file(path, root,
-    dates_format = "dmy")
+    dates_format = "dmy"
+)
 matrices <- import_parallel_Vispa2Matrices_auto(
     association_file, NULL,
     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
