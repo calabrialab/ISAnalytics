@@ -120,6 +120,23 @@ Website](https://calabrialab.github.io/ISAnalytics/)
 
 # NEWS
 
+# ISAnalytics 1.1.6 (2020-02-06)
+
+## UPGRADES
+
+  - It is now possible to save html reports to file from
+    import\_parallel\_Vispa2Matrices\_auto and
+    import\_parallel\_Vispa2Matrices\_interactive, remove\_collisions
+    and compute\_near\_integrations
+
+## FIXES
+
+  - Fixed sample\_statistics: now functions that have data frame output
+    do not produce nested tables. Flat tables are ready to be saved to
+    file or can be nested.
+  - Simplified association file check logic in remove\_collisions: now
+    function blocks only if the af doesn’t contain the needed columns
+
 # ISAnalytics 1.1.5 (2020-02-03)
 
 ## UPGRADES

@@ -1,5 +1,22 @@
 \title{ISAnalytics News}
 
+# ISAnalytics 1.1.6 (2020-02-06)
+
+## UPGRADES
+
+* It is now possible to save html reports to file from 
+import_parallel_Vispa2Matrices_auto and 
+import_parallel_Vispa2Matrices_interactive, remove_collisions and 
+compute_near_integrations
+
+## FIXES
+
+* Fixed sample_statistics: now functions that have data frame output do not
+produce nested tables. Flat tables are ready to be saved to file or can be
+nested.
+* Simplified association file check logic in remove_collisions: now 
+function blocks only if the af doesn't contain the needed columns
+
 # ISAnalytics 1.1.5 (2020-02-03)
 
 ## UPGRADES
