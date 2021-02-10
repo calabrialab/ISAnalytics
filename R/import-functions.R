@@ -119,7 +119,7 @@ import_association_file <- function(path,
     stopifnot(is.character(path) & length(path) == 1)
     stopifnot((is.character(root) & length(root) == 1) || (is.null(root)))
     stopifnot(file.exists(path))
-    if (!is.null(root)) {
+    if (!is.null(root) & root != "") {
         stopifnot(file.exists(root))
     }
     stopifnot((is.numeric(tp_padding) |
