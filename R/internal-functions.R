@@ -250,11 +250,16 @@
                     pattern = "\\\\\\/\\\\\\/",
                     replacement = "\\\\/"
                 )
-                found <- file.exists(PathToFolderProjectID)
-                value <- if (!found) {
+                dirExists <- file.exists(PathToFolderProjectID)
+                value <- if (!dirExists) {
                     NA_character_
                 } else {
-                    PathToFolderProjectID
+                    tree_struct <- fs::dir_ls(
+                        path = PathToFolderProjectID, recurse = TRUE,
+                        type = "directory", fail = FALSE
+                    )
+                    found <- stringr::str_extract_all(tree_struct, pattern)
+                    found <- unlist(found)
                 }
                 tibble::tibble(
                     ProjectID = ProjectID,
