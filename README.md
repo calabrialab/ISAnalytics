@@ -120,6 +120,13 @@ Website](https://calabrialab.github.io/ISAnalytics/)
 
 # NEWS
 
+# ISAnalytics 1.0.8 (2021-02-10)
+
+## FIXES
+
+  - Fixed minor issues in import\_association\_file when checking
+    parameters
+
 # ISAnalytics 1.0.7 (2021-02-06)
 
 ## UPGRADES
