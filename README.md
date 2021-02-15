@@ -60,12 +60,6 @@ BiocManager::install("ISAnalytics")
 
 ## Installation from GitHub
 
-IMPORTANT NOTE: as of today the package `knitcitations` which is used in
-our vignettes, is temporarily unavailable through CRAN and can lead to
-the failure of package installation. This issue should be solved in the
-near future, in the meantime please use the safer option (you have to
-install suggested dependencies manually).
-
 RELEASE:
 
 ``` r
@@ -119,6 +113,13 @@ Website](https://calabrialab.github.io/ISAnalytics/)
   - Utility functions
 
 # NEWS
+
+# ISAnalytics 1.0.9 (2021-02-15)
+
+## FIXES
+
+  - Fixed minor issues in internal functions to optimize file system
+    alignment
 
 # ISAnalytics 1.0.8 (2021-02-10)
 

@@ -1,5 +1,11 @@
 \title{ISAnalytics News}
 
+# ISAnalytics 1.0.9 (2021-02-15)
+
+## FIXES
+
+* Fixed minor issues in internal functions to optimize file system alignment
+
 # ISAnalytics 1.0.8 (2021-02-10)
 
 ## FIXES

@@ -51,10 +51,6 @@ BiocManager::install("ISAnalytics")
 
 ## Installation from GitHub
 
-IMPORTANT NOTE: as of today the package `knitcitations` which is used in our vignettes,
-is temporarily unavailable through CRAN and can lead to the failure of package installation. This issue should be solved in the near future, in the meantime
-please use the safer option (you have to install suggested dependencies manually).
-
 RELEASE:
 ```{r eval=FALSE}
 if (!require(devtools)) {
