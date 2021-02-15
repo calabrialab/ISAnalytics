@@ -6,6 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies • ISAnalytics</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -13,6 +19,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies">
 <meta property="og:description" content="In gene therapy, stem cells are modified using viral vectors to deliver the therapeutic transgene and replace functional properties since the genetic modification is stable and inherited in all cell progeny. The retrieval and mapping of the sequences flanking the virus-host DNA junctions allows the identification of insertion sites (IS), essential for monitoring the evolution of genetically modified cells in vivo. A comprehensive toolkit for the analysis of IS is required to foster clonal trackign studies and supporting the assessment of safety and long term efficacy in vivo. This package is aimed at (1) supporting automation of IS workflow, (2) performing base and advance analysis for IS tracking (clonal abundance, clonal expansions and statistics for insertional mutagenesis, etc.), (3) providing basic biology insights of transduced stem cells in vivo.">
+<meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -31,12 +38,18 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.9</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+<li>
+  <a href="index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
@@ -56,6 +69,9 @@
     <li>
       <a href="articles/how_to_import_functions.html">How to use import functions</a>
     </li>
+    <li>
+      <a href="articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -65,7 +81,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/calabrialab/ISAnalytics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -84,7 +100,7 @@
 
 <div id="isanalytics-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#isanalytics-" class="anchor"></a>ISAnalytics <a href="https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html"><img src="reference/figures/isanalytics_logo.png" align="right" height="250"></a>
+<a href="#isanalytics-" class="anchor"></a>ISAnalytics <a href="https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html"><img src="reference/figures/logo.png" align="right" height="250"></a>
 </h1></div>
 <!-- badges: start -->
 
@@ -94,21 +110,54 @@
 <div id="installation" class="section level1">
 <h1 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h1>
-<p>To install the package from bioconductor:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+<div id="installation-from-bioconductor" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation-from-bioconductor" class="anchor"></a>Installation from bioconductor</h2>
+<p>RELEASE version:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></code></pre></div>
+<p>DEVEL version:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
     <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
 
 <span class="co"># The following initializes usage of Bioc devel</span>
 <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span>version<span class="op">=</span><span class="st">'devel'</span><span class="op">)</span>
 
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></pre></div>
-<p>To install the package from GitHub:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="installation-from-github" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation-from-github" class="anchor"></a>Installation from GitHub</h2>
+<p>RELEASE:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
   <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
 <span class="op">}</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></pre></div>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
+                         ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span>,
+                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
+                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+
+<span class="co">## Safer option for vignette building issue</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
+                         ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span><span class="op">)</span></code></pre></div>
+<p>DEVEL:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
+                         ref <span class="op">=</span> <span class="st">"master"</span>,
+                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
+                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+
+<span class="co">## Safer option for vignette building issue</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
+                         ref <span class="op">=</span> <span class="st">"master"</span><span class="op">)</span></code></pre></div>
+</div>
 </div>
 <div id="visit-the-package-website" class="section level1">
 <h1 class="hasAnchor">
@@ -136,6 +185,132 @@
 <div id="news" class="section level1">
 <h1 class="hasAnchor">
 <a href="#news" class="anchor"></a>NEWS</h1>
+</div>
+<div id="isanalytics-109-2021-02-15" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-109-2021-02-15" class="anchor"></a>ISAnalytics 1.0.9 (2021-02-15)</h1>
+<div id="fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Fixed minor issues in internal functions to optimize file system alignment</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-108-2021-02-10" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-108-2021-02-10" class="anchor"></a>ISAnalytics 1.0.8 (2021-02-10)</h1>
+<div id="fixes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes-1" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Fixed minor issues in import_association_file when checking parameters</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-107-2021-02-06" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-107-2021-02-06" class="anchor"></a>ISAnalytics 1.0.7 (2021-02-06)</h1>
+<div id="upgrades" class="section level2">
+<h2 class="hasAnchor">
+<a href="#upgrades" class="anchor"></a>UPGRADES</h2>
+<ul>
+<li>It is now possible to save html reports to file from import_parallel_Vispa2Matrices_auto and import_parallel_Vispa2Matrices_interactive, remove_collisions and compute_near_integrations</li>
+</ul>
+</div>
+<div id="fixes-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes-2" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Fixed sample_statistics: now functions that have data frame output do not produce nested tables. Flat tables are ready to be saved to file or can be nested.</li>
+<li>Simplified association file check logic in remove_collisions: now function blocks only if the af doesn’t contain the needed columns</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-106-2021-02-03" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-106-2021-02-03" class="anchor"></a>ISAnalytics 1.0.6 (2021-02-03)</h1>
+<div id="upgrades-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#upgrades-1" class="anchor"></a>UPGRADES</h2>
+<ul>
+<li>Upgraded import_association_file function: now file alignment is not mandatory anymore and it is possible to save the html report to file</li>
+<li>Updated vignettes and documentation</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-105-2020-11-16" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-105-2020-11-16" class="anchor"></a>ISAnalytics 1.0.5 (2020-11-16)</h1>
+<div id="upgrades-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#upgrades-2" class="anchor"></a>UPGRADES</h2>
+<ul>
+<li>Greatly improved reports for collision removal functionality</li>
+<li>General improvements for all widget reports</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-104-2020-11-10" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-104-2020-11-10" class="anchor"></a>ISAnalytics 1.0.4 (2020-11-10)</h1>
+<div id="fixes-3" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes-3" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Further fixes for printing reports when widgets not available</li>
+<li>Added progress bar to collision processing in <code>remove_collisions</code>
+</li>
+<li>Updated vignettes</li>
+</ul>
+</div>
+<div id="new" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new" class="anchor"></a>NEW</h2>
+<ul>
+<li>Added vignette “Using ISAnalytics without RStudio support”</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-103-2020-11-05" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-103-2020-11-05" class="anchor"></a>ISAnalytics 1.0.3 (2020-11-05)</h1>
+<div id="fixes-4" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes-4" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Fixed missing restarts for non-blocking widgets</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-102-2020-11-04" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-102-2020-11-04" class="anchor"></a>ISAnalytics 1.0.2 (2020-11-04)</h1>
+<div id="fixes-5" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes-5" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Functions that make use of widgets do not interrupt execution anymore if errors are thrown while producing or printing the widgets</li>
+<li>Optimized widget printing for importing functions</li>
+<li>If widgets can’t be printed and verbose option is active, reports are now displayed on console instead (needed for usage in environments that do not have access to a browser)</li>
+<li>Other minor fixes (typos)</li>
+</ul>
+</div>
+<div id="important-notes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#important-notes" class="anchor"></a>IMPORTANT NOTES</h2>
+<ul>
+<li>Vignette building might fail due to the fact that package “knitcitations” is temporarily unavailable through CRAN</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-101-2020-10-29" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-101-2020-10-29" class="anchor"></a>ISAnalytics 1.0.1 (2020-10-29)</h1>
+<ul>
+<li>ISAnalytics is finally in release on bioconductor!</li>
+<li>Bug fixes: fixed a few bugs in importing and recalibration functions</li>
+</ul>
 </div>
 <div id="isanalytics-09915-2020-10-22" class="section level1">
 <h1 class="hasAnchor">
@@ -343,6 +518,7 @@ Add support for multi-quantification matrices to several functions (ISAnalytics 
 <li><a href="https://codecov.io/gh/calabrialab/ISAnalytics"><img src="https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg" alt="codecov"></a></li>
 <li><a href="https://github.com/calabrialab/isanalytics/actions"><img src="https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg" alt="R build status - bioc"></a></li>
 <li><a href="https://www.tidyverse.org/lifecycle/#maturing"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
+<li><a href="https://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics"><img src="http://www.bioconductor.org/shields/build/release/bioc/ISAnalytics.svg" alt="BioC status"></a></li>
 </ul>
 </div>
 </div>
@@ -354,7 +530,7 @@ Add support for multi-quantification matrices to several functions (ISAnalytics 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

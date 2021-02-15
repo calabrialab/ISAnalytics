@@ -8,6 +8,13 @@
 
 <title>Import the association file from disk — import_association_file • ISAnalytics</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -45,6 +52,7 @@
 Imports the association file and immediately performs a check on
 the file system starting from the root to assess the alignment between the
 two." />
+<meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
 
@@ -76,13 +84,19 @@ two." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.9</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -101,6 +115,9 @@ two." />
     <li>
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
+    <li>
+      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -110,7 +127,7 @@ two." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/calabrialab/ISAnalytics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -133,14 +150,20 @@ two." />
     </div>
 
     <div class="ref-description">
-    <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
 
 Imports the association file and immediately performs a check on
 the file system starting from the root to assess the alignment between the
 two.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>import_association_file</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>root</span>, tp_padding <span class='op'>=</span> <span class='fl'>4</span>, dates_format <span class='op'>=</span> <span class='st'>"dmy"</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>import_association_file</span><span class='op'>(</span>
+  <span class='va'>path</span>,
+  root <span class='op'>=</span> <span class='cn'>NULL</span>,
+  tp_padding <span class='op'>=</span> <span class='fl'>4</span>,
+  dates_format <span class='op'>=</span> <span class='st'>"ymd"</span>,
+  export_widget_path <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -151,7 +174,7 @@ two.</p>
     </tr>
     <tr>
       <th>root</th>
-      <td><p>The path on disk of the root folder of Vispa2 output.
+      <td><p>The path on disk of the root folder of Vispa2 output or NULL.
 See details.</p></td>
     </tr>
     <tr>
@@ -164,6 +187,11 @@ specified (ex: 1 becomes 0001 with a tp_padding of 4)</p></td>
       <th>dates_format</th>
       <td><p>A single string indicating how dates should be parsed.
 Must be a value in: <code><a href='date_formats.html'>date_formats()</a></code></p></td>
+    </tr>
+    <tr>
+      <th>export_widget_path</th>
+      <td><p>A path on disk to save produced widgets or NULL
+if the user doesn't wish to save the html file</p></td>
     </tr>
     </table>
 
@@ -199,7 +227,8 @@ system which follows this schema:</p><ul>
 function only looks for PoolIDs in the quantification folder, since it's
 the location of the matrices to import.
 For more details on how to properly use these functions, refer to the
-vignette - vignette("how_to_import_functions")</p>
+vignette - vignette("how_to_import_functions").<br />
+If 'NULL' the file system alignment step is skipped.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='date_formats.html'>date_formats</a></code></p>
@@ -215,9 +244,21 @@ vignette - vignette("how_to_import_functions")</p>
 <span class='op'>)</span>
 <span class='va'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_pth</span>, <span class='st'>"fs"</span><span class='op'>)</span>
-<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'>import_association_file</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>root</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
-</div></pre>
+<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'>import_association_file</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>root</span>, dates_format <span class='op'>=</span> <span class='st'>"dmy"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 4 x 4</span><span>
+#&gt;   ProjectID   concatenatePoolIDSeqRun Found
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                   </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> CLOEXP      POOL6-1                 TRUE 
+#&gt; </span><span style='color: #555555;'>2</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     TRUE 
+#&gt; </span><span style='color: #555555;'>3</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     TRUE 
+#&gt; </span><span style='color: #555555;'>4</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     TRUE 
+#&gt;   Path                                                                          
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                                                                         
+#&gt; </span><span style='color: #555555;'>1</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/VA/CLOEXP/quan…
+#&gt; </span><span style='color: #555555;'>2</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu…
+#&gt; </span><span style='color: #555555;'>3</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu…
+#&gt; </span><span style='color: #555555;'>4</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1101/qu…</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -233,7 +274,7 @@ vignette - vignette("how_to_import_functions")</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

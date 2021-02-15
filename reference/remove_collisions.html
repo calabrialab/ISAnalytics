@@ -8,6 +8,13 @@
 
 <title>Identifies and removes collisions based on the sequence count matrix. — remove_collisions • ISAnalytics</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -48,6 +55,7 @@ independent sample (a unique pair of ProjectID and SubjectID). The function
 tries to decide to which subject an integration should be assigned and if no
 decision can be taken, the integration is completely removed from the data
 frame." />
+<meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
 
@@ -79,13 +87,19 @@ frame." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.9</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -104,6 +118,9 @@ frame." />
     <li>
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
+    <li>
+      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -113,7 +130,7 @@ frame." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/calabrialab/ISAnalytics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -136,7 +153,7 @@ frame." />
     </div>
 
     <div class="ref-description">
-    <p><a href='https://www.tidyverse.org/lifecycle/#experimental'><img src='figures/lifecycle-experimental.svg' alt='Experimental lifecycle'></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#experimental'><img src='figures/lifecycle-experimental.svg' alt='[Experimental]' /></a>
 
 A collision is an integration (aka a unique combination of
 chr, integration_locus and strand) which is observed in more than one
@@ -151,7 +168,9 @@ frame.</p>
   <span class='va'>association_file</span>,
   date_col <span class='op'>=</span> <span class='st'>"SequencingDate"</span>,
   reads_ratio <span class='op'>=</span> <span class='fl'>10</span>,
-  seq_count_col <span class='op'>=</span> <span class='st'>"seqCount"</span>
+  seq_count_col <span class='op'>=</span> <span class='st'>"seqCount"</span>,
+  max_rows_reports <span class='op'>=</span> <span class='fl'>50</span>,
+  save_widget_path <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -184,6 +203,20 @@ to be considered when deciding between seqCount value.</p></td>
       <td><p>For support of multi-quantification matrix -
 the name of the sequence count values column</p></td>
     </tr>
+    <tr>
+      <th>max_rows_reports</th>
+      <td><p>A numeric value, represents the maximum number of
+rows of the reports data frames that can be printed on console
+if the option <code>ISAnalytics.verbose</code> is active. If the data frames are too
+large they won't be printed on console - we recommend using widgets for
+detailed and more accessible info.</p></td>
+    </tr>
+    <tr>
+      <th>save_widget_path</th>
+      <td><p>Either NULL or a path where the html report file
+should be saved. If NULL the report is visualized via browser ONLY (not
+saved on disk).</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -210,16 +243,123 @@ For more details on how to use collision removal functionality:
 <span class='op'>)</span>
 <span class='va'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_pth</span>, <span class='st'>"fs"</span><span class='op'>)</span>
-<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>root</span><span class='op'>)</span>
-<span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></span><span class='op'>(</span>
+<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>root</span>,
+    dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>
+<span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 4 x 4</span><span>
+#&gt;   ProjectID   concatenatePoolIDSeqRun Found
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                   </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> CLOEXP      POOL6-1                 TRUE 
+#&gt; </span><span style='color: #555555;'>2</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     TRUE 
+#&gt; </span><span style='color: #555555;'>3</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     TRUE 
+#&gt; </span><span style='color: #555555;'>4</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     TRUE 
+#&gt;   Path                                                                          
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                                                                         
+#&gt; </span><span style='color: #555555;'>1</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/VA/CLOEXP/quan…
+#&gt; </span><span style='color: #555555;'>2</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu…
+#&gt; </span><span style='color: #555555;'>3</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu…
+#&gt; </span><span style='color: #555555;'>4</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1101/qu…</div><div class='input'><span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></span><span class='op'>(</span>
     <span class='va'>association_file</span>, <span class='cn'>NULL</span>,
     <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>, <span class='st'>"annotated"</span>, <span class='fl'>2</span>, <span class='cn'>NULL</span>, <span class='st'>"ANY"</span>
 <span class='op'>)</span>
-<span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'>remove_collisions</span><span class='op'>(</span><span class='va'>matrices</span>, <span class='va'>association_file</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 1 x 3</span><span>
-#&gt;   ProjectID   PoolID       CompleteAmplificationID                              
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>        </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                                                
-#&gt; </span><span style='color: #555555;'>1</span><span> PROJECT1101 ABY-LR-PL4-… PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14…</div><div class='output co'>#&gt; <span class='message'>Identifying collisions...</span></div><div class='output co'>#&gt; <span class='message'>Processing collisions...</span></div><div class='output co'>#&gt; <span class='message'>Realigning matrices...</span></div><div class='output co'>#&gt; <span class='message'>Finished!</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "--- REPORT: FILES IMPORTED ---"
+#&gt; </span><span style='color: #555555;'># A tibble: 8 x 5</span><span>
+#&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>              
+#&gt; </span><span style='color: #555555;'>1</span><span> CLOEXP      POOL6-1                 fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>2</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>3</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>4</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>5</span><span> CLOEXP      POOL6-1                 seqCount           
+#&gt; </span><span style='color: #555555;'>6</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           
+#&gt; </span><span style='color: #555555;'>7</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           
+#&gt; </span><span style='color: #555555;'>8</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
+#&gt;   Files_chosen                                                                  
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;fs::path&gt;</span><span>                                                                    
+#&gt; </span><span style='color: #555555;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #555555;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1101/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #555555;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1101/qu</span><span>…
+#&gt;   Imported
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>   
+#&gt; </span><span style='color: #555555;'>1</span><span> TRUE    
+#&gt; </span><span style='color: #555555;'>2</span><span> TRUE    
+#&gt; </span><span style='color: #555555;'>3</span><span> TRUE    
+#&gt; </span><span style='color: #555555;'>4</span><span> TRUE    
+#&gt; </span><span style='color: #555555;'>5</span><span> TRUE    
+#&gt; </span><span style='color: #555555;'>6</span><span> TRUE    
+#&gt; </span><span style='color: #555555;'>7</span><span> TRUE    
+#&gt; </span><span style='color: #555555;'>8</span><span> TRUE    
+#&gt; [1] "--- SUMMARY OF FILES CHOSEN FOR IMPORT ---"
+#&gt; </span><span style='color: #555555;'># A tibble: 8 x 4</span><span>
+#&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>              
+#&gt; </span><span style='color: #555555;'>1</span><span> CLOEXP      POOL6-1                 fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>2</span><span> CLOEXP      POOL6-1                 seqCount           
+#&gt; </span><span style='color: #555555;'>3</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>4</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           
+#&gt; </span><span style='color: #555555;'>5</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>6</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           
+#&gt; </span><span style='color: #555555;'>7</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>8</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
+#&gt;   Files_chosen                                                                  
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;fs::path&gt;</span><span>                                                                    
+#&gt; </span><span style='color: #555555;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #555555;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #555555;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1101/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1101/qu</span><span>…
+#&gt; [1] "--- INTEGRATION MATRICES FOUND REPORT ---"
+#&gt; </span><span style='color: #555555;'># A tibble: 8 x 5</span><span>
+#&gt;   ProjectID   concatenatePoolIDSeqRun Anomalies Quantification_type
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                   </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>              
+#&gt; </span><span style='color: #555555;'>1</span><span> CLOEXP      POOL6-1                 FALSE     fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>2</span><span> CLOEXP      POOL6-1                 FALSE     seqCount           
+#&gt; </span><span style='color: #555555;'>3</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>4</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     seqCount           
+#&gt; </span><span style='color: #555555;'>5</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>6</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     seqCount           
+#&gt; </span><span style='color: #555555;'>7</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     fragmentEstimate   
+#&gt; </span><span style='color: #555555;'>8</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     seqCount           
+#&gt;   Files_found                                                                   
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;fs::path&gt;</span><span>                                                                    
+#&gt; </span><span style='color: #555555;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #555555;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #555555;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1101/qu</span><span>…
+#&gt; </span><span style='color: #555555;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmphbUjQ7/fs/PROJECT1101/qu</span><span>…</div><div class='input'><span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'>remove_collisions</span><span class='op'>(</span><span class='va'>matrices</span>, <span class='va'>association_file</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 1 x 3</span><span>
+#&gt;   ProjectID   PoolID           
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>            
+#&gt; </span><span style='color: #555555;'>1</span><span> PROJECT1101 ABY-LR-PL4-POOL54
+#&gt;   CompleteAmplificationID                                                       
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                                                                         
+#&gt; </span><span style='color: #555555;'>1</span><span> PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14_VA2020-mix14_lenti_737.p…</div><div class='output co'>#&gt; <span class='message'>Identifying collisions...</span></div><div class='output co'>#&gt; <span class='message'>Processing collisions...</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
+#&gt; 
+#&gt; [1] "--- SUMMARY ---"
+#&gt; </span><span style='color: #555555;'># A tibble: 4 x 7</span><span>
+#&gt;   SubjectID    count_integrations_before sumSeqReads_before
+#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                            </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>              </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span> VA2020-mix10                      </span><span style='text-decoration: underline;'>2</span><span>092           10</span><span style='text-decoration: underline;'>099</span><span>664
+#&gt; </span><span style='color: #555555;'>2</span><span> VA2020-mix11                      </span><span style='text-decoration: underline;'>1</span><span>332           15</span><span style='text-decoration: underline;'>955</span><span>128
+#&gt; </span><span style='color: #555555;'>3</span><span> VA2020-mix12                       896            8</span><span style='text-decoration: underline;'>172</span><span>644
+#&gt; </span><span style='color: #555555;'>4</span><span> VA2020-mix13                      </span><span style='text-decoration: underline;'>1</span><span>584           10</span><span style='text-decoration: underline;'>035</span><span>460
+#&gt;   count_integrations_after sumSeqReads_after delta_integrations delta_seqReads
+#&gt;                      </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>             </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>              </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>          </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>
+#&gt; </span><span style='color: #555555;'>1</span><span>                     </span><span style='text-decoration: underline;'>1</span><span>714           5</span><span style='text-decoration: underline;'>052</span><span>150                378        5</span><span style='text-decoration: underline;'>047</span><span>514
+#&gt; </span><span style='color: #555555;'>2</span><span>                      994           7</span><span style='text-decoration: underline;'>980</span><span>886                338        7</span><span style='text-decoration: underline;'>974</span><span>242
+#&gt; </span><span style='color: #555555;'>3</span><span>                      614           4</span><span style='text-decoration: underline;'>088</span><span>054                282        4</span><span style='text-decoration: underline;'>084</span><span>590
+#&gt; </span><span style='color: #555555;'>4</span><span>                     </span><span style='text-decoration: underline;'>1</span><span>258           5</span><span style='text-decoration: underline;'>019</span><span>402                326        5</span><span style='text-decoration: underline;'>016</span><span>058</div><div class='output co'>#&gt; <span class='message'>Realigning matrices...</span></div><div class='output co'>#&gt; <span class='message'>Finished!</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -236,7 +376,7 @@ For more details on how to use collision removal functionality:
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

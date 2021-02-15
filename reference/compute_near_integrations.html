@@ -8,6 +8,13 @@
 
 <title>Scans input matrix to find and merge near integration sites. — compute_near_integrations • ISAnalytics</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -45,6 +52,7 @@
 This function scans the input integration matrix to detect eventual
 integration sites that are too &quot;near&quot; to each other and merges them
 into single integration sites adjusting their values if needed." />
+<meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
 
@@ -76,13 +84,19 @@ into single integration sites adjusting their values if needed." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.9</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -101,6 +115,9 @@ into single integration sites adjusting their values if needed." />
     <li>
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
+    <li>
+      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -110,7 +127,7 @@ into single integration sites adjusting their values if needed." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/calabrialab/ISAnalytics/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -133,7 +150,7 @@ into single integration sites adjusting their values if needed." />
     </div>
 
     <div class="ref-description">
-    <p><a href='https://www.tidyverse.org/lifecycle/#experimental'><img src='figures/lifecycle-experimental.svg' alt='Experimental lifecycle'></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#experimental'><img src='figures/lifecycle-experimental.svg' alt='[Experimental]' /></a>
 
 This function scans the input integration matrix to detect eventual
 integration sites that are too "near" to each other and merges them
@@ -148,7 +165,8 @@ into single integration sites adjusting their values if needed.</p>
   max_value_column <span class='op'>=</span> <span class='st'>"seqCount"</span>,
   map_as_widget <span class='op'>=</span> <span class='cn'>TRUE</span>,
   map_as_file <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  file_path <span class='op'>=</span> <span class='st'>"."</span>
+  file_path <span class='op'>=</span> <span class='st'>"."</span>,
+  export_widget_path <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -201,6 +219,11 @@ searching the maximum value</p></td>
 saved. By default the function produces a folder in the current
 working directory and generates file names with time stamps.</p></td>
     </tr>
+    <tr>
+      <th>export_widget_path</th>
+      <td><p>A path on disk to save produced widgets or NULL
+if the user doesn't wish to save the html file</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -252,7 +275,7 @@ all quantification matrices.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
