@@ -114,6 +114,13 @@ Website](https://calabrialab.github.io/ISAnalytics/)
 
 # NEWS
 
+# ISAnalytics 1.1.9 (2021-02-17)
+
+## FIXES
+
+  - Fixed minor issues in internal functions with absolute file paths &
+    corrected typos
+
 # ISAnalytics 1.1.8 (2020-02-15)
 
 ## FIXES
