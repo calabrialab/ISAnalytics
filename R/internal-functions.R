@@ -236,35 +236,40 @@
     if (root_folder == "") {
         results_df <- purrr::pmap(
             temp_df,
-            function(ProjectID, concatenatePoolIDSeqRun,
-    PathToFolderProjectID) {
+            function(...) {
+                cur <- tibble::tibble(...)
                 pattern <- paste0(
                     "^", root_regexp,
                     stringr::str_replace_all(
-                        PathToFolderProjectID, "\\/", "\\\\/"
+                        cur$PathToFolderProjectID, "\\/", "\\\\/"
                     ),
                     "\\/quantification\\/",
-                    concatenatePoolIDSeqRun, "$"
+                    cur$concatenatePoolIDSeqRun, "$"
                 )
                 pattern <- stringr::str_replace_all(pattern,
                     pattern = "\\\\\\/\\\\\\/",
                     replacement = "\\\\/"
                 )
-                dirExists <- file.exists(PathToFolderProjectID)
+                dirExists <- file.exists(cur$PathToFolderProjectID)
                 value <- if (!dirExists) {
                     NA_character_
                 } else {
                     tree_struct <- fs::dir_ls(
-                        path = PathToFolderProjectID, recurse = TRUE,
+                        path = cur$PathToFolderProjectID, recurse = TRUE,
                         type = "directory", fail = FALSE
                     )
                     found <- stringr::str_extract_all(tree_struct, pattern)
                     found <- unlist(found)
+                    if (purrr::is_empty(found)) {
+                        NA_character_
+                    } else {
+                        found
+                    }
                 }
                 tibble::tibble(
-                    ProjectID = ProjectID,
+                    ProjectID = cur$ProjectID,
                     concatenatePoolIDSeqRun =
-                        concatenatePoolIDSeqRun,
+                        cur$concatenatePoolIDSeqRun,
                     Path = value
                 )
             }
@@ -276,15 +281,15 @@
         )
         results_df <- purrr::pmap(
             temp_df,
-            function(ProjectID, concatenatePoolIDSeqRun,
-    PathToFolderProjectID) {
+            function(...) {
+                cur <- tibble::tibble(...)
                 pattern <- paste0(
                     "^", root_regexp,
                     stringr::str_replace_all(
-                        PathToFolderProjectID, "\\/", "\\\\/"
+                        cur$PathToFolderProjectID, "\\/", "\\\\/"
                     ),
                     "\\/quantification\\/",
-                    concatenatePoolIDSeqRun, "$"
+                    cur$concatenatePoolIDSeqRun, "$"
                 )
                 pattern <- stringr::str_replace_all(pattern,
                     pattern = "\\\\\\/\\\\\\/",
@@ -298,9 +303,9 @@
                     found
                 }
                 tibble::tibble(
-                    ProjectID = ProjectID,
+                    ProjectID = cur$ProjectID,
                     concatenatePoolIDSeqRun =
-                        concatenatePoolIDSeqRun,
+                        cur$concatenatePoolIDSeqRun,
                     Path = value
                 )
             }
@@ -377,7 +382,7 @@
                 if (!"PathToFolderProjectID" %in% colnames(association_file)) {
                     warning(.af_missing_path_warning(FALSE))
                 }
-            } else if (!is.null(root) & !"PathToFolderProjectID"
+            } else if (!is.null(root) && !"PathToFolderProjectID"
             %in% colnames(association_file)) {
                 stop(.af_missing_path_warning(TRUE))
             }
