@@ -17,7 +17,7 @@
 #' ## Oncogene and tumor suppressor genes files
 #' These files are included in the package for user convenience and are
 #' simply UniProt files with gene annotations for human and mouse.
-#' For more details on how this files were generated use the help `?filname`
+#' For more details on how this files were generated use the help `?filename`
 #' function.
 #'
 #' ## Known oncogenes
@@ -98,7 +98,8 @@ CIS_volcano_plot <- function(x,
     significance_threshold = 0.05,
     annotation_threshold_ontots = 0.1,
     facet_rows = NULL,
-    facet_cols = NULL) {
+    facet_cols = NULL,
+    ProjectID = NULL) {
     stopifnot(is.data.frame(x))
     stopifnot(is.character(onco_db_file) & length(onco_db_file) == 1)
     stopifnot(is.character(tumor_suppressors_db_file) &
@@ -112,6 +113,11 @@ CIS_volcano_plot <- function(x,
     stopifnot(is.numeric(annotation_threshold_ontots) |
         is.integer(annotation_threshold_ontots) &
             length(annotation_threshold_ontots) == 1)
+    stopifnot(is.null(ProjectID) || (is.character(ProjectID) &
+                                         length(ProjectID == 1)))
+    if (is.null(ProjectID)) {
+        ProjectID <- ""
+    }
     ## Load onco and ts
     oncots_to_use <- .load_onco_ts_genes(
         onco_db_file,
@@ -176,10 +182,10 @@ CIS_volcano_plot <- function(x,
     plot_cis_fdr_slice <- ggplot2::ggplot(
         data = cis_grubbs_df,
         ggplot2::aes(
-            y = .data$minus_log_p_fdr,
-            x = .data$neg_zscore_minus_log2_int_freq_tolerance,
-            color = .data$KnownGeneClass,
-            fill = .data$KnownGeneClass
+            y = minus_log_p_fdr,
+            x = neg_zscore_minus_log2_int_freq_tolerance,
+            color = KnownGeneClass,
+            fill = KnownGeneClass
         ),
         na.rm = TRUE, se = TRUE
     ) +
@@ -190,16 +196,15 @@ CIS_volcano_plot <- function(x,
         ) +
         ggplot2::scale_y_continuous(limits = c(0, max(c(
             (significance_threshold_minus_log_p + 0.5),
-            max(.data$minus_log_p_fdr, na.rm = TRUE)
-        )))) +
+            max(cis_grubbs_df$minus_log_p_fdr, na.rm = TRUE)
+        ), na.rm = TRUE))) +
         ggplot2::scale_x_continuous(breaks = seq(-4, 4, 2)) +
-        ggplot2::facet_grid(rows = {{ facet_rows }}, cols = {{ facet_cols }}) +
         ggrepel::geom_label_repel(
             data = dplyr::filter(
                 cis_grubbs_df,
-                .data$tdist_fdr < significance_threshold
+                tdist_fdr < significance_threshold
             ),
-            ggplot2::aes(label = .data$GeneName),
+            ggplot2::aes(label = GeneName),
             box.padding = ggplot2::unit(0.35, "lines"),
             point.padding = ggplot2::unit(0.3, "lines"),
             color = "white",
@@ -226,10 +231,10 @@ CIS_volcano_plot <- function(x,
             axis.text.y = ggplot2::element_text(size = 16),
             axis.title = ggplot2::element_text(size = 16),
             plot.title = ggplot2::element_text(size = 20)
-        ) +
-        ggplot2::labs(list(
+         ) +
+        ggplot2::labs(
             title = paste(
-                .data$ProjectID,
+                ProjectID,
                 "- Volcano plot of IS gene frequency and",
                 "CIS results"
             ),
@@ -246,7 +251,20 @@ CIS_volcano_plot <- function(x,
                 "labeled as 'Other'). Annotated if P-value > ",
                 round(annotation_threshold_ontots_log, 3)
             )
-        ))
+        )
+    if (!is.null(facet_rows) & !is.null(facet_cols)) {
+        plot_cis_fdr_slice <- plot_cis_fdr_slice +
+            ggplot2::facet_grid(rows = {{ facet_rows }},
+                                cols = {{ facet_cols }})
+    } else if (!is.null(facet_rows)) {
+        plot_cis_fdr_slice <- plot_cis_fdr_slice +
+            ggplot2::facet_wrap({{ facet_rows }}, nrow = length(facet_rows),
+                                ncol = 1)
+    } else if (!is.null(facet_cols)) {
+        plot_cis_fdr_slice <- plot_cis_fdr_slice +
+            ggplot2::facet_wrap({{ facet_cols }}, ncol = length(facet_cols),
+                                nrow = 1)
+    }
     return(plot_cis_fdr_slice)
 }
 
