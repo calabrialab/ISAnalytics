@@ -1005,13 +1005,18 @@
     } else {
         htmltools::p()
     }
-    additional_info <- if (!is.null(add_info)) {
-        .add_info_widget(add_info)
-    } else {
+    additional_info <- if (is.null(add_info) || nrow(add_info) == 0) {
         htmltools::p()
+    } else {
+        .add_info_widget(add_info)
     }
     post_join_info <- .sc_stats_input_joined(input_joined_df, quant_cols)
-    pre_process_matrix <- .generate_react_table(input_df[-missing, ])
+    ppm <- if (length(missing) > 0) {
+        input_df[-missing, ]
+    } else {
+        input_df
+    }
+    pre_process_matrix <- .generate_react_table(ppm)
     pre_sharing <- .sharing_widget(input_joined_df, "PRE-PROCESSING")
     summary_w <- .generate_react_table(summary)
 

@@ -3,6 +3,25 @@
 #------------------------------------------------------------------------------#
 ## All functions in this file are NOT exported, to be used internally only.
 
+#### ---- Internals for multiple functions/general purpose ----####
+# Returns the file format for each of the file paths passed as a parameter.
+#' @importFrom fs path_ext
+#' @importFrom tools file_path_sans_ext
+#' @importFrom purrr is_empty
+.check_file_extension <- function(file_path) {
+    compressed_formats <- c("gz", "bz2", "xz", "zip")
+    ## Get last portion of file name
+    last <- fs::path_ext(file_path)
+    compressed <- which(last %in% compressed_formats)
+    if (!purrr::is_empty(compressed)) {
+        ## for compressed files try extracting the true extension
+        file_path[compressed] <- tools::file_path_sans_ext(
+            file_path[compressed])
+        last <- fs::path_ext(file_path)
+    }
+    return(last)
+}
+
 #### ---- Internals for checks on integration matrices----####
 
 # Internal helper function for checking mandatory vars presence in x.
@@ -2945,14 +2964,14 @@
     species) {
     if (!file.exists(onco_db_file)) {
         stop(paste(
-            "`onco_db_file` was not found, check you provided the",
+            "`onco_db_file` was not found, check if you provided the",
             "correct path for the file"
         ))
     }
     if (!file.exists(tumor_suppressors_db_file)) {
         stop(paste(
             "`tumor_suppressors_db_file` was not found,",
-            "check you provided the",
+            "check if you provided the",
             "correct path for the file"
         ))
     }

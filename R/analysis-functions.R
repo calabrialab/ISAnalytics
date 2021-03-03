@@ -771,15 +771,35 @@ CIS_grubbs <- function(x,
     stopifnot(is.logical(add_standard_padjust) &
         length(add_standard_padjust) == 1)
     stopifnot(file.exists(genomic_annotation_file))
+    # Determine file extension
+    ext <- .check_file_extension(genomic_annotation_file)
+
     # Try to import annotation file
-    refgenes <- read.csv(
-        file = genomic_annotation_file,
-        header = TRUE, fill = TRUE, sep = "\t",
-        check.names = FALSE,
-        na.strings = c("NONE", "NA", "NULL", "NaN", "")
-    )
-    refgenes <- tibble::as_tibble(refgenes) %>%
-        dplyr::mutate(chrom = stringr::str_replace_all(.data$chrom, "chr", ""))
+    if (ext == "tsv") {
+        refgenes <- read.csv(
+            file = genomic_annotation_file,
+            header = TRUE, fill = TRUE, sep = "\t",
+            check.names = FALSE,
+            na.strings = c("NONE", "NA", "NULL", "NaN", "")
+        )
+        refgenes <- tibble::as_tibble(refgenes) %>%
+            dplyr::mutate(chrom = stringr::str_replace_all(.data$chrom,
+                                                           "chr", ""))
+    } else if (ext == "csv") {
+        refgenes <- read.csv(
+            file = genomic_annotation_file,
+            header = TRUE, fill = TRUE,
+            check.names = FALSE,
+            na.strings = c("NONE", "NA", "NULL", "NaN", "")
+        )
+        refgenes <- tibble::as_tibble(refgenes) %>%
+            dplyr::mutate(chrom = stringr::str_replace_all(.data$chrom,
+                                                           "chr", ""))
+    } else {
+        stop(paste("The genomic annotation file must be either in",
+                   ".tsv or .csv format (compressed or not)"))
+    }
+
     # Check annotation file format
     if (!all(c(
         "name2", "chrom", "strand", "min_txStart", "max_txEnd",
@@ -811,9 +831,11 @@ CIS_grubbs <- function(x,
             median_bp_integration_locus =
                 stats::median(.data$integration_locus),
             distinct_orientations = dplyr::n_distinct(.data$strand),
-            describe = psych::describe(.data$integration_locus),
+            describe = list(tibble::as_tibble(
+                psych::describe(.data$integration_locus))),
             .groups = "drop"
-        )
+        ) %>%
+        tidyr::unnest(.data$describe, keep_empty = TRUE, names_sep = "_")
 
     df_bygene_withannotation <- df_by_gene %>%
         dplyr::inner_join(refgenes, by = c(
