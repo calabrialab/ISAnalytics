@@ -143,10 +143,11 @@
 #' @importFrom tidyr pivot_longer
 #' @importFrom dplyr arrange all_of filter
 #' @importFrom forcats fct_inseq as_factor
-.messy_to_tidy <- function(df) {
+.messy_to_tidy <- function(df, to_exclude) {
     exp_cols <- which(!(colnames(df) %in% c(
         mandatory_IS_vars(),
-        annotation_IS_vars()
+        annotation_IS_vars(),
+        to_exclude
     )))
     isadf_tidy <- df %>%
         tidyr::pivot_longer(
@@ -158,6 +159,7 @@
         dplyr::filter(.data$Value > 0)
     isadf_tidy
 }
+
 
 # Internal function to auto-detect the type of IS based on the headers.
 #

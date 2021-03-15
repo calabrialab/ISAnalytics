@@ -29,8 +29,9 @@
 #'     package = "ISAnalytics"
 #' )
 #' isa_dataframe <- import_single_Vispa2Matrix(path_to_file)
-import_single_Vispa2Matrix <- function(path) {
+import_single_Vispa2Matrix <- function(path, to_exclude = NULL) {
     stopifnot(!missing(path) & is.character(path))
+    stopifnot(is.null(to_exclude) || is.character(to_exclude))
     if (!file.exists(path)) {
         stop(paste("File not found at", path))
     }
@@ -51,10 +52,13 @@ import_single_Vispa2Matrix <- function(path) {
     if (df_type == "MALFORMED") {
         warning(.malformed_ISmatrix_warning())
     }
-    isadf <- .messy_to_tidy(df)
+    isadf <- if (is.null(to_exclude)) {
+        .messy_to_tidy(df, "")
+    } else {
+        .messy_to_tidy(df, to_exclude)
+    }
     isadf
 }
-
 
 #' Import the association file from disk
 #'
