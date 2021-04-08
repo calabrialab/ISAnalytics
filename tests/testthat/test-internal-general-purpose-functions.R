@@ -1,5 +1,3 @@
-context("Internal general purpose")
-
 library(ISAnalytics)
 
 #------------------------------------------------------------------------------#
@@ -31,12 +29,13 @@ test_that(".check_file_extension works with non comp file", {
 })
 
 test_that(".check_file_extension works with multiple input", {
-  checks <- .check_file_extension(
-    c(
-      sample_xz_file,
-      sample_zip_file,
-      sample_tsv_file
-    ))
-  expected <- c("tsv", "", "tsv")
-  expect_equal(checks, expected)
+    checks <- .check_file_extension(
+        c(
+            sample_xz_file,
+            sample_zip_file,
+            sample_tsv_file
+        )
+    )
+    expected <- c("tsv", "", "tsv")
+    expect_equal(checks, expected)
 })

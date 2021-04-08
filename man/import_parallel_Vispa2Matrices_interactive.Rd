@@ -6,24 +6,18 @@
 \usage{
 import_parallel_Vispa2Matrices_interactive(
   association_file,
-  root,
   quantification_type,
   matrix_type = "annotated",
   workers = 2,
-  tp_padding = 4,
-  dates_format = "ymd",
-  multi_quant_matrix = FALSE,
-  export_widget_path = NULL,
+  multi_quant_matrix = TRUE,
+  export_report_path = NULL,
   ...
 )
 }
 \arguments{
 \item{association_file}{A single string containing the path to the
-association file on disk, or a tibble resulting from the previous call of
+association file on disk, or a data frame resulting from a previous call to
 \code{import_association_file}}
-
-\item{root}{A single string containing the path to the root folder containing
-Vispa2 output. Can be NULL if association_file parameter is a tibble}
 
 \item{quantification_type}{A vector of requested quantification_types. Must
 be one in \code{quantification_types()}}
@@ -31,28 +25,23 @@ be one in \code{quantification_types()}}
 \item{matrix_type}{A single string representing the type of matrices to
 be imported. Can only be one in \code{"annotated"} or \code{"not_annotated"}}
 
-\item{workers}{A single number representing the number of parallel workers to
-use for the import}
-
-\item{tp_padding}{Timepoint padding, indicates the number of digits of the
-"Timepoint" column once imported. Fills the content with 0s up to the length
-specified (ex: 1 becomes 0001 with a tp_padding of 4)}
-
-\item{dates_format}{A single string indicating how dates should be parsed.
-Must be a value in: \code{date_formats()}}
+\item{workers}{A single integer representing the number
+of parallel workers to use for the import}
 
 \item{multi_quant_matrix}{If set to TRUE will produce a
 multi-quantification matrix (data frame) through \code{comparison_matrix}
 instead of a list.}
 
-\item{export_widget_path}{A path on disk to save produced widgets or NULL
-if the user doesn't wish to save the html file}
+\item{export_report_path}{A path on disk to save produced import report
+or NULL if the user doesn't wish to save the html file}
 
-\item{...}{Additional arguments to pass to \code{comparison_matrix}}
+\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Additional named arguments
+to pass to \code{ìmport_association_file} and \code{comparison_matrix}}
 }
 \value{
-A named list of tibbles containing data from all imported integration
-matrices, divided by quantification type
+A named list of data frames containing data from
+all imported integration
+matrices, divided by quantification type or a multi-quantification matrix
 }
 \description{
 \lifecycle{maturing}
@@ -82,13 +71,17 @@ shown in html format.
 # Can't run because it's interactive and requires user input
 matrices <- import_parallel_Vispa2Matrices_interactive(
     association_file,
-    root, quantification_type, matrix_type, workers,
-    dates_format = "dmy"
+    quantification_type,
+    matrix_type = "annotated",
+    workers = 2,
+    multi_quant_matrix = FALSE,
+    export_report_path = NULL,
 )
 }
 }
 \seealso{
-\code{\link{comparison_matrix}}
+\code{\link{comparison_matrix}},
+\code{\link{import_association_file}}
 
 Other Import functions: 
 \code{\link{import_association_file}()},

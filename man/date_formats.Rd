@@ -19,7 +19,7 @@ All options correspond to \code{lubridate} functions:
 \item ydm: year, day, month
 \item mdy: month, day, year
 \item myd: month, year, day
-\item dmy: day, month, year - default value
+\item dmy: day, month, year
 \item dym: day, year, month
 \item yq: year quantile
 }

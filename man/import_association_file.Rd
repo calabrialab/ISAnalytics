@@ -9,6 +9,8 @@ import_association_file(
   root = NULL,
   tp_padding = 4,
   dates_format = "ymd",
+  separator = "\\t",
+  filter_for = NULL,
   export_widget_path = NULL
 )
 }
@@ -24,6 +26,15 @@ specified (ex: 1 becomes 0001 with a tp_padding of 4)}
 
 \item{dates_format}{A single string indicating how dates should be parsed.
 Must be a value in: \code{date_formats()}}
+
+\item{separator}{The column separator used in the file}
+
+\item{filter_for}{A named list where names represent column names that
+must be filtered. For example: \verb{list(ProjectID = c("PROJECT1", "PROJECT2))}
+will filter the association file so that it contains only those rows
+for which the value of the column "ProjectID" is one of the specified
+values. If multiple columns are present in the list all filtering
+conditions are applied as a logical AND.}
 
 \item{export_widget_path}{A path on disk to save produced widgets or NULL
 if the user doesn't wish to save the html file}

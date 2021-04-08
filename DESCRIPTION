@@ -1,6 +1,6 @@
 Package: ISAnalytics
 Title: Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies
-Version: 1.0.10
+Version: 1.0.11
 Date: 2020-07-03
 Authors@R: c(
   person(given = "Andrea",
@@ -45,7 +45,10 @@ Imports:
     stats,
     upsetjs,
     psych,
-    grDevices
+    grDevices,
+    data.table,
+    readxl,
+    tools
 Encoding: UTF-8
 LazyData: false
 Roxygen: list(markdown = TRUE)
@@ -59,7 +62,9 @@ Suggests:
     sessioninfo,
     rmarkdown,
     roxygen2,
-    vegan
+    vegan,
+    withr
 VignetteBuilder: knitr
 RdMacros: 
     lifecycle
+Config/testthat/edition: 3

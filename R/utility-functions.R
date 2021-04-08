@@ -87,7 +87,7 @@ generate_Vispa2_launch_AF <- function(association_file, project, pool, path) {
     stopifnot(is.character(project))
     stopifnot(is.character(pool))
     stopifnot(length(project) == length(pool))
-    stopifnot(.check_af_correctness(association_file))
+    stopifnot(all(reduced_AF_columns() %in% colnames(association_file)))
     stopifnot(is.character(path) & length(path) == 1)
     path <- fs::as_fs_path(path)
     if (!fs::file_exists(path)) {

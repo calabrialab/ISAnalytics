@@ -72,15 +72,17 @@ To install the package run the following code:
 
 ```{r installBioc, eval=FALSE}
 ## For release version
-if(!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+      install.packages("BiocManager")
+  }
 BiocManager::install("ISAnalytics")
 
 ## For devel version
-if(!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+      install.packages("BiocManager")
+  }
 # The following initializes usage of Bioc devel
-BiocManager::install(version='devel')
+BiocManager::install(version = "devel")
 BiocManager::install("ISAnalytics")
 ```
 
@@ -89,29 +91,33 @@ To install from GitHub:
 ```{r installGitHub, eval=FALSE}
 # For release version
 if (!require(devtools)) {
-  install.packages("devtools")
+    install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_12",
-                         dependencies = TRUE,
-                         build_vignettes = TRUE)
+    ref = "RELEASE_3_12",
+    dependencies = TRUE,
+    build_vignettes = TRUE
+)
 
 ## Safer option for vignette building issue
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_12")
+    ref = "RELEASE_3_12"
+)
 
 # For devel version
 if (!require(devtools)) {
-  install.packages("devtools")
+    install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master",
-                         dependencies = TRUE,
-                         build_vignettes = TRUE)
+    ref = "master",
+    dependencies = TRUE,
+    build_vignettes = TRUE
+)
 
 ## Safer option for vignette building issue
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master")
+    ref = "master"
+)
 ```
 ```{r}
 library(ISAnalytics)
@@ -152,15 +158,15 @@ does just that, according to the grouping variables, meaning the names of
 the columns in the association file to perform a `group_by` operation with, 
 creates a summary which includes:
 
-* `FusionPrimerPCRDate` - The minimum date in the group for this variable
-* `LinearPCRDate` - The minimum date in the group for this variable
-* `VCN` - The mean of "VCN" column for each group
-* `Avg_DNAngUsed` - The mean of "DNAngUsed "column for each group
-* `Kapa` - The mean of "Kapa" column for each group
-* `DNAngUsed` - The sum of "DNAngUsed" column for each group
-* `ulForPool` - The sum of "ulForPool" column for each group
-* `AggregateMeta` - A string obtained by concatenation of all of the grouping 
-variables separated by "_"
+* `FusionPrimerPCRDate_min` - The minimum date in the group for this variable
+* `LinearPCRDate_min` - The minimum date in the group for this variable
+* `VCN_avg` - The mean of "VCN" column for each group
+* `DNAngUsed_avg` - The mean of "DNAngUsed "column for each group
+* `Kapa_avg` - The mean of "Kapa" column for each group
+* `DNAngUsed_sum` - The sum of "DNAngUsed" column for each group
+* `ulForPool_sum` - The sum of "ulForPool" column for each group
+* `AggregateMeta_sum` - A string obtained by concatenation of all 
+of the grouping variables separated by "_"
 
 ## Typical workflow
 
@@ -169,16 +175,17 @@ information on import function please view the vignette
 "How to use import functions".
 
 ```{r}
-options(ISAnalytics.widgets = FALSE)
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
-)
+withr::with_options(list(ISAnalytics.widgets = FALSE), {
+    path_AF <- system.file("extdata", "ex_association_file.tsv",
+        package = "ISAnalytics"
+    )
 
-root_correct <- system.file("extdata", "fs.zip",
-    package = "ISAnalytics"
-)
-root_correct <- unzip_file_system(root_correct, "fs")
-association_file <- import_association_file(path_AF, root_correct)
+    root_correct <- system.file("extdata", "fs.zip",
+        package = "ISAnalytics"
+    )
+    root_correct <- unzip_file_system(root_correct, "fs")
+    association_file <- import_association_file(path_AF, root_correct)
+})
 ```
 
 Perform aggregation:
@@ -207,22 +214,24 @@ file and is linked to the single Vispa2 run. In some cases it's useful to
 perform aggregation on those info too. If you set the parameter to `TRUE`, 
 besides the columns mentioned before you will also have:
 
-* `BARCODE_MUX` - The sum of the "BARCODE_MUX" column for the group
-* `TRIMMING_FINAL_LTRLC` - The sum of the "TRIMMING_FINAL_LTRLC" column for 
+* `BARCODE_MUX_sum` - The sum of the "BARCODE_MUX" column for the group
+* `TRIMMING_FINAL_LTRLC_sum` - The sum of the "TRIMMING_FINAL_LTRLC" column for 
 the group
-* `LV_MAPPED` - The sum of the "LV_MAPPED" column for the group
-* `BWA_MAPPED_OVERALL` - The sum of the "BWA_MAPPED_OVERALL" column for the 
+* `LV_MAPPED_sum` - The sum of the "LV_MAPPED" column for the group
+* `BWA_MAPPED_OVERALL_sum` - The sum of the "BWA_MAPPED_OVERALL" column for the 
 group
-* `ISS_MAPPED_PP` - The sum of the "ISS_MAPPED_PP" column for the group
+* `ISS_MAPPED_PP_sum` - The sum of the "ISS_MAPPED_PP" column for the group
 
-```{r R.options=options(ISAnalytics.widgets = FALSE)}
-aggregated_meta <- aggregate_metadata(association_file,
-    grouping_keys = c(
-        "SubjectID", "CellMarker",
-        "Tissue", "TimePoint"
-    ),
-    import_stats = TRUE
-)
+```{r}
+withr::with_options(list(ISAnalytics.widgets = FALSE), {
+    aggregated_meta <- aggregate_metadata(association_file,
+        grouping_keys = c(
+            "SubjectID", "CellMarker",
+            "Tissue", "TimePoint"
+        ),
+        import_stats = TRUE
+    )
+})
 ```
 
 ```{r echo=FALSE}
@@ -244,13 +253,15 @@ columns contained in the association file that are related to the samples.
 Import your association file (see previous section) and then import your 
 matrices:
 
-```{r R.options=options(ISAnalytics.widgets = FALSE)}
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = association_file, root = NULL,
-    quantification_type = c("fragmentEstimate", "seqCount"),
-    matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY"
-)
+```{r}
+withr::with_options(list(ISAnalytics.widgets = FALSE), {
+    matrices <- import_parallel_Vispa2Matrices_auto(
+        association_file = association_file, root = NULL,
+        quantification_type = c("fragmentEstimate", "seqCount"),
+        matrix_type = "annotated", workers = 2, patterns = NULL,
+        matching_opt = "ANY", multi_quant_matrix = FALSE
+    )
+})
 ```
 
 The function `aggregate_values_by_key` can perform the aggregation both on the 
@@ -261,8 +272,10 @@ list of matrices and a single matrix.
 aggregated_matrices <- aggregate_values_by_key(matrices, association_file)
 
 # Takes a single matrix and produces a single matrix as output
-aggregated_matrices_single <- aggregate_values_by_key(matrices$seqCount, 
-                                                      association_file)
+aggregated_matrices_single <- aggregate_values_by_key(
+    matrices$seqCount,
+    association_file
+)
 ```
 
 ```{r echo=FALSE}
@@ -312,7 +325,7 @@ agg2 <- aggregate_values_by_key(
     x = matrices$seqCount,
     association_file = association_file,
     key = "SubjectID",
-    lambda = list(mean = ~mean(.x, na.rm = TRUE))
+    lambda = list(mean = ~ mean(.x, na.rm = TRUE))
 )
 ```
 

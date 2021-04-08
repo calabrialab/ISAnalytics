@@ -2,15 +2,23 @@
 % Please edit documentation in R/analysis-functions.R
 \name{top_integrations}
 \alias{top_integrations}
-\title{Sorts and keeps the top n integration sites in a data frame.}
+\title{Sorts and keeps the top n integration sites based on the values
+in a given column.}
 \usage{
-top_integrations(x, n = 50, columns = "RelAbundance", keep = "everything")
+top_integrations(
+  x,
+  n = 50,
+  columns = "fragmentEstimate_sum_RelAbundance",
+  keep = "everything",
+  key = NULL
+)
 }
 \arguments{
 \item{x}{An integration matrix (data frame containing
 \code{mandatory_IS_vars()})}
 
-\item{n}{How many rows should the output have? Must be numeric
+\item{n}{How many integrations should be sliced (in total or
+for each group)? Must be numeric
 or integer and greater than 0}
 
 \item{columns}{Columns to use for the sorting. If more than a column
@@ -19,9 +27,14 @@ secondary ordering on all other columns}
 
 \item{keep}{Names of the columns to keep besides \code{mandatory_IS_vars()}
 and \code{columns}}
+
+\item{key}{Either \code{NULL} or a character vector of column names to group
+by. If not \code{NULL} the input will be grouped and the top fraction will
+be extracted from each group.}
 }
 \value{
-A data frame with \code{n} rows
+Either a data frame with at most n rows or
+a data frames with at most n*(number of groups) rows.
 }
 \description{
 \lifecycle{experimental}
@@ -30,8 +43,8 @@ the columns specified and the top n rows will be returned as output.
 The user can choose to keep additional columns in the output
 by passing a vector of column names or passing 2 "shortcuts":
 \itemize{
-\item \code{keep} = "everything" keeps all columns in the original data frame
-\item \code{keep} = "nothing" only keeps the mandatory columns
+\item \code{keep = "everything"} keeps all columns in the original data frame
+\item \code{keep = "nothing"} only keeps the mandatory columns
 (\code{mandatory_IS_vars()}) plus the columns in the \code{columns} parameter.
 }
 }
@@ -49,6 +62,12 @@ top <- top_integrations(smpl,
     n = 3,
     columns = c("Value", "Value2"),
     keep = "nothing"
+)
+top_key <- top_integrations(smpl,
+    n = 3,
+    columns = "Value",
+    keep = "Value2",
+    key = "CompleteAmplificationID"
 )
 }
 \seealso{

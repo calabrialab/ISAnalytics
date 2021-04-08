@@ -8,22 +8,61 @@
     )
 }
 
-.af_missing_path_warning <- function(alignment) {
-    if (alignment) {
-        paste(
-            "Column 'PathToFolderProjectID' is missing, can't proceed",
-            "with file system alignment"
+# Signals the user that file system alignment can't be performed because
+# 'PathToFolderProjectID' is missing.
+# USED IN:
+# - .check_file_system_alignment
+.af_missing_pathfolder_error <- function() {
+    c("Column 'PathToFolderProjectID' is missing",
+        x = "Can't proceed with file system alignment",
+        i = paste(
+            "To import metadata without performing file system aligment",
+            "set the parameter 'root' to NULL"
         )
-    } else {
-        paste("Column 'PathToFolderProjectID' is missing")
-    }
+    )
 }
 
+# Signals the user that the column
+# 'Path' is missing (needed for matrix import).
+# USED IN:
+# - import_parallel_Vispa2Matrices
 .af_missing_path_error <- function() {
-    paste(
-        "Column 'Path' not found in the association file,",
-        "file system alignment is necessary for this step. Please",
-        "re-import the association file with the alignment feature"
+    c("Column 'Path' not found in the association file",
+        x = paste(
+            "File system alignment is necessary for this step. Please",
+            "re-import the association file with the alignment feature"
+        )
+    )
+}
+
+# Produces a mini-report to print after file reading only if verbose is active
+# USED IN:
+# - import_associaton_file
+.summary_af_import_msg <- function(pars_prob, dates_prob, cols_prob, crit_na,
+    checks) {
+    c(
+        "*** Association file import summary ***",
+        i = "For detailed report please set option 'ISAnalytics.widgets' to TRUE",
+        paste0("Parsing problems detected: ", !is.null(pars_prob)),
+        paste0("Date parsing problems: ", !is.null(dates_prob)),
+        paste0("Column problems detected: ", !is.null(cols_prob)),
+        paste0("NAs found in important columns: ", !is.null(crit_na)),
+        paste0("File system alignment: ", checks)
+    )
+}
+
+# Warns the user that the input file is in excel format and it is not
+# reccommended for potential parsing issues.
+# USED IN:
+# - .read_af
+.xls_file_warning <- function() {
+    c("Warning: file in xls/xlsx format",
+        i = paste(
+            "The use of xls/xlsx is discouraged as it can lead to",
+            "potential problems in parsing data. Use of *.tsv or *.csv",
+            "is recommended."
+        ),
+        "Carefully review the data after importing!"
     )
 }
 
@@ -35,14 +74,77 @@
     paste("Unable to save widget to file, skipping this step")
 }
 
-# @keywords internal
-.malformed_ISmatrix_warning <- function() {
-    paste(c(
-        "Mandatory integration matrix variables, ", mandatory_IS_vars(),
-        ", were not detected"
-    ), collapse = " ")
+# Produces a mini-report to print after file reading only if verbose is active
+# USED IN:
+# - import_single_Vispa2Matrix
+.summary_ism_import_msg <- function(df_type, annotated, dims, mode) {
+    c(
+        "*** File info *** ",
+        paste("--- Matrix type:", df_type),
+        paste("--- Annotated:", annotated),
+        paste("--- Dimensions:", paste0(dims, collapse = " x ")),
+        paste("--- Read mode: ", mode)
+    )
 }
-# @keywords internal
+
+# Produces a mini-report to print after file reading only if verbose is active
+# USED IN:
+# - import_parallel_Vispa2Matrix
+#' @importFrom dplyr select
+#' @importFrom tidyr unnest
+.summary_ism_par_import_msg <- function(fimported, files_to_import,
+    files_found) {
+    if (getOption("ISAnalytics.verbose") == TRUE) {
+        print("--- REPORT: FILES IMPORTED ---")
+        print(fimported, width = Inf)
+        print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
+        print(files_to_import, width = Inf)
+        print("--- INTEGRATION MATRICES FOUND REPORT ---")
+        unnested <- tidyr::unnest(files_found %>%
+            dplyr::select(
+                -.data$Files_count
+            ),
+        cols = c(.data$Files)
+        )
+        print(unnested,
+            n = nrow(unnested), width = Inf
+        )
+    }
+}
+
+# Warns the user that the file in input is compressed but the compression
+# format is not supported by fread.
+# USED IN:
+# - import_single_Vispa2Matrix
+# - .read_af
+.unsupported_comp_format_inf <- function() {
+    c(paste(
+        "Warning: compression format not",
+        "supported by fread"
+    ),
+    i = "File will be read using readr"
+    )
+}
+
+# Error that signals the integration matrix to import is malformed, aka
+# it does not contain mandatory variables or does not have a standard structure
+# USED IN:
+# - import_single_Vispa2Matrix
+.malformed_ISmatrix_error <- function() {
+    c("The input integration matrix seems to be malformed",
+        x = "Non standard column structure detected",
+        i = paste(
+            "Matrix should contain either these columns: [",
+            paste0(mandatory_IS_vars(), collapse = ", "),
+            "], or",
+            "'IS_genomicID'",
+            "but not both or a combination of the two."
+        )
+    )
+}
+
+# General error, used in multiple functions: signals that the input is
+# formally not considered an integration matrix
 .non_ISM_error <- function() {
     paste(
         "One or more elements in x are not integration matrices.",
@@ -178,11 +280,20 @@
     )
 }
 
-# @keywords internal
-.missing_user_cols_error <- function() {
-    paste(
-        "Some or all of the column names specified were not found",
+# Error message: notifies the user that one or more column names specified
+# as parameters were not found in the data frame column names
+# USED IN:
+# - compute_abundance
+# - top_integrations
+.missing_user_cols_error <- function(missing_cols) {
+    c(paste(
+        "Some or all of the input column names were not found",
         "in the data frame"
+    ),
+    i = paste(
+        "Columns missing:",
+        paste0(missing_cols, collapse = ", ")
+    )
     )
 }
 
@@ -195,11 +306,19 @@
     ), collapse = "")
 }
 
-# @keywords internal
-.non_num_user_cols_error <- function() {
+# Error message: notifies the user that one or more column names specified
+# as parameters are not numeric
+# USED IN:
+# - compute_abundance
+.non_num_user_cols_error <- function(non_num) {
     paste(
-        "Some or all of the column names specified are not numeric",
-        "or integer columns in the data frame"
+        paste(
+            "Some or all of the input column names are not numeric",
+            "or integer in the data frame"
+        ),
+        "Non-numeric columns:",
+        paste0(non_num, collapse = ", "),
+        sep = "\t"
     )
 }
 

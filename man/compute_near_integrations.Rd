@@ -7,7 +7,7 @@
 compute_near_integrations(
   x,
   threshold = 4,
-  keep_criteria = "keep_first",
+  keep_criteria = "max_value",
   strand_specific = TRUE,
   max_value_column = "seqCount",
   map_as_widget = TRUE,

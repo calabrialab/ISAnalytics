@@ -83,7 +83,7 @@ will be added to the final data frame.
 }
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE)
+op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
 path_AF <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
 )
@@ -98,8 +98,9 @@ matrices <- import_parallel_Vispa2Matrices_auto(
     matrix_type = "annotated", workers = 2, matching_opt = "ANY"
 )
 agg <- aggregate_values_by_key(
-    x = matrices$seqCount,
-    association_file = association_file
+    x = matrices,
+    association_file = association_file,
+    value_cols = c("fragmentEstimate", "seqCount")
 )
 options(op)
 }

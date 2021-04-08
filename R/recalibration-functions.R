@@ -50,7 +50,7 @@
 #' @param export_widget_path A path on disk to save produced widgets or NULL
 #' if the user doesn't wish to save the html file
 #' @importFrom magrittr `%>%`
-#' @importFrom tibble is_tibble tibble_row
+#' @importFrom tibble tibble_row
 #' @importFrom dplyr group_by group_split bind_rows
 #' @importFrom purrr reduce map_lgl map_dfr
 #' @importFrom rlang .data
@@ -80,7 +80,7 @@ compute_near_integrations <- function(x,
     file_path = ".",
     export_widget_path = NULL) {
     # Check parameters
-    stopifnot(tibble::is_tibble(x))
+    stopifnot(is.data.frame(x))
     ## Check tibble is an integration matrix
     if (.check_mandatory_vars(x) == FALSE) {
         stop(.non_ISM_error())

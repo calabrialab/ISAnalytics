@@ -1,12 +1,12 @@
-context("Analysis functions")
-
 library(ISAnalytics)
 
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
-op <- options(ISAnalytics.verbose = FALSE, ISAnalytics.widgets = FALSE)
-on.exit(options(op))
+op <- withr::local_options(
+    ISAnalytics.verbose = FALSE,
+    ISAnalytics.widgets = FALSE
+)
 
 path_AF <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
@@ -25,7 +25,7 @@ matrices_correct <- import_parallel_Vispa2Matrices_auto(
     association_file = path_AF, root = root_correct,
     quantification_type = c("seqCount", "fragmentEstimate"),
     matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY", dates_format = "dmy"
+    matching_opt = "ANY", dates_format = "dmy", multi_quant_matrix = FALSE
 )
 
 matrices_incorr <- suppressWarnings({
@@ -33,142 +33,8 @@ matrices_incorr <- suppressWarnings({
         association_file = path_AF, root = root_error,
         quantification_type = c("fragmentEstimate", "seqCount"),
         matrix_type = "annotated", workers = 2, patterns = NULL,
-        matching_opt = "ANY", dates_format = "dmy"
+        matching_opt = "ANY", dates_format = "dmy", multi_quant_matrix = FALSE
     )
-})
-
-#------------------------------------------------------------------------------#
-# Test compute_abundance
-#------------------------------------------------------------------------------#
-smpl <- tibble::tibble(
-    chr = c("1", "2", "3", "4", "5", "6"),
-    integration_locus = c(
-        14536,
-        14544,
-        14512,
-        14236,
-        14522,
-        14566
-    ),
-    strand = c("+", "+", "-", "+", "-", "+"),
-    CompleteAmplificationID = c(
-        "ID1", "ID2", "ID1",
-        "ID1", "ID3", "ID2"
-    ),
-    Value = c(3, 10, 40, 2, 15, 150),
-    Value2 = c(456, 87, 87, 9, 64, 96),
-    Value3 = c("a", "b", "c", "d", "e", "f")
-)
-
-test_that("compute_abundance stops if x is not tibble", {
-    expect_error({
-        ab <- compute_abundance(list(
-            a = matrices_correct$seqCount,
-            b = matrices_correct$fragmentEstimate
-        ))
-    })
-})
-
-test_that("compute_abundance stops if x is not integration matrix", {
-    expect_error(
-        {
-            ab <- compute_abundance(tibble::tibble(a = c(1, 2, 3)))
-        },
-        regexp = .non_ISM_error()
-    )
-    expect_error(
-        {
-            ab <- compute_abundance(tibble::tibble(
-                chr = c("1", "2", "3", "4", "5", "6"),
-                integration_locus = c(
-                    14536,
-                    14544,
-                    14512,
-                    14236,
-                    14522,
-                    14566
-                ),
-                strand = c(
-                    "+", "+", "-", "+",
-                    "-", "+"
-                )
-            ))
-        },
-        regexp = .missing_complAmpID_error()
-    )
-    expect_error(
-        {
-            ab <- compute_abundance(smpl, columns = c("a"))
-        },
-        regexp = .missing_user_cols_error()
-    )
-    expect_error(
-        {
-            ab <- compute_abundance(smpl, columns = "Value3")
-        },
-        regexp = .non_num_user_cols_error()
-    )
-})
-
-test_that("compute_abundance produces expected output", {
-    ab <- compute_abundance(smpl)
-    expected <- tibble::tibble(
-        chr = c("1", "2", "3", "4", "5", "6"),
-        integration_locus = c(
-            14536,
-            14544,
-            14512,
-            14236,
-            14522,
-            14566
-        ),
-        strand = c("+", "+", "-", "+", "-", "+"),
-        CompleteAmplificationID = c(
-            "ID1", "ID2", "ID1",
-            "ID1", "ID3", "ID2"
-        ),
-        Value = c(3, 10, 40, 2, 15, 150),
-        Value2 = c(456, 87, 87, 9, 64, 96),
-        Value3 = c("a", "b", "c", "d", "e", "f"),
-        Value_RelAbundance = c(
-            0.06667, 0.0625, 0.88889,
-            0.04445, 1.0, 0.9375
-        ),
-        Value_PercAbundance = Value_RelAbundance * 100
-    )
-    expect_equal(ab, expected, tolerance = 0.05)
-
-    ab <- compute_abundance(smpl, columns = c("Value", "Value2"))
-    expected <- tibble::tibble(
-        chr = c("1", "2", "3", "4", "5", "6"),
-        integration_locus = c(
-            14536,
-            14544,
-            14512,
-            14236,
-            14522,
-            14566
-        ),
-        strand = c("+", "+", "-", "+", "-", "+"),
-        CompleteAmplificationID = c(
-            "ID1", "ID2", "ID1",
-            "ID1", "ID3", "ID2"
-        ),
-        Value = c(3, 10, 40, 2, 15, 150),
-        Value2 = c(456, 87, 87, 9, 64, 96),
-        Value3 = c("a", "b", "c", "d", "e", "f"),
-        Value_RelAbundance = c(
-            0.06667, 0.0625, 0.88889,
-            0.04445, 1.0, 0.9375
-        ),
-        Value2_RelAbundance = c(
-            0.82608, 0.475409, 0.157608,
-            0.016304, 1.0, 0.52459
-        ),
-        Value_PercAbundance = Value_RelAbundance * 100,
-        Value2_PercAbundance = Value2_RelAbundance * 100,
-    )
-    expect_equal(ab, expected, tolerance = 0.05)
 })
 
 #------------------------------------------------------------------------------#
@@ -262,7 +128,7 @@ test_that("comparison_matrix supports custom names", {
     )
     expect_true(all(c("fe", "sc") %in% colnames(comp)))
     expect_true(nrow(comp) == nrow(matrices_correct$seqCount))
-    expect_true(is.integer(comp$sc))
+    expect_true(is.numeric(comp$sc))
     expect_true(is.numeric(comp$fe))
 })
 
@@ -481,26 +347,18 @@ test_that("threshold_filter gives errors with df - params wrong", {
         regexp = .comparators_err(),
         fixed = TRUE
     )
-    expect_error(
-        {
-            threshold_filter(example_df,
-                threshold = 1,
-                cols_to_compare = c("a", "f")
-            )
-        },
-        regexp = .missing_user_cols_error(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_df,
-                threshold = 1,
-                cols_to_compare = c("a", "c")
-            )
-        },
-        regexp = .non_num_user_cols_error(),
-        fixed = TRUE
-    )
+    expect_error({
+        threshold_filter(example_df,
+            threshold = 1,
+            cols_to_compare = c("a", "f")
+        )
+    })
+    expect_error({
+        threshold_filter(example_df,
+            threshold = 1,
+            cols_to_compare = c("a", "c")
+        )
+    })
     expect_error(
         {
             threshold_filter(example_df,
@@ -812,80 +670,56 @@ test_that("threshold_filter gives errors with list - params wrong", {
     )
 
     ### Cols not in df
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = 1,
-                cols_to_compare = list(
-                    first = c("a", "b"),
-                    second = c("aa", "bb")
-                ),
-                comparators = c("<", ">")
-            )
-        },
-        regexp = .missing_user_cols_list_error(c("aa", "bb"), "second"),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = 1,
-                cols_to_compare = c("aa", "bb"),
-                comparators = c("<", ">")
-            )
-        },
-        regexp = .missing_user_cols_error(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = list(first = c(1, 2), second = c(2, 3)),
-                cols_to_compare = c("aa", "bb"),
-                comparators = c("<", ">")
-            )
-        },
-        regexp = .missing_user_cols_error(),
-        fixed = TRUE
-    )
+    expect_error({
+        threshold_filter(example_list,
+            threshold = 1,
+            cols_to_compare = list(
+                first = c("a", "b"),
+                second = c("aa", "bb")
+            ),
+            comparators = c("<", ">")
+        )
+    })
+    expect_error({
+        threshold_filter(example_list,
+            threshold = 1,
+            cols_to_compare = c("aa", "bb"),
+            comparators = c("<", ">")
+        )
+    })
+    expect_error({
+        threshold_filter(example_list,
+            threshold = list(first = c(1, 2), second = c(2, 3)),
+            cols_to_compare = c("aa", "bb"),
+            comparators = c("<", ">")
+        )
+    })
 
     ### Cols not numeric
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = 1,
-                cols_to_compare = list(
-                    first = c("a", "b"),
-                    second = c("c", "d")
-                ),
-                comparators = c("<", ">")
-            )
-        },
-        regexp = .non_num_user_cols_error(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = 1,
-                cols_to_compare = c("c", "b"),
-                comparators = c("<", ">")
-            )
-        },
-        regexp = .non_num_user_cols_error(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = list(first = c(1, 2), second = c(2, 3)),
-                cols_to_compare = c("c", "b"),
-                comparators = c("<", ">")
-            )
-        },
-        regexp = .non_num_user_cols_error(),
-        fixed = TRUE
-    )
+    expect_error({
+        threshold_filter(example_list,
+            threshold = 1,
+            cols_to_compare = list(
+                first = c("a", "b"),
+                second = c("c", "d")
+            ),
+            comparators = c("<", ">")
+        )
+    })
+    expect_error({
+        threshold_filter(example_list,
+            threshold = 1,
+            cols_to_compare = c("c", "b"),
+            comparators = c("<", ">")
+        )
+    })
+    expect_error({
+        threshold_filter(example_list,
+            threshold = list(first = c(1, 2), second = c(2, 3)),
+            cols_to_compare = c("c", "b"),
+            comparators = c("<", ">")
+        )
+    })
 })
 
 test_that("threshold_filter gives result with list", {
@@ -960,82 +794,6 @@ test_that("threshold_filter gives result with list", {
         second = expected2,
         third = example_df
     ))
-})
-
-#------------------------------------------------------------------------------#
-# Test top_integrations
-#------------------------------------------------------------------------------#
-test_that("top_integrations stops if params incorrect", {
-    ## Missing value cols
-    expect_error(
-        {
-            top_integrations(smpl)
-        },
-        regexp = .missing_user_cols_error()
-    )
-    ## Missing cols to keep
-    expect_error(
-        {
-            top_integrations(smpl, columns = "Value", keep = "a")
-        },
-        regexp = .missing_user_cols_error()
-    )
-    ## No mand vars
-    expect_error(
-        {
-            top_integrations(smpl[2:7], columns = "Value")
-        },
-        regexp = .non_ISM_error()
-    )
-})
-
-smpl <- tibble::tibble(
-    chr = c("1", "2", "3", "4", "5", "6"),
-    integration_locus = c(
-        14536,
-        14544,
-        14512,
-        14236,
-        14522,
-        14566
-    ),
-    strand = c("+", "+", "-", "+", "-", "+"),
-    CompleteAmplificationID = c(
-        "ID1", "ID2", "ID1",
-        "ID1", "ID3", "ID2"
-    ),
-    Value = c(3, 10, 40, 2, 15, 150),
-    Value2 = c(456, 87, 87, 9, 64, 96),
-    Value3 = c("a", "b", "c", "d", "e", "f")
-)
-
-test_that("top_integrations works correctly", {
-    top <- top_integrations(smpl,
-        n = 3, columns = c("Value", "Value2"),
-        keep = "nothing"
-    )
-    expected <- tibble::tibble(
-        chr = c("6", "3", "5"),
-        integration_locus = c(14566, 14512, 14522),
-        strand = c("+", "-", "-"),
-        Value = c(150, 40, 15),
-        Value2 = c(96, 87, 64)
-    )
-    expect_equal(top, expected)
-    top <- top_integrations(smpl,
-        n = 3, columns = c("Value", "Value2"),
-        keep = c("Value3", "CompleteAmplificationID")
-    )
-    expected <- tibble::tibble(
-        chr = c("6", "3", "5"),
-        integration_locus = c(14566, 14512, 14522),
-        strand = c("+", "-", "-"),
-        Value = c(150, 40, 15),
-        Value2 = c(96, 87, 64),
-        Value3 = c("f", "c", "e"),
-        CompleteAmplificationID = c("ID2", "ID1", "ID3")
-    )
-    expect_equal(top, expected)
 })
 
 #------------------------------------------------------------------------------#
@@ -1161,7 +919,11 @@ test_that("CIS_grubbs produces correct df", {
         "min_bp_integration_locus", "max_bp_integration_locus",
         "IS_span_bp", "avg_bp_integration_locus",
         "median_bp_integration_locus", "distinct_orientations",
-        "describe", "average_TxLen", "geneIS_frequency_byHitIS",
+        "describe_vars", "describe_n", "describe_mean", "describe_sd",
+        "describe_median", "describe_trimmed", "describe_mad",
+        "describe_min", "describe_max", "describe_range",
+        "describe_skew", "describe_kurtosis", "describe_se",
+        "average_TxLen", "geneIS_frequency_byHitIS",
         "raw_gene_integration_frequency",
         "integration_frequency_withtolerance",
         "minus_log2_integration_freq_withtolerance",
@@ -1173,12 +935,12 @@ test_that("CIS_grubbs produces correct df", {
         "tdist_positive_and_correctedEM"
     )
     result <- CIS_grubbs(matrices_correct$seqCount)
-    expect_true(ncol(result) == 28)
+    expect_true(ncol(result) == 40)
     expect_true(all(output_cols %in% colnames(result)))
     result <- CIS_grubbs(matrices_correct$seqCount,
         add_standard_padjust = FALSE
     )
-    expect_true(ncol(result) == 25)
+    expect_true(ncol(result) == 37)
     expect_true(all(output_cols[!output_cols %in% c(
         "tdist_bonferroni",
         "tdist_fdr",

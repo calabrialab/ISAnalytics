@@ -1,20 +1,30 @@
 #------------------------------------------------------------------------------#
 # Importing functions
 #------------------------------------------------------------------------------#
+
 #' Import a single integration matrix from file
 #'
 #' @description \lifecycle{stable}
 #' This function allows to read and import an integration matrix
 #' produced as the output of Vispa2 pipeline and converts it to a tidy
-#' tibble.
+#' format.
 #'
 #' @param path The path to the file on disk
+#' @param to_exclude Either NULL or a character vector of column names that
+#' should be ignored when importing
+#' @param separator The column delimiter used
 #'
-#' @return A tidy tibble
+#' @return A data.table object in tidy format
 #' @family Import functions
+#' @importFrom rlang abort inform
+#' @importFrom fs path_ext
+#' @importFrom readr read_delim cols
 #' @importFrom tidyr separate
-#' @importFrom utils read.csv
 #' @importFrom magrittr `%>%`
+#' @importFrom dplyr mutate
+#' @importFrom stringr str_replace
+#' @importFrom BiocParallel SnowParam MulticoreParam bplapply bpstop
+#' @importFrom data.table melt.data.table rbindlist
 #' @details The import series of functions is designed to work in combination
 #' with the use of Vispa2 pipeline, please refer to this article for more
 #' details: \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/}{VISPA2:
@@ -29,35 +39,140 @@
 #'     package = "ISAnalytics"
 #' )
 #' isa_dataframe <- import_single_Vispa2Matrix(path_to_file)
-import_single_Vispa2Matrix <- function(path, to_exclude = NULL) {
+import_single_Vispa2Matrix <- function(path,
+    to_exclude = NULL,
+    separator = "\t") {
     stopifnot(!missing(path) & is.character(path))
     stopifnot(is.null(to_exclude) || is.character(to_exclude))
     if (!file.exists(path)) {
-        stop(paste("File not found at", path))
+        rlang::abort(paste("File not found at", path))
     }
-    df <- read.csv(path,
-        sep = "\t", header = TRUE, fill = TRUE,
-        check.names = FALSE, stringsAsFactors = FALSE
+    if (!fs::is_file(path)) {
+        rlang::abort(paste("Path exists but is not a file"))
+    }
+    mode <- "fread"
+    ## Is the file compressed?
+    is_compressed <- fs::path_ext(path) %in% .compressed_formats()
+    if (is_compressed) {
+        ## The compression type is supported by data.table::fread?
+        compression_type <- fs::path_ext(path)
+        if (!compression_type %in% .supported_fread_compression_formats()) {
+            ### If not, switch to classic for reading
+            mode <- "classic"
+            if (getOption("ISAnalytics.verbose") == TRUE) {
+                rlang::inform(.unsupported_comp_format_inf(),
+                    class = "unsup_comp_format"
+                )
+            }
+        }
+    }
+    ### Peak headers
+    peek_headers <- readr::read_delim(path,
+        delim = separator, n_max = 0,
+        col_types = readr::cols()
     )
-    df <- tibble::as_tibble(df)
-    df_type <- .auto_detect_type(df)
-    if (df_type == "OLD") {
-        df <- df %>% tidyr::separate(
-            col = .data$IS_genomicID,
-            into = mandatory_IS_vars(),
-            sep = "_", remove = TRUE,
-            convert = TRUE
+    ## - Detect type
+    df_type <- .auto_detect_type(peek_headers)
+    if (df_type == "MALFORMED") {
+        rlang::abort(.malformed_ISmatrix_error(),
+            class = "malformed_ism"
         )
     }
-    if (df_type == "MALFORMED") {
-        warning(.malformed_ISmatrix_warning())
+    is_annotated <- .is_annotated(peek_headers)
+    ## - Start reading
+    if (getOption("ISAnalytics.verbose") == TRUE) {
+        rlang::inform(c("Reading file...", i = paste0("Mode: ", mode)))
     }
-    isadf <- if (is.null(to_exclude)) {
-        .messy_to_tidy(df, "")
+    df <- if (mode == "fread") {
+        .read_with_fread(
+            path = path, to_drop = to_exclude,
+            df_type = df_type, annotated = is_annotated,
+            sep = separator
+        )
     } else {
-        .messy_to_tidy(df, to_exclude)
+        .read_with_readr(
+            path = path, to_drop = to_exclude,
+            df_type = df_type, annotated = is_annotated,
+            sep = separator
+        )
     }
-    isadf
+    ## - Report summary
+    if (getOption("ISAnalytics.verbose") == TRUE) {
+        rlang::inform(.summary_ism_import_msg(
+            df_type,
+            .is_annotated(df),
+            dim(df),
+            mode
+        ),
+        class = "ism_import_summary"
+        )
+    }
+    if (df_type == "OLD") {
+        df <- df %>%
+            tidyr::separate(
+                col = .data$IS_genomicID,
+                into = mandatory_IS_vars(),
+                sep = "_", remove = TRUE,
+                convert = TRUE
+            ) %>%
+            dplyr::mutate(chr = stringr::str_replace(
+                .data$chr, "chr", ""
+            ))
+    }
+    ## - Split in chunks
+    if (getOption("ISAnalytics.verbose") == TRUE) {
+        rlang::inform("Reshaping...")
+    }
+    chunks <- split(df,
+        by = c("chr"),
+        verbose = FALSE
+    )
+    ## - Melt in parallel
+    p <- if (.Platform$OS.type == "windows") {
+        BiocParallel::SnowParam(
+            tasks = length(chunks),
+            progressbar = getOption("ISAnalytics.verbose"),
+            exportglobals = FALSE,
+            stop.on.error = TRUE
+        )
+    } else {
+        BiocParallel::MulticoreParam(
+            tasks = length(chunks),
+            progressbar = getOption("ISAnalytics.verbose"),
+            exportglobals = FALSE,
+            stop.on.error = TRUE
+        )
+    }
+    mt <- function(data, annot) {
+        id_vars <- if (annot) {
+            c(
+                mandatory_IS_vars(),
+                annotation_IS_vars()
+            )
+        } else {
+            mandatory_IS_vars()
+        }
+        data.table::melt.data.table(data,
+            id.vars = id_vars,
+            variable.name = "CompleteAmplificationID",
+            value.name = "Value",
+            na.rm = TRUE,
+            verbose = FALSE
+        )
+    }
+    tidy_chunks <- BiocParallel::bplapply(
+        X = chunks,
+        FUN = mt,
+        annot = is_annotated,
+        BPPARAM = p
+    )
+    BiocParallel::bpstop(p)
+    tidy <- data.table::rbindlist(tidy_chunks)
+    tidy <- tidy["Value" > 0]
+    if (getOption("ISAnalytics.verbose") == TRUE) {
+        rlang::inform("Done!")
+    }
+    return(tidy)
 }
 
 #' Import the association file from disk
@@ -74,6 +189,13 @@ import_single_Vispa2Matrix <- function(path, to_exclude = NULL) {
 #' specified (ex: 1 becomes 0001 with a tp_padding of 4)
 #' @param dates_format A single string indicating how dates should be parsed.
 #' Must be a value in: \code{date_formats()}
+#' @param separator The column separator used in the file
+#' @param filter_for A named list where names represent column names that
+#' must be filtered. For example: `list(ProjectID = c("PROJECT1", "PROJECT2))`
+#' will filter the association file so that it contains only those rows
+#' for which the value of the column "ProjectID" is one of the specified
+#' values. If multiple columns are present in the list all filtering
+#' conditions are applied as a logical AND.
 #' @param export_widget_path A path on disk to save produced widgets or NULL
 #' if the user doesn't wish to save the html file
 #' @family Import functions
@@ -106,6 +228,9 @@ import_single_Vispa2Matrix <- function(path, to_exclude = NULL) {
 #' If 'NULL' the file system alignment step is skipped.
 #' @export
 #'
+#' @importFrom purrr map_lgl set_names is_empty
+#' @importFrom rlang inform
+#' @importFrom magrittr `%>%`
 #' @seealso \code{\link{date_formats}}
 #' @examples
 #' op <- options("ISAnalytics.widgets" = FALSE)
@@ -118,6 +243,8 @@ import_single_Vispa2Matrix <- function(path, to_exclude = NULL) {
 #' options(op)
 import_association_file <- function(path,
     root = NULL, tp_padding = 4, dates_format = "ymd",
+    separator = "\t",
+    filter_for = NULL,
     export_widget_path = NULL) {
     # Check parameters
     stopifnot(is.character(path) & length(path) == 1)
@@ -129,32 +256,80 @@ import_association_file <- function(path,
     stopifnot((is.numeric(tp_padding) |
         is.integer(tp_padding)) & length(tp_padding) == 1)
     stopifnot(length(dates_format) == 1 & dates_format %in% date_formats())
-
+    stopifnot(is.character(separator) && length(separator) == 1)
+    # Check filter
+    stopifnot(is.null(filter_for) ||
+        (is.list(filter_for) && !is.null(names(filter_for))))
     # Read file and check the correctness
-    af_checks <- .manage_association_file(path, root, tp_padding, dates_format)
+    af_checks <- .manage_association_file(
+        path, root, tp_padding, dates_format,
+        separator, filter_for
+    )
     as_file <- af_checks$af
+    parsing_problems <- af_checks$parsing_probs
+    date_problems <- af_checks$date_probs
     checks <- af_checks$check
-
-    if (!is.null(checks)) {
-        # Checks if the association file and the file system are aligned
+    col_probs <- NULL
+    if (!.check_af_correctness(as_file)) {
+        col_probs[["missing"]] <- association_file_columns()[
+            !association_file_columns() %in% colnames(as_file)
+        ]
+    }
+    non_standard <- colnames(as_file)[
+        !colnames(as_file) %in% c(association_file_columns(), "Path")
+    ]
+    if (!purrr::is_empty(non_standard)) {
+        col_probs[["non_standard"]] <- non_standard
+    }
+    missing_dates <- purrr::map_lgl(date_columns_coll(), function(date_col) {
+        any(is.na(as_file[[date_col]]))
+    }) %>% purrr::set_names(date_columns_coll())
+    missing_dates <- names(missing_dates)[missing_dates == TRUE]
+    something_to_report <- any(!is.null(c(
+        parsing_problems,
+        date_problems,
+        checks,
+        col_probs,
+        missing_dates
+    )))
+    if (something_to_report) {
+        summary_report <- .summary_af_import_msg(
+            pars_prob = parsing_problems, dates_prob = date_problems,
+            cols_prob = col_probs, crit_na = missing_dates,
+            checks = ifelse(is.null(checks),
+                yes = "skipped",
+                no = ifelse(any(!checks$Found),
+                    "problems detected",
+                    "no problems detected"
+                )
+            )
+        )
         if (getOption("ISAnalytics.widgets") == TRUE) {
             withCallingHandlers(
                 expr = {
                     withRestarts(
                         {
-                            widg <- .checker_widget(checks)
+                            widg <- .checker_widget(
+                                parsing_problems,
+                                date_problems,
+                                checks,
+                                col_probs,
+                                missing_dates
+                            )
                             print(widg)
                         },
                         print_err = function() {
-                            message(.widgets_error())
+                            rlang::inform(.widgets_error())
                             if (getOption("ISAnalytics.verbose") == TRUE) {
-                                print(checks, n = nrow(checks))
+                                rlang::inform(summary_report,
+                                    class = "summary_report"
+                                )
                             }
                         }
                     )
                 },
                 error = function(cnd) {
-                    message(conditionMessage(cnd))
+                    rlang::inform(conditionMessage(cnd))
                     invokeRestart("print_err")
                 }
             )
@@ -165,7 +340,9 @@ import_association_file <- function(path,
                 )
             }
         } else if (getOption("ISAnalytics.verbose") == TRUE) {
-            print(checks, n = nrow(checks), width = Inf)
+            rlang::inform(summary_report,
+                class = "summary_report"
+            )
         }
     }
     as_file
@@ -192,38 +369,34 @@ import_association_file <- function(path,
 #' if necessary, duplicate files. During the execution, a series of reports is
 #' shown in html format.
 #' @param association_file A single string containing the path to the
-#' association file on disk, or a tibble resulting from the previous call of
+#' association file on disk, or a data frame resulting from a previous call to
 #' `import_association_file`
-#' @param root A single string containing the path to the root folder containing
-#' Vispa2 output. Can be NULL if association_file parameter is a tibble
 #' @param quantification_type A vector of requested quantification_types. Must
 #' be one in `quantification_types()`
 #' @param matrix_type A single string representing the type of matrices to
 #' be imported. Can only be one in `"annotated"` or `"not_annotated"`
-#' @param workers A single number representing the number of parallel workers to
-#' use for the import
-#' @param tp_padding Timepoint padding, indicates the number of digits of the
-#' "Timepoint" column once imported. Fills the content with 0s up to the length
-#' specified (ex: 1 becomes 0001 with a tp_padding of 4)
-#' @param dates_format A single string indicating how dates should be parsed.
-#' Must be a value in: \code{date_formats()}
+#' @param workers A single integer representing the number
+#' of parallel workers to use for the import
 #' @param multi_quant_matrix If set to TRUE will produce a
 #' multi-quantification matrix (data frame) through `comparison_matrix`
 #' instead of a list.
-#' @param export_widget_path A path on disk to save produced widgets or NULL
-#' if the user doesn't wish to save the html file
-#' @param ... Additional arguments to pass to `comparison_matrix`
+#' @param export_report_path A path on disk to save produced import report
+#'  or NULL if the user doesn't wish to save the html file
+#' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Additional named arguments
+#' to pass to `ìmport_association_file` and `comparison_matrix`
 #'
-#' @seealso \code{\link{comparison_matrix}}
+#' @seealso \code{\link{comparison_matrix}},
+#' \code{\link{import_association_file}}
 #'
 #' @importFrom htmltools browsable tagList
-#' @importFrom tibble is_tibble
-#' @importFrom tidyr unnest
-#' @importFrom dplyr select
+#' @importFrom dplyr filter
+#' @importFrom rlang dots_list inform abort call2 eval_tidy fn_fmls_names
+#' @importFrom magrittr `%>%`
 #' @family Import functions
 #'
-#' @return A named list of tibbles containing data from all imported integration
-#' matrices, divided by quantification type
+#' @return A named list of data frames containing data from
+#' all imported integration
+#' matrices, divided by quantification type or a multi-quantification matrix
 #' @export
 #'
 #' @examples
@@ -231,28 +404,24 @@ import_association_file <- function(path,
 #' # Can't run because it's interactive and requires user input
 #' matrices <- import_parallel_Vispa2Matrices_interactive(
 #'     association_file,
-#'     root, quantification_type, matrix_type, workers,
-#'     dates_format = "dmy"
+#'     quantification_type,
+#'     matrix_type = "annotated",
+#'     workers = 2,
+#'     multi_quant_matrix = FALSE,
+#'     export_report_path = NULL,
 #' )
 #' }
 import_parallel_Vispa2Matrices_interactive <- function(association_file,
-    root,
     quantification_type,
     matrix_type = "annotated",
     workers = 2,
-    tp_padding = 4,
-    dates_format = "ymd",
-    multi_quant_matrix = FALSE,
-    export_widget_path = NULL,
+    multi_quant_matrix = TRUE,
+    export_report_path = NULL,
     ...) {
     # Check parameters
-    stopifnot(!missing(association_file))
-    stopifnot(is.character(association_file) |
+    stopifnot((is.character(association_file) &
+        length(association_file) == 1) ||
         is.data.frame(association_file))
-    stopifnot((is.character(root) && length(root) == 1) | is.null(root))
-    if (is.character(association_file)) {
-        stopifnot(length(association_file) == 1)
-    }
     stopifnot(is.numeric(workers) & length(workers) == 1)
     workers <- floor(workers)
     stopifnot(!missing(quantification_type))
@@ -261,18 +430,49 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
         "annotated",
         "not_annotated"
     ))
-    stopifnot((is.numeric(tp_padding) |
-        is.integer(tp_padding)) & length(tp_padding) == 1)
-    stopifnot(length(dates_format) == 1 & dates_format %in% date_formats())
     stopifnot(is.logical(multi_quant_matrix) & length(multi_quant_matrix) == 1)
-
-    # Manage association file
-    association_file <- .manage_association_file(
-        association_file, root,
-        tp_padding, dates_format
-    )
-    checker_widg <- association_file[[2]]
-    association_file <- association_file[[1]]
+    ## Collect dot args
+    if (is.character(association_file) || isTRUE(multi_quant_matrix)) {
+        dots_args <- rlang::dots_list(..., .named = TRUE, .homonyms = "first")
+        if (is.character(association_file)) {
+            import_af_arg_names <- rlang::fn_fmls_names(import_association_file)
+            import_af_arg_names <- import_af_arg_names[
+                import_af_arg_names != "path"
+            ]
+            import_af_args <- dots_args[names(dots_args) %in%
+                import_af_arg_names]
+        }
+        if (isTRUE(multi_quant_matrix)) {
+            mult_arg_names <- rlang::fn_fmls_names(comparison_matrix)
+            mult_arg_names <- mult_arg_names[mult_arg_names != "x"]
+            mult_args <- dots_args[names(dots_args) %in%
+                mult_arg_names]
+        }
+    }
+    ## Import association file if provided a path
+    if (is.character(association_file)) {
+        association_file <- rlang::eval_tidy(
+            rlang::call2("import_association_file",
+                path = association_file,
+                !!!import_af_args
+            )
+        )
+    }
+    ## Check there are the appropriate columns
+    if (!"Path" %in% colnames(association_file)) {
+        rlang::abort(.af_missing_path_error(), class = "missing_path_col")
+    }
+    association_file <- association_file %>%
+        dplyr::filter(!is.na(.data$Path))
+    if (nrow(association_file) == 0) {
+        rlang::inform(c("The association file is empty, nothing to import",
+            i = paste(
+                "No projects left to import,",
+                "absolute paths are all NA"
+            )
+        ))
+        return(NULL)
+    }
     ## User selects projects to keep
     association_file <- .interactive_select_projects_import(association_file)
     ## User selects pools to keep
@@ -287,7 +487,7 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
 
     ## If files to import are 0 just terminate
     if (nrow(files_to_import) == 0) {
-        stop("No files to import")
+        rlang::abort("No files to import")
     }
 
     ## Import
@@ -298,88 +498,50 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
             {
                 withRestarts(
                     {
-                        if (!is.null(checker_widg)) {
-                            checker_widg <- .checker_widget(checker_widg)
-                        }
                         import_widget <- .import_report_widget(
                             files_found,
                             files_to_import,
                             fimported
                         )
-                        if (!is.null(checker_widg)) {
-                            print(htmltools::browsable(htmltools::tagList(
-                                import_widget,
-                                checker_widg
-                            )))
-                        } else {
-                            print(htmltools::browsable(htmltools::tagList(
-                                import_widget
-                            )))
-                        }
-                        if (!is.null(export_widget_path)) {
+                        print(htmltools::browsable(htmltools::tagList(
+                            import_widget
+                        )))
+                        if (!is.null(export_report_path)) {
                             .export_widget_file(
                                 import_widget,
-                                export_widget_path,
+                                export_report_path,
                                 "matrices_import_report.html"
                             )
                         }
                     },
                     print_err = function() {
-                        message(.widgets_error())
-                        if (getOption("ISAnalytics.verbose") == TRUE) {
-                            print("--- REPORT: FILES IMPORTED ---")
-                            print(fimported, width = Inf)
-                            print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
-                            print(files_to_import, width = Inf)
-                            print("--- INTEGRATION MATRICES FOUND REPORT ---")
-                            unnested <- tidyr::unnest(files_found %>%
-                                dplyr::select(
-                                    -.data$Files_count
-                                ),
-                            cols = c(.data$Files)
-                            )
-                            print(unnested,
-                                n = nrow(unnested), width = Inf
-                            )
-                            if (!is.null(checker_widg)) {
-                                print("--- ALIGNMENT RESULTS ---")
-                                print(checker_widg,
-                                    n = nrow(checker_widg),
-                                    width = Inf
-                                )
-                            }
-                        }
+                        rlang::inform(.widgets_error())
+                        .summary_ism_par_import_msg(
+                            fimported,
+                            files_to_import,
+                            files_found
+                        )
                     }
                 )
             },
             error = function(cnd) {
-                message(conditionMessage(cnd))
+                rlang::inform(conditionMessage(cnd))
                 invokeRestart("print_err")
             }
         )
-    } else if (getOption("ISAnalytics.verbose") == TRUE) {
-        print("--- REPORT: FILES IMPORTED ---")
-        print(fimported, width = Inf)
-        print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
-        print(files_to_import, width = Inf)
-        print("--- INTEGRATION MATRICES FOUND REPORT ---")
-        unnested <- tidyr::unnest(files_found %>%
-            dplyr::select(
-                -.data$Files_count
-            ),
-        cols = c(.data$Files)
+    } else {
+        .summary_ism_par_import_msg(
+            fimported,
+            files_to_import,
+            files_found
         )
-        print(unnested,
-            n = nrow(unnested), width = Inf
-        )
-        if (!is.null(checker_widg)) {
-            print("--- ALIGNMENT RESULTS ---")
-            print(checker_widg, n = nrow(checker_widg), width = Inf)
-        }
     }
     matrices <- matrices[[1]]
     if (multi_quant_matrix == TRUE) {
-        matrices <- comparison_matrix(matrices, ...)
+        matrices <- rlang::eval_tidy(rlang::call2(comparison_matrix,
+            x = matrices,
+            !!!mult_args
+        ))
     }
     matrices
 }
@@ -406,9 +568,9 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
 #' \url{https://stringr.tidyverse.org/articles/regular-expressions.html}
 #' @family Import functions
 #' @importFrom htmltools browsable tagList
-#' @importFrom tibble is_tibble
-#' @importFrom tidyr unnest
-#' @importFrom dplyr select
+#' @importFrom dplyr filter
+#' @importFrom rlang dots_list inform abort call2 eval_tidy fn_fmls_names
+#' @importFrom magrittr `%>%`
 #'
 #' @export
 #'
@@ -420,31 +582,27 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
 #' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     path, root,
-#'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY",
-#'     dates_format = "dmy"
+#'     association_file = path,
+#'     quantification_type = c("fragmentEstimate", "seqCount"),
+#'     patterns = NULL, matching_opt = "ANY",
+#'     root = root,
+#'     dates_format = "dmy",
+#'     workers = 2
 #' )
 #' options(op)
 import_parallel_Vispa2Matrices_auto <- function(association_file,
-    root,
     quantification_type,
     matrix_type = "annotated",
     workers = 2,
+    multi_quant_matrix = TRUE,
+    export_report_path = NULL,
     patterns = NULL,
     matching_opt = matching_options(),
-    tp_padding = 4,
-    dates_format = "ymd",
-    multi_quant_matrix = FALSE,
-    export_widget_path = NULL,
     ...) {
     # Check parameters
-    stopifnot(!missing(association_file))
-    stopifnot(is.character(association_file) |
+    stopifnot((is.character(association_file) &
+        length(association_file) == 1) ||
         is.data.frame(association_file))
-    stopifnot((is.character(root) && length(root) == 1) | is.null(root))
-    if (is.character(association_file)) {
-        stopifnot(length(association_file) == 1)
-    }
     stopifnot(is.numeric(workers) & length(workers) == 1)
     workers <- floor(workers)
     stopifnot(!missing(quantification_type))
@@ -453,26 +611,55 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
         "annotated",
         "not_annotated"
     ))
+    stopifnot(is.logical(multi_quant_matrix) & length(multi_quant_matrix) == 1)
     if (!is.null(patterns)) {
         stopifnot(is.character(patterns))
     }
-    stopifnot((is.numeric(tp_padding) |
-        is.integer(tp_padding)) & length(tp_padding) == 1)
-    stopifnot(length(dates_format) == 1 & dates_format %in% date_formats())
-    stopifnot(is.logical(multi_quant_matrix) & length(multi_quant_matrix) == 1)
-
     ### Evaluate matching_opt
     matching_option <- match.arg(matching_opt)
     stopifnot(is.character(matching_option))
-
-    # Manage association file
-    association_file <- .manage_association_file(
-        association_file, root,
-        tp_padding, dates_format
-    )
-    checker_widg <- association_file[[2]]
-    association_file <- association_file[[1]]
-
+    ## Collect dot args
+    if (is.character(association_file) || isTRUE(multi_quant_matrix)) {
+        dots_args <- rlang::dots_list(..., .named = TRUE, .homonyms = "first")
+        if (is.character(association_file)) {
+            import_af_arg_names <- rlang::fn_fmls_names(import_association_file)
+            import_af_arg_names <- import_af_arg_names[
+                import_af_arg_names != "path"
+            ]
+            import_af_args <- dots_args[names(dots_args) %in%
+                import_af_arg_names]
+        }
+        if (isTRUE(multi_quant_matrix)) {
+            mult_arg_names <- rlang::fn_fmls_names(comparison_matrix)
+            mult_arg_names <- mult_arg_names[mult_arg_names != "x"]
+            mult_args <- dots_args[names(dots_args) %in%
+                mult_arg_names]
+        }
+    }
+    ## Import association file if provided a path
+    if (is.character(association_file)) {
+        association_file <- rlang::eval_tidy(
+            rlang::call2("import_association_file",
+                path = association_file,
+                !!!import_af_args
+            )
+        )
+    }
+    ## Check there are the appropriate columns
+    if (!"Path" %in% colnames(association_file)) {
+        rlang::abort(.af_missing_path_error(), class = "missing_path_col")
+    }
+    association_file <- association_file %>%
+        dplyr::filter(!is.na(.data$Path))
+    if (nrow(association_file) == 0) {
+        rlang::inform(c("The association file is empty, nothing to import",
+            i = paste(
+                "No projects left to import,",
+                "absolute paths are all NA"
+            )
+        ))
+        return(NULL)
+    }
     # Automatic workflow - limited options
     ## In automatic workflow all projects and pools contained in the association
     ## file are considered. If more precise selection is needed on this, user
@@ -488,7 +675,7 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
     files_to_import <- .manage_anomalies_auto(files_found)
     ## If files to import are 0 just terminate
     if (nrow(files_to_import) == 0) {
-        stop("No files to import")
+        rlang::abort("No files to import")
     }
 
     ## Import
@@ -499,91 +686,55 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
             {
                 withRestarts(
                     {
-                        if (!is.null(checker_widg)) {
-                            checker_widg <- .checker_widget(checker_widg)
-                        }
                         import_widget <- .import_report_widget(
                             files_found,
                             files_to_import,
                             fimported
                         )
-                        if (!is.null(checker_widg)) {
-                            print(htmltools::browsable(htmltools::tagList(
-                                import_widget,
-                                checker_widg
-                            )))
-                        } else {
-                            print(htmltools::browsable(htmltools::tagList(
-                                import_widget
-                            )))
-                        }
-                        if (!is.null(export_widget_path)) {
+                        print(htmltools::browsable(htmltools::tagList(
+                            import_widget
+                        )))
+                        if (!is.null(export_report_path)) {
                             .export_widget_file(
                                 import_widget,
-                                export_widget_path,
+                                export_report_path,
                                 "matrices_import_report.html"
                             )
                         }
                     },
                     print_err = function() {
-                        message(.widgets_error())
-                        if (getOption("ISAnalytics.verbose") == TRUE) {
-                            print("--- REPORT: FILES IMPORTED ---")
-                            print(fimported, width = Inf)
-                            print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
-                            print(files_to_import, width = Inf)
-                            print("--- INTEGRATION MATRICES FOUND REPORT ---")
-                            unnested <- tidyr::unnest(files_found %>%
-                                dplyr::select(
-                                    -.data$Files_count
-                                ),
-                            cols = c(.data$Files)
-                            )
-                            print(unnested,
-                                n = nrow(unnested), width = Inf
-                            )
-                            if (!is.null(checker_widg)) {
-                                print("--- ALIGNMENT RESULTS ---")
-                                print(checker_widg,
-                                    n = nrow(checker_widg),
-                                    width = Inf
-                                )
-                            }
-                        }
+                        rlang::inform(.widgets_error())
+                        .summary_ism_par_import_msg(
+                            fimported,
+                            files_to_import,
+                            files_found
+                        )
                     }
                 )
             },
             error = function(cnd) {
-                message(conditionMessage(cnd))
+                rlang::inform(conditionMessage(cnd))
                 invokeRestart("print_err")
             }
         )
-    } else if (getOption("ISAnalytics.verbose") == TRUE) {
-        print("--- REPORT: FILES IMPORTED ---")
-        print(fimported, width = Inf)
-        print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
-        print(files_to_import, width = Inf)
-        print("--- INTEGRATION MATRICES FOUND REPORT ---")
-        unnested <- tidyr::unnest(files_found %>%
-            dplyr::select(
-                -.data$Files_count
-            ),
-        cols = c(.data$Files)
+    } else {
+        .summary_ism_par_import_msg(
+            fimported,
+            files_to_import,
+            files_found
         )
-        print(unnested,
-            n = nrow(unnested), width = Inf
-        )
-        if (!is.null(checker_widg)) {
-            print("--- ALIGNMENT RESULTS ---")
-            print(checker_widg, n = nrow(checker_widg), width = Inf)
-        }
     }
     matrices <- matrices[[1]]
     if (multi_quant_matrix == TRUE) {
-        matrices <- comparison_matrix(matrices, ...)
+        matrices <- rlang::eval_tidy(rlang::call2(comparison_matrix,
+            x = matrices,
+            !!!mult_args
+        ))
     }
     matrices
 }
+
+
 
 #' Possible choices for the `quantification_type` parameter.
 #'
@@ -650,7 +801,7 @@ matching_options <- function() {
 #' * ydm: year, day, month
 #' * mdy: month, day, year
 #' * myd: month, year, day
-#' * dmy: day, month, year - default value
+#' * dmy: day, month, year
 #' * dym: day, year, month
 #' * yq: year quantile
 #'

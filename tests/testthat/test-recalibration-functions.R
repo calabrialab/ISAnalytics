@@ -1,12 +1,12 @@
-context("Recalibration functions")
-
 library(ISAnalytics)
 
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
-op <- options(ISAnalytics.widgets = FALSE, ISAnalytics.verbose = FALSE)
-on.exit(options(op))
+op <- withr::local_options(
+    ISAnalytics.widgets = FALSE,
+    ISAnalytics.verbose = FALSE
+)
 # Samples
 sample_group1 <- tibble::tibble(
     chr = c(rep_len("1", 6)),

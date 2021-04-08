@@ -48,16 +48,20 @@
 #' genes. See details.
 #' @param significance_threshold The significance threshold
 #' @param annotation_threshold_ontots Value above which genes are annotated
-#' @param facet_rows Column names to pass to the faceting function as rows
-#' (NULL for no faceting)
-#' @param facet_cols Column names to pass to the faceting function as columns
-#' (NULL for no faceting)
+#' @param highlight_genes Either NULL or a character vector of genes to be
+#' highlighted in the plot even if they're not above the threshold
+#' @param title_prefix A string to be displayed in the title - usually the
+#' project name and other characterizing info
+#' @param return_df Return the data frame used to generate the plot?
+#' This can be useful if the user wants to manually modify the plot with
+#' ggplot2. If TRUE the function returns a list containing both the plot
+#' and the data frame.
 #'
 #' @import ggplot2
 #' @importFrom ggrepel geom_label_repel
-#' @importFrom dplyr filter
+#' @import dplyr
 #'
-#' @return A plot
+#' @return A plot or a list containing a plot and a data frame
 #' @export
 #'
 #' @examples
@@ -79,7 +83,7 @@
 #'     dates_format = "dmy"
 #' )
 #'
-#' cis <- CIS_grubbs(matrices$seqCount)
+#' cis <- CIS_grubbs(matrices)
 #' plot <- CIS_volcano_plot(cis)
 #' options(op)
 CIS_volcano_plot <- function(x,
@@ -97,9 +101,10 @@ CIS_volcano_plot <- function(x,
         clinical_relevant_suspicious_genes(),
     significance_threshold = 0.05,
     annotation_threshold_ontots = 0.1,
-    facet_rows = NULL,
-    facet_cols = NULL,
-    ProjectID = NULL) {
+    highlight_genes = NULL,
+    title_prefix = NULL,
+    return_df = FALSE) {
+    ## Check params
     stopifnot(is.data.frame(x))
     stopifnot(is.character(onco_db_file) & length(onco_db_file) == 1)
     stopifnot(is.character(tumor_suppressors_db_file) &
@@ -113,10 +118,12 @@ CIS_volcano_plot <- function(x,
     stopifnot(is.numeric(annotation_threshold_ontots) |
         is.integer(annotation_threshold_ontots) &
             length(annotation_threshold_ontots) == 1)
-    stopifnot(is.null(ProjectID) || (is.character(ProjectID) &
-                                         length(ProjectID == 1)))
-    if (is.null(ProjectID)) {
-        ProjectID <- ""
+    stopifnot(is.null(title_prefix) || (is.character(title_prefix) &
+        length(title_prefix == 1)))
+    stopifnot(is.null(highlight_genes) || is.character(highlight_genes))
+    stopifnot(is.logical(return_df))
+    if (is.null(title_prefix)) {
+        title_prefix <- ""
     }
     ## Load onco and ts
     oncots_to_use <- .load_onco_ts_genes(
@@ -143,7 +150,7 @@ CIS_volcano_plot <- function(x,
         dplyr::left_join(known_onco, by = "GeneName") %>%
         dplyr::left_join(suspicious_genes, by = "GeneName")
 
-    ## Add infos to CIS
+    ## Add info to CIS
     cis_grubbs_df <- cis_grubbs_df %>%
         dplyr::mutate(minus_log_p = -log(.data$tdist_bonferroni_default,
             base = 10
@@ -181,11 +188,11 @@ CIS_volcano_plot <- function(x,
     ## Trace plot
     plot_cis_fdr_slice <- ggplot2::ggplot(
         data = cis_grubbs_df,
-        ggplot2::aes(
-            y = minus_log_p_fdr,
-            x = neg_zscore_minus_log2_int_freq_tolerance,
-            color = KnownGeneClass,
-            fill = KnownGeneClass
+        ggplot2::aes_(
+            y = ~minus_log_p_fdr,
+            x = ~neg_zscore_minus_log2_int_freq_tolerance,
+            color = ~KnownGeneClass,
+            fill = ~KnownGeneClass
         ),
         na.rm = TRUE, se = TRUE
     ) +
@@ -202,13 +209,14 @@ CIS_volcano_plot <- function(x,
         ggrepel::geom_label_repel(
             data = dplyr::filter(
                 cis_grubbs_df,
-                tdist_fdr < significance_threshold
+                .data$tdist_fdr < significance_threshold
             ),
-            ggplot2::aes(label = GeneName),
+            ggplot2::aes_(label = ~GeneName),
             box.padding = ggplot2::unit(0.35, "lines"),
             point.padding = ggplot2::unit(0.3, "lines"),
             color = "white",
-            segment.color = "black"
+            segment.color = "black",
+            max.overlaps = Inf
         ) +
         ggplot2::theme(
             strip.text.y = ggplot2::element_text(
@@ -231,10 +239,10 @@ CIS_volcano_plot <- function(x,
             axis.text.y = ggplot2::element_text(size = 16),
             axis.title = ggplot2::element_text(size = 16),
             plot.title = ggplot2::element_text(size = 20)
-         ) +
+        ) +
         ggplot2::labs(
             title = paste(
-                ProjectID,
+                title_prefix,
                 "- Volcano plot of IS gene frequency and",
                 "CIS results"
             ),
@@ -245,27 +253,35 @@ CIS_volcano_plot <- function(x,
             subtitle = paste0(
                 "Significance threshold for annotation",
                 " labeling: P-value < ", significance_threshold,
-                "(FDR adjusted;",
+                "(FDR adjusted; ",
                 "-log = ", (round(-log(significance_threshold, base = 10), 3)),
-                ").\nOnco/TS genes source: UniProt (other genes",
+                ").\nOnco/TS genes source: UniProt (other genes ",
                 "labeled as 'Other'). Annotated if P-value > ",
-                round(annotation_threshold_ontots_log, 3)
+                round(annotation_threshold_ontots_log, 3), "\nexcept ",
+                "selected genes to be highlighted"
             )
         )
-    if (!is.null(facet_rows) & !is.null(facet_cols)) {
+    if (!is.null(highlight_genes) && !purrr::is_empty(highlight_genes)) {
+        ## Look for the genes (case insensitive)
+        to_highlight <- cis_grubbs_df %>%
+            dplyr::filter(stringr::str_to_lower(.data$GeneName) %in%
+                stringr::str_to_lower(highlight_genes))
         plot_cis_fdr_slice <- plot_cis_fdr_slice +
-            ggplot2::facet_grid(rows = {{ facet_rows }},
-                                cols = {{ facet_cols }})
-    } else if (!is.null(facet_rows)) {
-        plot_cis_fdr_slice <- plot_cis_fdr_slice +
-            ggplot2::facet_wrap({{ facet_rows }}, nrow = length(facet_rows),
-                                ncol = 1)
-    } else if (!is.null(facet_cols)) {
-        plot_cis_fdr_slice <- plot_cis_fdr_slice +
-            ggplot2::facet_wrap({{ facet_cols }}, ncol = length(facet_cols),
-                                nrow = 1)
+            ggrepel::geom_label_repel(
+                data = to_highlight,
+                ggplot2::aes_(label = ~GeneName),
+                box.padding = ggplot2::unit(0.35, "lines"),
+                point.padding = ggplot2::unit(0.3, "lines"),
+                color = "white",
+                segment.color = "black",
+                max.overlaps = Inf
+            )
     }
-    return(plot_cis_fdr_slice)
+    if (return_df) {
+        return(list(plot = plot_cis_fdr_slice, df = cis_grubbs_df))
+    } else {
+        return(plot_cis_fdr_slice)
+    }
 }
 
 #' Known clinical oncogenes (for mouse and human).

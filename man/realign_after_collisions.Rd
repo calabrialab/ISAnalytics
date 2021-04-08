@@ -42,8 +42,11 @@ association_file <- import_association_file(path, root,
     dates_format = "dmy"
 )
 matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file, NULL,
-    c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY"
+    association_file = association_file, root = NULL,
+    quantification_type = c("fragmentEstimate", "seqCount"),
+    matrix_type = "annotated", workers = 2,
+    patterns = NULL, matching_opt = "ANY",
+    multi_quant_matrix = FALSE
 )
 sc_matrix <- remove_collisions(matrices$seqCount, association_file)
 others <- matrices[!names(matrices) \%in\% "seqCount"]

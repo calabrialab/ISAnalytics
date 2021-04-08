@@ -83,7 +83,7 @@ matrices <- import_parallel_Vispa2Matrices_auto(
     association_file = association_file, root = NULL,
     quantification_type = c("seqCount", "fragmentEstimate"),
     matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY"
+    matching_opt = "ANY", multi_quant_matrix = FALSE
 )
 
 stats <- sample_statistics(matrices$seqCount, association_file)

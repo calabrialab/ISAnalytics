@@ -2,26 +2,43 @@
 % Please edit documentation in R/analysis-functions.R
 \name{compute_abundance}
 \alias{compute_abundance}
-\title{Computes the abundance of every integration in the sample.}
+\title{Computes the abundance for every integration event in the input data frame.}
 \usage{
-compute_abundance(x, columns = "Value", percentage = TRUE)
+compute_abundance(
+  x,
+  columns = "Value",
+  percentage = TRUE,
+  key = "CompleteAmplificationID",
+  keep_totals = FALSE
+)
 }
 \arguments{
 \item{x}{An integration matrix - aka a data frame that includes
-the \code{mandatory_IS_vars()} as columns}
+the \code{mandatory_IS_vars()} as columns. The matrix can either be aggregated
+(via \code{aggregate_values_by_key()}) or not.}
 
 \item{columns}{A character vector of column names to process,
 must be numeric or integer columns}
 
 \item{percentage}{Add abundance as percentage?}
+
+\item{key}{The key to group by when calculating totals}
+
+\item{keep_totals}{A value between \code{TRUE}, \code{FALSE} or \code{df}. If \code{TRUE},
+the intermediate totals for each group will be kept in the output
+data frame as a dedicated column with a trailing "_tot". If \code{FALSE},
+totals won't be included in the output data frame. If \code{df}, the totals
+are returned to the user as a separate data frame, together with the
+abundance data frame.}
 }
 \value{
-An integration matrix
+Either a single data frame with computed abundance values or
+a list of 2 data frames (abundance_df, quant_totals)
 }
 \description{
 \lifecycle{maturing}
-Abundance is obtained for every row by calculating the ratio
-between the single value and the total value for the sample.
+Abundance is obtained for every integration event by calculating the ratio
+between the single value and the total value for the given group.
 }
 \details{
 Abundance will be computed upon the user selected columns
@@ -34,7 +51,14 @@ path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
     package = "ISAnalytics"
 )
 matrix <- import_single_Vispa2Matrix(path)
-abundance <- compute_abundance(matrix)
+
+# Simple integration matrix - grouping by CompleteAmplificationID
+abundance1 <- compute_abundance(matrix)
+abundance1
+
+# Keeping totals as a separate data frame
+abundance2 <- compute_abundance(matrix, keep_totals = "df")
+abundance2
 }
 \seealso{
 Other Analysis functions: 
