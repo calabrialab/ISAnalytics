@@ -19,7 +19,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -52,12 +52,10 @@
 This function scans the input integration matrix to detect eventual
 integration sites that are too &quot;near&quot; to each other and merges them
 into single integration sites adjusting their values if needed." />
-<meta property="og:image" content="/logo.png" />
+<meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
 <meta name="robots" content="noindex">
-
-
 
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
@@ -86,13 +84,19 @@ into single integration sites adjusting their values if needed." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.1.5</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.1.10</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -118,6 +122,13 @@ into single integration sites adjusting their values if needed." />
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
+</li>
+<li>
+  <a href="https://calabrialab.github.io/ISAnalytics/">
+    <span class="fas fa-code-branch"></span>
+     
+    RELEASE
+  </a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -146,7 +157,7 @@ into single integration sites adjusting their values if needed." />
     </div>
 
     <div class="ref-description">
-    <p><a href='https://www.tidyverse.org/lifecycle/#experimental'><img src='figures/lifecycle-experimental.svg' alt='Experimental lifecycle'></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#experimental'><img src='figures/lifecycle-experimental.svg' alt='[Experimental]' /></a>
 
 This function scans the input integration matrix to detect eventual
 integration sites that are too "near" to each other and merges them
@@ -156,12 +167,13 @@ into single integration sites adjusting their values if needed.</p>
     <pre class="usage"><span class='fu'>compute_near_integrations</span><span class='op'>(</span>
   <span class='va'>x</span>,
   threshold <span class='op'>=</span> <span class='fl'>4</span>,
-  keep_criteria <span class='op'>=</span> <span class='st'>"keep_first"</span>,
+  keep_criteria <span class='op'>=</span> <span class='st'>"max_value"</span>,
   strand_specific <span class='op'>=</span> <span class='cn'>TRUE</span>,
   max_value_column <span class='op'>=</span> <span class='st'>"seqCount"</span>,
   map_as_widget <span class='op'>=</span> <span class='cn'>TRUE</span>,
   map_as_file <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  file_path <span class='op'>=</span> <span class='st'>"."</span>
+  file_path <span class='op'>=</span> <span class='st'>"."</span>,
+  export_widget_path <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -214,6 +226,11 @@ searching the maximum value</p></td>
 saved. By default the function produces a folder in the current
 working directory and generates file names with time stamps.</p></td>
     </tr>
+    <tr>
+      <th>export_widget_path</th>
+      <td><p>A path on disk to save produced widgets or NULL
+if the user doesn't wish to save the html file</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -244,12 +261,20 @@ all quantification matrices.</p>
     package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
 <span class='op'>)</span>
 <span class='va'>matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a></span><span class='op'>(</span><span class='va'>path</span><span class='op'>)</span>
-<span class='va'>near</span> <span class='op'>&lt;-</span> <span class='fu'>compute_near_integrations</span><span class='op'>(</span><span class='va'>matrix</span>,
+</div><div class='output co'>#&gt; <span class='message'>Warning: compression format not supported by fread</span>
+#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span><span> File will be read using readr</span></div><div class='output co'>#&gt; <span class='message'>Reading file...</span>
+#&gt; <span class='message'></span><span style='color: #0000BB;'>ℹ</span><span> Mode: classic</span></div><div class='output co'>#&gt; <span class='message'>*** File info *** </span>
+#&gt; <span class='message'>* --- Matrix type: NEW</span>
+#&gt; <span class='message'>* --- Annotated: TRUE</span>
+#&gt; <span class='message'>* --- Dimensions: 50 x 10</span>
+#&gt; <span class='message'>* --- Read mode:  classic</span></div><div class='output co'>#&gt; <span class='message'>Reshaping...</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   5%  |                                                                              |======                                                                |   9%  |                                                                              |==========                                                            |  14%  |                                                                              |=============                                                         |  18%  |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  32%  |                                                                              |=========================                                             |  36%  |                                                                              |=============================                                         |  41%  |                                                                              |================================                                      |  45%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================                                |  55%  |                                                                              |=========================================                             |  59%  |                                                                              |=============================================                         |  64%  |                                                                              |================================================                      |  68%  |                                                                              |===================================================                   |  73%  |                                                                              |======================================================                |  77%  |                                                                              |=========================================================             |  82%  |                                                                              |============================================================          |  86%  |                                                                              |================================================================      |  91%  |                                                                              |===================================================================   |  95%  |                                                                              |======================================================================| 100%
+#&gt; </div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='input'><span class='va'>near</span> <span class='op'>&lt;-</span> <span class='fu'>compute_near_integrations</span><span class='op'>(</span><span class='va'>matrix</span>,
     map_as_widget <span class='op'>=</span> <span class='cn'>FALSE</span>,
     map_as_file <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Using the following numeric columns:  Value</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |====                                                                  |   5%  |                                                                              |=======                                                               |  11%  |                                                                              |===========                                                           |  16%  |                                                                              |===============                                                       |  21%  |                                                                              |==================                                                    |  26%  |                                                                              |======================                                                |  32%  |                                                                              |==========================                                            |  37%  |                                                                              |=============================                                         |  42%  |                                                                              |=================================                                     |  47%  |                                                                              |=====================================                                 |  53%  |                                                                              |=========================================                             |  58%  |                                                                              |============================================                          |  63%  |                                                                              |================================================                      |  68%  |                                                                              |====================================================                  |  74%  |                                                                              |=======================================================               |  79%  |                                                                              |===========================================================           |  84%  |                                                                              |===============================================================       |  89%  |                                                                              |==================================================================    |  95%  |                                                                              |======================================================================| 100%
-#&gt; </div></pre>
+</div><div class='output co'>#&gt; <span class='message'>Using the following numeric columns:  Value</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Column for max value `seqCount` not found in numeric columns.</span>
+#&gt; <span class='warning'>Using `Value` column as reference instead.</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |====                                                                  |   5%  |                                                                              |=======                                                               |  11%  |                                                                              |===========                                                           |  16%  |                                                                              |===============                                                       |  21%  |                                                                              |==================                                                    |  26%  |                                                                              |======================                                                |  32%  |                                                                              |==========================                                            |  37%  |                                                                              |=============================                                         |  42%  |                                                                              |=================================                                     |  47%  |                                                                              |=====================================                                 |  53%  |                                                                              |=========================================                             |  58%  |                                                                              |============================================                          |  63%  |                                                                              |================================================                      |  68%  |                                                                              |====================================================                  |  74%  |                                                                              |=======================================================               |  79%  |                                                                              |===========================================================           |  84%  |                                                                              |===============================================================       |  89%  |                                                                              |==================================================================    |  95%  |                                                                              |======================================================================| 100%
+#&gt; </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -265,7 +290,7 @@ all quantification matrices.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

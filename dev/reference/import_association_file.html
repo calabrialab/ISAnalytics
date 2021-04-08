@@ -19,7 +19,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -52,12 +52,10 @@
 Imports the association file and immediately performs a check on
 the file system starting from the root to assess the alignment between the
 two." />
-<meta property="og:image" content="/logo.png" />
+<meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
 <meta name="robots" content="noindex">
-
-
 
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
@@ -86,13 +84,19 @@ two." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.1.5</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.1.10</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -118,6 +122,13 @@ two." />
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
+</li>
+<li>
+  <a href="https://calabrialab.github.io/ISAnalytics/">
+    <span class="fas fa-code-branch"></span>
+     
+    RELEASE
+  </a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -146,7 +157,7 @@ two." />
     </div>
 
     <div class="ref-description">
-    <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
 
 Imports the association file and immediately performs a check on
 the file system starting from the root to assess the alignment between the
@@ -158,6 +169,8 @@ two.</p>
   root <span class='op'>=</span> <span class='cn'>NULL</span>,
   tp_padding <span class='op'>=</span> <span class='fl'>4</span>,
   dates_format <span class='op'>=</span> <span class='st'>"ymd"</span>,
+  separator <span class='op'>=</span> <span class='st'>"\t"</span>,
+  filter_for <span class='op'>=</span> <span class='cn'>NULL</span>,
   export_widget_path <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
@@ -183,6 +196,19 @@ specified (ex: 1 becomes 0001 with a tp_padding of 4)</p></td>
       <th>dates_format</th>
       <td><p>A single string indicating how dates should be parsed.
 Must be a value in: <code><a href='date_formats.html'>date_formats()</a></code></p></td>
+    </tr>
+    <tr>
+      <th>separator</th>
+      <td><p>The column separator used in the file</p></td>
+    </tr>
+    <tr>
+      <th>filter_for</th>
+      <td><p>A named list where names represent column names that
+must be filtered. For example: <code>list(ProjectID = c("PROJECT1", "PROJECT2))</code>
+will filter the association file so that it contains only those rows
+for which the value of the column "ProjectID" is one of the specified
+values. If multiple columns are present in the list all filtering
+conditions are applied as a logical AND.</p></td>
     </tr>
     <tr>
       <th>export_widget_path</th>
@@ -241,19 +267,13 @@ If 'NULL' the file system alignment step is skipped.</p>
 <span class='va'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_pth</span>, <span class='st'>"fs"</span><span class='op'>)</span>
 <span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'>import_association_file</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>root</span>, dates_format <span class='op'>=</span> <span class='st'>"dmy"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 4 x 4</span><span>
-#&gt;   ProjectID   concatenatePoolIDSeqRun Found
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                   </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>
-#&gt; </span><span style='color: #555555;'>1</span><span> CLOEXP      POOL6-1                 TRUE 
-#&gt; </span><span style='color: #555555;'>2</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     TRUE 
-#&gt; </span><span style='color: #555555;'>3</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     TRUE 
-#&gt; </span><span style='color: #555555;'>4</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     TRUE 
-#&gt;   Path                                                             
-#&gt;   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                                                            
-#&gt; </span><span style='color: #555555;'>1</span><span> /tmp/RtmpaVHbny/fs/VA/CLOEXP/quantification/POOL6-1              
-#&gt; </span><span style='color: #555555;'>2</span><span> /tmp/RtmpaVHbny/fs/PROJECT1100/quantification/ABX-LR-PL5-POOL14-1
-#&gt; </span><span style='color: #555555;'>3</span><span> /tmp/RtmpaVHbny/fs/PROJECT1100/quantification/ABX-LR-PL6-POOL15-1
-#&gt; </span><span style='color: #555555;'>4</span><span> /tmp/RtmpaVHbny/fs/PROJECT1101/quantification/ABY-LR-PL4-POOL54-2</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
+#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span><span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
+#&gt; <span class='message'>* Parsing problems detected: TRUE</span>
+#&gt; <span class='message'>* Date parsing problems: TRUE</span>
+#&gt; <span class='message'>* Column problems detected: TRUE</span>
+#&gt; <span class='message'>* NAs found in important columns: TRUE</span>
+#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -270,7 +290,7 @@ If 'NULL' the file system alignment step is skipped.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

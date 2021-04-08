@@ -19,7 +19,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -52,12 +52,10 @@
 These functions are designed to import the appropriate
 integration matrix files given the association file and the root folder of
 the file system where Vispa2 matrices are generated." />
-<meta property="og:image" content="/logo.png" />
+<meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
 <meta name="robots" content="noindex">
-
-
 
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
@@ -86,13 +84,19 @@ the file system where Vispa2 matrices are generated." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.1.5</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.1.10</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -118,6 +122,13 @@ the file system where Vispa2 matrices are generated." />
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
+</li>
+<li>
+  <a href="https://calabrialab.github.io/ISAnalytics/">
+    <span class="fas fa-code-branch"></span>
+     
+    RELEASE
+  </a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -146,7 +157,7 @@ the file system where Vispa2 matrices are generated." />
     </div>
 
     <div class="ref-description">
-    <p><a href='https://www.tidyverse.org/lifecycle/#maturing'><img src='figures/lifecycle-maturing.svg' alt='Maturing lifecycle'></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
 
 These functions are designed to import the appropriate
 integration matrix files given the association file and the root folder of
@@ -155,13 +166,11 @@ the file system where Vispa2 matrices are generated.</p>
 
     <pre class="usage"><span class='fu'>import_parallel_Vispa2Matrices_interactive</span><span class='op'>(</span>
   <span class='va'>association_file</span>,
-  <span class='va'>root</span>,
   <span class='va'>quantification_type</span>,
   matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>,
   workers <span class='op'>=</span> <span class='fl'>2</span>,
-  tp_padding <span class='op'>=</span> <span class='fl'>4</span>,
-  dates_format <span class='op'>=</span> <span class='st'>"ymd"</span>,
-  multi_quant_matrix <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  multi_quant_matrix <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  export_report_path <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -171,13 +180,8 @@ the file system where Vispa2 matrices are generated.</p>
     <tr>
       <th>association_file</th>
       <td><p>A single string containing the path to the
-association file on disk, or a tibble resulting from the previous call of
+association file on disk, or a data frame resulting from a previous call to
 <code>import_association_file</code></p></td>
-    </tr>
-    <tr>
-      <th>root</th>
-      <td><p>A single string containing the path to the root folder containing
-Vispa2 output. Can be NULL if association_file parameter is a tibble</p></td>
     </tr>
     <tr>
       <th>quantification_type</th>
@@ -191,19 +195,8 @@ be imported. Can only be one in <code>"annotated"</code> or <code>"not_annotated
     </tr>
     <tr>
       <th>workers</th>
-      <td><p>A single number representing the number of parallel workers to
-use for the import</p></td>
-    </tr>
-    <tr>
-      <th>tp_padding</th>
-      <td><p>Timepoint padding, indicates the number of digits of the
-"Timepoint" column once imported. Fills the content with 0s up to the length
-specified (ex: 1 becomes 0001 with a tp_padding of 4)</p></td>
-    </tr>
-    <tr>
-      <th>dates_format</th>
-      <td><p>A single string indicating how dates should be parsed.
-Must be a value in: <code><a href='date_formats.html'>date_formats()</a></code></p></td>
+      <td><p>A single integer representing the number
+of parallel workers to use for the import</p></td>
     </tr>
     <tr>
       <th>multi_quant_matrix</th>
@@ -212,15 +205,22 @@ multi-quantification matrix (data frame) through <code>comparison_matrix</code>
 instead of a list.</p></td>
     </tr>
     <tr>
+      <th>export_report_path</th>
+      <td><p>A path on disk to save produced import report
+or NULL if the user doesn't wish to save the html file</p></td>
+    </tr>
+    <tr>
       <th>...</th>
-      <td><p>Additional arguments to pass to <code>comparison_matrix</code></p></td>
+      <td><p>&lt;<code><a href='https://rlang.r-lib.org/reference/dyn-dots.html'>dynamic-dots</a></code>&gt; Additional named arguments
+to pass to <code>ìmport_association_file</code> and <code>comparison_matrix</code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named list of tibbles containing data from all imported integration
-matrices, divided by quantification type</p>
+    <p>A named list of data frames containing data from
+all imported integration
+matrices, divided by quantification type or a multi-quantification matrix</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Import family functions are designed to work in combination with
@@ -240,7 +240,8 @@ if necessary, duplicate files. During the execution, a series of reports is
 shown in html format.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='comparison_matrix.html'>comparison_matrix</a></code></p>
+    <div class='dont-index'><p><code><a href='comparison_matrix.html'>comparison_matrix</a></code>,
+<code><a href='import_association_file.html'>import_association_file</a></code></p>
 <p>Other Import functions: 
 <code><a href='import_association_file.html'>import_association_file</a>()</code>,
 <code><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a>()</code>,
@@ -251,7 +252,11 @@ shown in html format.</p>
 <span class='co'># Can't run because it's interactive and requires user input</span>
 <span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'>import_parallel_Vispa2Matrices_interactive</span><span class='op'>(</span>
     <span class='va'>association_file</span>,
-    <span class='va'>root</span>, <span class='va'>quantification_type</span>, <span class='va'>matrix_type</span>, <span class='va'>workers</span>, dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>
+    <span class='va'>quantification_type</span>,
+    matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>,
+    workers <span class='op'>=</span> <span class='fl'>2</span>,
+    multi_quant_matrix <span class='op'>=</span> <span class='cn'>FALSE</span>,
+    export_report_path <span class='op'>=</span> <span class='cn'>NULL</span>,
 <span class='op'>)</span>
 <span class='op'>}</span>
 </div></pre>
@@ -270,7 +275,7 @@ shown in html format.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

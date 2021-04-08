@@ -19,7 +19,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -48,12 +48,10 @@
 
 <meta property="og:title" content="A set of pre-defined functions for sample_statistics. — default_stats" />
 <meta property="og:description" content="A set of pre-defined functions for sample_statistics." />
-<meta property="og:image" content="/logo.png" />
+<meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
 <meta name="robots" content="noindex">
-
-
 
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
@@ -82,13 +80,19 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.1.5</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.1.10</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -114,6 +118,13 @@
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
+</li>
+<li>
+  <a href="https://calabrialab.github.io/ISAnalytics/">
+    <span class="fas fa-code-branch"></span>
+     
+    RELEASE
+  </a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -185,226 +196,19 @@
 #&gt;         H[NAS] &lt;- NA
 #&gt;     H
 #&gt; }
-#&gt; &lt;bytecode: 0x556b03d98718&gt;
+#&gt; &lt;bytecode: 0x7fbe30e58fc8&gt;
 #&gt; &lt;environment: namespace:vegan&gt;
 #&gt; 
 #&gt; $sum
 #&gt; ~sum(.x, na.rm = TRUE)
-#&gt; &lt;environment: 0x556af4fa5a90&gt;
+#&gt; &lt;environment: 0x7fbe2f8d92b0&gt;
 #&gt; 
 #&gt; $count
 #&gt; function (x)  .Primitive("length")
 #&gt; 
 #&gt; $describe
-#&gt; function (x, na.rm = TRUE, interp = FALSE, skew = TRUE, ranges = TRUE, 
-#&gt;     trim = 0.1, type = 3, check = TRUE, fast = NULL, quant = NULL, 
-#&gt;     IQR = FALSE, omit = FALSE, data = NULL) 
-#&gt; {
-#&gt;     if (inherits(x, "formula")) {
-#&gt;         ps &lt;- fparse(x)
-#&gt;         if (missing(data)) {
-#&gt;             x &lt;- get(ps$y)
-#&gt;             group &lt;- x[, ps$x]
-#&gt;         }
-#&gt;         else {
-#&gt;             x &lt;- data[ps$y]
-#&gt;             group &lt;- data[ps$x]
-#&gt;         }
-#&gt;         describeBy(x, group = group, na.rm = na.rm, interp = interp, 
-#&gt;             skew = skew, ranges = ranges, trim = trim, type = type, 
-#&gt;             check = check, fast = fast, quant = quant, IQR = IQR, 
-#&gt;             omit = omit, data = data)
-#&gt;     }
-#&gt;     else {
-#&gt;         cl &lt;- match.call()
-#&gt;         valid &lt;- function(x) {
-#&gt;             sum(!is.na(x))
-#&gt;         }
-#&gt;         if (!na.rm) 
-#&gt;             x &lt;- na.omit(x)
-#&gt;         if (is.null(fast)) {
-#&gt;             if (prod(dim(x)) &gt; 10^7) {
-#&gt;                 fast &lt;- TRUE
-#&gt;             }
-#&gt;             else {
-#&gt;                 fast &lt;- FALSE
-#&gt;             }
-#&gt;         }
-#&gt;         if (fast) {
-#&gt;             skew &lt;- FALSE
-#&gt;         }
-#&gt;         numstats &lt;- 10 + length(quant) + IQR
-#&gt;         if (NCOL(x) &lt; 2) {
-#&gt;             if (is.data.frame(x)) {
-#&gt;                 if (!is.numeric(x[, 1])) {
-#&gt;                   warning("You were trying to describe a non-numeric data.frame or vector which describe converted  to numeric.")
-#&gt;                   x[, 1] &lt;- as.numeric(as.factor(x[, ]))
-#&gt;                 }
-#&gt;                 x &lt;- x[, 1]
-#&gt;             }
-#&gt;             len &lt;- 1
-#&gt;             nvar &lt;- 1
-#&gt;             stats = matrix(rep(NA, numstats), ncol = numstats)
-#&gt;             stats[1, 1] &lt;- valid(x)
-#&gt;             stats[1, 2] &lt;- mean(x, na.rm = na.rm)
-#&gt;             stats[1, 10] &lt;- sd(x, na.rm = na.rm)
-#&gt;             if (interp) {
-#&gt;                 stats[1, 3] &lt;- interp.median(x, na.rm = na.rm)
-#&gt;             }
-#&gt;             else {
-#&gt;                 stats[1, 3] &lt;- median(x, na.rm = na.rm)
-#&gt;             }
-#&gt;             stats[1, 9] &lt;- mean(x, na.rm = na.rm, trim = trim)
-#&gt;             stats[1, 4] &lt;- min(x, na.rm = na.rm)
-#&gt;             stats[1, 5] &lt;- max(x, na.rm = na.rm)
-#&gt;             stats[1, 6] &lt;- skew(x, na.rm = na.rm, type = type)
-#&gt;             stats[1, 7] &lt;- mad(x, na.rm = na.rm)
-#&gt;             stats[1, 8] &lt;- kurtosi(x, na.rm = na.rm, type = type)
-#&gt;             vars &lt;- 1
-#&gt;             if (!is.null(quant)) {
-#&gt;                 Qnt &lt;- quantile(x, prob = quant, na.rm = TRUE)
-#&gt;                 stats[1, (IQR + 11):numstats] &lt;- t(Qnt)
-#&gt;             }
-#&gt;             if (IQR) {
-#&gt;                 Quart &lt;- t(quantile(x, prob = c(0.25, 0.75), 
-#&gt;                   na.rm = TRUE))
-#&gt;                 Iqr &lt;- Quart[, 2] - Quart[, 1]
-#&gt;                 stats[1, 11] &lt;- Iqr
-#&gt;             }
-#&gt;             rownames(stats) &lt;- "X1"
-#&gt;         }
-#&gt;         else {
-#&gt;             nvar &lt;- ncol(x)
-#&gt;             stats = matrix(rep(NA, nvar * numstats), ncol = numstats)
-#&gt;             if (is.null(colnames(x))) 
-#&gt;                 colnames(x) &lt;- paste0("X", 1:ncol(x))
-#&gt;             rownames(stats) &lt;- colnames(x)
-#&gt;             stats[, 1] &lt;- apply(x, 2, valid)
-#&gt;             vars &lt;- c(1:nvar)
-#&gt;             select &lt;- 1:nvar
-#&gt;             if (!is.matrix(x) &amp;&amp; check) {
-#&gt;                 for (i in 1:nvar) {
-#&gt;                   if (!is.numeric(x[[i]])) {
-#&gt;                     if (fast) {
-#&gt;                       x[[i]] &lt;- NA
-#&gt;                     }
-#&gt;                     else {
-#&gt;                       if (omit) {
-#&gt;                         select[i] &lt;- NA
-#&gt;                       }
-#&gt;                       if (is.factor(unlist(x[[i]])) | is.character(unlist(x[[i]]))) {
-#&gt;                         x[[i]] &lt;- as.numeric(as.factor(x[[i]]))
-#&gt;                         rownames(stats)[i] &lt;- paste(rownames(stats)[i], 
-#&gt;                           "*", sep = "")
-#&gt;                       }
-#&gt;                       else {
-#&gt;                         x[[i]] &lt;- NA
-#&gt;                       }
-#&gt;                     }
-#&gt;                   }
-#&gt;                 }
-#&gt;             }
-#&gt;             select &lt;- select[!is.na(select)]
-#&gt;             x &lt;- as.matrix(x[, select])
-#&gt;             vars &lt;- vars[select]
-#&gt;             stats &lt;- stats[select, ]
-#&gt;             if (!is.numeric(x)) {
-#&gt;                 message("Converted non-numeric matrix input to numeric.  Are you sure you wanted to do this. Please check your data")
-#&gt;                 x &lt;- matrix(as.numeric(x), ncol = nvar)
-#&gt;                 rownames(stats) &lt;- paste0(rownames(stats), "*")
-#&gt;             }
-#&gt;             stats[, 2] &lt;- apply(x, 2, mean, na.rm = na.rm)
-#&gt;             stats[, 10] &lt;- apply(x, 2, sd, na.rm = na.rm)
-#&gt;             if (skew) {
-#&gt;                 stats[, 6] &lt;- skew(x, na.rm = na.rm, type = type)
-#&gt;                 stats[, 8] &lt;- kurtosi(x, na.rm = na.rm, type = type)
-#&gt;             }
-#&gt;             if (ranges) {
-#&gt;                 if (fast) {
-#&gt;                   stats[, 4] &lt;- apply(x, 2, min, na.rm = na.rm)
-#&gt;                   stats[, 5] &lt;- apply(x, 2, max, na.rm = na.rm)
-#&gt;                 }
-#&gt;                 else {
-#&gt;                   stats[, 4] &lt;- apply(x, 2, min, na.rm = na.rm)
-#&gt;                   stats[, 5] &lt;- apply(x, 2, max, na.rm = na.rm)
-#&gt;                   stats[, 7] &lt;- apply(x, 2, mad, na.rm = na.rm)
-#&gt;                   stats[, 9] &lt;- apply(x, 2, mean, na.rm = na.rm, 
-#&gt;                     trim = trim)
-#&gt;                   if (interp) {
-#&gt;                     stats[, 3] &lt;- apply(x, 2, interp.median, 
-#&gt;                       na.rm = na.rm)
-#&gt;                   }
-#&gt;                   else {
-#&gt;                     stats[, 3] &lt;- apply(x, 2, median, na.rm = na.rm)
-#&gt;                   }
-#&gt;                 }
-#&gt;             }
-#&gt;             if (!is.null(quant)) {
-#&gt;                 Qnt &lt;- apply(x, 2, quantile, prob = quant, na.rm = TRUE)
-#&gt;                 stats[, (IQR + 11):numstats] &lt;- t(Qnt)
-#&gt;             }
-#&gt;             if (IQR) {
-#&gt;                 Quart &lt;- t(apply(x, 2, quantile, prob = c(0.25, 
-#&gt;                   0.75), na.rm = TRUE))
-#&gt;                 Iqr &lt;- Quart[, 2] - Quart[, 1]
-#&gt;                 stats[, 11] &lt;- Iqr
-#&gt;             }
-#&gt;         }
-#&gt;         if (numstats &gt; (10 + IQR)) {
-#&gt;             colnames(stats)[(11 + IQR):numstats] &lt;- paste0("Q", 
-#&gt;                 quant[1:length(quant)])
-#&gt;         }
-#&gt;         if (fast) {
-#&gt;             answer &lt;- data.frame(vars = vars, n = stats[, 1], 
-#&gt;                 mean = stats[, 2], sd = stats[, 10], se = stats[, 
-#&gt;                   10]/sqrt(stats[, 1]))
-#&gt;         }
-#&gt;         if (skew) {
-#&gt;             if (ranges) {
-#&gt;                 answer &lt;- data.frame(vars = vars, n = stats[, 
-#&gt;                   1], mean = stats[, 2], sd = stats[, 10], median = stats[, 
-#&gt;                   3], trimmed = stats[, 9], mad = stats[, 7], 
-#&gt;                   min = stats[, 4], max = stats[, 5], range = stats[, 
-#&gt;                     5] - stats[, 4], skew = stats[, 6], kurtosis = stats[, 
-#&gt;                     8], se = stats[, 10]/sqrt(stats[, 1]))
-#&gt;             }
-#&gt;             else {
-#&gt;                 answer &lt;- data.frame(vars = vars, n = stats[, 
-#&gt;                   1], mean = stats[, 2], sd = stats[, 10], skew = stats[, 
-#&gt;                   6], kurtosis = stats[, 8], se = stats[, 10]/sqrt(stats[, 
-#&gt;                   1]))
-#&gt;             }
-#&gt;         }
-#&gt;         else {
-#&gt;             if (ranges) {
-#&gt;                 answer &lt;- data.frame(vars = vars, n = stats[, 
-#&gt;                   1], mean = stats[, 2], sd = stats[, 10], min = stats[, 
-#&gt;                   4], max = stats[, 5], range = stats[, 5] - 
-#&gt;                   stats[, 4], se = stats[, 10]/sqrt(stats[, 1]))
-#&gt;             }
-#&gt;             else {
-#&gt;                 answer &lt;- data.frame(vars = vars, n = stats[, 
-#&gt;                   1], mean = stats[, 2], sd = stats[, 10], se = stats[, 
-#&gt;                   10]/sqrt(stats[, 1]))
-#&gt;             }
-#&gt;         }
-#&gt;         if (IQR) 
-#&gt;             answer &lt;- data.frame(answer, IQR = stats[, 11])
-#&gt;         if (numstats &gt; (10 + IQR)) {
-#&gt;             if (nvar &gt; 1) {
-#&gt;                 answer &lt;- data.frame(answer, stats[, (IQR + 11):numstats])
-#&gt;             }
-#&gt;             else {
-#&gt;                 answer &lt;- data.frame(answer, t(stats[, (IQR + 
-#&gt;                   11):numstats]))
-#&gt;             }
-#&gt;         }
-#&gt;         class(answer) &lt;- c("psych", "describe", "data.frame")
-#&gt;         return(answer)
-#&gt;     }
-#&gt; }
-#&gt; &lt;bytecode: 0x556af8281038&gt;
-#&gt; &lt;environment: namespace:psych&gt;
+#&gt; ~tibble::as_tibble(psych::describe(.x))
+#&gt; &lt;environment: 0x7fbe2f8d92b0&gt;
 #&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -421,7 +225,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

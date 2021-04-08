@@ -19,7 +19,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -51,13 +51,11 @@
 
 This function allows to read and import an integration matrix
 produced as the output of Vispa2 pipeline and converts it to a tidy
-tibble." />
-<meta property="og:image" content="/logo.png" />
+format." />
+<meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
 <meta name="robots" content="noindex">
-
-
 
 <!-- mathjax -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
@@ -86,13 +84,19 @@ tibble." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.1.5</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.1.10</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="../index.html">
+    <span class="fas fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -118,6 +122,13 @@ tibble." />
 </li>
 <li>
   <a href="../news/index.html">Changelog</a>
+</li>
+<li>
+  <a href="https://calabrialab.github.io/ISAnalytics/">
+    <span class="fas fa-code-branch"></span>
+     
+    RELEASE
+  </a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -146,14 +157,14 @@ tibble." />
     </div>
 
     <div class="ref-description">
-    <p><a href='https://www.tidyverse.org/lifecycle/#stable'><img src='figures/lifecycle-stable.svg' alt='Stable lifecycle'></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#stable'><img src='figures/lifecycle-stable.svg' alt='[Stable]' /></a>
 
 This function allows to read and import an integration matrix
 produced as the output of Vispa2 pipeline and converts it to a tidy
-tibble.</p>
+format.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>import_single_Vispa2Matrix</span><span class='op'>(</span><span class='va'>path</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>import_single_Vispa2Matrix</span><span class='op'>(</span><span class='va'>path</span>, to_exclude <span class='op'>=</span> <span class='cn'>NULL</span>, separator <span class='op'>=</span> <span class='st'>"\t"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -162,11 +173,20 @@ tibble.</p>
       <th>path</th>
       <td><p>The path to the file on disk</p></td>
     </tr>
+    <tr>
+      <th>to_exclude</th>
+      <td><p>Either NULL or a character vector of column names that
+should be ignored when importing</p></td>
+    </tr>
+    <tr>
+      <th>separator</th>
+      <td><p>The column delimiter used</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A tidy tibble</p>
+    <p>A data.table object in tidy format</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The import series of functions is designed to work in combination
@@ -188,7 +208,14 @@ For more details on how to properly use these functions, refer to
     package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
 <span class='op'>)</span>
 <span class='va'>isa_dataframe</span> <span class='op'>&lt;-</span> <span class='fu'>import_single_Vispa2Matrix</span><span class='op'>(</span><span class='va'>path_to_file</span><span class='op'>)</span>
-</div></pre>
+</div><div class='output co'>#&gt; <span class='message'>Warning: compression format not supported by fread</span>
+#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span><span> File will be read using readr</span></div><div class='output co'>#&gt; <span class='message'>Reading file...</span>
+#&gt; <span class='message'></span><span style='color: #0000BB;'>ℹ</span><span> Mode: classic</span></div><div class='output co'>#&gt; <span class='message'>*** File info *** </span>
+#&gt; <span class='message'>* --- Matrix type: NEW</span>
+#&gt; <span class='message'>* --- Annotated: TRUE</span>
+#&gt; <span class='message'>* --- Dimensions: 50 x 10</span>
+#&gt; <span class='message'>* --- Read mode:  classic</span></div><div class='output co'>#&gt; <span class='message'>Reshaping...</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   5%  |                                                                              |======                                                                |   9%  |                                                                              |==========                                                            |  14%  |                                                                              |=============                                                         |  18%  |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  32%  |                                                                              |=========================                                             |  36%  |                                                                              |=============================                                         |  41%  |                                                                              |================================                                      |  45%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================                                |  55%  |                                                                              |=========================================                             |  59%  |                                                                              |=============================================                         |  64%  |                                                                              |================================================                      |  68%  |                                                                              |===================================================                   |  73%  |                                                                              |======================================================                |  77%  |                                                                              |=========================================================             |  82%  |                                                                              |============================================================          |  86%  |                                                                              |================================================================      |  91%  |                                                                              |===================================================================   |  95%  |                                                                              |======================================================================| 100%
+#&gt; </div><div class='output co'>#&gt; <span class='message'>Done!</span></div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -204,7 +231,7 @@ For more details on how to properly use these functions, refer to
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
