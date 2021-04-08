@@ -1,12 +1,12 @@
-context("Collision Removal")
-
 library(ISAnalytics)
 
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
-op <- options(ISAnalytics.widgets = FALSE, ISAnalytics.verbose = FALSE)
-on.exit(options(op))
+op <- withr::local_options(
+    ISAnalytics.widgets = FALSE,
+    ISAnalytics.verbose = FALSE
+)
 
 # Path to example association file
 path_af <- system.file("extdata", "ex_association_file.tsv",
@@ -61,7 +61,7 @@ import_matr_silent <- function() {
         association_file = path_af, root = root_correct,
         quantification_type = c("fragmentEstimate", "seqCount"),
         matrix_type = "annotated", workers = 2, patterns = NULL,
-        matching_opt = "ANY", dates_format = "dmy"
+        matching_opt = "ANY", dates_format = "dmy", multi_quant_matrix = FALSE
     )
     matrices
 }

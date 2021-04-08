@@ -21,7 +21,7 @@
 #' @export
 #'
 #' @examples
-#' op <- options("ISAnalytics.widgets" = FALSE)
+#' op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
 #' path_AF <- system.file("extdata", "ex_association_file.tsv",
 #'     package = "ISAnalytics"
 #' )
@@ -180,13 +180,13 @@ aggregate_metadata <- function(association_file,
 #' @family Aggregate functions
 #'
 #' @importFrom purrr walk
-#' @importFrom rlang expr eval_tidy
+#' @importFrom rlang expr eval_tidy abort
 #'
 #' @return A list of tibbles or a single tibble according to input
 #' @export
 #'
 #' @examples
-#' op <- options("ISAnalytics.widgets" = FALSE)
+#' op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
 #' path_AF <- system.file("extdata", "ex_association_file.tsv",
 #'     package = "ISAnalytics"
 #' )
@@ -201,12 +201,12 @@ aggregate_metadata <- function(association_file,
 #'     matrix_type = "annotated", workers = 2, matching_opt = "ANY"
 #' )
 #' agg <- aggregate_values_by_key(
-#'     x = matrices$seqCount,
-#'     association_file = association_file
+#'     x = matrices,
+#'     association_file = association_file,
+#'     value_cols = c("fragmentEstimate", "seqCount")
 #' )
 #' options(op)
-aggregate_values_by_key <- function(
-    x,
+aggregate_values_by_key <- function(x,
     association_file,
     value_cols = "Value",
     key = c(
@@ -225,39 +225,55 @@ aggregate_values_by_key <- function(
         purrr::walk(x, function(df) {
             stopifnot(is.data.frame(df))
             if (.check_mandatory_vars(df) == FALSE) {
-                stop(.non_ISM_error())
+                rlang::abort(.non_ISM_error())
             }
             if (.check_complAmpID(df) == FALSE) {
-                stop(.missing_complAmpID_error())
+                rlang::abort(.missing_complAmpID_error())
             }
             if (!all(value_cols %in% colnames(df))) {
-                stop(.missing_user_cols_error())
+                rlang::abort(.missing_user_cols_error(
+                    value_cols[!value_cols %in% colnames(df)]
+                ))
             }
-            purrr::walk(value_cols, function(col) {
-                expr <- rlang::expr(`$`(df, !!col))
-                if (!is.numeric(rlang::eval_tidy(expr)) &&
-                    !is.integer(rlang::eval_tidy(expr))) {
-                    stop(.non_num_user_cols_error())
+            is_numeric_col <- purrr::map_lgl(value_cols, function(col) {
+                if (!is.double(df[[col]]) &&
+                    !is.integer(df[[col]])) {
+                    FALSE
+                } else {
+                    TRUE
                 }
-            })
+            }) %>% purrr::set_names(value_cols)
+            if (any(!is_numeric_col)) {
+                rlang::abort(.non_num_user_cols_error(
+                    names(is_numeric_col)[!is_numeric_col]
+                ))
+            }
         })
     } else {
         if (.check_mandatory_vars(x) == FALSE) {
-            stop(.non_ISM_error())
+            rlang::abort(.non_ISM_error())
         }
         if (.check_complAmpID(x) == FALSE) {
-            stop(.missing_complAmpID_error())
+            rlang::abort(.missing_complAmpID_error())
         }
         if (!all(value_cols %in% colnames(x))) {
-            stop(.missing_user_cols_error())
+            rlang::abort(.missing_user_cols_error(
+                value_cols[!value_cols %in% colnames(x)]
+            ))
         }
-        purrr::walk(value_cols, function(col) {
-            expr <- rlang::expr(`$`(x, !!col))
-            if (!is.numeric(rlang::eval_tidy(expr)) &&
-                !is.integer(rlang::eval_tidy(expr))) {
-                stop(.non_num_user_cols_error())
+        is_numeric_col <- purrr::map_lgl(value_cols, function(col) {
+            if (!is.double(x[[col]]) &&
+                !is.integer(x[[col]])) {
+                FALSE
+            } else {
+                TRUE
             }
-        })
+        }) %>% purrr::set_names(value_cols)
+        if (any(!is_numeric_col)) {
+            rlang::abort(.non_num_user_cols_error(
+                names(is_numeric_col)[!is_numeric_col]
+            ))
+        }
     }
     # Check association file
     stopifnot(is.data.frame(association_file))

@@ -15,8 +15,9 @@ CIS_volcano_plot(
   suspicious_genes = clinical_relevant_suspicious_genes(),
   significance_threshold = 0.05,
   annotation_threshold_ontots = 0.1,
-  facet_rows = NULL,
-  facet_cols = NULL
+  highlight_genes = NULL,
+  title_prefix = NULL,
+  return_df = FALSE
 )
 }
 \arguments{
@@ -38,14 +39,19 @@ genes. See details.}
 
 \item{annotation_threshold_ontots}{Value above which genes are annotated}
 
-\item{facet_rows}{Column names to pass to the faceting function as rows
-(NULL for no faceting)}
+\item{highlight_genes}{Either NULL or a character vector of genes to be
+highlighted in the plot even if they're not above the threshold}
 
-\item{facet_cols}{Column names to pass to the faceting function as columns
-(NULL for no faceting)}
+\item{title_prefix}{A string to be displayed in the title - usually the
+project name and other characterizing info}
+
+\item{return_df}{Return the data frame used to generate the plot?
+This can be useful if the user wants to manually modify the plot with
+ggplot2. If TRUE the function returns a list containing both the plot
+and the data frame.}
 }
 \value{
-A plot
+A plot or a list containing a plot and a data frame
 }
 \description{
 \lifecycle{experimental}
@@ -64,7 +70,7 @@ the function \code{CIS_grubbs} is performed.
 
 These files are included in the package for user convenience and are
 simply UniProt files with gene annotations for human and mouse.
-For more details on how this files were generated use the help \code{?filname}
+For more details on how this files were generated use the help \code{?filename}
 function.
 }
 
@@ -116,7 +122,7 @@ matrices <- import_parallel_Vispa2Matrices_auto(
     dates_format = "dmy"
 )
 
-cis <- CIS_grubbs(matrices$seqCount)
+cis <- CIS_grubbs(matrices)
 plot <- CIS_volcano_plot(cis)
 options(op)
 }

@@ -1,12 +1,12 @@
-context("Aggregate functions")
-
 library(ISAnalytics)
 
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
-op <- options(ISAnalytics.widgets = FALSE, ISAnalytics.verbose = FALSE)
-on.exit(options(op))
+op <- withr::local_options(
+    ISAnalytics.widgets = FALSE,
+    ISAnalytics.verbose = FALSE
+)
 
 # Path to example association file
 path_af <- system.file("extdata", "ex_association_file.tsv",
@@ -41,7 +41,7 @@ matrices <- import_parallel_Vispa2Matrices_auto(
     quantification_type = c("seqCount", "fragmentEstimate"),
     matrix_type = "annotated", workers = 2, patterns = NULL,
     matching_opt = "ANY",
-    dates_format = "dmy"
+    dates_format = "dmy", multi_quant_matrix = FALSE
 )
 
 #------------------------------------------------------------------------------#
@@ -64,8 +64,9 @@ test_that(".stats_report returns NULL if all paths are NA", {
 
 test_that(".stats_report returns correctly for both af", {
     stats_rep <- .stats_report(association_file)
-    expect_true(all(!stats_rep$files == ""))
+    expect_true(all(!is.na(stats_rep$stats_files)))
     stats_rep <- .stats_report(association_file_err)
+    expect_true(any(is.na(stats_rep$stats_path)))
 })
 
 #------------------------------------------------------------------------------#
@@ -110,29 +111,37 @@ test_that(".join_and_aggregate correctly join and aggregate for stats", {
             "Tissue", "TimePoint"
         )
     )
-    expect_equivalent(agg$VCN, c(0.7, 2.8, 4.3, 9.89))
-    expect_true(all(agg$Avg_DNAngUsed == 100))
-    expect_equivalent(agg$Kapa, c(26.54667, 59.81000, 79.80333, 85.87000),
-        tolerance = .5
+    expect_equal(agg$VCN_avg, c(0.7, 2.8, 4.3, 9.89), ignore_attr = TRUE)
+    expect_true(all(agg$DNAngUsed_avg == 100))
+    expect_equal(agg$Kapa_avg, c(26.54667, 59.81000, 79.80333, 85.87000),
+        tolerance = .5, ignore_attr = TRUE
     )
-    expect_true(all(agg$DNAngUsed == 300))
-    expect_equivalent(agg$ulForPool, c(25.7, 12.29, 7.98, 7.46))
-    expect_equivalent(agg$BARCODE_MUX, c(4872448, 8573674, 5841068, 6086489))
-    expect_equivalent(
-        agg$TRIMMING_FINAL_LTRLC,
-        c(4863932, 8549992, 5818598, 6062299)
+    expect_true(all(agg$DNAngUsed_sum == 300))
+    expect_equal(agg$ulForPool_sum, c(25.7, 12.29, 7.98, 7.46),
+        ignore_attr = TRUE
     )
-    expect_equivalent(
-        agg$LV_MAPPED,
-        c(2114395, 3485464, 2923561, 2484034)
+    expect_equal(agg$BARCODE_MUX_sum, c(4872448, 8573674, 5841068, 6086489),
+        ignore_attr = TRUE
     )
-    expect_equivalent(
-        agg$BWA_MAPPED_OVERALL,
-        c(2619004, 4751887, 2631197, 3297007)
+    expect_equal(
+        agg$TRIMMING_FINAL_LTRLC_sum,
+        c(4863932, 8549992, 5818598, 6062299),
+        ignore_attr = TRUE
     )
-    expect_equivalent(
-        agg$ISS_MAPPED_PP,
-        c(2386173, 3746655, 1938140, 2330286)
+    expect_equal(
+        agg$LV_MAPPED_sum,
+        c(2114395, 3485464, 2923561, 2484034),
+        ignore_attr = TRUE
+    )
+    expect_equal(
+        agg$BWA_MAPPED_OVERALL_sum,
+        c(2619004, 4751887, 2631197, 3297007),
+        ignore_attr = TRUE
+    )
+    expect_equal(
+        agg$ISS_MAPPED_PP_sum,
+        c(2386173, 3746655, 1938140, 2330286),
+        ignore_attr = TRUE
     )
 })
 
@@ -146,13 +155,15 @@ test_that(".join_and_aggregate correctly join and aggregate for af only", {
             "Tissue", "TimePoint"
         )
     )
-    expect_equivalent(agg$VCN, c(0.7, 2.8, 4.3, 9.89))
-    expect_true(all(agg$Avg_DNAngUsed == 100))
-    expect_equivalent(agg$Kapa, c(26.54667, 59.81000, 79.80333, 85.87000),
-        tolerance = .5
+    expect_equal(agg$VCN_avg, c(0.7, 2.8, 4.3, 9.89), ignore_attr = TRUE)
+    expect_true(all(agg$DNAngUsed_avg == 100))
+    expect_equal(agg$Kapa_avg, c(26.54667, 59.81000, 79.80333, 85.87000),
+        tolerance = .5, ignore_attr = TRUE
     )
-    expect_true(all(agg$DNAngUsed == 300))
-    expect_equivalent(agg$ulForPool, c(25.7, 12.29, 7.98, 7.46))
+    expect_true(all(agg$DNAngUsed_sum == 300))
+    expect_equal(agg$ulForPool_sum, c(25.7, 12.29, 7.98, 7.46),
+        ignore_attr = TRUE
+    )
     expect_true(all(!.stats_columns_min() %in% colnames(agg)))
 })
 
@@ -160,16 +171,6 @@ test_that(".join_and_aggregate correctly join and aggregate for af only", {
 # Tests aggregate_metadata
 #------------------------------------------------------------------------------#
 # Test input
-test_that("aggregate_metadata stops if association file is not a tibble", {
-    expect_error({
-        agg_meta <- aggregate_metadata(association_file = as.data.frame(
-            association_file
-        ))
-    })
-    expect_error({
-        agg_meta <- aggregate_metadata(association_file = 1)
-    })
-})
 test_that("aggregate_metadata stops if af is missing mandatory columns", {
     association_file <- association_file %>%
         dplyr::select(-c(.data$FusionPrimerPCRDate))
@@ -229,41 +230,6 @@ test_that("aggregate_metadata stops if import_stats is not logical", {
     })
 })
 
-# Test Values
-test_that("aggregate_metadata succeeds if all params are correct", {
-    op <- options(ISAnalytics.verbose = FALSE)
-    on.exit({
-        options(op)
-    })
-    af_filtered <- association_file %>%
-        dplyr::filter(.data$ProjectID == "CLOEXP")
-    agg <- aggregate_metadata(af_filtered)
-    expect_equivalent(agg$VCN, c(0.7, 2.8, 4.3, 9.89))
-    expect_true(all(agg$Avg_DNAngUsed == 100))
-    expect_equivalent(agg$Kapa, c(26.54667, 59.81000, 79.80333, 85.87000),
-        tolerance = .5
-    )
-    expect_true(all(agg$DNAngUsed == 300))
-    expect_equivalent(agg$ulForPool, c(25.7, 12.29, 7.98, 7.46))
-    expect_equivalent(agg$BARCODE_MUX, c(4872448, 8573674, 5841068, 6086489))
-    expect_equivalent(
-        agg$TRIMMING_FINAL_LTRLC,
-        c(4863932, 8549992, 5818598, 6062299)
-    )
-    expect_equivalent(
-        agg$LV_MAPPED,
-        c(2114395, 3485464, 2923561, 2484034)
-    )
-    expect_equivalent(
-        agg$BWA_MAPPED_OVERALL,
-        c(2619004, 4751887, 2631197, 3297007)
-    )
-    expect_equivalent(
-        agg$ISS_MAPPED_PP,
-        c(2386173, 3746655, 1938140, 2330286)
-    )
-})
-
 #------------------------------------------------------------------------------#
 # Tests aggregate_values_by_key
 #------------------------------------------------------------------------------#
@@ -285,48 +251,33 @@ test_that("aggregate_values_by_key stops if x incorrect", {
         },
         regexp = .non_ISM_error()
     )
-    expect_error(
-        {
-            agg <- aggregate_values_by_key(matrices$seqCount, association_file,
-                value_cols = "x"
-            )
-        },
-        regexp = .missing_user_cols_error()
-    )
-    expect_error(
-        {
-            agg <- aggregate_values_by_key(matrices$seqCount, association_file,
-                value_cols = c("chr")
-            )
-        },
-        regexp = .non_num_user_cols_error()
-    )
-    expect_error(
-        {
-            agg <- aggregate_values_by_key(
-                matrices$seqCount %>%
-                    dplyr::select(-c("CompleteAmplificationID")),
-                association_file
-            )
-        },
-        regexp = .missing_complAmpID_error()
-    )
-    expect_error(
-        {
-            agg <- aggregate_values_by_key(matrices, association_file,
-                value_cols = "x"
-            )
-        },
-        regexp = .missing_user_cols_error()
-    )
-    expect_error(
-        {
-            agg <- aggregate_values_by_key(matrices, association_file,
-                value_cols = c("chr")
-            )
-        },
-        regexp = .non_num_user_cols_error()
-    )
+    expect_error({
+        agg <- aggregate_values_by_key(matrices$seqCount, association_file,
+            value_cols = "x"
+        )
+    })
+    expect_error({
+        agg <- aggregate_values_by_key(matrices$seqCount, association_file,
+            value_cols = c("chr")
+        )
+    })
+    expect_error({
+        agg <- aggregate_values_by_key(
+            matrices$seqCount %>%
+                dplyr::select(-c("CompleteAmplificationID")),
+            association_file
+        )
+    })
+    expect_error({
+        agg <- aggregate_values_by_key(matrices, association_file,
+            value_cols = "x"
+        )
+    })
+    expect_error({
+        agg <- aggregate_values_by_key(matrices, association_file,
+            value_cols = c("chr")
+        )
+    })
     mod_list <- purrr::map(matrices, function(m) {
         m %>% dplyr::select(-c("CompleteAmplificationID"))
     })

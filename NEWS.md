@@ -1,5 +1,50 @@
 \title{ISAnalytics News}
 
+# ISAnalytics 1.1.10 (2021-04-08)
+
+## FIXES
+
+* Fixed issue in `compute_near_integrations`: when provided recalibration
+map export path as a folder now the function works correctly and produces
+an automatically generated file name
+* Fixed issue in `aggregate_metadata`: now paths to folder that contains
+Vispa2 stats is looked up correctly. Also, VISPA2 stats columns are aggregated
+if found in the input data frame independently from the parameter 
+`import_stats`.
+
+## IMPROVEMENTS
+
+* `compute_abundance` can now take as input aggregated matrices and has
+additional parameters to offer more flexibility to the user. Major updates
+and improvements also on documentation and reproducible examples.
+* Major improvements in function `import_single_Vispa2Matrix`: import is 
+now preferentially carried out using `data.table::fread` greatly speeding up 
+the process - where not possible `readr::read_delim` is used instead
+* Major improvements in function `import_association_file`: greatly improved
+parsing precision (each column has a dedicated type), import report now 
+signals parsing problems and their location and signals also
+problems in parsing dates.
+Report also includes potential problems in column names and signals missing
+data in important columns. Added also the possibility to give various file 
+formats in input including `*.xls(x)` formats.
+* Function `top_integrations` can now take additional parameters to compute
+top n genes for each specified group
+* Removed faceting parameters in `CIS_volcano_plot` due to poor precision
+(easier to add faceting manually) and added parameters to return the 
+data frame that generated the plot as an additional result. Also, it is 
+now possible to specify a vector of gene names to highlight even if they're
+not above the annotation threshold.
+
+## MINOR
+
+* ISAnalytics website has improved graphic theme and has an additional button
+on the right that leads to the devel (or release) version of the website
+* Updated vignettes
+
+## FOR DEVS ONLY
+
+* Complete rework of test suite to be compliant to testthat v.3
+
 # ISAnalytics 1.1.9 (2021-02-17)
 
 ## FIXES

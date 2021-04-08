@@ -1,0 +1,102 @@
+url: https://calabrialab.github.io/ISAnalytics
+
+development:
+  mode: devel
+template:
+  params:
+    bootswatch: flatly
+navbar:
+  structure:
+    left:
+    - home
+    - intro
+    - reference
+    - articles
+    - tutorials
+    - news
+    right:
+    - release-v
+    - github
+  components:
+    home:
+      icon: fas fa-home fa-lg
+      href: index.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    news:
+      text: Changelog
+      href: news/index.html
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/calabrialab/ISAnalytics/
+    articles:
+      text: Articles
+      menu:
+      - text: Working with aggregate functions
+        href: articles/aggregate_function_usage.html
+      - text: Collision removal functionality
+        href: articles/collision_removal.html
+      - text: How to use import functions
+        href: articles/how_to_import_functions.html
+      - text: Using ISAnalytics without RStudio support
+        href: articles/no_rstudio_usage.html
+    devel-v:
+      icon: fas fa-code-branch
+      text: RELEASE
+      href: https://calabrialab.github.io/ISAnalytics/
+reference:
+- title: "Import functions"
+  desc: >
+    Importing integration matrices and metadata from files
+- contents:
+  - import_association_file
+  - import_single_Vispa2Matrix
+  - import_parallel_Vispa2Matrices_interactive
+  - import_parallel_Vispa2Matrices_auto
+- title: "Aggregating functions"
+- contents:
+  - aggregate_metadata
+  - aggregate_values_by_key
+- title: "Collision removal functions"
+- contents:
+  - remove_collisions
+  - realign_after_collisions
+- title: "Recalibration functions"
+- contents:
+  - compute_near_integrations
+- title: "Analysis functions"
+- contents:
+  - compute_abundance
+  - comparison_matrix
+  - separate_quant_matrices
+  - threshold_filter
+  - top_integrations
+  - sample_statistics
+  - CIS_grubbs
+  - cumulative_count_union
+- title: "Plotting functions"
+- contents:
+  - CIS_volcano_plot
+- title: "Utility functions"
+- contents:
+  - as_sparse_matrix
+  - generate_blank_association_file
+  - generate_Vispa2_launch_AF
+  - unzip_file_system
+- title: "Exported variables and helpers"
+- contents:
+  - annotation_IS_vars
+  - association_file_columns
+  - date_columns_coll
+  - date_formats
+  - mandatory_IS_vars
+  - matching_options
+  - quantification_types
+  - reduced_AF_columns
+  - default_stats
+  - clinical_relevant_suspicious_genes
+  - known_clinical_oncogenes
+- title: "Package overview"
+- contents:
+  - ISAnalytics

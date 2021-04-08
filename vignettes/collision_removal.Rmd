@@ -66,15 +66,17 @@ To install the package run the following code:
 
 ```{r installBioc, eval=FALSE}
 ## For release version
-if(!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+      install.packages("BiocManager")
+  }
 BiocManager::install("ISAnalytics")
 
 ## For devel version
-if(!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+      install.packages("BiocManager")
+  }
 # The following initializes usage of Bioc devel
-BiocManager::install(version='devel')
+BiocManager::install(version = "devel")
 BiocManager::install("ISAnalytics")
 ```
 
@@ -83,29 +85,33 @@ To install from GitHub:
 ```{r installGitHub, eval=FALSE}
 # For release version
 if (!require(devtools)) {
-  install.packages("devtools")
+    install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_12",
-                         dependencies = TRUE,
-                         build_vignettes = TRUE)
+    ref = "RELEASE_3_12",
+    dependencies = TRUE,
+    build_vignettes = TRUE
+)
 
 ## Safer option for vignette building issue
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_12")
+    ref = "RELEASE_3_12"
+)
 
 # For devel version
 if (!require(devtools)) {
-  install.packages("devtools")
+    install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master",
-                         dependencies = TRUE,
-                         build_vignettes = TRUE)
+    ref = "master",
+    dependencies = TRUE,
+    build_vignettes = TRUE
+)
 
 ## Safer option for vignette building issue
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master")
+    ref = "master"
+)
 ```
 ```{r}
 library(ISAnalytics)
@@ -210,17 +216,19 @@ import functions".
 
 Import your association file:
 
-```{r import_af, R.options=options(ISAnalytics.widgets = FALSE)}
-options(ISAnalytics.widgets = FALSE)
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
-)
+```{r import_af}
+withr::with_options(list(ISAnalytics.widgets = FALSE), {
+    path_AF <- system.file("extdata", "ex_association_file.tsv",
+        package = "ISAnalytics"
+    )
 
-root_correct <- system.file("extdata", "fs.zip",
-    package = "ISAnalytics"
-)
-root_correct <- unzip_file_system(root_correct, "fs")
-association_file <- import_association_file(path_AF, root_correct, dates_format = "dmy")
+    root_correct <- system.file("extdata", "fs.zip",
+        package = "ISAnalytics"
+    )
+    root_correct <- unzip_file_system(root_correct, "fs")
+    association_file <- import_association_file(path_AF, root_correct, 
+                                                dates_format = "dmy")
+})
 ```
 
 Important notes on the association file:  
@@ -237,14 +245,16 @@ the matrix you're analyzing, you'll be notified with a console message.
 
 ## Import the matrices for your analysis
 
-```{r importMatr, R.options=options(ISAnalytics.widgets = FALSE)}
+```{r importMatr}
 # This imports both sequence count and fragment estimate matrices
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = association_file, root = NULL,
-    quantification_type = c("fragmentEstimate", "seqCount"),
-    matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY"
-)
+withr::with_options(list(ISAnalytics.widgets = FALSE), {
+    matrices <- import_parallel_Vispa2Matrices_auto(
+        association_file = association_file, root = NULL,
+        quantification_type = c("fragmentEstimate", "seqCount"),
+        matrix_type = "annotated", workers = 2, patterns = NULL,
+        matching_opt = "ANY", multi_quant_matrix = FALSE
+    )
+})
 ```
 
 As stated in the introduction, it is fundamental that the sequence count matrix 
@@ -256,12 +266,16 @@ You can process the collisions in 3 different ways.
 
 ### Pass the entire named list to the function
 
-```{r removecoll1, R.options=options(ISAnalytics.widgets = FALSE)}
+```{r removecoll1}
 # Pass the whole named list
-matrices_processed <- remove_collisions(x = matrices, 
-                                        association_file = association_file, 
-                                        date_col = "SequencingDate", 
-                                        reads_ratio = 10)
+withr::with_options(list(ISAnalytics.widgets = FALSE), {
+    matrices_processed <- remove_collisions(
+        x = matrices,
+        association_file = association_file,
+        date_col = "SequencingDate",
+        reads_ratio = 10
+    )
+})
 ```
 
 If you have the "widgets" option active, a report file is produced at the end
@@ -273,13 +287,17 @@ count matrix and other matrices are re-aligned automatically.
 
 ### Give only the sequence count matrix as input
 
-```{r removecoll2, R.options=options(ISAnalytics.widgets = FALSE)}
+```{r removecoll2}
 # Pass the sequence count matrix only
-matrices_processed_single <- remove_collisions(x = matrices$seqCount, 
-                                               association_file = 
-                                                 association_file, 
-                                               date_col = "SequencingDate", 
-                                               reads_ratio = 10)
+withr::with_options(list(ISAnalytics.widgets = FALSE), {
+    matrices_processed_single <- remove_collisions(
+        x = matrices$seqCount,
+        association_file =
+            association_file,
+        date_col = "SequencingDate",
+        reads_ratio = 10
+    )
+})
 ```
 
 If you have the "verbose" option active, a console message will remind you to
@@ -290,16 +308,20 @@ align other matrices if you have them at a later time.
 If you'd like to avoid the re-alignment phase, you can call collision removal 
 on a multi-quantification matrix obtained via the function `comparison_matrix`:
 
-```{r removecoll3, R.options=options(ISAnalytics.widgets = FALSE)}
+```{r removecoll3}
 # Obtain multi-quantification matrix
 multi <- comparison_matrix(matrices)
 multi
-matrices_processed_multi <- remove_collisions(x = multi,
-                                              association_file = 
-                                                 association_file, 
-                                               date_col = "SequencingDate", 
-                                               reads_ratio = 10, 
-                                              seq_count_col = "seqCount")
+withr::with_options(list(ISAnalytics.widgets = FALSE), {
+    matrices_processed_multi <- remove_collisions(
+        x = multi,
+        association_file =
+            association_file,
+        date_col = "SequencingDate",
+        reads_ratio = 10,
+        seq_count_col = "seqCount"
+    )
+})
 ```
 
 As you can see, `comparison_matrix` produces a single integration matrix 
@@ -317,7 +339,7 @@ to realign.
 
 ```{r realign, R.options=options(ISAnalytics.widgets = FALSE)}
 seq_count_proc <- matrices_processed_single
-other_matrices <- matrices[!names(matrices) %in% "seqCount"] 
+other_matrices <- matrices[!names(matrices) %in% "seqCount"]
 # Select only matrices that are not relative to sequence count
 other_realigned <- realign_after_collisions(seq_count_proc, other_matrices)
 ```

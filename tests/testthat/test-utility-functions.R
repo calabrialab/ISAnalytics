@@ -1,13 +1,12 @@
-context("Utility functions")
-
 library(ISAnalytics)
 
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
-op <- options(ISAnalytics.widgets = FALSE)
-on.exit(options(op))
-
+op <- withr::local_options(
+    ISAnalytics.widgets = FALSE,
+    ISAnalytics.verbose = FALSE
+)
 # Path to example association file
 path_af <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
@@ -85,7 +84,7 @@ test_that("generate_Vispa2_launch_AF stops if af is malformed", {
 
 ## Testing output
 test_that("generate_Vispa2_launch_AF works for single pair", {
-    temp <- tempdir()
+    temp <- withr::local_tempdir()
     project <- c("CLOEXP")
     pool <- c("POOL6")
     name <- paste0(project, "-", pool, "_AF.tsv")
@@ -101,7 +100,7 @@ test_that("generate_Vispa2_launch_AF works for single pair", {
 })
 
 test_that("generate_Vispa2_launch_AF works for multiple pair", {
-    temp <- tempdir()
+    temp <- withr::local_tempdir()
     project <- c("CLOEXP", "PROJECT1100")
     pool <- c("POOL6", "ABX-LR-PL5-POOL14")
     name <- paste0(project, "-", pool, "_AF.tsv")

@@ -141,9 +141,11 @@
         'body {font-family: "Calibri"}',
         "h2 {margin-left: 10px; font-weight: bold; border-bottom-width: 1px;
     border-bottom-style: solid;}",
-        "#subtitle {font-size: 18px;}",
+        "#subtitle {font-size: 18px; margin-bottom: 10px;}",
         "#section-content {margin-left: 20px;}",
-        "#single-numbers {margin-left: 25px;}"
+        "#single-numbers {margin-left: 25px;}",
+        "h3, h4 {margin-left: 10px;}",
+        "#simple_txt {color: grey; font-style: italic;}"
     )
 }
 ### ---- import_association_file ---- ###
@@ -156,7 +158,8 @@
 #' @importFrom htmltools tags h1 h2 div browsable
 #
 # @return An html widget
-.checker_widget <- function(checker_df) {
+.checker_widget <- function(parsing_probs, date_probs, checker_df,
+    col_probs, critical_nas) {
     columns_def <- list(
         ProjectID = reactable::colDef(
             align = "right",
@@ -193,11 +196,71 @@
         )
     )
 
-    styled_df <- .generate_react_table(checker_df,
-        defaultSorted = list(Found = "asc"),
-        columns = columns_def
+    nothing_to_rep <- htmltools::div(
+        id = "section-content",
+        htmltools::div("Nothing to report", id = "simple_txt")
     )
 
+    styled_parsing_df <- if (!is.null(parsing_probs) &&
+        !purrr::is_empty(parsing_probs)) {
+        .generate_react_table(parsing_probs)
+    } else {
+        nothing_to_rep
+    }
+
+    styled_date_df <- if (!is.null(date_probs) &&
+        !purrr::is_empty(date_probs)) {
+        .generate_react_table(date_probs)
+    } else {
+        nothing_to_rep
+    }
+
+    styled_checker_df <- if (!is.null(checker_df) &&
+        !purrr::is_empty(checker_df)) {
+        .generate_react_table(checker_df,
+            defaultSorted = list(Found = "asc"),
+            columns = columns_def
+        )
+    } else {
+        nothing_to_rep
+    }
+
+
+    missing <- if ("missing" %in% names(col_probs)) {
+        paste0(col_probs$missing, collapse = ", ")
+    } else {
+        "no missing columns to report"
+    }
+    non_st <- if ("non_standard" %in% names(col_probs)) {
+        paste0(col_probs$non_standard, collapse = ", ")
+    } else {
+        "no non-standard columns to report"
+    }
+    styled_cols_probs <- htmltools::div(
+        id = "section-content",
+        htmltools::tags$ul(
+            htmltools::tags$li(
+                "Missing standard columns: ",
+                missing
+            ),
+            htmltools::tags$li(
+                "Non standard columns: ",
+                non_st
+            )
+        )
+    )
+    styled_crit_na <- if (!is.null(critical_nas) &&
+        !purrr::is_empty(checker_df)) {
+        htmltools::div(
+            id = "section-content",
+            "NAs found in date columns that can be used for collision removal",
+            htmltools::tags$ul(
+                purrr::map(critical_nas, ~ htmltools::tags$li(.x))
+            )
+        )
+    } else {
+        nothing_to_rep
+    }
 
     widget <- htmltools::tags$html(
         htmltools::tags$head(
@@ -205,6 +268,48 @@
         ),
         htmltools::tags$body(
             htmltools::h1("IMPORT ASSOCIATION FILE REPORT"),
+            htmltools::h3(lubridate::today()),
+            htmltools::h2("PROBLEMS REPORT"),
+            htmltools::h3("PARSING PROBLEMS"),
+            htmltools::div(
+                id = "section-content",
+                htmltools::div("Summary of parsing problems when reading from",
+                    "file. NOTE: if the input file was in .xls or .xlsx",
+                    "format, this section will be empty by default!",
+                    id = "subtitle"
+                )
+            ),
+            styled_parsing_df,
+            htmltools::h3("DATE CONVERSION PROBLEMS"),
+            htmltools::div(
+                id = "section-content",
+                htmltools::div("Summary of date conversion problems found",
+                    id = "subtitle"
+                )
+            ),
+            styled_date_df,
+            htmltools::h3("COLUMNS PROBLEMS"),
+            htmltools::div(
+                id = "section-content",
+                htmltools::div("Potential problems in columns - either",
+                    "missing or non-standard columns",
+                    id = "subtitle"
+                )
+            ),
+            styled_cols_probs,
+            htmltools::h3("IMPORTANT MISSING INFO"),
+            htmltools::div(
+                id = "section-content",
+                htmltools::div("Important missing info - this info is",
+                    "needed for the correct functioning of other",
+                    "operations (eg: collision removal).",
+                    "NOTE: this info refers ONLY to data post-",
+                    "filtering (if a filter was set in the import",
+                    "phase.",
+                    id = "subtitle"
+                )
+            ),
+            styled_crit_na,
             htmltools::h2("ALIGNMENT RESULTS"),
             htmltools::div(
                 id = "section-content",
@@ -215,7 +320,7 @@
                     id = "subtitle"
                 )
             ),
-            styled_df
+            styled_checker_df
         )
     )
 
@@ -987,8 +1092,7 @@
 #' @importFrom purrr is_empty
 #' @importFrom tibble tibble
 # @return A widget
-.collisions_widget <- function(
-    input_df,
+.collisions_widget <- function(input_df,
     quant_cols,
     input_joined_df,
     association_file,

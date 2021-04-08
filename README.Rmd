@@ -27,6 +27,14 @@ ISAnalytics is an R package developed to analyze gene therapy vector insertion s
 
 In gene therapy, stem cells are modified using viral vectors to deliver the therapeutic transgene and replace functional properties since the genetic modification is stable and inherited in all cell progeny. The retrieval and mapping of the sequences flanking the virus-host DNA junctions allows the identification of insertion sites (IS), essential for monitoring the evolution of genetically modified cells in vivo. A comprehensive toolkit for the analysis of IS is required to foster clonal trackign studies and supporting the assessment of safety and long term efficacy in vivo. This package is aimed at (1) supporting automation of IS workflow, (2) performing base and advance analysis for IS tracking (clonal abundance, clonal expansions and statistics for insertional mutagenesis, etc.), (3) providing basic biology insights of transduced stem cells in vivo.
 
+# Visit the package website
+
+You can visit the package website to view documentation, vignettes and 
+more.
+
+* For the release version: [ISAnalytics Website release](https://calabrialab.github.io/ISAnalytics/)
+* For the devel version: [ISAnalytics Website dev](https://calabrialab.github.io/ISAnalytics/dev)
+
 # Installation
 
 ## Installation from bioconductor
@@ -81,11 +89,6 @@ devtools::install_github("calabrialab/ISAnalytics",
                          ref = "master")
 ```
 
-# Visit the package website
-
-You can visit the package website to view documentation, vignettes and 
-more at this link: [ISAnalytics Website](https://calabrialab.github.io/ISAnalytics/)
-
 # Current functionality
 
 * Import integration matrices from files: more info with `vignette("How to use import functions", package = "ISAnalytics")`
@@ -105,9 +108,12 @@ more at this link: [ISAnalytics Website](https://calabrialab.github.io/ISAnalyti
 
 # TO DO in future updates  
 
-- [ ] Add vignette for association file usage
-- [ ] Add vignette for re-calibration functionality
-- [X] Add support for multi-quantification matrices to several functions (ISAnalytics 0.99.12)
+- [ ] Add further plot wrappers
+- [ ] New functionality: raw reads flagging/filtering
+- [ ] New functionality: HSCs population size estimate
+- [ ] New functionality: genomic annotation
+- [ ] Obtain a system to visualize interactive reports based on shiny (possibly
+replacing self-contained HTML reports)
 
 # Getting help
 

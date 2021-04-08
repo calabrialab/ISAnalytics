@@ -4,19 +4,24 @@
 \alias{import_single_Vispa2Matrix}
 \title{Import a single integration matrix from file}
 \usage{
-import_single_Vispa2Matrix(path)
+import_single_Vispa2Matrix(path, to_exclude = NULL, separator = "\\t")
 }
 \arguments{
 \item{path}{The path to the file on disk}
+
+\item{to_exclude}{Either NULL or a character vector of column names that
+should be ignored when importing}
+
+\item{separator}{The column delimiter used}
 }
 \value{
-A tidy tibble
+A data.table object in tidy format
 }
 \description{
 \lifecycle{stable}
 This function allows to read and import an integration matrix
 produced as the output of Vispa2 pipeline and converts it to a tidy
-tibble.
+format.
 }
 \details{
 The import series of functions is designed to work in combination

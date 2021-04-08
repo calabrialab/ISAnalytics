@@ -9,14 +9,14 @@
 #' @importFrom tools file_path_sans_ext
 #' @importFrom purrr is_empty
 .check_file_extension <- function(file_path) {
-    compressed_formats <- c("gz", "bz2", "xz", "zip")
     ## Get last portion of file name
     last <- fs::path_ext(file_path)
-    compressed <- which(last %in% compressed_formats)
+    compressed <- which(last %in% .compressed_formats())
     if (!purrr::is_empty(compressed)) {
         ## for compressed files try extracting the true extension
         file_path[compressed] <- tools::file_path_sans_ext(
-            file_path[compressed])
+            file_path[compressed]
+        )
         last <- fs::path_ext(file_path)
     }
     return(last)
@@ -174,10 +174,82 @@
         all(!mandatory_IS_vars() %in% colnames(df))) {
         return("OLD")
     }
-    if (all(mandatory_IS_vars() %in% colnames(df))) {
+    if (all(mandatory_IS_vars() %in% colnames(df)) &
+        !"IS_genomicID" %in% colnames(df)) {
         return("NEW")
     }
     return("MALFORMED")
+}
+
+# Reads an integration matrix using data.table::fread
+#' @importFrom data.table fread
+.read_with_fread <- function(path, to_drop, df_type, annotated, sep) {
+    df <- if (df_type == "OLD") {
+        data.table::fread(
+            file = path,
+            sep = sep,
+            na.strings = c("NONE", "NA", "NULL", "NaN", ""),
+            verbose = FALSE,
+            drop = to_drop,
+            colClasses = list(
+                character = "IS_genomicID"
+            ),
+            showProgress = getOption("ISAnalytics.verbose"),
+            data.table = TRUE
+        )
+    } else {
+        col_types <- .mandatory_IS_types("fread")
+        if (annotated) {
+            col_types$character <- append(
+                col_types$character,
+                .annotation_IS_types("fread")$character
+            )
+        }
+        data.table::fread(
+            file = path,
+            sep = sep,
+            na.strings = c("NONE", "NA", "NULL", "NaN", ""),
+            verbose = FALSE,
+            drop = to_drop,
+            colClasses = col_types,
+            showProgress = getOption("ISAnalytics.verbose"),
+            data.table = TRUE
+        )
+    }
+    return(df)
+}
+
+# Reads an integration matrix using readr::read_delim
+#' @importFrom readr read_delim cols
+#' @importFrom data.table setDT
+.read_with_readr <- function(path, to_drop, df_type, annotated, sep) {
+    col_types <- if (df_type == "NEW") {
+        .mandatory_IS_types("classic")
+    } else {
+        list(IS_genomicID = "c")
+    }
+    if (annotated) {
+        col_types <- append(
+            col_types,
+            .annotation_IS_types("classic")
+        )
+    }
+    if (!is.null(to_drop)) {
+        for (x in to_drop) {
+            col_types[[x]] <- "_"
+        }
+    }
+    col_types[[".default"]] <- "n"
+    df <- readr::read_delim(
+        file = path,
+        delim = sep,
+        col_types = do.call(readr::cols, col_types),
+        na = c("NONE", "NA", "NULL", "NaN", ""),
+        trim_ws = TRUE,
+        progress = getOption("ISAnalytics.verbose")
+    )
+    df <- data.table::setDT(df)
+    return(df)
 }
 
 #---- USED IN : import_association_file ----
@@ -197,35 +269,117 @@
 }
 
 
-# Imports association file from disk and converts dates and pads timepoints.
-#' @importFrom tibble as_tibble
-#' @importFrom dplyr mutate across contains
-#' @importFrom rlang .data
-#' @importFrom stringr str_pad
-#' @import lubridate
-.read_af <- function(path, padding, date_format) {
-    as_file <- read.csv(path,
-        header = TRUE, check.names = FALSE,
-        stringsAsFactors = FALSE, sep = "\t",
-        na.strings = c("NONE", "NA", "NULL", "NaN", "")
-    )
-    as_file <- tibble::as_tibble(as_file)
-    if ("TimePoint" %in% colnames(as_file)) {
-        as_file <- as_file %>%
-            dplyr::mutate(TimePoint = stringr::str_pad(
-                as.character(.data$TimePoint),
-                padding,
-                side = "left",
-                pad = "0"
-            ))
+# Imports association file from disk. Converts dates and pads timepoints,
+# reporting parsing problems.
+#' @importFrom rlang inform
+#' @importFrom readr read_delim cols problems
+#' @importFrom readxl read_excel
+#' @importFrom purrr map2_lgl is_empty map_chr map_dfr
+#' @importFrom lubridate parse_date_time
+#' @importFrom tibble tibble
+#' @importFrom dplyr mutate across
+.read_af <- function(path, padding, date_format, delimiter) {
+    mode <- "readr"
+    ## - Check file extension
+    file_ext <- .check_file_extension(path)
+    if (file_ext %in% c("xls", "xlsx")) {
+        mode <- "readxl"
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            rlang::inform(.xls_file_warning(),
+                class = "xls_file"
+            )
+        }
     }
-    as_file <- as_file %>%
-        dplyr::mutate(dplyr::across(dplyr::contains("Date"), ~ do.call(
-            getExportedValue("lubridate", date_format),
-            list(.x),
-            quote = TRUE
-        )))
-    as_file
+    ## - Peek headers to know column types
+    col_types <- if (mode != "readxl") {
+        headers_peek <- readr::read_delim(path,
+            delim = delimiter,
+            n_max = 0,
+            col_types = readr::cols()
+        )
+        t_readr <- .af_col_types("readr")
+        t_readr[names(t_readr) %in% colnames(headers_peek)]
+    } else {
+        headers_peek <- readxl::read_excel(path, n_max = 0)
+        t_readr <- .af_col_types("readr")
+        ordered <- purrr::map_chr(
+            colnames(headers_peek),
+            function(x) {
+                el <- getElement(t_readr, x)
+                el <- if (el == "c") {
+                    "text"
+                } else if (el %in% c("i", "d")) {
+                    "numeric"
+                } else {
+                    "guess"
+                }
+            }
+        )
+        ordered
+    }
+    suppressWarnings({
+        as_file <- if (mode == "readr") {
+            df <- readr::read_delim(path,
+                delim = delimiter,
+                na = c("NONE", "NA", "NULL", "NaN", ""),
+                col_types = do.call(readr::cols, col_types),
+                trim_ws = TRUE,
+                progress = getOption("ISAnalytics.verbose")
+            )
+            problems <- readr::problems(df)
+            df
+        } else {
+            df <- readxl::read_excel(path,
+                col_types = col_types,
+                na = c("NONE", "NA", "NULL", "NaN", ""),
+                trim_ws = TRUE,
+                progress = getOption("ISAnalytics.verbose")
+            )
+            problems <- NULL
+            df
+        }
+        if ("TimePoint" %in% colnames(as_file)) {
+            as_file <- as_file %>%
+                dplyr::mutate(TimePoint = stringr::str_pad(
+                    as.character(.data$TimePoint),
+                    padding,
+                    side = "left",
+                    pad = "0"
+                ))
+        }
+        date_cols <- colnames(as_file)[stringr::str_detect(
+            colnames(as_file), "Date"
+        )]
+        before <- as_file %>% dplyr::select(dplyr::all_of(date_cols))
+        as_file <- as_file %>%
+            dplyr::mutate(dplyr::across(date_cols,
+                .fns = ~ lubridate::parse_date_time(.x,
+                    orders = date_format
+                )
+            ))
+        date_failures <- purrr::map_dfr(date_cols, function(col) {
+            before_col <- purrr::pluck(before, col)
+            row_failed <- which(
+                purrr::map2_lgl(before_col, as_file[[col]], function(d1, d2) {
+                    if (!is.na(d1) & is.na(d2)) {
+                        TRUE
+                    } else {
+                        FALSE
+                    }
+                })
+            )
+            if (!is.null(row_failed) && !purrr::is_empty(row_failed)) {
+                tibble::tibble(
+                    row = row_failed, col = col,
+                    original = before_col[row_failed],
+                    parsed = NA, format = date_format
+                )
+            } else {
+                return(NULL)
+            }
+        })
+    })
+    return(list(af = as_file, probs = problems, date_fail = date_failures))
 }
 
 # Internal function to check alignment between association file and file
@@ -244,6 +398,9 @@
 # concatenatePoolIDSeqRun the
 # corresponding path on disk if found, NA otherwise.
 .check_file_system_alignment <- function(df, root_folder) {
+    if (!"PathToFolderProjectID" %in% colnames(df)) {
+        rlang::abort(.af_missing_pathfolder_error())
+    }
     temp_df <- df %>%
         dplyr::select(
             .data$ProjectID,
@@ -340,7 +497,7 @@
 
 # Updates the association file after the alignment check.
 #
-# The function checks if there are missing folders and updates the association
+# The function updates the association
 # file by adding a column `Path` where the absolute path on disk for the
 # project and pool is found, if no path is found NA is inserted instead.
 #
@@ -352,13 +509,6 @@
 #
 # @return An updated association file with absolute paths
 .update_af_after_alignment <- function(as_file, checks, root) {
-    # If some some folders are missing a warning is thrown
-    not_found <- checks %>% dplyr::filter(.data$Found == FALSE)
-    if (nrow(not_found) > 0) {
-        warning(.warning_update_after_alignment(root),
-            immediate. = TRUE, call. = FALSE
-        )
-    }
     # Finally import modified association file
     checks <- checks %>%
         dplyr::select(
@@ -372,67 +522,86 @@
 
 #---- USED IN : import_parallel_Vispa2Matrices_interactive ----
 
-# Helper function to be used when importing matrices in parallel.
-#
-# @param association_file Either the path to the association file or the tibble
-# representing the imported association file (done via
-# `import_association_file`)
-# @param root If `association_file` is the path to the file, root is a single
-# string holding the path to the root folder, otherwise root is `NULL`
-# @param padding The padding for TimePoint field
-# @param format The date format of date columns
-# @keywords internal
-#
-# @return A list of two elements: the first element is an updated version of
-# the association file with NAs removed, the second element is a widget showing
-# results of alignment checks.
-.manage_association_file <- function(association_file, root, padding, format) {
-    # Manage association file
-    if (is.character(association_file)) {
-        # If it's a path to file import the association file
-        association_file <- .read_af(
-            association_file,
-            padding, format
-        )
-        is_af_correct <- .check_af_correctness(association_file)
-        if (!is_af_correct) {
-            warning(.af_correctness_warning())
-            if (is.null(root) & getOption("ISAnalytics.verbose") == TRUE) {
-                if (!"PathToFolderProjectID" %in% colnames(association_file)) {
-                    warning(.af_missing_path_warning(FALSE))
-                }
-            } else if (!is.null(root) && !"PathToFolderProjectID"
-            %in% colnames(association_file)) {
-                stop(.af_missing_path_warning(TRUE))
+# Helper function to be used internally to treat association file.
+.manage_association_file <- function(association_file,
+    root, padding, format,
+    delimiter, filter) {
+    # If it's a path to file import the association file
+    association_file <- .read_af(
+        association_file,
+        padding, format,
+        delimiter
+    )
+    parsing_probs <- association_file$probs
+    date_probs <- association_file$date_fail
+    association_file <- association_file$af
+    if (!is.null(filter)) {
+        # Pre-filtering of association file
+        if (!all(names(filter) %in% colnames(association_file))) {
+            if (getOption("ISAnalytics.verbose") == TRUE) {
+                rlang::inform(
+                    c("Some or all the names in the filter not found",
+                        i = paste(
+                            "Columns not found: ",
+                            paste0(
+                                names(filter)[names(filter) %in%
+                                    colnames(association_file)],
+                                collapse = ", "
+                            )
+                        ),
+                        "Ignoring the missing columns"
+                    ),
+                    class = "filter_warn"
+                )
             }
+            filter <- filter[names(filter) %in% colnames(association_file)]
         }
-        checks <- NULL
-        if (!is.null(root)) {
-            checks <- .check_file_system_alignment(association_file, root)
-            association_file <- .update_af_after_alignment(
-                association_file,
-                checks, root
+        if (!purrr::is_empty(filter)) {
+            predicate <- purrr::map2_chr(
+                filter, names(filter),
+                function(x, y) {
+                    if (is.character(x)) {
+                        paste0(
+                            y, " %in% c(", paste0("'",
+                                rlang::enexpr(x),
+                                "'",
+                                collapse = ", "
+                            ),
+                            ")"
+                        )
+                    } else {
+                        paste0(
+                            y, " %in% c(", paste0(rlang::enexpr(x),
+                                collapse = ", "
+                            ),
+                            ")"
+                        )
+                    }
+                }
             )
-            association_file <- association_file %>% dplyr::filter(!is.na(
-                .data$Path
-            ))
+            predicate <- paste0(c(
+                "dplyr::filter(association_file, ",
+                paste0(predicate, collapse = ", "),
+                ")"
+            ), collapse = "")
+            association_file <- rlang::eval_tidy(
+                rlang::parse_expr(predicate)
+            )
         }
-        res <- list(af = association_file, check = checks)
-        return(res)
-    } else {
-        # If it's a tibble (file already imported) check the correctness
-        is_af_correct <- .check_af_correctness(association_file)
-        if (!is_af_correct) {
-            warning(.af_correctness_warning())
-        }
-        if (!"Path" %in% colnames(association_file)) {
-            stop(.af_missing_path_error())
-        }
-        association_file <- association_file %>% dplyr::filter(!is.na(
-            .data$Path
-        ))
-        return(list(association_file, NULL))
     }
+    checks <- NULL
+    if (!is.null(root) & nrow(association_file) > 0) {
+        checks <- .check_file_system_alignment(association_file, root)
+        association_file <- .update_af_after_alignment(
+            association_file,
+            checks, root
+        )
+    }
+    res <- list(
+        af = association_file, check = checks,
+        parsing_probs = parsing_probs, date_probs = date_probs
+    )
+    return(res)
 }
 
 # Allows the user to choose interactively the projects
@@ -1090,6 +1259,103 @@
     }
 }
 
+# A single threaded and simplified version of import_single_Vispa2Matrix
+# to use for parallel import. Preferred instead of calling the exported one
+# because:
+# - Better control over process forking (don't risk too many threads at once)
+# - It was proved that on smaller matrices it is more efficient NOT to split
+# and to reshape the entire matrix directly
+# - No need for info msgs since there is a final report
+#' @importFrom rlang abort
+#' @importFrom fs path_ext
+#' @importFrom readr read_delim cols
+#' @importFrom tidyr separate
+#' @importFrom magrittr `%>%`
+#' @importFrom dplyr mutate
+#' @importFrom stringr str_replace
+#' @importFrom data.table melt.data.table
+.import_single_matrix <- function(path, to_exclude = NULL, separator = "\t") {
+    stopifnot(!missing(path) & is.character(path))
+    stopifnot(is.null(to_exclude) || is.character(to_exclude))
+    if (!file.exists(path)) {
+        rlang::abort(paste("File not found at", path))
+    }
+    if (!fs::is_file(path)) {
+        rlang::abort(paste("Path exists but is not a file"))
+    }
+    mode <- "fread"
+    ## Is the file compressed?
+    is_compressed <- fs::path_ext(path) %in% .compressed_formats()
+    if (is_compressed) {
+        ## The compression type is supported by data.table::fread?
+        compression_type <- fs::path_ext(path)
+        if (!compression_type %in% .supported_fread_compression_formats()) {
+            ### If not, switch to classic for reading
+            mode <- "classic"
+        }
+    }
+    ### Peak headers
+    peek_headers <- readr::read_delim(path,
+        delim = separator, n_max = 1,
+        col_types = readr::cols()
+    )
+    ## - Detect type
+    df_type <- .auto_detect_type(peek_headers)
+    if (df_type == "MALFORMED") {
+        rlang::abort(.malformed_ISmatrix_error(),
+            class = "malformed_ism"
+        )
+    }
+    is_annotated <- .is_annotated(peek_headers)
+    ## - Start reading
+    df <- if (mode == "fread") {
+        .read_with_fread(
+            path = path, to_drop = to_exclude,
+            df_type = df_type, annotated = is_annotated,
+            sep = separator
+        )
+    } else {
+        .read_with_readr(
+            path = path, to_drop = to_exclude,
+            df_type = df_type, annotated = is_annotated,
+            sep = separator
+        )
+    }
+    if (df_type == "OLD") {
+        df <- df %>%
+            tidyr::separate(
+                col = .data$IS_genomicID,
+                into = mandatory_IS_vars(),
+                sep = "_", remove = TRUE,
+                convert = TRUE
+            ) %>%
+            dplyr::mutate(chr = stringr::str_replace(
+                .data$chr, "chr", ""
+            ))
+    }
+    ## - Melt
+    mt <- function(data, annot) {
+        id_vars <- if (annot) {
+            c(
+                mandatory_IS_vars(),
+                annotation_IS_vars()
+            )
+        } else {
+            mandatory_IS_vars()
+        }
+        data.table::melt.data.table(data,
+            id.vars = id_vars,
+            variable.name = "CompleteAmplificationID",
+            value.name = "Value",
+            na.rm = TRUE,
+            verbose = FALSE
+        )
+    }
+    tidy <- mt(df, is_annotated)
+    tidy <- tidy["Value" > 0]
+    return(tidy)
+}
+
 # Internal function for parallel import of a single quantification
 # type files.
 #
@@ -1117,7 +1383,7 @@
     }
     # Import every file
     FUN <- function(x) {
-        matrix <- import_single_Vispa2Matrix(x)
+        matrix <- .import_single_matrix(x)
     }
     suppressMessages(suppressWarnings({
         matrices <- BiocParallel::bptry(
@@ -2041,24 +2307,17 @@
     if (all(is.na(temp$Path))) {
         return(NULL)
     }
-    pattern <- "^stats\\."
-    file_reg <- "(?<=iss\\/).*"
-    # Obtain paths to iss folder
+    pattern <- "stats\\.sequence*"
+    # Obtain paths to iss folder (as ../iss/pool)
     stats_paths <- purrr::pmap_dfr(temp, function(...) {
         current <- tibble::tibble(...)
         if (is.na(current$Path)) {
             l <- list(ProjectID = current$ProjectID, stats_path = NA_character_)
             tibble::as_tibble(l)
         } else {
-            pj_path <-
-                stringr::str_extract(current$Path,
-                    pattern = paste0(
-                        ".*",
-                        current$ProjectID,
-                        "(?=\\/quantification)"
-                    )
-                )
-            pj_path <- paste0(pj_path, "/iss")
+            path_split <- unlist(fs::path_split(current$Path))
+            path_split[path_split == "quantification"] <- "iss"
+            pj_path <- fs::path_join(path_split)
             l <- list(ProjectID = current$ProjectID, stats_path = pj_path)
             tibble::as_tibble(l)
         }
@@ -2073,21 +2332,15 @@
             cur$stats_path <- NA_character_
             cur %>% tibble::add_column(stats_files = list(NA_character_))
         } else {
-            files_in_iss <- unlist(fs::dir_ls(cur$stats_path))
-            files_in_iss <- unlist(stringr::str_extract_all(
-                files_in_iss, file_reg
+            files_in_iss <- unlist(fs::dir_ls(cur$stats_path,
+                regexp = pattern,
+                type = "file"
             ))
-            which_match <- unlist(stringr::str_detect(files_in_iss, pattern))
-            files_in_iss <- files_in_iss[which_match]
             cur %>% tibble::add_column(stats_files = list(files_in_iss))
         }
     })
     stats_paths <- stats_paths %>%
-        tidyr::unnest(.data$stats_files) %>%
-        tidyr::unite(
-            col = "files", .data$stats_path, .data$stats_files,
-            sep = "/", na.rm = TRUE
-        )
+        tidyr::unnest(.data$stats_files)
 }
 
 # Imports all found Vispa2 stats files.
@@ -2117,7 +2370,7 @@
         )
     }
     FUN <- function(x) {
-        stats <- read.csv(
+        stats <- utils::read.csv(
             file = x, sep = "\t", stringsAsFactors = FALSE,
             check.names = FALSE
         )
@@ -2131,7 +2384,7 @@
     }
     suppressMessages(suppressWarnings({
         stats_dfs <- BiocParallel::bptry(
-            BiocParallel::bplapply(stats_paths$files, FUN, BPPARAM = p)
+            BiocParallel::bplapply(stats_paths$stats_files, FUN, BPPARAM = p)
         )
     }))
     BiocParallel::bpstop(p)
@@ -2170,6 +2423,7 @@
 #
 # @return A tibble
 .join_and_aggregate <- function(association_file, stats, grouping_keys) {
+    iss_cols <- .agg_iss_cols()
     # If stats not null join with af
     if (!is.null(stats)) {
         stats <- stats %>% dplyr::mutate(TAG = stringr::str_replace_all(
@@ -2183,88 +2437,45 @@
                     "TagSequence" = "TAG"
                 )
             )
+    }
+    iss_cols_pres <- iss_cols[iss_cols %in% colnames(association_file)]
+    suppressWarnings({
         aggregated <- association_file %>%
             dplyr::group_by(dplyr::across(dplyr::all_of(grouping_keys))) %>%
-            dplyr::summarise(
-                FusionPrimerPCRDate = suppressWarnings({
-                    min(.data$FusionPrimerPCRDate,
-                        na.rm = TRUE
-                    )
-                }),
-                LinearPCRDate = suppressWarnings({
-                    min(.data$LinearPCRDate, na.rm = TRUE)
-                }),
-                VCN = suppressWarnings({
-                    mean(.data$VCN, na.rm = TRUE)
-                }),
-                Avg_DNAngUsed = suppressWarnings({
-                    mean(.data$DNAngUsed, na.rm = TRUE)
-                }),
-                Kapa = suppressWarnings({
-                    mean(.data$Kapa, na.rm = TRUE)
-                }),
-                DNAngUsed = suppressWarnings({
-                    sum(.data$DNAngUsed, na.rm = TRUE)
-                }),
-                ulForPool = suppressWarnings({
-                    sum(.data$ulForPool, na.rm = TRUE)
-                }),
-                BARCODE_MUX = suppressWarnings({
-                    sum(.data$BARCODE_MUX, na.rm = TRUE)
-                }),
-                TRIMMING_FINAL_LTRLC = suppressWarnings({
-                    sum(.data$TRIMMING_FINAL_LTRLC, na.rm = TRUE)
-                }),
-                LV_MAPPED = suppressWarnings({
-                    sum(.data$LV_MAPPED, na.rm = TRUE)
-                }),
-                BWA_MAPPED_OVERALL = suppressWarnings({
-                    sum(.data$BWA_MAPPED_OVERALL, na.rm = TRUE)
-                }),
-                ISS_MAPPED_PP = suppressWarnings({
-                    sum(.data$ISS_MAPPED_PP, na.rm = TRUE)
-                })
+            dplyr::summarise(dplyr::across(
+                .cols = c(
+                    .data$FusionPrimerPCRDate,
+                    .data$LinearPCRDate
+                ),
+                .fns = ~ min(.x, na.rm = TRUE),
+                .names = "{.col}_min"
+            ),
+            dplyr::across(
+                .cols = c(
+                    .data$VCN,
+                    .data$DNAngUsed,
+                    .data$Kapa
+                ),
+                .fns = ~ mean(.x, na.rm = TRUE),
+                .names = "{.col}_avg"
+            ),
+            dplyr::across(
+                .cols = c(
+                    .data$DNAngUsed,
+                    .data$ulForPool,
+                    iss_cols_pres
+                ),
+                .fns = ~ sum(.x, na.rm = TRUE),
+                .names = "{.col}_sum"
+            ),
+            .groups = "drop"
             ) %>%
-            dplyr::ungroup() %>%
             tidyr::unite(
                 col = "AggregateMeta", dplyr::all_of(grouping_keys),
                 sep = "_", remove = FALSE
             )
-        return(aggregated)
-    }
-    # Aggregate
-    aggregated <- association_file %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(grouping_keys))) %>%
-        dplyr::summarise(
-            FusionPrimerPCRDate = suppressWarnings({
-                min(.data$FusionPrimerPCRDate,
-                    na.rm = TRUE
-                )
-            }),
-            LinearPCRDate = suppressWarnings({
-                min(.data$LinearPCRDate, na.rm = TRUE)
-            }),
-            VCN = suppressWarnings({
-                mean(.data$VCN, na.rm = TRUE)
-            }),
-            Avg_DNAngUsed = suppressWarnings({
-                mean(.data$DNAngUsed, na.rm = TRUE)
-            }),
-            Kapa = suppressWarnings({
-                mean(.data$Kapa, na.rm = TRUE)
-            }),
-            DNAngUsed = suppressWarnings({
-                sum(.data$DNAngUsed, na.rm = TRUE)
-            }),
-            ulForPool = suppressWarnings({
-                sum(.data$ulForPool, na.rm = TRUE)
-            })
-        ) %>%
-        dplyr::ungroup() %>%
-        tidyr::unite(
-            col = "AggregateMeta", dplyr::all_of(grouping_keys),
-            sep = "_", remove = FALSE
-        )
+    })
+    return(aggregated)
 }
 
 #---- USED IN : aggregate_values_by_key ----
@@ -2569,6 +2780,18 @@
                 }
             } else {
                 file_path <- fs::path(file_path)
+                if (fs::is_file(file_path)) {
+                    readr::write_tsv(map, file_path)
+                    if (getOption("ISAnalytics.verbose") == TRUE) {
+                        message(paste(
+                            "Recalibration map saved to: ",
+                            file_path
+                        ))
+                    }
+                    return(NULL)
+                }
+                filename <- .generate_filename()
+                file_path <- fs::path(file_path, filename)
                 readr::write_tsv(map, file_path)
                 if (getOption("ISAnalytics.verbose") == TRUE) {
                     message(paste(

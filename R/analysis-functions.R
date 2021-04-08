@@ -1,11 +1,12 @@
 #------------------------------------------------------------------------------#
 # Analysis functions
 #------------------------------------------------------------------------------#
-#' Computes the abundance of every integration in the sample.
+
+#' Computes the abundance for every integration event in the input data frame.
 #'
 #' \lifecycle{maturing}
-#' Abundance is obtained for every row by calculating the ratio
-#' between the single value and the total value for the sample.
+#' Abundance is obtained for every integration event by calculating the ratio
+#' between the single value and the total value for the given group.
 #'
 #' @details Abundance will be computed upon the user selected columns
 #' in the `columns` parameter. For each column a corresponding
@@ -13,19 +14,28 @@
 #' column) will be produced.
 #'
 #' @param x An integration matrix - aka a data frame that includes
-#' the `mandatory_IS_vars()` as columns
+#' the `mandatory_IS_vars()` as columns. The matrix can either be aggregated
+#' (via `aggregate_values_by_key()`) or not.
 #' @param columns A character vector of column names to process,
 #' must be numeric or integer columns
 #' @param percentage Add abundance as percentage?
+#' @param key The key to group by when calculating totals
+#' @param keep_totals A value between `TRUE`, `FALSE` or `df`. If `TRUE`,
+#' the intermediate totals for each group will be kept in the output
+#' data frame as a dedicated column with a trailing "_tot". If `FALSE`,
+#' totals won't be included in the output data frame. If `df`, the totals
+#' are returned to the user as a separate data frame, together with the
+#' abundance data frame.
 #'
 #' @family Analysis functions
 #'
 #' @importFrom magrittr `%>%`
-#' @importFrom tibble is_tibble
 #' @import dplyr
 #' @importFrom rlang .data eval_tidy parse_expr
+#' @importFrom purrr map_lgl
 #' @importFrom stringr str_replace
-#' @return An integration matrix
+#' @return Either a single data frame with computed abundance values or
+#' a list of 2 data frames (abundance_df, quant_totals)
 #' @export
 #'
 #' @examples
@@ -33,54 +43,79 @@
 #'     package = "ISAnalytics"
 #' )
 #' matrix <- import_single_Vispa2Matrix(path)
-#' abundance <- compute_abundance(matrix)
-compute_abundance <- function(x, columns = "Value", percentage = TRUE) {
+#'
+#' # Simple integration matrix - grouping by CompleteAmplificationID
+#' abundance1 <- compute_abundance(matrix)
+#' abundance1
+#'
+#' # Keeping totals as a separate data frame
+#' abundance2 <- compute_abundance(matrix, keep_totals = "df")
+#' abundance2
+compute_abundance <- function(x,
+    columns = "Value",
+    percentage = TRUE,
+    key = "CompleteAmplificationID",
+    keep_totals = FALSE) {
     ## Check parameters
-    stopifnot(tibble::is_tibble(x))
+    stopifnot(is.data.frame(x))
     stopifnot(is.character(columns))
+    stopifnot(is.character(key))
     if (.check_mandatory_vars(x) == FALSE) {
         stop(.non_ISM_error())
     }
-    if (.check_complAmpID(x) == FALSE) {
-        stop(.missing_complAmpID_error())
-    }
     stopifnot(is.logical(percentage) & length(percentage) == 1)
-    if (!all(columns %in% colnames(x))) {
-        stop(.missing_user_cols_error())
+    if (!all(columns %in% colnames(x)) | !all(key %in% colnames(x))) {
+        missing_cols <- c(
+            columns[!columns %in% colnames(x)],
+            key[!key %in% colnames(x)]
+        )
+        rlang::abort(.missing_user_cols_error(missing_cols))
     }
-    purrr::walk(columns, function(col) {
+    non_num_cols <- purrr::map_lgl(columns, function(col) {
         expr <- rlang::expr(`$`(x, !!col))
-        if (!is.numeric(rlang::eval_tidy(expr)) &
-            !is.numeric(rlang::eval_tidy(expr))) {
-            stop(.non_num_user_cols_error())
+        if (is.numeric(rlang::eval_tidy(expr)) |
+            is.integer(rlang::eval_tidy(expr))) {
+            return(FALSE)
+        } else {
+            return(TRUE)
         }
     })
+    if (any(non_num_cols)) {
+        stop(.non_num_user_cols_error(columns[non_num_cols]))
+    }
+    stopifnot(is.logical(keep_totals) || keep_totals == "df")
     ## Computation
+    ### Computes totals for each group defined by key
     totals <- x %>%
-        dplyr::group_by(.data$CompleteAmplificationID) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(key))) %>%
         dplyr::summarise(
             dplyr::across(dplyr::all_of(columns),
                 sum,
-                .names = "{.col}_sum"
+                .names = "{.col}_tot"
             ),
             .groups = "drop"
         )
+    ### Computes abundance as value (for each col) / total of the corresponding
+    ### group (defined by key)
     abundance_df <- x %>%
-        dplyr::left_join(totals, by = "CompleteAmplificationID") %>%
+        dplyr::left_join(totals, by = key) %>%
         dplyr::mutate(dplyr::across(dplyr::all_of(columns),
             list(ab = ~ .x / rlang::eval_tidy(
                 rlang::parse_expr(
                     paste(
                         dplyr::cur_column(),
-                        "sum",
+                        "tot",
                         sep = "_"
                     )
                 )
             )),
             .names = "{.col}_RelAbundance"
         )) %>%
-        dplyr::select(-c(dplyr::all_of(paste(columns, "sum", sep = "_")))) %>%
         dplyr::distinct()
+    if (keep_totals == FALSE || keep_totals == "df") {
+        abundance_df <- abundance_df %>%
+            dplyr::select(-c(dplyr::all_of(paste(columns, "tot", sep = "_"))))
+    }
     if (percentage == TRUE) {
         abundance_df <- abundance_df %>%
             dplyr::mutate(
@@ -93,7 +128,11 @@ compute_abundance <- function(x, columns = "Value", percentage = TRUE) {
                 dplyr::contains("PercAbundance")
             )
     }
-    abundance_df
+    if (keep_totals == "df") {
+        return(list(abundance_df = abundance_df, quant_totals = totals))
+    } else {
+        return(abundance_df)
+    }
 }
 
 
@@ -139,9 +178,11 @@ compute_abundance <- function(x, columns = "Value", percentage = TRUE) {
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
 #' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     path, root,
-#'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY",
-#'     dates_format = "dmy"
+#'     association_file = path, root = root,
+#'     quantification_type = c("fragmentEstimate", "seqCount"),
+#'     matrix_type = "annotated", workers = 2, patterns = NULL,
+#'     matching_opt = "ANY",
+#'     dates_format = "dmy", multi_quant_matrix = FALSE
 #' )
 #' total_matrix <- comparison_matrix(matrices)
 #' options(op)
@@ -225,13 +266,17 @@ comparison_matrix <- function(x,
 #' )
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     path, root,
-#'     c("fragmentEstimate", "seqCount"), "annotated", 2, NULL, "ANY",
+#' association_file <- import_association_file(
+#'     path = path, root = root,
 #'     dates_format = "dmy"
 #' )
-#' total_matrix <- comparison_matrix(matrices)
-#' separated_matrix <- separate_quant_matrices(total_matrix)
+#' matrices <- import_parallel_Vispa2Matrices_auto(
+#'     association_file = association_file,
+#'     quantification_type = c("seqCount", "fragmentEstimate"),
+#'     matrix_type = "annotated", workers = 2, patterns = NULL,
+#'     matching_opt = "ANY"
+#' )
+#' separated_matrix <- separate_quant_matrices(matrices)
 #' options(op)
 separate_quant_matrices <- function(x, fragmentEstimate = "fragmentEstimate",
     seqCount = "seqCount",
@@ -446,33 +491,40 @@ threshold_filter <- function(x,
 }
 
 
-#' Sorts and keeps the top n integration sites in a data frame.
+#' Sorts and keeps the top n integration sites based on the values
+#' in a given column.
 #'
 #' \lifecycle{experimental}
 #' The input data frame will be sorted by the highest values in
 #' the columns specified and the top n rows will be returned as output.
 #' The user can choose to keep additional columns in the output
 #' by passing a vector of column names or passing 2 "shortcuts":
-#' * `keep` = "everything" keeps all columns in the original data frame
-#' * `keep` = "nothing" only keeps the mandatory columns
+#' * `keep = "everything"` keeps all columns in the original data frame
+#' * `keep = "nothing"` only keeps the mandatory columns
 #' (`mandatory_IS_vars()`) plus the columns in the `columns` parameter.
 #'
 #' @param x An integration matrix (data frame containing
 #' `mandatory_IS_vars()`)
-#' @param n How many rows should the output have? Must be numeric
+#' @param n How many integrations should be sliced (in total or
+#'  for each group)? Must be numeric
 #' or integer and greater than 0
 #' @param columns Columns to use for the sorting. If more than a column
 #' is supplied primary ordering is done on the first column,
 #' secondary ordering on all other columns
 #' @param keep Names of the columns to keep besides `mandatory_IS_vars()`
 #' and `columns`
+#' @param key Either `NULL` or a character vector of column names to group
+#' by. If not `NULL` the input will be grouped and the top fraction will
+#' be extracted from each group.
 #'
 #' @family Analysis functions
 #'
-#' @importFrom dplyr arrange across all_of desc slice_head select
+#' @import dplyr
 #' @importFrom magrittr `%>%`
+#' @importFrom rlang abort
 #'
-#' @return A data frame with `n` rows
+#' @return Either a data frame with at most n rows or
+#' a data frames with at most n*(number of groups) rows.
 #' @export
 #'
 #' @examples
@@ -490,21 +542,40 @@ threshold_filter <- function(x,
 #'     columns = c("Value", "Value2"),
 #'     keep = "nothing"
 #' )
-top_integrations <- function(x, n = 50, columns = "RelAbundance",
-    keep = "everything") {
+#' top_key <- top_integrations(smpl,
+#'     n = 3,
+#'     columns = "Value",
+#'     keep = "Value2",
+#'     key = "CompleteAmplificationID"
+#' )
+top_integrations <- function(x, n = 50,
+    columns = "fragmentEstimate_sum_RelAbundance",
+    keep = "everything", key = NULL) {
     stopifnot(is.data.frame(x))
     stopifnot(is.numeric(n) & length(n) == 1 & n > 0)
     stopifnot(is.character(keep))
     stopifnot(is.character(columns))
+    stopifnot(is.null(key) || is.character(key))
     if (!.check_mandatory_vars(x)) {
-        stop(.non_ISM_error())
+        rlang::abort(.non_ISM_error())
     }
     if (!all(columns %in% colnames(x))) {
-        stop(.missing_user_cols_error())
+        rlang::abort(.missing_user_cols_error(
+            columns[!columns %in% colnames(x)]
+        ))
     }
     if (!(all(keep == "everything") || all(keep == "nothing"))) {
         if (any(!keep %in% colnames(x))) {
-            stop(.missing_user_cols_error())
+            rlang::abort(.missing_user_cols_error(
+                keep[!keep %in% colnames(x)]
+            ))
+        }
+    }
+    if (!is.null(key)) {
+        if (!all(key %in% colnames(x))) {
+            rlang::abort(.missing_user_cols_error(
+                key[!key %in% colnames(x)]
+            ))
         }
     }
     essential_cols <- c(mandatory_IS_vars(), columns)
@@ -514,6 +585,18 @@ top_integrations <- function(x, n = 50, columns = "RelAbundance",
         character(0)
     } else {
         keep[!keep %in% essential_cols]
+    }
+    if (!is.null(key)) {
+        result <- x %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(key))) %>%
+            dplyr::arrange(dplyr::across(
+                dplyr::all_of(columns),
+                dplyr::desc
+            ), .by_group = TRUE) %>%
+            dplyr::slice_head(n = n) %>%
+            dplyr::select(dplyr::all_of(c(key, essential_cols, to_keep))) %>%
+            dplyr::ungroup()
+        return(result)
     }
     result <- x %>%
         dplyr::arrange(dplyr::across(
@@ -602,7 +685,7 @@ top_integrations <- function(x, n = 50, columns = "RelAbundance",
 #'     association_file = association_file, root = NULL,
 #'     quantification_type = c("seqCount", "fragmentEstimate"),
 #'     matrix_type = "annotated", workers = 2, patterns = NULL,
-#'     matching_opt = "ANY"
+#'     matching_opt = "ANY", multi_quant_matrix = FALSE
 #' )
 #'
 #' stats <- sample_statistics(matrices$seqCount, association_file)
@@ -719,6 +802,7 @@ sample_statistics <- function(x, metadata,
 #' @importFrom rlang .data
 #' @importFrom magrittr `%>%`
 #' @importFrom stats median pt p.adjust
+#' @importFrom utils read.csv
 #'
 #' @return A data frame
 #' @export
@@ -742,7 +826,7 @@ sample_statistics <- function(x, metadata,
 #'     dates_format = "dmy"
 #' )
 #'
-#' cis <- CIS_grubbs(matrices$seqCount)
+#' cis <- CIS_grubbs(matrices)
 #'
 #' options(op)
 CIS_grubbs <- function(x,
@@ -776,28 +860,34 @@ CIS_grubbs <- function(x,
 
     # Try to import annotation file
     if (ext == "tsv") {
-        refgenes <- read.csv(
+        refgenes <- utils::read.csv(
             file = genomic_annotation_file,
             header = TRUE, fill = TRUE, sep = "\t",
             check.names = FALSE,
             na.strings = c("NONE", "NA", "NULL", "NaN", "")
         )
         refgenes <- tibble::as_tibble(refgenes) %>%
-            dplyr::mutate(chrom = stringr::str_replace_all(.data$chrom,
-                                                           "chr", ""))
+            dplyr::mutate(chrom = stringr::str_replace_all(
+                .data$chrom,
+                "chr", ""
+            ))
     } else if (ext == "csv") {
-        refgenes <- read.csv(
+        refgenes <- utils::read.csv(
             file = genomic_annotation_file,
             header = TRUE, fill = TRUE,
             check.names = FALSE,
             na.strings = c("NONE", "NA", "NULL", "NaN", "")
         )
         refgenes <- tibble::as_tibble(refgenes) %>%
-            dplyr::mutate(chrom = stringr::str_replace_all(.data$chrom,
-                                                           "chr", ""))
+            dplyr::mutate(chrom = stringr::str_replace_all(
+                .data$chrom,
+                "chr", ""
+            ))
     } else {
-        stop(paste("The genomic annotation file must be either in",
-                   ".tsv or .csv format (compressed or not)"))
+        stop(paste(
+            "The genomic annotation file must be either in",
+            ".tsv or .csv format (compressed or not)"
+        ))
     }
 
     # Check annotation file format
@@ -832,7 +922,8 @@ CIS_grubbs <- function(x,
                 stats::median(.data$integration_locus),
             distinct_orientations = dplyr::n_distinct(.data$strand),
             describe = list(tibble::as_tibble(
-                psych::describe(.data$integration_locus))),
+                psych::describe(.data$integration_locus)
+            )),
             .groups = "drop"
         ) %>%
         tidyr::unnest(.data$describe, keep_empty = TRUE, names_sep = "_")
@@ -1028,7 +1119,7 @@ CIS_grubbs <- function(x,
 #'     association_file = association_file, root = NULL,
 #'     quantification_type = c("seqCount", "fragmentEstimate"),
 #'     matrix_type = "annotated", workers = 2, patterns = NULL,
-#'     matching_opt = "ANY"
+#'     matching_opt = "ANY", multi_quant_matrix = FALSE
 #' )
 #'
 #' #### EXTERNAL AGGREGATION

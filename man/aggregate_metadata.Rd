@@ -28,7 +28,7 @@ group. For more details on how to use this function:
 \code{vignette("Working with aggregate functions", package = "ISAnalytics")}
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE)
+op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
 path_AF <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
 )

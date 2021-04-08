@@ -72,7 +72,7 @@ matrices <- import_parallel_Vispa2Matrices_auto(
     dates_format = "dmy"
 )
 
-cis <- CIS_grubbs(matrices$seqCount)
+cis <- CIS_grubbs(matrices)
 
 options(op)
 }
