@@ -19,7 +19,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -84,7 +84,7 @@ the file system where Vispa2 matrices are generated." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.11</span>
       </span>
     </div>
 
@@ -126,6 +126,13 @@ the file system where Vispa2 matrices are generated." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
+  <a href="https://calabrialab.github.io/ISAnalytics/dev/">
+    <span class="fas fa-code-branch"></span>
+     
+    DEVEL
+  </a>
+</li>
+<li>
   <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa-github fa-lg"></span>
      
@@ -159,16 +166,13 @@ the file system where Vispa2 matrices are generated.</p>
 
     <pre class="usage"><span class='fu'>import_parallel_Vispa2Matrices_auto</span><span class='op'>(</span>
   <span class='va'>association_file</span>,
-  <span class='va'>root</span>,
   <span class='va'>quantification_type</span>,
   matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>,
   workers <span class='op'>=</span> <span class='fl'>2</span>,
+  multi_quant_matrix <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  export_report_path <span class='op'>=</span> <span class='cn'>NULL</span>,
   patterns <span class='op'>=</span> <span class='cn'>NULL</span>,
   matching_opt <span class='op'>=</span> <span class='fu'><a href='matching_options.html'>matching_options</a></span><span class='op'>(</span><span class='op'>)</span>,
-  tp_padding <span class='op'>=</span> <span class='fl'>4</span>,
-  dates_format <span class='op'>=</span> <span class='st'>"ymd"</span>,
-  multi_quant_matrix <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  export_widget_path <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -178,13 +182,8 @@ the file system where Vispa2 matrices are generated.</p>
     <tr>
       <th>association_file</th>
       <td><p>A single string containing the path to the
-association file on disk, or a tibble resulting from the previous call of
+association file on disk, or a data frame resulting from a previous call to
 <code>import_association_file</code></p></td>
-    </tr>
-    <tr>
-      <th>root</th>
-      <td><p>A single string containing the path to the root folder containing
-Vispa2 output. Can be NULL if association_file parameter is a tibble</p></td>
     </tr>
     <tr>
       <th>quantification_type</th>
@@ -198,8 +197,19 @@ be imported. Can only be one in <code>"annotated"</code> or <code>"not_annotated
     </tr>
     <tr>
       <th>workers</th>
-      <td><p>A single number representing the number of parallel workers to
-use for the import</p></td>
+      <td><p>A single integer representing the number
+of parallel workers to use for the import</p></td>
+    </tr>
+    <tr>
+      <th>multi_quant_matrix</th>
+      <td><p>If set to TRUE will produce a
+multi-quantification matrix (data frame) through <code>comparison_matrix</code>
+instead of a list.</p></td>
+    </tr>
+    <tr>
+      <th>export_report_path</th>
+      <td><p>A path on disk to save produced import report
+or NULL if the user doesn't wish to save the html file</p></td>
     </tr>
     <tr>
       <th>patterns</th>
@@ -212,37 +222,17 @@ no patterns needs to be matched.</p></td>
       <td><p>A single value between <code>matching_options</code></p></td>
     </tr>
     <tr>
-      <th>tp_padding</th>
-      <td><p>Timepoint padding, indicates the number of digits of the
-"Timepoint" column once imported. Fills the content with 0s up to the length
-specified (ex: 1 becomes 0001 with a tp_padding of 4)</p></td>
-    </tr>
-    <tr>
-      <th>dates_format</th>
-      <td><p>A single string indicating how dates should be parsed.
-Must be a value in: <code><a href='date_formats.html'>date_formats()</a></code></p></td>
-    </tr>
-    <tr>
-      <th>multi_quant_matrix</th>
-      <td><p>If set to TRUE will produce a
-multi-quantification matrix (data frame) through <code>comparison_matrix</code>
-instead of a list.</p></td>
-    </tr>
-    <tr>
-      <th>export_widget_path</th>
-      <td><p>A path on disk to save produced widgets or NULL
-if the user doesn't wish to save the html file</p></td>
-    </tr>
-    <tr>
       <th>...</th>
-      <td><p>Additional arguments to pass to <code>comparison_matrix</code></p></td>
+      <td><p>&lt;<code><a href='https://rlang.r-lib.org/reference/dyn-dots.html'>dynamic-dots</a></code>&gt; Additional named arguments
+to pass to <code>ìmport_association_file</code> and <code>comparison_matrix</code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named list of tibbles containing data from all imported integration
-matrices, divided by quantification type</p>
+    <p>A named list of data frames containing data from
+all imported integration
+matrices, divided by quantification type or a multi-quantification matrix</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Import family functions are designed to work in combination with
@@ -292,12 +282,21 @@ shown in html format.</p>
 <span class='va'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_pth</span>, <span class='st'>"fs"</span><span class='op'>)</span>
 <span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'>import_parallel_Vispa2Matrices_auto</span><span class='op'>(</span>
-    <span class='va'>path</span>, <span class='va'>root</span>,
-    <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>, <span class='st'>"annotated"</span>, <span class='fl'>2</span>, <span class='cn'>NULL</span>, <span class='st'>"ANY"</span>,
-    dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>
+    association_file <span class='op'>=</span> <span class='va'>path</span>,
+    quantification_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>,
+    patterns <span class='op'>=</span> <span class='cn'>NULL</span>, matching_opt <span class='op'>=</span> <span class='st'>"ANY"</span>,
+    root <span class='op'>=</span> <span class='va'>root</span>,
+    dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>,
+    workers <span class='op'>=</span> <span class='fl'>2</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "--- REPORT: FILES IMPORTED ---"
-#&gt; <span style='color: #949494;'># A tibble: 8 x 5</span><span>
+</div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
+#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span><span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
+#&gt; <span class='message'>* Parsing problems detected: TRUE</span>
+#&gt; <span class='message'>* Date parsing problems: TRUE</span>
+#&gt; <span class='message'>* Column problems detected: TRUE</span>
+#&gt; <span class='message'>* NAs found in important columns: TRUE</span>
+#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='output co'>#&gt; [1] "--- REPORT: FILES IMPORTED ---"
+#&gt; </span><span style='color: #949494;'># A tibble: 8 x 5</span><span>
 #&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type
 #&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>              
 #&gt; </span><span style='color: #BCBCBC;'>1</span><span> CLOEXP      POOL6-1                 fragmentEstimate   
@@ -310,14 +309,14 @@ shown in html format.</p>
 #&gt; </span><span style='color: #BCBCBC;'>8</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
 #&gt;   Files_chosen                                                                  
 #&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;fs::path&gt;</span><span>                                                                    
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1101/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1101/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…
 #&gt;   Imported
 #&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>   
 #&gt; </span><span style='color: #BCBCBC;'>1</span><span> TRUE    
@@ -342,14 +341,14 @@ shown in html format.</p>
 #&gt; </span><span style='color: #BCBCBC;'>8</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
 #&gt;   Files_chosen                                                                  
 #&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;fs::path&gt;</span><span>                                                                    
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1101/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1101/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…
 #&gt; [1] "--- INTEGRATION MATRICES FOUND REPORT ---"
 #&gt; </span><span style='color: #949494;'># A tibble: 8 x 5</span><span>
 #&gt;   ProjectID   concatenatePoolIDSeqRun Anomalies Quantification_type
@@ -364,28 +363,14 @@ shown in html format.</p>
 #&gt; </span><span style='color: #BCBCBC;'>8</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     seqCount           
 #&gt;   Files_found                                                                   
 #&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;fs::path&gt;</span><span>                                                                    
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1101/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1101/qu</span><span>…
-#&gt; [1] "--- ALIGNMENT RESULTS ---"
-#&gt; </span><span style='color: #949494;'># A tibble: 4 x 4</span><span>
-#&gt;   ProjectID   concatenatePoolIDSeqRun Found
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                   </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> CLOEXP      POOL6-1                 TRUE 
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     TRUE 
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     TRUE 
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     TRUE 
-#&gt;   Path                                                                          
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                                                                         
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/VA/CLOEXP/quan…
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu…
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1100/qu…
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpT2gJzi/fs/PROJECT1101/qu…</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
+#&gt; </span><span style='color: #BCBCBC;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…
+#&gt; </span><span style='color: #BCBCBC;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

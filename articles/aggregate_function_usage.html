@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.11</span>
       </span>
     </div>
 
@@ -80,6 +80,13 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
+  <a href="https://calabrialab.github.io/ISAnalytics/dev/">
+    <span class="fas fa-code-branch"></span>
+     
+    DEVEL
+  </a>
+</li>
+<li>
   <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa-github fa-lg"></span>
      
@@ -105,7 +112,7 @@
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 class="date">3 March 2021</h4>
+            <h4 class="date">8 April 2021</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/master/vignettes/aggregate_function_usage.Rmd"><code>vignettes/aggregate_function_usage.Rmd</code></a></small>
       <div class="hidden name"><code>aggregate_function_usage.Rmd</code></div>
@@ -128,43 +135,49 @@
 <p>To install the package run the following code:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## For release version</span>
-<span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+      <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+  <span class="op">}</span>
 <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span>
 
 <span class="co">## For devel version</span>
-<span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+      <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+  <span class="op">}</span>
 <span class="co"># The following initializes usage of Bioc devel</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span>version<span class="op">=</span><span class="st">'devel'</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span>version <span class="op">=</span> <span class="st">"devel"</span><span class="op">)</span>
 <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></code></pre></div>
 <p>To install from GitHub:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># For release version</span>
 <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span>,
-                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
-                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+    ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span>,
+    dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
+    build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span>
 
 <span class="co">## Safer option for vignette building issue</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span><span class="op">)</span>
+    ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span>
+<span class="op">)</span>
 
 <span class="co"># For devel version</span>
 <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"master"</span>,
-                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
-                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+    ref <span class="op">=</span> <span class="st">"master"</span>,
+    dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
+    build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span>
 
 <span class="co">## Safer option for vignette building issue</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"master"</span><span class="op">)</span></code></pre></div>
+    ref <span class="op">=</span> <span class="st">"master"</span>
+<span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://calabrialab.github.io/ISAnalytics">ISAnalytics</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: magrittr</span></code></pre></div>
@@ -194,63 +207,45 @@
 <p>We refer to information contained in the association file as “metadata”: sometimes it’s useful to obtain collective information based on a certain group of variables we’re interested in. The function <code>aggregate_metadata</code> does just that, according to the grouping variables, meaning the names of the columns in the association file to perform a <code>group_by</code> operation with, creates a summary which includes:</p>
 <ul>
 <li>
-<code>FusionPrimerPCRDate</code> - The minimum date in the group for this variable</li>
+<code>FusionPrimerPCRDate_min</code> - The minimum date in the group for this variable</li>
 <li>
-<code>LinearPCRDate</code> - The minimum date in the group for this variable</li>
+<code>LinearPCRDate_min</code> - The minimum date in the group for this variable</li>
 <li>
-<code>VCN</code> - The mean of “VCN” column for each group</li>
+<code>VCN_avg</code> - The mean of “VCN” column for each group</li>
 <li>
-<code>Avg_DNAngUsed</code> - The mean of “DNAngUsed”column for each group</li>
+<code>DNAngUsed_avg</code> - The mean of “DNAngUsed”column for each group</li>
 <li>
-<code>Kapa</code> - The mean of “Kapa” column for each group</li>
+<code>Kapa_avg</code> - The mean of “Kapa” column for each group</li>
 <li>
-<code>DNAngUsed</code> - The sum of “DNAngUsed” column for each group</li>
+<code>DNAngUsed_sum</code> - The sum of “DNAngUsed” column for each group</li>
 <li>
-<code>ulForPool</code> - The sum of “ulForPool” column for each group</li>
+<code>ulForPool_sum</code> - The sum of “ulForPool” column for each group</li>
 <li>
-<code>AggregateMeta</code> - A string obtained by concatenation of all of the grouping variables separated by "_"</li>
+<code>AggregateMeta_sum</code> - A string obtained by concatenation of all of the grouping variables separated by "_"</li>
 </ul>
 <div id="typical-workflow" class="section level2">
 <h2 class="hasAnchor">
 <a href="#typical-workflow" class="anchor"></a>Typical workflow</h2>
 <p>Import the association file via <code>import_assocition_file</code>. If you need more information on import function please view the vignette “How to use import functions”.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>ISAnalytics.widgets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">path_AF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ex_association_file.tsv"</span>,
-    package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
-<span class="op">)</span>
+<code class="sourceCode R"><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>ISAnalytics.widgets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="op">{</span>
+    <span class="va">path_AF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ex_association_file.tsv"</span>,
+        package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
+    <span class="op">)</span>
 
-<span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>,
-    package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
-<span class="op">)</span>
-<span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_correct</span>, <span class="st">"fs"</span><span class="op">)</span>
-<span class="va">association_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">path_AF</span>, <span class="va">root_correct</span><span class="op">)</span>
-<span class="co">#&gt; Warning: All formats failed to parse. No formats found.</span>
-
-<span class="co">#&gt; Warning: All formats failed to parse. No formats found.</span>
-
-<span class="co">#&gt; Warning: All formats failed to parse. No formats found.</span>
-
-<span class="co">#&gt; Warning: All formats failed to parse. No formats found.</span>
-
-<span class="co">#&gt; Warning: All formats failed to parse. No formats found.</span>
-
-<span class="co">#&gt; Warning: All formats failed to parse. No formats found.</span>
-
-<span class="co">#&gt; Warning: All formats failed to parse. No formats found.</span>
-<span class="co">#&gt; # A tibble: 4 x 4</span>
-<span class="co">#&gt;   ProjectID   concatenatePoolIDSeqRun Found</span>
-<span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;                   &lt;lgl&gt;</span>
-<span class="co">#&gt; 1 CLOEXP      POOL6-1                 TRUE </span>
-<span class="co">#&gt; 2 PROJECT1100 ABX-LR-PL5-POOL14-1     TRUE </span>
-<span class="co">#&gt; 3 PROJECT1100 ABX-LR-PL6-POOL15-1     TRUE </span>
-<span class="co">#&gt; 4 PROJECT1101 ABY-LR-PL4-POOL54-2     TRUE </span>
-<span class="co">#&gt;   Path                                                                          </span>
-<span class="co">#&gt;   &lt;chr&gt;                                                                         </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1101/qu…</span></code></pre></div>
+    <span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>,
+        package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
+    <span class="op">)</span>
+    <span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_correct</span>, <span class="st">"fs"</span><span class="op">)</span>
+    <span class="va">association_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">path_AF</span>, <span class="va">root_correct</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt; *** Association file import summary ***</span>
+<span class="co">#&gt; ℹ For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
+<span class="co">#&gt; * Parsing problems detected: TRUE</span>
+<span class="co">#&gt; * Date parsing problems: TRUE</span>
+<span class="co">#&gt; * Column problems detected: TRUE</span>
+<span class="co">#&gt; * NAs found in important columns: TRUE</span>
+<span class="co">#&gt; * File system alignment: no problems detected</span></code></pre></div>
 <p>Perform aggregation:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">aggregated_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_metadata.html">aggregate_metadata</a></span><span class="op">(</span><span class="va">association_file</span>,
@@ -263,18 +258,18 @@
 <span class="op">)</span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="16%">
-<col width="8%">
+<col width="14%">
 <col width="7%">
+<col width="6%">
 <col width="4%">
 <col width="6%">
-<col width="13%">
-<col width="9%">
-<col width="3%">
-<col width="9%">
-<col width="6%">
-<col width="6%">
-<col width="6%">
+<col width="14%">
+<col width="10%">
+<col width="4%">
+<col width="8%">
+<col width="5%">
+<col width="8%">
+<col width="8%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">AggregateMeta</th>
@@ -282,13 +277,13 @@
 <th align="left">CellMarker</th>
 <th align="left">Tissue</th>
 <th align="left">TimePoint</th>
-<th align="left">FusionPrimerPCRDate</th>
-<th align="left">LinearPCRDate</th>
-<th align="right">VCN</th>
-<th align="right">Avg_DNAngUsed</th>
-<th align="right">Kapa</th>
-<th align="right">DNAngUsed</th>
-<th align="right">ulForPool</th>
+<th align="left">FusionPrimerPCRDate_min</th>
+<th align="left">LinearPCRDate_min</th>
+<th align="right">VCN_avg</th>
+<th align="right">DNAngUsed_avg</th>
+<th align="right">Kapa_avg</th>
+<th align="right">DNAngUsed_sum</th>
+<th align="right">ulForPool_sum</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -367,38 +362,46 @@
 Vispa2 stats contain useful information that is not included in the association file and is linked to the single Vispa2 run. In some cases it’s useful to perform aggregation on those info too. If you set the parameter to <code>TRUE</code>, besides the columns mentioned before you will also have:</p>
 <ul>
 <li>
-<code>BARCODE_MUX</code> - The sum of the “BARCODE_MUX” column for the group</li>
+<code>BARCODE_MUX_sum</code> - The sum of the “BARCODE_MUX” column for the group</li>
 <li>
-<code>TRIMMING_FINAL_LTRLC</code> - The sum of the “TRIMMING_FINAL_LTRLC” column for the group</li>
+<code>TRIMMING_FINAL_LTRLC_sum</code> - The sum of the “TRIMMING_FINAL_LTRLC” column for the group</li>
 <li>
-<code>LV_MAPPED</code> - The sum of the “LV_MAPPED” column for the group</li>
+<code>LV_MAPPED_sum</code> - The sum of the “LV_MAPPED” column for the group</li>
 <li>
-<code>BWA_MAPPED_OVERALL</code> - The sum of the “BWA_MAPPED_OVERALL” column for the group</li>
+<code>BWA_MAPPED_OVERALL_sum</code> - The sum of the “BWA_MAPPED_OVERALL” column for the group</li>
 <li>
-<code>ISS_MAPPED_PP</code> - The sum of the “ISS_MAPPED_PP” column for the group</li>
+<code>ISS_MAPPED_PP_sum</code> - The sum of the “ISS_MAPPED_PP” column for the group</li>
 </ul>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">aggregated_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_metadata.html">aggregate_metadata</a></span><span class="op">(</span><span class="va">association_file</span>,
-    grouping_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
-        <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,
-        <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span>
-    <span class="op">)</span>,
-    import_stats <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span>
+<code class="sourceCode R"><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>ISAnalytics.widgets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="op">{</span>
+    <span class="va">aggregated_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_metadata.html">aggregate_metadata</a></span><span class="op">(</span><span class="va">association_file</span>,
+        grouping_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
+            <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,
+            <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span>
+        <span class="op">)</span>,
+        import_stats <span class="op">=</span> <span class="cn">TRUE</span>
+    <span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt; [1] "--- REPORT IMPORT VISPA2STATS: FILES IMPORTED ---"</span>
-<span class="co">#&gt; # A tibble: 4 x 3</span>
+<span class="co">#&gt; # A tibble: 4 x 4</span>
 <span class="co">#&gt;   ProjectID  </span>
 <span class="co">#&gt;   &lt;chr&gt;      </span>
 <span class="co">#&gt; 1 CLOEXP     </span>
 <span class="co">#&gt; 2 PROJECT1100</span>
 <span class="co">#&gt; 3 PROJECT1100</span>
 <span class="co">#&gt; 4 PROJECT1101</span>
-<span class="co">#&gt;   files                                                                         </span>
-<span class="co">#&gt;   &lt;chr&gt;                                                                         </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/VA/CLOEXP/iss/…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/is…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/is…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1101/is…</span>
+<span class="co">#&gt;   stats_path                                                                    </span>
+<span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/VA/CLOEXP/iss/…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/is…</span>
+<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/is…</span>
+<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1101/is…</span>
+<span class="co">#&gt;   stats_files                                                                   </span>
+<span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/VA/CLOEXP/iss/…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/is…</span>
+<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/is…</span>
+<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1101/is…</span>
 <span class="co">#&gt;   Imported</span>
 <span class="co">#&gt;   &lt;lgl&gt;   </span>
 <span class="co">#&gt; 1 TRUE    </span>
@@ -407,21 +410,21 @@ Vispa2 stats contain useful information that is not included in the association 
 <span class="co">#&gt; 4 TRUE</span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="10%">
-<col width="5%">
-<col width="4%">
-<col width="3%">
-<col width="4%">
-<col width="8%">
-<col width="6%">
-<col width="2%">
-<col width="6%">
-<col width="4%">
-<col width="4%">
-<col width="4%">
-<col width="5%">
 <col width="9%">
 <col width="4%">
+<col width="4%">
+<col width="2%">
+<col width="3%">
+<col width="9%">
+<col width="6%">
+<col width="3%">
+<col width="5%">
+<col width="3%">
+<col width="5%">
+<col width="5%">
+<col width="6%">
+<col width="9%">
+<col width="5%">
 <col width="8%">
 <col width="6%">
 </colgroup>
@@ -431,18 +434,18 @@ Vispa2 stats contain useful information that is not included in the association 
 <th align="left">CellMarker</th>
 <th align="left">Tissue</th>
 <th align="left">TimePoint</th>
-<th align="left">FusionPrimerPCRDate</th>
-<th align="left">LinearPCRDate</th>
-<th align="right">VCN</th>
-<th align="right">Avg_DNAngUsed</th>
-<th align="right">Kapa</th>
-<th align="right">DNAngUsed</th>
-<th align="right">ulForPool</th>
-<th align="right">BARCODE_MUX</th>
-<th align="right">TRIMMING_FINAL_LTRLC</th>
-<th align="right">LV_MAPPED</th>
-<th align="right">BWA_MAPPED_OVERALL</th>
-<th align="right">ISS_MAPPED_PP</th>
+<th align="left">FusionPrimerPCRDate_min</th>
+<th align="left">LinearPCRDate_min</th>
+<th align="right">VCN_avg</th>
+<th align="right">DNAngUsed_avg</th>
+<th align="right">Kapa_avg</th>
+<th align="right">DNAngUsed_sum</th>
+<th align="right">ulForPool_sum</th>
+<th align="right">BARCODE_MUX_sum</th>
+<th align="right">TRIMMING_FINAL_LTRLC_sum</th>
+<th align="right">LV_MAPPED_sum</th>
+<th align="right">BWA_MAPPED_OVERALL_sum</th>
+<th align="right">ISS_MAPPED_PP_sum</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -554,12 +557,14 @@ Vispa2 stats contain useful information that is not included in the association 
 <a href="#typical-workflow-1" class="anchor"></a>Typical workflow</h2>
 <p>Import your association file (see previous section) and then import your matrices:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto</a></span><span class="op">(</span>
-    association_file <span class="op">=</span> <span class="va">association_file</span>, root <span class="op">=</span> <span class="cn">NULL</span>,
-    quantification_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"fragmentEstimate"</span>, <span class="st">"seqCount"</span><span class="op">)</span>,
-    matrix_type <span class="op">=</span> <span class="st">"annotated"</span>, workers <span class="op">=</span> <span class="fl">2</span>, patterns <span class="op">=</span> <span class="cn">NULL</span>,
-    matching_opt <span class="op">=</span> <span class="st">"ANY"</span>
-<span class="op">)</span>
+<code class="sourceCode R"><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>ISAnalytics.widgets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="op">{</span>
+    <span class="va">matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto</a></span><span class="op">(</span>
+        association_file <span class="op">=</span> <span class="va">association_file</span>, root <span class="op">=</span> <span class="cn">NULL</span>,
+        quantification_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"fragmentEstimate"</span>, <span class="st">"seqCount"</span><span class="op">)</span>,
+        matrix_type <span class="op">=</span> <span class="st">"annotated"</span>, workers <span class="op">=</span> <span class="fl">2</span>, patterns <span class="op">=</span> <span class="cn">NULL</span>,
+        matching_opt <span class="op">=</span> <span class="st">"ANY"</span>, multi_quant_matrix <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt; [1] "--- REPORT: FILES IMPORTED ---"</span>
 <span class="co">#&gt; # A tibble: 8 x 5</span>
 <span class="co">#&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type</span>
@@ -574,14 +579,14 @@ Vispa2 stats contain useful information that is not included in the association 
 <span class="co">#&gt; 8 PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           </span>
 <span class="co">#&gt;   Files_chosen                                                                  </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1101/qu…</span>
-<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1101/qu…</span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1101/qu…</span>
+<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1101/qu…</span>
 <span class="co">#&gt;   Imported</span>
 <span class="co">#&gt;   &lt;lgl&gt;   </span>
 <span class="co">#&gt; 1 TRUE    </span>
@@ -606,14 +611,14 @@ Vispa2 stats contain useful information that is not included in the association 
 <span class="co">#&gt; 8 PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           </span>
 <span class="co">#&gt;   Files_chosen                                                                  </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1101/qu…</span>
-<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1101/qu…</span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1101/qu…</span>
+<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1101/qu…</span>
 <span class="co">#&gt; [1] "--- INTEGRATION MATRICES FOUND REPORT ---"</span>
 <span class="co">#&gt; # A tibble: 8 x 5</span>
 <span class="co">#&gt;   ProjectID   concatenatePoolIDSeqRun Anomalies Quantification_type</span>
@@ -628,22 +633,24 @@ Vispa2 stats contain useful information that is not included in the association 
 <span class="co">#&gt; 8 PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     seqCount           </span>
 <span class="co">#&gt;   Files_found                                                                   </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1101/qu…</span>
-<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAKtl5K/fs/PROJECT1101/qu…</span></code></pre></div>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1101/qu…</span>
+<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpld8qlO/fs/PROJECT1101/qu…</span></code></pre></div>
 <p>The function <code>aggregate_values_by_key</code> can perform the aggregation both on the list of matrices and a single matrix.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Takes the whole list and produces a list in output</span>
 <span class="va">aggregated_matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span><span class="va">matrices</span>, <span class="va">association_file</span><span class="op">)</span>
 
 <span class="co"># Takes a single matrix and produces a single matrix as output</span>
-<span class="va">aggregated_matrices_single</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span><span class="va">matrices</span><span class="op">$</span><span class="va">seqCount</span>, 
-                                                      <span class="va">association_file</span><span class="op">)</span></code></pre></div>
+<span class="va">aggregated_matrices_single</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span>
+    <span class="va">matrices</span><span class="op">$</span><span class="va">seqCount</span>,
+    <span class="va">association_file</span>
+<span class="op">)</span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="3%">
@@ -843,7 +850,7 @@ The <code>lambda</code> parameter indicates the function(s) to be applied to the
     x <span class="op">=</span> <span class="va">matrices</span><span class="op">$</span><span class="va">seqCount</span>,
     association_file <span class="op">=</span> <span class="va">association_file</span>,
     key <span class="op">=</span> <span class="st">"SubjectID"</span>,
-    lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">.x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">.x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -925,7 +932,7 @@ The <code>lambda</code> parameter indicates the function(s) to be applied to the
 <span class="va">agg3</span>
 <span class="co">#&gt; # A tibble: 1,272 x 7</span>
 <span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand SubjectID Value_describe$…</span>
-<span class="co">#&gt;  * &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;                &lt;dbl&gt;</span>
+<span class="co">#&gt;    &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;                &lt;dbl&gt;</span>
 <span class="co">#&gt;  1 1               4519734 +      LINC017… +          VA2020-m…                1</span>
 <span class="co">#&gt;  2 1               8426336 -      RERE     -          VA2020-m…                1</span>
 <span class="co">#&gt;  3 1               8884086 -      RERE     -          VA2020-m…                1</span>
@@ -1152,7 +1159,7 @@ The <code>group</code> parameter should contain all other variables to include i
 <p><code>R</code> session information.</p>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 4.0.4 (2021-02-15)
+#&gt;  version  R version 4.0.5 (2021-03-31)
 #&gt;  os       macOS Catalina 10.15.7      
 #&gt;  system   x86_64, darwin17.0          
 #&gt;  ui       X11                         
@@ -1160,22 +1167,23 @@ The <code>group</code> parameter should contain all other variables to include i
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       UTC                         
-#&gt;  date     2021-03-03                  
+#&gt;  date     2021-04-08                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  package       * version date       lib source        
-#&gt;  assertthat      0.2.1   2019-03-21 [1] CRAN (R 4.0.2)
-#&gt;  BiocManager     1.30.10 2019-11-16 [1] CRAN (R 4.0.2)
+#&gt;  BiocManager     1.30.12 2021-03-28 [1] CRAN (R 4.0.2)
 #&gt;  BiocParallel    1.24.1  2020-11-06 [1] Bioconductor  
 #&gt;  BiocStyle     * 2.18.1  2020-11-24 [1] Bioconductor  
 #&gt;  bookdown        0.21    2020-10-13 [1] CRAN (R 4.0.2)
 #&gt;  cachem          1.0.4   2021-02-13 [1] CRAN (R 4.0.2)
-#&gt;  cli             2.3.1   2021-02-23 [1] CRAN (R 4.0.2)
+#&gt;  cellranger      1.1.0   2016-07-27 [1] CRAN (R 4.0.2)
+#&gt;  cli             2.4.0   2021-04-05 [1] CRAN (R 4.0.2)
 #&gt;  colorspace      2.0-0   2020-11-11 [1] CRAN (R 4.0.2)
 #&gt;  crayon          1.4.1   2021-02-08 [1] CRAN (R 4.0.2)
-#&gt;  desc            1.2.0   2018-05-01 [1] CRAN (R 4.0.2)
+#&gt;  data.table      1.14.0  2021-02-21 [1] CRAN (R 4.0.2)
+#&gt;  desc            1.3.0   2021-03-05 [1] CRAN (R 4.0.2)
 #&gt;  digest          0.6.27  2020-10-24 [1] CRAN (R 4.0.2)
-#&gt;  dplyr           1.0.4   2021-02-02 [1] CRAN (R 4.0.2)
+#&gt;  dplyr           1.0.5   2021-03-05 [1] CRAN (R 4.0.2)
 #&gt;  ellipsis        0.3.1   2020-05-15 [1] CRAN (R 4.0.2)
 #&gt;  evaluate        0.14    2019-05-28 [1] CRAN (R 4.0.1)
 #&gt;  fansi           0.4.2   2021-01-15 [1] CRAN (R 4.0.2)
@@ -1192,30 +1200,31 @@ The <code>group</code> parameter should contain all other variables to include i
 #&gt;  htmltools       0.5.1.1 2021-01-22 [1] CRAN (R 4.0.2)
 #&gt;  htmlwidgets     1.5.3   2020-12-10 [1] CRAN (R 4.0.2)
 #&gt;  httr            1.4.2   2020-07-20 [1] CRAN (R 4.0.2)
-#&gt;  ISAnalytics   * 1.0.10  2021-03-03 [1] Bioconductor  
+#&gt;  ISAnalytics   * 1.0.11  2021-04-08 [1] Bioconductor  
 #&gt;  jsonlite        1.7.2   2020-12-09 [1] CRAN (R 4.0.2)
 #&gt;  knitcitations * 1.0.12  2021-01-10 [1] CRAN (R 4.0.2)
 #&gt;  knitr           1.31    2021-01-27 [1] CRAN (R 4.0.2)
-#&gt;  lattice         0.20-41 2020-04-02 [2] CRAN (R 4.0.4)
+#&gt;  lattice         0.20-41 2020-04-02 [2] CRAN (R 4.0.5)
 #&gt;  lifecycle       1.0.0   2021-02-15 [1] CRAN (R 4.0.2)
 #&gt;  lubridate       1.7.10  2021-02-26 [1] CRAN (R 4.0.2)
 #&gt;  magrittr      * 2.0.1   2020-11-17 [1] CRAN (R 4.0.2)
 #&gt;  memoise         2.0.0   2021-01-26 [1] CRAN (R 4.0.2)
 #&gt;  mnormt          2.0.2   2020-09-01 [1] CRAN (R 4.0.2)
 #&gt;  munsell         0.5.0   2018-06-12 [1] CRAN (R 4.0.2)
-#&gt;  nlme            3.1-152 2021-02-04 [2] CRAN (R 4.0.4)
-#&gt;  pillar          1.5.0   2021-02-22 [1] CRAN (R 4.0.2)
+#&gt;  nlme            3.1-152 2021-02-04 [2] CRAN (R 4.0.5)
+#&gt;  pillar          1.5.1   2021-03-05 [1] CRAN (R 4.0.2)
 #&gt;  pkgconfig       2.0.3   2019-09-22 [1] CRAN (R 4.0.2)
 #&gt;  pkgdown         1.6.1   2020-09-12 [1] CRAN (R 4.0.2)
 #&gt;  plyr            1.8.6   2020-03-03 [1] CRAN (R 4.0.2)
-#&gt;  ps              1.6.0   2021-02-28 [1] CRAN (R 4.0.4)
-#&gt;  psych           2.0.12  2020-12-16 [1] CRAN (R 4.0.2)
+#&gt;  ps              1.6.0   2021-02-28 [1] CRAN (R 4.0.2)
+#&gt;  psych           2.1.3   2021-03-27 [1] CRAN (R 4.0.2)
 #&gt;  purrr           0.3.4   2020-04-17 [1] CRAN (R 4.0.2)
 #&gt;  R6              2.5.0   2020-10-28 [1] CRAN (R 4.0.2)
-#&gt;  ragg            1.1.1   2021-02-25 [1] CRAN (R 4.0.2)
+#&gt;  ragg            1.1.2   2021-03-17 [1] CRAN (R 4.0.2)
 #&gt;  Rcpp            1.0.6   2021-01-15 [1] CRAN (R 4.0.2)
 #&gt;  reactable       0.2.3   2020-10-04 [1] CRAN (R 4.0.2)
 #&gt;  readr           1.4.0   2020-10-05 [1] CRAN (R 4.0.2)
+#&gt;  readxl          1.3.1   2019-03-13 [1] CRAN (R 4.0.2)
 #&gt;  RefManageR      1.3.0   2020-11-13 [1] CRAN (R 4.0.2)
 #&gt;  rlang           0.4.10  2020-12-30 [1] CRAN (R 4.0.2)
 #&gt;  rmarkdown       2.7     2021-02-19 [1] CRAN (R 4.0.2)
@@ -1226,16 +1235,16 @@ The <code>group</code> parameter should contain all other variables to include i
 #&gt;  stringi         1.5.3   2020-09-09 [1] CRAN (R 4.0.2)
 #&gt;  stringr         1.4.0   2019-02-10 [1] CRAN (R 4.0.2)
 #&gt;  systemfonts     1.0.1   2021-02-09 [1] CRAN (R 4.0.2)
-#&gt;  textshaping     0.3.1   2021-02-22 [1] CRAN (R 4.0.2)
+#&gt;  textshaping     0.3.3   2021-03-16 [1] CRAN (R 4.0.2)
 #&gt;  tibble          3.1.0   2021-02-25 [1] CRAN (R 4.0.2)
-#&gt;  tidyr           1.1.3   2021-03-03 [1] CRAN (R 4.0.4)
+#&gt;  tidyr           1.1.3   2021-03-03 [1] CRAN (R 4.0.2)
 #&gt;  tidyselect      1.1.0   2020-05-11 [1] CRAN (R 4.0.2)
 #&gt;  tmvnsim         1.0-2   2016-12-15 [1] CRAN (R 4.0.2)
 #&gt;  upsetjs         1.9.0   2021-02-15 [1] CRAN (R 4.0.2)
-#&gt;  utf8            1.1.4   2018-05-24 [1] CRAN (R 4.0.2)
-#&gt;  vctrs           0.3.6   2020-12-17 [1] CRAN (R 4.0.2)
+#&gt;  utf8            1.2.1   2021-03-12 [1] CRAN (R 4.0.2)
+#&gt;  vctrs           0.3.7   2021-03-29 [1] CRAN (R 4.0.2)
 #&gt;  withr           2.4.1   2021-01-26 [1] CRAN (R 4.0.2)
-#&gt;  xfun            0.21    2021-02-10 [1] CRAN (R 4.0.2)
+#&gt;  xfun            0.22    2021-03-11 [1] CRAN (R 4.0.2)
 #&gt;  xml2            1.3.2   2020-04-23 [1] CRAN (R 4.0.2)
 #&gt;  yaml            2.2.1   2020-02-01 [1] CRAN (R 4.0.2)
 #&gt;  zip             2.1.1   2020-08-27 [1] CRAN (R 4.0.2)
@@ -1250,7 +1259,7 @@ The <code>group</code> parameter should contain all other variables to include i
 <p>Citations made with <em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> (<a href="https://CRAN.R-project.org/package=knitcitations">Boettiger, 2021</a>).</p>
 <p>[1] J. Allaire, Y. Xie, J. McPherson, J. Luraschi, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.7. 2021. &lt;URL: <a href="https://github.com/rstudio/rmarkdown" class="uri">https://github.com/rstudio/rmarkdown</a>&gt;.</p>
 <p>[2] C. Boettiger. <em>knitcitations: Citations for ‘Knitr’ Markdown Files</em>. R package version 1.0.12. 2021. &lt;URL: <a href="https://CRAN.R-project.org/package=knitcitations" class="uri">https://CRAN.R-project.org/package=knitcitations</a>&gt;.</p>
-<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 1.0.10. 2021. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
+<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 1.0.11. 2021. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
 <p>[4] G. Csárdi, R. core, H. Wickham, W. Chang, et al. <em>sessioninfo: R Session Information</em>. R package version 1.1.1. 2018. &lt;URL: <a href="https://CRAN.R-project.org/package=sessioninfo" class="uri">https://CRAN.R-project.org/package=sessioninfo</a>&gt;.</p>
 <p>[5] A. Oleś, M. Morgan, and W. Huber. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.18.1. 2020. &lt;URL: <a href="https://github.com/Bioconductor/BiocStyle" class="uri">https://github.com/Bioconductor/BiocStyle</a>&gt;.</p>
 <p>[6] R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. R Foundation for Statistical Computing. Vienna, Austria, 2021. &lt;URL: <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>&gt;.</p>

@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.11</span>
       </span>
     </div>
 
@@ -80,6 +80,13 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
+  <a href="https://calabrialab.github.io/ISAnalytics/dev/">
+    <span class="fas fa-code-branch"></span>
+     
+    DEVEL
+  </a>
+</li>
+<li>
   <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa-github fa-lg"></span>
      
@@ -105,7 +112,7 @@
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 class="date">3 March 2021</h4>
+            <h4 class="date">8 April 2021</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/master/vignettes/collision_removal.Rmd"><code>vignettes/collision_removal.Rmd</code></a></small>
       <div class="hidden name"><code>collision_removal.Rmd</code></div>
@@ -123,43 +130,49 @@
 <p>To install the package run the following code:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## For release version</span>
-<span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+      <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+  <span class="op">}</span>
 <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span>
 
 <span class="co">## For devel version</span>
-<span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+      <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+  <span class="op">}</span>
 <span class="co"># The following initializes usage of Bioc devel</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span>version<span class="op">=</span><span class="st">'devel'</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span>version <span class="op">=</span> <span class="st">"devel"</span><span class="op">)</span>
 <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></code></pre></div>
 <p>To install from GitHub:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># For release version</span>
 <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span>,
-                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
-                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+    ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span>,
+    dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
+    build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span>
 
 <span class="co">## Safer option for vignette building issue</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span><span class="op">)</span>
+    ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span>
+<span class="op">)</span>
 
 <span class="co"># For devel version</span>
 <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"master"</span>,
-                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
-                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+    ref <span class="op">=</span> <span class="st">"master"</span>,
+    dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
+    build_vignettes <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span>
 
 <span class="co">## Safer option for vignette building issue</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"master"</span><span class="op">)</span></code></pre></div>
+    ref <span class="op">=</span> <span class="st">"master"</span>
+<span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://calabrialab.github.io/ISAnalytics">ISAnalytics</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: magrittr</span></code></pre></div>
@@ -220,29 +233,24 @@
 <a href="#import-the-association-file" class="anchor"></a>Import the association file</h2>
 <p>Import your association file:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>ISAnalytics.widgets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">path_AF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ex_association_file.tsv"</span>,
-    package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
-<span class="op">)</span>
+<code class="sourceCode R"><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>ISAnalytics.widgets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="op">{</span>
+    <span class="va">path_AF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ex_association_file.tsv"</span>,
+        package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
+    <span class="op">)</span>
 
-<span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>,
-    package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
-<span class="op">)</span>
-<span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_correct</span>, <span class="st">"fs"</span><span class="op">)</span>
-<span class="va">association_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">path_AF</span>, <span class="va">root_correct</span>, dates_format <span class="op">=</span> <span class="st">"dmy"</span><span class="op">)</span>
-<span class="co">#&gt; # A tibble: 4 x 4</span>
-<span class="co">#&gt;   ProjectID   concatenatePoolIDSeqRun Found</span>
-<span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;                   &lt;lgl&gt;</span>
-<span class="co">#&gt; 1 CLOEXP      POOL6-1                 TRUE </span>
-<span class="co">#&gt; 2 PROJECT1100 ABX-LR-PL5-POOL14-1     TRUE </span>
-<span class="co">#&gt; 3 PROJECT1100 ABX-LR-PL6-POOL15-1     TRUE </span>
-<span class="co">#&gt; 4 PROJECT1101 ABY-LR-PL4-POOL54-2     TRUE </span>
-<span class="co">#&gt;   Path                                                                          </span>
-<span class="co">#&gt;   &lt;chr&gt;                                                                         </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1101/qu…</span></code></pre></div>
+    <span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>,
+        package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
+    <span class="op">)</span>
+    <span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_correct</span>, <span class="st">"fs"</span><span class="op">)</span>
+    <span class="va">association_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">path_AF</span>, <span class="va">root_correct</span>, dates_format <span class="op">=</span> <span class="st">"dmy"</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+<span class="co">#&gt; *** Association file import summary ***</span>
+<span class="co">#&gt; ℹ For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
+<span class="co">#&gt; * Parsing problems detected: TRUE</span>
+<span class="co">#&gt; * Date parsing problems: TRUE</span>
+<span class="co">#&gt; * Column problems detected: TRUE</span>
+<span class="co">#&gt; * NAs found in important columns: TRUE</span>
+<span class="co">#&gt; * File system alignment: no problems detected</span></code></pre></div>
 <p>Important notes on the association file:</p>
 <ul>
 <li>You have to be sure your association file is properly filled out. The function requires you to specify a date column (by default “SequencingDate”), you have to ensure this column doesn’t contain NA values or incorrect values.</li>
@@ -255,12 +263,14 @@
 <a href="#import-the-matrices-for-your-analysis" class="anchor"></a>Import the matrices for your analysis</h2>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># This imports both sequence count and fragment estimate matrices</span>
-<span class="va">matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto</a></span><span class="op">(</span>
-    association_file <span class="op">=</span> <span class="va">association_file</span>, root <span class="op">=</span> <span class="cn">NULL</span>,
-    quantification_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"fragmentEstimate"</span>, <span class="st">"seqCount"</span><span class="op">)</span>,
-    matrix_type <span class="op">=</span> <span class="st">"annotated"</span>, workers <span class="op">=</span> <span class="fl">2</span>, patterns <span class="op">=</span> <span class="cn">NULL</span>,
-    matching_opt <span class="op">=</span> <span class="st">"ANY"</span>
-<span class="op">)</span>
+<span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>ISAnalytics.widgets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="op">{</span>
+    <span class="va">matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto</a></span><span class="op">(</span>
+        association_file <span class="op">=</span> <span class="va">association_file</span>, root <span class="op">=</span> <span class="cn">NULL</span>,
+        quantification_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"fragmentEstimate"</span>, <span class="st">"seqCount"</span><span class="op">)</span>,
+        matrix_type <span class="op">=</span> <span class="st">"annotated"</span>, workers <span class="op">=</span> <span class="fl">2</span>, patterns <span class="op">=</span> <span class="cn">NULL</span>,
+        matching_opt <span class="op">=</span> <span class="st">"ANY"</span>, multi_quant_matrix <span class="op">=</span> <span class="cn">FALSE</span>
+    <span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
 <span class="co">#&gt; [1] "--- REPORT: FILES IMPORTED ---"</span>
 <span class="co">#&gt; # A tibble: 8 x 5</span>
 <span class="co">#&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type</span>
@@ -275,14 +285,14 @@
 <span class="co">#&gt; 8 PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           </span>
 <span class="co">#&gt;   Files_chosen                                                                  </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1101/qu…</span>
-<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1101/qu…</span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1101/qu…</span>
+<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1101/qu…</span>
 <span class="co">#&gt;   Imported</span>
 <span class="co">#&gt;   &lt;lgl&gt;   </span>
 <span class="co">#&gt; 1 TRUE    </span>
@@ -307,14 +317,14 @@
 <span class="co">#&gt; 8 PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           </span>
 <span class="co">#&gt;   Files_chosen                                                                  </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1101/qu…</span>
-<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1101/qu…</span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1101/qu…</span>
+<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1101/qu…</span>
 <span class="co">#&gt; [1] "--- INTEGRATION MATRICES FOUND REPORT ---"</span>
 <span class="co">#&gt; # A tibble: 8 x 5</span>
 <span class="co">#&gt;   ProjectID   concatenatePoolIDSeqRun Anomalies Quantification_type</span>
@@ -329,14 +339,14 @@
 <span class="co">#&gt; 8 PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     seqCount           </span>
 <span class="co">#&gt;   Files_found                                                                   </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1101/qu…</span>
-<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4KuRno/fs/PROJECT1101/qu…</span></code></pre></div>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1100/qu…</span>
+<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1101/qu…</span>
+<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp0hQzR0/fs/PROJECT1101/qu…</span></code></pre></div>
 <p>As stated in the introduction, it is fundamental that the sequence count matrix is present for the collision removal process to take place.</p>
 </div>
 <div id="process-the-collisions" class="section level2">
@@ -347,42 +357,46 @@
 <h3 class="hasAnchor">
 <a href="#pass-the-entire-named-list-to-the-function" class="anchor"></a>Pass the entire named list to the function</h3>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># Pass the whole named list</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a>matrices_processed &lt;-<span class="st"> </span><span class="kw">remove_collisions</span>(<span class="dt">x =</span> matrices, </span>
-<span id="cb8-3"><a href="#cb8-3"></a>                                        <span class="dt">association_file =</span> association_file, </span>
-<span id="cb8-4"><a href="#cb8-4"></a>                                        <span class="dt">date_col =</span> <span class="st">"SequencingDate"</span>, </span>
-<span id="cb8-5"><a href="#cb8-5"></a>                                        <span class="dt">reads_ratio =</span> <span class="dv">10</span>)</span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#&gt; Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; # A tibble: 1 x 3</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt;   ProjectID   PoolID           </span></span>
-<span id="cb8-9"><a href="#cb8-9"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;            </span></span>
-<span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt; 1 PROJECT1101 ABY-LR-PL4-POOL54</span></span>
-<span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt;   CompleteAmplificationID                                                       </span></span>
-<span id="cb8-12"><a href="#cb8-12"></a><span class="co">#&gt;   &lt;chr&gt;                                                                         </span></span>
-<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; 1 PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14_VA2020-mix14_lenti_737.p…</span></span>
-<span id="cb8-14"><a href="#cb8-14"></a><span class="co">#&gt; Identifying collisions...</span></span>
-<span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt; Processing collisions...</span></span>
-<span id="cb8-16"><a href="#cb8-16"></a><span class="co">#&gt; </span></span>
-<span id="cb8-17"><a href="#cb8-17"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
-<span id="cb8-18"><a href="#cb8-18"></a><span class="st">  </span><span class="er">|</span><span class="st">                                                                      </span><span class="er">|</span><span class="st">   </span><span class="dv">0</span>%</span>
-<span id="cb8-19"><a href="#cb8-19"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
-<span id="cb8-20"><a href="#cb8-20"></a><span class="st">  </span><span class="er">|======================================================================|</span><span class="st"> </span><span class="dv">100</span>%</span>
-<span id="cb8-21"><a href="#cb8-21"></a><span class="co">#&gt; </span></span>
-<span id="cb8-22"><a href="#cb8-22"></a><span class="co">#&gt; [1] "--- SUMMARY ---"</span></span>
-<span id="cb8-23"><a href="#cb8-23"></a><span class="co">#&gt; # A tibble: 4 x 7</span></span>
-<span id="cb8-24"><a href="#cb8-24"></a><span class="co">#&gt;   SubjectID    count_integrations_before sumSeqReads_before</span></span>
-<span id="cb8-25"><a href="#cb8-25"></a><span class="co">#&gt;   &lt;chr&gt;                            &lt;int&gt;              &lt;int&gt;</span></span>
-<span id="cb8-26"><a href="#cb8-26"></a><span class="co">#&gt; 1 VA2020-mix10                      2092           10099664</span></span>
-<span id="cb8-27"><a href="#cb8-27"></a><span class="co">#&gt; 2 VA2020-mix11                      1332           15955128</span></span>
-<span id="cb8-28"><a href="#cb8-28"></a><span class="co">#&gt; 3 VA2020-mix12                       896            8172644</span></span>
-<span id="cb8-29"><a href="#cb8-29"></a><span class="co">#&gt; 4 VA2020-mix13                      1584           10035460</span></span>
-<span id="cb8-30"><a href="#cb8-30"></a><span class="co">#&gt;   count_integrations_after sumSeqReads_after delta_integrations delta_seqReads</span></span>
-<span id="cb8-31"><a href="#cb8-31"></a><span class="co">#&gt;                      &lt;int&gt;             &lt;int&gt;              &lt;int&gt;          &lt;int&gt;</span></span>
-<span id="cb8-32"><a href="#cb8-32"></a><span class="co">#&gt; 1                     1714           5052150                378        5047514</span></span>
-<span id="cb8-33"><a href="#cb8-33"></a><span class="co">#&gt; 2                      994           7980886                338        7974242</span></span>
-<span id="cb8-34"><a href="#cb8-34"></a><span class="co">#&gt; 3                      614           4088054                282        4084590</span></span>
-<span id="cb8-35"><a href="#cb8-35"></a><span class="co">#&gt; 4                     1258           5019402                326        5016058</span></span>
-<span id="cb8-36"><a href="#cb8-36"></a><span class="co">#&gt; Realigning matrices...</span></span>
-<span id="cb8-37"><a href="#cb8-37"></a><span class="co">#&gt; Finished!</span></span></code></pre></div>
+<span id="cb8-2"><a href="#cb8-2"></a>withr<span class="op">::</span><span class="kw">with_options</span>(<span class="kw">list</span>(<span class="dt">ISAnalytics.widgets =</span> <span class="ot">FALSE</span>), {</span>
+<span id="cb8-3"><a href="#cb8-3"></a>    matrices_processed &lt;-<span class="st"> </span><span class="kw">remove_collisions</span>(</span>
+<span id="cb8-4"><a href="#cb8-4"></a>        <span class="dt">x =</span> matrices,</span>
+<span id="cb8-5"><a href="#cb8-5"></a>        <span class="dt">association_file =</span> association_file,</span>
+<span id="cb8-6"><a href="#cb8-6"></a>        <span class="dt">date_col =</span> <span class="st">"SequencingDate"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7"></a>        <span class="dt">reads_ratio =</span> <span class="dv">10</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>    )</span>
+<span id="cb8-9"><a href="#cb8-9"></a>})</span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt; Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt; # A tibble: 1 x 3</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="co">#&gt;   ProjectID   PoolID           </span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;            </span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="co">#&gt; 1 PROJECT1101 ABY-LR-PL4-POOL54</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt;   CompleteAmplificationID                                                       </span></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="co">#&gt;   &lt;chr&gt;                                                                         </span></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co">#&gt; 1 PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14_VA2020-mix14_lenti_737.p…</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="co">#&gt; Identifying collisions...</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a><span class="co">#&gt; Processing collisions...</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a><span class="co">#&gt; </span></span>
+<span id="cb8-21"><a href="#cb8-21"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
+<span id="cb8-22"><a href="#cb8-22"></a><span class="st">  </span><span class="er">|</span><span class="st">                                                                      </span><span class="er">|</span><span class="st">   </span><span class="dv">0</span>%</span>
+<span id="cb8-23"><a href="#cb8-23"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
+<span id="cb8-24"><a href="#cb8-24"></a><span class="st">  </span><span class="er">|======================================================================|</span><span class="st"> </span><span class="dv">100</span>%</span>
+<span id="cb8-25"><a href="#cb8-25"></a><span class="co">#&gt; </span></span>
+<span id="cb8-26"><a href="#cb8-26"></a><span class="co">#&gt; [1] "--- SUMMARY ---"</span></span>
+<span id="cb8-27"><a href="#cb8-27"></a><span class="co">#&gt; # A tibble: 4 x 7</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a><span class="co">#&gt;   SubjectID    count_integrations_before sumSeqReads_before</span></span>
+<span id="cb8-29"><a href="#cb8-29"></a><span class="co">#&gt;   &lt;chr&gt;                            &lt;int&gt;              &lt;dbl&gt;</span></span>
+<span id="cb8-30"><a href="#cb8-30"></a><span class="co">#&gt; 1 VA2020-mix10                      2092           10099664</span></span>
+<span id="cb8-31"><a href="#cb8-31"></a><span class="co">#&gt; 2 VA2020-mix11                      1332           15955128</span></span>
+<span id="cb8-32"><a href="#cb8-32"></a><span class="co">#&gt; 3 VA2020-mix12                       896            8172644</span></span>
+<span id="cb8-33"><a href="#cb8-33"></a><span class="co">#&gt; 4 VA2020-mix13                      1584           10035460</span></span>
+<span id="cb8-34"><a href="#cb8-34"></a><span class="co">#&gt;   count_integrations_after sumSeqReads_after delta_integrations delta_seqReads</span></span>
+<span id="cb8-35"><a href="#cb8-35"></a><span class="co">#&gt;                      &lt;int&gt;             &lt;dbl&gt;              &lt;int&gt;          &lt;dbl&gt;</span></span>
+<span id="cb8-36"><a href="#cb8-36"></a><span class="co">#&gt; 1                     1714           5052150                378        5047514</span></span>
+<span id="cb8-37"><a href="#cb8-37"></a><span class="co">#&gt; 2                      994           7980886                338        7974242</span></span>
+<span id="cb8-38"><a href="#cb8-38"></a><span class="co">#&gt; 3                      614           4088054                282        4084590</span></span>
+<span id="cb8-39"><a href="#cb8-39"></a><span class="co">#&gt; 4                     1258           5019402                326        5016058</span></span>
+<span id="cb8-40"><a href="#cb8-40"></a><span class="co">#&gt; Realigning matrices...</span></span>
+<span id="cb8-41"><a href="#cb8-41"></a><span class="co">#&gt; Finished!</span></span></code></pre></div>
 <p>If you have the “widgets” option active, a report file is produced at the end that shows the before and after for each subject (and some other details). This report is an HTML widget, so you can save it or export it for future reference if you need it.<br>
 In this case, collision removal is done on the sequence count matrix and other matrices are re-aligned automatically.</p>
 </div>
@@ -390,42 +404,46 @@ In this case, collision removal is done on the sequence count matrix and other m
 <h3 class="hasAnchor">
 <a href="#give-only-the-sequence-count-matrix-as-input" class="anchor"></a>Give only the sequence count matrix as input</h3>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Pass the sequence count matrix only</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>matrices_processed_single &lt;-<span class="st"> </span><span class="kw">remove_collisions</span>(<span class="dt">x =</span> matrices<span class="op">$</span>seqCount, </span>
-<span id="cb9-3"><a href="#cb9-3"></a>                                               <span class="dt">association_file =</span> </span>
-<span id="cb9-4"><a href="#cb9-4"></a>                                                 association_file, </span>
-<span id="cb9-5"><a href="#cb9-5"></a>                                               <span class="dt">date_col =</span> <span class="st">"SequencingDate"</span>, </span>
-<span id="cb9-6"><a href="#cb9-6"></a>                                               <span class="dt">reads_ratio =</span> <span class="dv">10</span>)</span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="co">#&gt; Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="co">#&gt; # A tibble: 1 x 3</span></span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="co">#&gt;   ProjectID   PoolID           </span></span>
-<span id="cb9-10"><a href="#cb9-10"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;            </span></span>
-<span id="cb9-11"><a href="#cb9-11"></a><span class="co">#&gt; 1 PROJECT1101 ABY-LR-PL4-POOL54</span></span>
-<span id="cb9-12"><a href="#cb9-12"></a><span class="co">#&gt;   CompleteAmplificationID                                                       </span></span>
-<span id="cb9-13"><a href="#cb9-13"></a><span class="co">#&gt;   &lt;chr&gt;                                                                         </span></span>
-<span id="cb9-14"><a href="#cb9-14"></a><span class="co">#&gt; 1 PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14_VA2020-mix14_lenti_737.p…</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a><span class="co">#&gt; Identifying collisions...</span></span>
-<span id="cb9-16"><a href="#cb9-16"></a><span class="co">#&gt; Processing collisions...</span></span>
-<span id="cb9-17"><a href="#cb9-17"></a><span class="co">#&gt; </span></span>
-<span id="cb9-18"><a href="#cb9-18"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
-<span id="cb9-19"><a href="#cb9-19"></a><span class="st">  </span><span class="er">|</span><span class="st">                                                                      </span><span class="er">|</span><span class="st">   </span><span class="dv">0</span>%</span>
-<span id="cb9-20"><a href="#cb9-20"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
-<span id="cb9-21"><a href="#cb9-21"></a><span class="st">  </span><span class="er">|======================================================================|</span><span class="st"> </span><span class="dv">100</span>%</span>
-<span id="cb9-22"><a href="#cb9-22"></a><span class="co">#&gt; </span></span>
-<span id="cb9-23"><a href="#cb9-23"></a><span class="co">#&gt; [1] "--- SUMMARY ---"</span></span>
-<span id="cb9-24"><a href="#cb9-24"></a><span class="co">#&gt; # A tibble: 4 x 7</span></span>
-<span id="cb9-25"><a href="#cb9-25"></a><span class="co">#&gt;   SubjectID    count_integrations_before sumSeqReads_before</span></span>
-<span id="cb9-26"><a href="#cb9-26"></a><span class="co">#&gt;   &lt;chr&gt;                            &lt;int&gt;              &lt;int&gt;</span></span>
-<span id="cb9-27"><a href="#cb9-27"></a><span class="co">#&gt; 1 VA2020-mix10                      2092           10099664</span></span>
-<span id="cb9-28"><a href="#cb9-28"></a><span class="co">#&gt; 2 VA2020-mix11                      1332           15955128</span></span>
-<span id="cb9-29"><a href="#cb9-29"></a><span class="co">#&gt; 3 VA2020-mix12                       896            8172644</span></span>
-<span id="cb9-30"><a href="#cb9-30"></a><span class="co">#&gt; 4 VA2020-mix13                      1584           10035460</span></span>
-<span id="cb9-31"><a href="#cb9-31"></a><span class="co">#&gt;   count_integrations_after sumSeqReads_after delta_integrations delta_seqReads</span></span>
-<span id="cb9-32"><a href="#cb9-32"></a><span class="co">#&gt;                      &lt;int&gt;             &lt;int&gt;              &lt;int&gt;          &lt;int&gt;</span></span>
-<span id="cb9-33"><a href="#cb9-33"></a><span class="co">#&gt; 1                     1714           5052150                378        5047514</span></span>
-<span id="cb9-34"><a href="#cb9-34"></a><span class="co">#&gt; 2                      994           7980886                338        7974242</span></span>
-<span id="cb9-35"><a href="#cb9-35"></a><span class="co">#&gt; 3                      614           4088054                282        4084590</span></span>
-<span id="cb9-36"><a href="#cb9-36"></a><span class="co">#&gt; 4                     1258           5019402                326        5016058</span></span>
-<span id="cb9-37"><a href="#cb9-37"></a><span class="co">#&gt; Finished! You provided a single sequence count as matrix, to re-align other related matrices see ?realign_after_collisions</span></span></code></pre></div>
+<span id="cb9-2"><a href="#cb9-2"></a>withr<span class="op">::</span><span class="kw">with_options</span>(<span class="kw">list</span>(<span class="dt">ISAnalytics.widgets =</span> <span class="ot">FALSE</span>), {</span>
+<span id="cb9-3"><a href="#cb9-3"></a>    matrices_processed_single &lt;-<span class="st"> </span><span class="kw">remove_collisions</span>(</span>
+<span id="cb9-4"><a href="#cb9-4"></a>        <span class="dt">x =</span> matrices<span class="op">$</span>seqCount,</span>
+<span id="cb9-5"><a href="#cb9-5"></a>        <span class="dt">association_file =</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>            association_file,</span>
+<span id="cb9-7"><a href="#cb9-7"></a>        <span class="dt">date_col =</span> <span class="st">"SequencingDate"</span>,</span>
+<span id="cb9-8"><a href="#cb9-8"></a>        <span class="dt">reads_ratio =</span> <span class="dv">10</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a>    )</span>
+<span id="cb9-10"><a href="#cb9-10"></a>})</span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="co">#&gt; Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="co">#&gt; # A tibble: 1 x 3</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="co">#&gt;   ProjectID   PoolID           </span></span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;            </span></span>
+<span id="cb9-15"><a href="#cb9-15"></a><span class="co">#&gt; 1 PROJECT1101 ABY-LR-PL4-POOL54</span></span>
+<span id="cb9-16"><a href="#cb9-16"></a><span class="co">#&gt;   CompleteAmplificationID                                                       </span></span>
+<span id="cb9-17"><a href="#cb9-17"></a><span class="co">#&gt;   &lt;chr&gt;                                                                         </span></span>
+<span id="cb9-18"><a href="#cb9-18"></a><span class="co">#&gt; 1 PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14_VA2020-mix14_lenti_737.p…</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a><span class="co">#&gt; Identifying collisions...</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a><span class="co">#&gt; Processing collisions...</span></span>
+<span id="cb9-21"><a href="#cb9-21"></a><span class="co">#&gt; </span></span>
+<span id="cb9-22"><a href="#cb9-22"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
+<span id="cb9-23"><a href="#cb9-23"></a><span class="st">  </span><span class="er">|</span><span class="st">                                                                      </span><span class="er">|</span><span class="st">   </span><span class="dv">0</span>%</span>
+<span id="cb9-24"><a href="#cb9-24"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
+<span id="cb9-25"><a href="#cb9-25"></a><span class="st">  </span><span class="er">|======================================================================|</span><span class="st"> </span><span class="dv">100</span>%</span>
+<span id="cb9-26"><a href="#cb9-26"></a><span class="co">#&gt; </span></span>
+<span id="cb9-27"><a href="#cb9-27"></a><span class="co">#&gt; [1] "--- SUMMARY ---"</span></span>
+<span id="cb9-28"><a href="#cb9-28"></a><span class="co">#&gt; # A tibble: 4 x 7</span></span>
+<span id="cb9-29"><a href="#cb9-29"></a><span class="co">#&gt;   SubjectID    count_integrations_before sumSeqReads_before</span></span>
+<span id="cb9-30"><a href="#cb9-30"></a><span class="co">#&gt;   &lt;chr&gt;                            &lt;int&gt;              &lt;dbl&gt;</span></span>
+<span id="cb9-31"><a href="#cb9-31"></a><span class="co">#&gt; 1 VA2020-mix10                      2092           10099664</span></span>
+<span id="cb9-32"><a href="#cb9-32"></a><span class="co">#&gt; 2 VA2020-mix11                      1332           15955128</span></span>
+<span id="cb9-33"><a href="#cb9-33"></a><span class="co">#&gt; 3 VA2020-mix12                       896            8172644</span></span>
+<span id="cb9-34"><a href="#cb9-34"></a><span class="co">#&gt; 4 VA2020-mix13                      1584           10035460</span></span>
+<span id="cb9-35"><a href="#cb9-35"></a><span class="co">#&gt;   count_integrations_after sumSeqReads_after delta_integrations delta_seqReads</span></span>
+<span id="cb9-36"><a href="#cb9-36"></a><span class="co">#&gt;                      &lt;int&gt;             &lt;dbl&gt;              &lt;int&gt;          &lt;dbl&gt;</span></span>
+<span id="cb9-37"><a href="#cb9-37"></a><span class="co">#&gt; 1                     1714           5052150                378        5047514</span></span>
+<span id="cb9-38"><a href="#cb9-38"></a><span class="co">#&gt; 2                      994           7980886                338        7974242</span></span>
+<span id="cb9-39"><a href="#cb9-39"></a><span class="co">#&gt; 3                      614           4088054                282        4084590</span></span>
+<span id="cb9-40"><a href="#cb9-40"></a><span class="co">#&gt; 4                     1258           5019402                326        5016058</span></span>
+<span id="cb9-41"><a href="#cb9-41"></a><span class="co">#&gt; Finished! You provided a single sequence count as matrix, to re-align other related matrices see ?realign_after_collisions</span></span></code></pre></div>
 <p>If you have the “verbose” option active, a console message will remind you to align other matrices if you have them at a later time.</p>
 </div>
 <div id="support-for-multi-quantification-matrices" class="section level3">
@@ -437,56 +455,60 @@ In this case, collision removal is done on the sequence count matrix and other m
 <span id="cb10-3"><a href="#cb10-3"></a>multi</span>
 <span id="cb10-4"><a href="#cb10-4"></a><span class="co">#&gt; # A tibble: 5,904 x 8</span></span>
 <span id="cb10-5"><a href="#cb10-5"></a><span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand CompleteAmplificationID   </span></span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="co">#&gt;    &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;                     </span></span>
-<span id="cb10-7"><a href="#cb10-7"></a><span class="co">#&gt;  1 10            100600323 +      HPSE2    -          CLOEXP_POOL6_LTR50LC50_VA…</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a><span class="co">#&gt;  2 10            100680154 +      HPSE2    -          CLOEXP_POOL6_LTR32LC32_VA…</span></span>
-<span id="cb10-9"><a href="#cb10-9"></a><span class="co">#&gt;  3 10            102326217 +      HIF1AN   +          CLOEXP_POOL6_LTR10LC10_VA…</span></span>
-<span id="cb10-10"><a href="#cb10-10"></a><span class="co">#&gt;  4 10            104673785 +      CNNM2    +          CLOEXP_POOL6_LTR30LC30_VA…</span></span>
-<span id="cb10-11"><a href="#cb10-11"></a><span class="co">#&gt;  5 10            107801701 +      LOC1053… +          CLOEXP_POOL6_LTR11LC11_VA…</span></span>
-<span id="cb10-12"><a href="#cb10-12"></a><span class="co">#&gt;  6 10            107801701 +      LOC1053… +          CLOEXP_POOL6_LTR30LC30_VA…</span></span>
-<span id="cb10-13"><a href="#cb10-13"></a><span class="co">#&gt;  7 10            107801701 +      LOC1053… +          CLOEXP_POOL6_LTR49LC49_VA…</span></span>
-<span id="cb10-14"><a href="#cb10-14"></a><span class="co">#&gt;  8 10            114347092 +      VTI1A    +          CLOEXP_POOL6_LTR11LC11_VA…</span></span>
-<span id="cb10-15"><a href="#cb10-15"></a><span class="co">#&gt;  9 10            116147098 -      AFAP1L2  -          CLOEXP_POOL6_LTR32LC32_VA…</span></span>
-<span id="cb10-16"><a href="#cb10-16"></a><span class="co">#&gt; 10 10             11860676 +      PROSER2  +          CLOEXP_POOL6_LTR51LC51_VA…</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="co">#&gt;    &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;fct&gt;                     </span></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="co">#&gt;  1 10            102326217 +      HIF1AN   +          CLOEXP_POOL6_LTR10LC10_VA…</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="co">#&gt;  2 10             20775144 +      MIR4675  +          CLOEXP_POOL6_LTR10LC10_VA…</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="co">#&gt;  3 10             24622789 +      KIAA1217 +          CLOEXP_POOL6_LTR10LC10_VA…</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="co">#&gt;  4 10             30105047 +      SVIL     -          CLOEXP_POOL6_LTR10LC10_VA…</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a><span class="co">#&gt;  5 10             32656933 -      EPC1     -          CLOEXP_POOL6_LTR10LC10_VA…</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="co">#&gt;  6 10             66717706 +      LOC1019… -          CLOEXP_POOL6_LTR10LC10_VA…</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="co">#&gt;  7 10             76391232 -      ADK      +          CLOEXP_POOL6_LTR10LC10_VA…</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a><span class="co">#&gt;  8 10             85334019 -      LOC1053… -          CLOEXP_POOL6_LTR10LC10_VA…</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a><span class="co">#&gt;  9 11            107591208 +      SLN      -          CLOEXP_POOL6_LTR10LC10_VA…</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a><span class="co">#&gt; 10 11            111744171 +      FDXACB1  -          CLOEXP_POOL6_LTR10LC10_VA…</span></span>
 <span id="cb10-17"><a href="#cb10-17"></a><span class="co">#&gt; # … with 5,894 more rows, and 2 more variables: fragmentEstimate &lt;dbl&gt;,</span></span>
-<span id="cb10-18"><a href="#cb10-18"></a><span class="co">#&gt; #   seqCount &lt;int&gt;</span></span>
-<span id="cb10-19"><a href="#cb10-19"></a>matrices_processed_multi &lt;-<span class="st"> </span><span class="kw">remove_collisions</span>(<span class="dt">x =</span> multi,</span>
-<span id="cb10-20"><a href="#cb10-20"></a>                                              <span class="dt">association_file =</span> </span>
-<span id="cb10-21"><a href="#cb10-21"></a>                                                 association_file, </span>
-<span id="cb10-22"><a href="#cb10-22"></a>                                               <span class="dt">date_col =</span> <span class="st">"SequencingDate"</span>, </span>
-<span id="cb10-23"><a href="#cb10-23"></a>                                               <span class="dt">reads_ratio =</span> <span class="dv">10</span>, </span>
-<span id="cb10-24"><a href="#cb10-24"></a>                                              <span class="dt">seq_count_col =</span> <span class="st">"seqCount"</span>)</span>
-<span id="cb10-25"><a href="#cb10-25"></a><span class="co">#&gt; Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></span>
-<span id="cb10-26"><a href="#cb10-26"></a><span class="co">#&gt; # A tibble: 1 x 3</span></span>
-<span id="cb10-27"><a href="#cb10-27"></a><span class="co">#&gt;   ProjectID   PoolID           </span></span>
-<span id="cb10-28"><a href="#cb10-28"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;            </span></span>
-<span id="cb10-29"><a href="#cb10-29"></a><span class="co">#&gt; 1 PROJECT1101 ABY-LR-PL4-POOL54</span></span>
-<span id="cb10-30"><a href="#cb10-30"></a><span class="co">#&gt;   CompleteAmplificationID                                                       </span></span>
-<span id="cb10-31"><a href="#cb10-31"></a><span class="co">#&gt;   &lt;chr&gt;                                                                         </span></span>
-<span id="cb10-32"><a href="#cb10-32"></a><span class="co">#&gt; 1 PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14_VA2020-mix14_lenti_737.p…</span></span>
-<span id="cb10-33"><a href="#cb10-33"></a><span class="co">#&gt; Identifying collisions...</span></span>
-<span id="cb10-34"><a href="#cb10-34"></a><span class="co">#&gt; Processing collisions...</span></span>
-<span id="cb10-35"><a href="#cb10-35"></a><span class="co">#&gt; </span></span>
-<span id="cb10-36"><a href="#cb10-36"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
-<span id="cb10-37"><a href="#cb10-37"></a><span class="st">  </span><span class="er">|</span><span class="st">                                                                      </span><span class="er">|</span><span class="st">   </span><span class="dv">0</span>%</span>
-<span id="cb10-38"><a href="#cb10-38"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
-<span id="cb10-39"><a href="#cb10-39"></a><span class="st">  </span><span class="er">|======================================================================|</span><span class="st"> </span><span class="dv">100</span>%</span>
-<span id="cb10-40"><a href="#cb10-40"></a><span class="co">#&gt; </span></span>
-<span id="cb10-41"><a href="#cb10-41"></a><span class="co">#&gt; [1] "--- SUMMARY ---"</span></span>
-<span id="cb10-42"><a href="#cb10-42"></a><span class="co">#&gt; # A tibble: 4 x 7</span></span>
-<span id="cb10-43"><a href="#cb10-43"></a><span class="co">#&gt;   SubjectID    count_integrations_before sumSeqReads_before</span></span>
-<span id="cb10-44"><a href="#cb10-44"></a><span class="co">#&gt;   &lt;chr&gt;                            &lt;int&gt;              &lt;int&gt;</span></span>
-<span id="cb10-45"><a href="#cb10-45"></a><span class="co">#&gt; 1 VA2020-mix10                      2092           10099664</span></span>
-<span id="cb10-46"><a href="#cb10-46"></a><span class="co">#&gt; 2 VA2020-mix11                      1332           15955128</span></span>
-<span id="cb10-47"><a href="#cb10-47"></a><span class="co">#&gt; 3 VA2020-mix12                       896            8172644</span></span>
-<span id="cb10-48"><a href="#cb10-48"></a><span class="co">#&gt; 4 VA2020-mix13                      1584           10035460</span></span>
-<span id="cb10-49"><a href="#cb10-49"></a><span class="co">#&gt;   count_integrations_after sumSeqReads_after delta_integrations delta_seqReads</span></span>
-<span id="cb10-50"><a href="#cb10-50"></a><span class="co">#&gt;                      &lt;int&gt;             &lt;int&gt;              &lt;int&gt;          &lt;int&gt;</span></span>
-<span id="cb10-51"><a href="#cb10-51"></a><span class="co">#&gt; 1                     1714           5052150                378        5047514</span></span>
-<span id="cb10-52"><a href="#cb10-52"></a><span class="co">#&gt; 2                      994           7980886                338        7974242</span></span>
-<span id="cb10-53"><a href="#cb10-53"></a><span class="co">#&gt; 3                      614           4088054                282        4084590</span></span>
-<span id="cb10-54"><a href="#cb10-54"></a><span class="co">#&gt; 4                     1258           5019402                326        5016058</span></span>
-<span id="cb10-55"><a href="#cb10-55"></a><span class="co">#&gt; Finished!</span></span></code></pre></div>
+<span id="cb10-18"><a href="#cb10-18"></a><span class="co">#&gt; #   seqCount &lt;dbl&gt;</span></span>
+<span id="cb10-19"><a href="#cb10-19"></a>withr<span class="op">::</span><span class="kw">with_options</span>(<span class="kw">list</span>(<span class="dt">ISAnalytics.widgets =</span> <span class="ot">FALSE</span>), {</span>
+<span id="cb10-20"><a href="#cb10-20"></a>    matrices_processed_multi &lt;-<span class="st"> </span><span class="kw">remove_collisions</span>(</span>
+<span id="cb10-21"><a href="#cb10-21"></a>        <span class="dt">x =</span> multi,</span>
+<span id="cb10-22"><a href="#cb10-22"></a>        <span class="dt">association_file =</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a>            association_file,</span>
+<span id="cb10-24"><a href="#cb10-24"></a>        <span class="dt">date_col =</span> <span class="st">"SequencingDate"</span>,</span>
+<span id="cb10-25"><a href="#cb10-25"></a>        <span class="dt">reads_ratio =</span> <span class="dv">10</span>,</span>
+<span id="cb10-26"><a href="#cb10-26"></a>        <span class="dt">seq_count_col =</span> <span class="st">"seqCount"</span></span>
+<span id="cb10-27"><a href="#cb10-27"></a>    )</span>
+<span id="cb10-28"><a href="#cb10-28"></a>})</span>
+<span id="cb10-29"><a href="#cb10-29"></a><span class="co">#&gt; Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></span>
+<span id="cb10-30"><a href="#cb10-30"></a><span class="co">#&gt; # A tibble: 1 x 3</span></span>
+<span id="cb10-31"><a href="#cb10-31"></a><span class="co">#&gt;   ProjectID   PoolID           </span></span>
+<span id="cb10-32"><a href="#cb10-32"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;            </span></span>
+<span id="cb10-33"><a href="#cb10-33"></a><span class="co">#&gt; 1 PROJECT1101 ABY-LR-PL4-POOL54</span></span>
+<span id="cb10-34"><a href="#cb10-34"></a><span class="co">#&gt;   CompleteAmplificationID                                                       </span></span>
+<span id="cb10-35"><a href="#cb10-35"></a><span class="co">#&gt;   &lt;chr&gt;                                                                         </span></span>
+<span id="cb10-36"><a href="#cb10-36"></a><span class="co">#&gt; 1 PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14_VA2020-mix14_lenti_737.p…</span></span>
+<span id="cb10-37"><a href="#cb10-37"></a><span class="co">#&gt; Identifying collisions...</span></span>
+<span id="cb10-38"><a href="#cb10-38"></a><span class="co">#&gt; Processing collisions...</span></span>
+<span id="cb10-39"><a href="#cb10-39"></a><span class="co">#&gt; </span></span>
+<span id="cb10-40"><a href="#cb10-40"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
+<span id="cb10-41"><a href="#cb10-41"></a><span class="st">  </span><span class="er">|</span><span class="st">                                                                      </span><span class="er">|</span><span class="st">   </span><span class="dv">0</span>%</span>
+<span id="cb10-42"><a href="#cb10-42"></a>  <span class="op">|</span><span class="st">                                                                            </span></span>
+<span id="cb10-43"><a href="#cb10-43"></a><span class="st">  </span><span class="er">|======================================================================|</span><span class="st"> </span><span class="dv">100</span>%</span>
+<span id="cb10-44"><a href="#cb10-44"></a><span class="co">#&gt; </span></span>
+<span id="cb10-45"><a href="#cb10-45"></a><span class="co">#&gt; [1] "--- SUMMARY ---"</span></span>
+<span id="cb10-46"><a href="#cb10-46"></a><span class="co">#&gt; # A tibble: 4 x 7</span></span>
+<span id="cb10-47"><a href="#cb10-47"></a><span class="co">#&gt;   SubjectID    count_integrations_before sumSeqReads_before</span></span>
+<span id="cb10-48"><a href="#cb10-48"></a><span class="co">#&gt;   &lt;chr&gt;                            &lt;int&gt;              &lt;dbl&gt;</span></span>
+<span id="cb10-49"><a href="#cb10-49"></a><span class="co">#&gt; 1 VA2020-mix10                      2092           10099664</span></span>
+<span id="cb10-50"><a href="#cb10-50"></a><span class="co">#&gt; 2 VA2020-mix11                      1332           15955128</span></span>
+<span id="cb10-51"><a href="#cb10-51"></a><span class="co">#&gt; 3 VA2020-mix12                       896            8172644</span></span>
+<span id="cb10-52"><a href="#cb10-52"></a><span class="co">#&gt; 4 VA2020-mix13                      1584           10035460</span></span>
+<span id="cb10-53"><a href="#cb10-53"></a><span class="co">#&gt;   count_integrations_after sumSeqReads_after delta_integrations delta_seqReads</span></span>
+<span id="cb10-54"><a href="#cb10-54"></a><span class="co">#&gt;                      &lt;int&gt;             &lt;dbl&gt;              &lt;int&gt;          &lt;dbl&gt;</span></span>
+<span id="cb10-55"><a href="#cb10-55"></a><span class="co">#&gt; 1                     1714           5052150                378        5047514</span></span>
+<span id="cb10-56"><a href="#cb10-56"></a><span class="co">#&gt; 2                      994           7980886                338        7974242</span></span>
+<span id="cb10-57"><a href="#cb10-57"></a><span class="co">#&gt; 3                      614           4088054                282        4084590</span></span>
+<span id="cb10-58"><a href="#cb10-58"></a><span class="co">#&gt; 4                     1258           5019402                326        5016058</span></span>
+<span id="cb10-59"><a href="#cb10-59"></a><span class="co">#&gt; Finished!</span></span></code></pre></div>
 <p>As you can see, <code>comparison_matrix</code> produces a single integration matrix from the named list of single quantification matrices. This is the recommended approach if you don’t have specific needs as it negates the necessity of realigning matrices altogether.</p>
 </div>
 </div>
@@ -496,7 +518,7 @@ In this case, collision removal is done on the sequence count matrix and other m
 <p>If you have opted for the second way, to realign other matrices you have to call the function <code>realign_after_collisions</code>, passing as input the processed sequence count matrix and the named list of other matrices to realign.<br><strong>NOTE: the names in the list must be quantification types.</strong></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">seq_count_proc</span> <span class="op">&lt;-</span> <span class="va">matrices_processed_single</span>
-<span class="va">other_matrices</span> <span class="op">&lt;-</span> <span class="va">matrices</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">matrices</span><span class="op">)</span> <span class="op">%in%</span> <span class="st">"seqCount"</span><span class="op">]</span> 
+<span class="va">other_matrices</span> <span class="op">&lt;-</span> <span class="va">matrices</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">matrices</span><span class="op">)</span> <span class="op">%in%</span> <span class="st">"seqCount"</span><span class="op">]</span>
 <span class="co"># Select only matrices that are not relative to sequence count</span>
 <span class="va">other_realigned</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/realign_after_collisions.html">realign_after_collisions</a></span><span class="op">(</span><span class="va">seq_count_proc</span>, <span class="va">other_matrices</span><span class="op">)</span></code></pre></div>
 </div>
@@ -524,7 +546,7 @@ In this case, collision removal is done on the sequence count matrix and other m
 <p><code>R</code> session information.</p>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 4.0.4 (2021-02-15)
+#&gt;  version  R version 4.0.5 (2021-03-31)
 #&gt;  os       macOS Catalina 10.15.7      
 #&gt;  system   x86_64, darwin17.0          
 #&gt;  ui       X11                         
@@ -532,22 +554,23 @@ In this case, collision removal is done on the sequence count matrix and other m
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       UTC                         
-#&gt;  date     2021-03-03                  
+#&gt;  date     2021-04-08                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  package       * version date       lib source        
-#&gt;  assertthat      0.2.1   2019-03-21 [1] CRAN (R 4.0.2)
-#&gt;  BiocManager     1.30.10 2019-11-16 [1] CRAN (R 4.0.2)
+#&gt;  BiocManager     1.30.12 2021-03-28 [1] CRAN (R 4.0.2)
 #&gt;  BiocParallel    1.24.1  2020-11-06 [1] Bioconductor  
 #&gt;  BiocStyle     * 2.18.1  2020-11-24 [1] Bioconductor  
 #&gt;  bookdown        0.21    2020-10-13 [1] CRAN (R 4.0.2)
 #&gt;  cachem          1.0.4   2021-02-13 [1] CRAN (R 4.0.2)
-#&gt;  cli             2.3.1   2021-02-23 [1] CRAN (R 4.0.2)
+#&gt;  cellranger      1.1.0   2016-07-27 [1] CRAN (R 4.0.2)
+#&gt;  cli             2.4.0   2021-04-05 [1] CRAN (R 4.0.2)
 #&gt;  colorspace      2.0-0   2020-11-11 [1] CRAN (R 4.0.2)
 #&gt;  crayon          1.4.1   2021-02-08 [1] CRAN (R 4.0.2)
-#&gt;  desc            1.2.0   2018-05-01 [1] CRAN (R 4.0.2)
+#&gt;  data.table      1.14.0  2021-02-21 [1] CRAN (R 4.0.2)
+#&gt;  desc            1.3.0   2021-03-05 [1] CRAN (R 4.0.2)
 #&gt;  digest          0.6.27  2020-10-24 [1] CRAN (R 4.0.2)
-#&gt;  dplyr           1.0.4   2021-02-02 [1] CRAN (R 4.0.2)
+#&gt;  dplyr           1.0.5   2021-03-05 [1] CRAN (R 4.0.2)
 #&gt;  ellipsis        0.3.1   2020-05-15 [1] CRAN (R 4.0.2)
 #&gt;  evaluate        0.14    2019-05-28 [1] CRAN (R 4.0.1)
 #&gt;  fansi           0.4.2   2021-01-15 [1] CRAN (R 4.0.2)
@@ -563,30 +586,31 @@ In this case, collision removal is done on the sequence count matrix and other m
 #&gt;  htmltools       0.5.1.1 2021-01-22 [1] CRAN (R 4.0.2)
 #&gt;  htmlwidgets     1.5.3   2020-12-10 [1] CRAN (R 4.0.2)
 #&gt;  httr            1.4.2   2020-07-20 [1] CRAN (R 4.0.2)
-#&gt;  ISAnalytics   * 1.0.10  2021-03-03 [1] Bioconductor  
+#&gt;  ISAnalytics   * 1.0.11  2021-04-08 [1] Bioconductor  
 #&gt;  jsonlite        1.7.2   2020-12-09 [1] CRAN (R 4.0.2)
 #&gt;  knitcitations * 1.0.12  2021-01-10 [1] CRAN (R 4.0.2)
 #&gt;  knitr           1.31    2021-01-27 [1] CRAN (R 4.0.2)
-#&gt;  lattice         0.20-41 2020-04-02 [2] CRAN (R 4.0.4)
+#&gt;  lattice         0.20-41 2020-04-02 [2] CRAN (R 4.0.5)
 #&gt;  lifecycle       1.0.0   2021-02-15 [1] CRAN (R 4.0.2)
 #&gt;  lubridate       1.7.10  2021-02-26 [1] CRAN (R 4.0.2)
 #&gt;  magrittr      * 2.0.1   2020-11-17 [1] CRAN (R 4.0.2)
 #&gt;  memoise         2.0.0   2021-01-26 [1] CRAN (R 4.0.2)
 #&gt;  mnormt          2.0.2   2020-09-01 [1] CRAN (R 4.0.2)
 #&gt;  munsell         0.5.0   2018-06-12 [1] CRAN (R 4.0.2)
-#&gt;  nlme            3.1-152 2021-02-04 [2] CRAN (R 4.0.4)
-#&gt;  pillar          1.5.0   2021-02-22 [1] CRAN (R 4.0.2)
+#&gt;  nlme            3.1-152 2021-02-04 [2] CRAN (R 4.0.5)
+#&gt;  pillar          1.5.1   2021-03-05 [1] CRAN (R 4.0.2)
 #&gt;  pkgconfig       2.0.3   2019-09-22 [1] CRAN (R 4.0.2)
 #&gt;  pkgdown         1.6.1   2020-09-12 [1] CRAN (R 4.0.2)
 #&gt;  plyr            1.8.6   2020-03-03 [1] CRAN (R 4.0.2)
-#&gt;  ps              1.6.0   2021-02-28 [1] CRAN (R 4.0.4)
-#&gt;  psych           2.0.12  2020-12-16 [1] CRAN (R 4.0.2)
+#&gt;  ps              1.6.0   2021-02-28 [1] CRAN (R 4.0.2)
+#&gt;  psych           2.1.3   2021-03-27 [1] CRAN (R 4.0.2)
 #&gt;  purrr           0.3.4   2020-04-17 [1] CRAN (R 4.0.2)
 #&gt;  R6              2.5.0   2020-10-28 [1] CRAN (R 4.0.2)
-#&gt;  ragg            1.1.1   2021-02-25 [1] CRAN (R 4.0.2)
+#&gt;  ragg            1.1.2   2021-03-17 [1] CRAN (R 4.0.2)
 #&gt;  Rcpp            1.0.6   2021-01-15 [1] CRAN (R 4.0.2)
 #&gt;  reactable       0.2.3   2020-10-04 [1] CRAN (R 4.0.2)
 #&gt;  readr           1.4.0   2020-10-05 [1] CRAN (R 4.0.2)
+#&gt;  readxl          1.3.1   2019-03-13 [1] CRAN (R 4.0.2)
 #&gt;  RefManageR      1.3.0   2020-11-13 [1] CRAN (R 4.0.2)
 #&gt;  rlang           0.4.10  2020-12-30 [1] CRAN (R 4.0.2)
 #&gt;  rmarkdown       2.7     2021-02-19 [1] CRAN (R 4.0.2)
@@ -597,16 +621,16 @@ In this case, collision removal is done on the sequence count matrix and other m
 #&gt;  stringi         1.5.3   2020-09-09 [1] CRAN (R 4.0.2)
 #&gt;  stringr         1.4.0   2019-02-10 [1] CRAN (R 4.0.2)
 #&gt;  systemfonts     1.0.1   2021-02-09 [1] CRAN (R 4.0.2)
-#&gt;  textshaping     0.3.1   2021-02-22 [1] CRAN (R 4.0.2)
+#&gt;  textshaping     0.3.3   2021-03-16 [1] CRAN (R 4.0.2)
 #&gt;  tibble          3.1.0   2021-02-25 [1] CRAN (R 4.0.2)
-#&gt;  tidyr           1.1.3   2021-03-03 [1] CRAN (R 4.0.4)
+#&gt;  tidyr           1.1.3   2021-03-03 [1] CRAN (R 4.0.2)
 #&gt;  tidyselect      1.1.0   2020-05-11 [1] CRAN (R 4.0.2)
 #&gt;  tmvnsim         1.0-2   2016-12-15 [1] CRAN (R 4.0.2)
 #&gt;  upsetjs         1.9.0   2021-02-15 [1] CRAN (R 4.0.2)
-#&gt;  utf8            1.1.4   2018-05-24 [1] CRAN (R 4.0.2)
-#&gt;  vctrs           0.3.6   2020-12-17 [1] CRAN (R 4.0.2)
+#&gt;  utf8            1.2.1   2021-03-12 [1] CRAN (R 4.0.2)
+#&gt;  vctrs           0.3.7   2021-03-29 [1] CRAN (R 4.0.2)
 #&gt;  withr           2.4.1   2021-01-26 [1] CRAN (R 4.0.2)
-#&gt;  xfun            0.21    2021-02-10 [1] CRAN (R 4.0.2)
+#&gt;  xfun            0.22    2021-03-11 [1] CRAN (R 4.0.2)
 #&gt;  xml2            1.3.2   2020-04-23 [1] CRAN (R 4.0.2)
 #&gt;  yaml            2.2.1   2020-02-01 [1] CRAN (R 4.0.2)
 #&gt;  zip             2.1.1   2020-08-27 [1] CRAN (R 4.0.2)
@@ -621,7 +645,7 @@ In this case, collision removal is done on the sequence count matrix and other m
 <p>Citations made with <em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> (<a href="https://CRAN.R-project.org/package=knitcitations">Boettiger, 2021</a>).</p>
 <p>[1] J. Allaire, Y. Xie, J. McPherson, J. Luraschi, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.7. 2021. &lt;URL: <a href="https://github.com/rstudio/rmarkdown" class="uri">https://github.com/rstudio/rmarkdown</a>&gt;.</p>
 <p>[2] C. Boettiger. <em>knitcitations: Citations for ‘Knitr’ Markdown Files</em>. R package version 1.0.12. 2021. &lt;URL: <a href="https://CRAN.R-project.org/package=knitcitations" class="uri">https://CRAN.R-project.org/package=knitcitations</a>&gt;.</p>
-<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 1.0.10. 2021. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
+<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 1.0.11. 2021. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
 <p>[4] G. Csárdi, R. core, H. Wickham, W. Chang, et al. <em>sessioninfo: R Session Information</em>. R package version 1.1.1. 2018. &lt;URL: <a href="https://CRAN.R-project.org/package=sessioninfo" class="uri">https://CRAN.R-project.org/package=sessioninfo</a>&gt;.</p>
 <p>[5] A. Oleś, M. Morgan, and W. Huber. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.18.1. 2020. &lt;URL: <a href="https://github.com/Bioconductor/BiocStyle" class="uri">https://github.com/Bioconductor/BiocStyle</a>&gt;.</p>
 <p>[6] R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. R Foundation for Statistical Computing. Vienna, Austria, 2021. &lt;URL: <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>&gt;.</p>

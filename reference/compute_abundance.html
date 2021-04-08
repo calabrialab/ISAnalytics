@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Computes the abundance of every integration in the sample. — compute_abundance • ISAnalytics</title>
+<title>Computes the abundance for every integration event in the input data frame. — compute_abundance • ISAnalytics</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -19,7 +19,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -46,11 +46,11 @@
 
 
 
-<meta property="og:title" content="Computes the abundance of every integration in the sample. — compute_abundance" />
+<meta property="og:title" content="Computes the abundance for every integration event in the input data frame. — compute_abundance" />
 <meta property="og:description" content="
 
-Abundance is obtained for every row by calculating the ratio
-between the single value and the total value for the sample." />
+Abundance is obtained for every integration event by calculating the ratio
+between the single value and the total value for the given group." />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -83,7 +83,7 @@ between the single value and the total value for the sample." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.11</span>
       </span>
     </div>
 
@@ -125,6 +125,13 @@ between the single value and the total value for the sample." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
+  <a href="https://calabrialab.github.io/ISAnalytics/dev/">
+    <span class="fas fa-code-branch"></span>
+     
+    DEVEL
+  </a>
+</li>
+<li>
   <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa-github fa-lg"></span>
      
@@ -143,7 +150,7 @@ between the single value and the total value for the sample." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Computes the abundance of every integration in the sample.</h1>
+    <h1>Computes the abundance for every integration event in the input data frame.</h1>
     <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/analysis-functions.R'><code>R/analysis-functions.R</code></a></small>
     <div class="hidden name"><code>compute_abundance.Rd</code></div>
     </div>
@@ -151,11 +158,17 @@ between the single value and the total value for the sample." />
     <div class="ref-description">
     <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
 
-Abundance is obtained for every row by calculating the ratio
-between the single value and the total value for the sample.</p>
+Abundance is obtained for every integration event by calculating the ratio
+between the single value and the total value for the given group.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>compute_abundance</span><span class='op'>(</span><span class='va'>x</span>, columns <span class='op'>=</span> <span class='st'>"Value"</span>, percentage <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>compute_abundance</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  columns <span class='op'>=</span> <span class='st'>"Value"</span>,
+  percentage <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  key <span class='op'>=</span> <span class='st'>"CompleteAmplificationID"</span>,
+  keep_totals <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -163,7 +176,8 @@ between the single value and the total value for the sample.</p>
     <tr>
       <th>x</th>
       <td><p>An integration matrix - aka a data frame that includes
-the <code><a href='mandatory_IS_vars.html'>mandatory_IS_vars()</a></code> as columns</p></td>
+the <code><a href='mandatory_IS_vars.html'>mandatory_IS_vars()</a></code> as columns. The matrix can either be aggregated
+(via <code><a href='aggregate_values_by_key.html'>aggregate_values_by_key()</a></code>) or not.</p></td>
     </tr>
     <tr>
       <th>columns</th>
@@ -174,11 +188,25 @@ must be numeric or integer columns</p></td>
       <th>percentage</th>
       <td><p>Add abundance as percentage?</p></td>
     </tr>
+    <tr>
+      <th>key</th>
+      <td><p>The key to group by when calculating totals</p></td>
+    </tr>
+    <tr>
+      <th>keep_totals</th>
+      <td><p>A value between <code>TRUE</code>, <code>FALSE</code> or <code>df</code>. If <code>TRUE</code>,
+the intermediate totals for each group will be kept in the output
+data frame as a dedicated column with a trailing "_tot". If <code>FALSE</code>,
+totals won't be included in the output data frame. If <code>df</code>, the totals
+are returned to the user as a separate data frame, together with the
+abundance data frame.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An integration matrix</p>
+    <p>Either a single data frame with computed abundance values or
+a list of 2 data frames (abundance_df, quant_totals)</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Abundance will be computed upon the user selected columns
@@ -201,8 +229,252 @@ column) will be produced.</p>
     package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
 <span class='op'>)</span>
 <span class='va'>matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a></span><span class='op'>(</span><span class='va'>path</span><span class='op'>)</span>
-<span class='va'>abundance</span> <span class='op'>&lt;-</span> <span class='fu'>compute_abundance</span><span class='op'>(</span><span class='va'>matrix</span><span class='op'>)</span>
-</div></pre>
+</div><div class='output co'>#&gt; <span class='message'>Warning: compression format not supported by fread</span>
+#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span><span> File will be read using readr</span></div><div class='output co'>#&gt; <span class='message'>Reading file...</span>
+#&gt; <span class='message'></span><span style='color: #0000BB;'>ℹ</span><span> Mode: classic</span></div><div class='output co'>#&gt; <span class='message'>*** File info *** </span>
+#&gt; <span class='message'>* --- Matrix type: NEW</span>
+#&gt; <span class='message'>* --- Annotated: TRUE</span>
+#&gt; <span class='message'>* --- Dimensions: 50 x 10</span>
+#&gt; <span class='message'>* --- Read mode:  classic</span></div><div class='output co'>#&gt; <span class='message'>Reshaping...</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   5%  |                                                                              |======                                                                |   9%  |                                                                              |==========                                                            |  14%  |                                                                              |=============                                                         |  18%  |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  32%  |                                                                              |=========================                                             |  36%  |                                                                              |=============================                                         |  41%  |                                                                              |================================                                      |  45%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================                                |  55%  |                                                                              |=========================================                             |  59%  |                                                                              |=============================================                         |  64%  |                                                                              |================================================                      |  68%  |                                                                              |===================================================                   |  73%  |                                                                              |======================================================                |  77%  |                                                                              |=========================================================             |  82%  |                                                                              |============================================================          |  86%  |                                                                              |================================================================      |  91%  |                                                                              |===================================================================   |  95%  |                                                                              |======================================================================| 100%
+#&gt; </div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='input'>
+<span class='co'># Simple integration matrix - grouping by CompleteAmplificationID</span>
+<span class='va'>abundance1</span> <span class='op'>&lt;-</span> <span class='fu'>compute_abundance</span><span class='op'>(</span><span class='va'>matrix</span><span class='op'>)</span>
+<span class='va'>abundance1</span>
+</div><div class='output co'>#&gt;     chr integration_locus strand  GeneName GeneStrand CompleteAmplificationID
+#&gt;  1:  20          39085641      +      MAFB          -                   exp_2
+#&gt;  2:  20          39085641      +      MAFB          -                   exp_5
+#&gt;  3:   7         155446768      +     RBM33          +                   exp_3
+#&gt;  4:  19           4049601      +    ZBTB7A          -                   exp_1
+#&gt;  5:  19           4049601      +    ZBTB7A          -                   exp_2
+#&gt;  6:  19          12278742      -    ZNF136          +                   exp_3
+#&gt;  7:  19           4049601      +    ZBTB7A          -                   exp_3
+#&gt;  8:  19          12278742      -    ZNF136          +                   exp_5
+#&gt;  9:   6           1865825      -      GMDS          -                   exp_4
+#&gt; 10:   6          70219927      -    ADGRB3          +                   exp_5
+#&gt; 11:  17          79831324      +   ARHGDIA          -                   exp_1
+#&gt; 12:  17           7113678      +      DLG4          -                   exp_3
+#&gt; 13:  17          56480574      +     RNF43          -                   exp_4
+#&gt; 14:  13         115089373      +    CHAMP1          +                   exp_4
+#&gt; 15:   4         127380734      -   MIR2054          +                   exp_3
+#&gt; 16:   4          46971398      -    GABRA4          -                   exp_4
+#&gt; 17:  11          57153892      +      PRG2          -                   exp_1
+#&gt; 18:  11          57153892      +      PRG2          -                   exp_2
+#&gt; 19:  11          57153892      +      PRG2          -                   exp_4
+#&gt; 20:  11          57153892      +      PRG2          -                   exp_5
+#&gt; 21:  15          56979473      -   ZNF280D          -                   exp_3
+#&gt; 22:  15          76209162      -    FBXO22          +                   exp_4
+#&gt; 23:  15          56979473      -   ZNF280D          -                   exp_5
+#&gt; 24:  10          99253610      +     MMS19          -                   exp_2
+#&gt; 25:  10          38314134      -    ZNF33A          +                   exp_4
+#&gt; 26:  10          99253610      +     MMS19          -                   exp_4
+#&gt; 27:  10          90471211      +      LIPK          +                   exp_5
+#&gt; 28:   1           8744319      -      RERE          -                   exp_2
+#&gt; 29:   1          89274341      +      PKN2          +                   exp_2
+#&gt; 30:   1           8744319      -      RERE          -                   exp_3
+#&gt; 31:   1          89274341      +      PKN2          +                   exp_3
+#&gt; 32:   2          33962502      + LINC01317          +                   exp_2
+#&gt; 33:   2          42521808      +      EML4          +                   exp_2
+#&gt; 34:   2          33962502      + LINC01317          +                   exp_3
+#&gt; 35:   5         152257562      + LINC01470          -                   exp_1
+#&gt; 36:   5          68342842      + LINC02198          -                   exp_1
+#&gt; 37:   9          77314074      +      RORB          +                   exp_5
+#&gt; 38:   8         137120365      +   KHDRBS3          +                   exp_2
+#&gt; 39:   8          87341169      -      WWP1          +                   exp_2
+#&gt; 40:   8          63731501      +    NKAIN3          +                   exp_3
+#&gt; 41:   8         137120365      +   KHDRBS3          +                   exp_5
+#&gt; 42:  12          88546429      -     TMTC3          +                   exp_2
+#&gt; 43:  12          88546429      -     TMTC3          +                   exp_5
+#&gt; 44:  18          69964312      -     CBLN2          -                   exp_4
+#&gt; 45:   X          41046822      +     USP9X          +                   exp_1
+#&gt; 46:   X          41046822      +     USP9X          +                   exp_4
+#&gt; 47:  22          17468972      -      GAB4          -                   exp_3
+#&gt; 48:  22          17468972      -      GAB4          -                   exp_5
+#&gt; 49:   3         137078019      -    IL20RB          +                   exp_1
+#&gt; 50:   3         157949340      -     RSRC1          +                   exp_2
+#&gt; 51:   3         137078019      -    IL20RB          +                   exp_2
+#&gt; 52:  16          53709727      -  RPGRIP1L          -                   exp_1
+#&gt; 53:  16          53709727      -  RPGRIP1L          -                   exp_5
+#&gt;     chr integration_locus strand  GeneName GeneStrand CompleteAmplificationID
+#&gt;         Value Value_RelAbundance Value_PercAbundance
+#&gt;  1: 94925.982        0.132693720          13.2693720
+#&gt;  2: 61143.203        0.098832448           9.8832448
+#&gt;  3: 68981.022        0.109473298          10.9473298
+#&gt;  4: 99324.680        0.270349560          27.0349560
+#&gt;  5: 83873.375        0.117243667          11.7243667
+#&gt;  6: 60410.179        0.095871318           9.5871318
+#&gt;  7: 47565.936        0.075487427           7.5487427
+#&gt;  8: 68463.189        0.110664541          11.0664541
+#&gt;  9: 46666.038        0.100913331          10.0913331
+#&gt; 10: 84163.039        0.136041926          13.6041926
+#&gt; 11: 70063.925        0.190705383          19.0705383
+#&gt; 12: 29285.895        0.046476892           4.6476892
+#&gt; 13: 25408.730        0.054945302           5.4945302
+#&gt; 14: 76745.114        0.165958059          16.5958059
+#&gt; 15: 42858.058        0.068015996           6.8015996
+#&gt; 16:  3736.397        0.008079801           0.8079801
+#&gt; 17: 29272.930        0.079677314           7.9677314
+#&gt; 18: 36743.994        0.051363148           5.1363148
+#&gt; 19: 34218.930        0.073996987           7.3996987
+#&gt; 20: 74588.496        0.120565546          12.0565546
+#&gt; 21: 63860.204        0.101346528          10.1346528
+#&gt; 22: 79029.953        0.170898928          17.0898928
+#&gt; 23:  8036.752        0.012990682           1.2990682
+#&gt; 24: 25255.111        0.035303239           3.5303239
+#&gt; 25: 97414.558        0.210654858          21.0654858
+#&gt; 26: 82334.313        0.178044466          17.8044466
+#&gt; 27: 30430.395        0.049187976           4.9187976
+#&gt; 28: 85050.007        0.118888440          11.8888440
+#&gt; 29: 12566.615        0.017566433           1.7566433
+#&gt; 30: 36910.659        0.058577438           5.8577438
+#&gt; 31: 61319.669        0.097314685           9.7314685
+#&gt; 32: 20246.969        0.028302532           2.8302532
+#&gt; 33: 73181.449        0.102297796          10.2297796
+#&gt; 34: 98047.224        0.155601535          15.5601535
+#&gt; 35: 92426.509        0.251573586          25.1573586
+#&gt; 36:  4388.195        0.011944127           1.1944127
+#&gt; 37: 55204.486        0.089233050           8.9233050
+#&gt; 38: 39071.423        0.054616580           5.4616580
+#&gt; 39: 67667.341        0.094589817           9.4589817
+#&gt; 40: 38778.586        0.061541849           6.1541849
+#&gt; 41: 92915.404        0.150189332          15.0189332
+#&gt; 42: 19758.601        0.027619859           2.7619859
+#&gt; 43: 39607.146        0.064021362           6.4021362
+#&gt; 44:  4799.085        0.010377819           1.0377819
+#&gt; 45: 37705.982        0.102631043          10.2631043
+#&gt; 46: 12083.681        0.026130449           2.6130449
+#&gt; 47: 82099.900        0.130293036          13.0293036
+#&gt; 48: 10109.592        0.016341239           1.6341239
+#&gt; 49: 23931.627        0.065138944           6.5138944
+#&gt; 50: 59266.776        0.082846960           8.2846960
+#&gt; 51: 97768.952        0.136667809          13.6667809
+#&gt; 52: 10279.687        0.027980043           2.7980043
+#&gt; 53: 93993.451        0.151931898          15.1931898
+#&gt;         Value Value_RelAbundance Value_PercAbundance</div><div class='input'>
+<span class='co'># Keeping totals as a separate data frame</span>
+<span class='va'>abundance2</span> <span class='op'>&lt;-</span> <span class='fu'>compute_abundance</span><span class='op'>(</span><span class='va'>matrix</span>, keep_totals <span class='op'>=</span> <span class='st'>"df"</span><span class='op'>)</span>
+<span class='va'>abundance2</span>
+</div><div class='output co'>#&gt; $abundance_df
+#&gt;     chr integration_locus strand  GeneName GeneStrand CompleteAmplificationID
+#&gt;  1:  20          39085641      +      MAFB          -                   exp_2
+#&gt;  2:  20          39085641      +      MAFB          -                   exp_5
+#&gt;  3:   7         155446768      +     RBM33          +                   exp_3
+#&gt;  4:  19           4049601      +    ZBTB7A          -                   exp_1
+#&gt;  5:  19           4049601      +    ZBTB7A          -                   exp_2
+#&gt;  6:  19          12278742      -    ZNF136          +                   exp_3
+#&gt;  7:  19           4049601      +    ZBTB7A          -                   exp_3
+#&gt;  8:  19          12278742      -    ZNF136          +                   exp_5
+#&gt;  9:   6           1865825      -      GMDS          -                   exp_4
+#&gt; 10:   6          70219927      -    ADGRB3          +                   exp_5
+#&gt; 11:  17          79831324      +   ARHGDIA          -                   exp_1
+#&gt; 12:  17           7113678      +      DLG4          -                   exp_3
+#&gt; 13:  17          56480574      +     RNF43          -                   exp_4
+#&gt; 14:  13         115089373      +    CHAMP1          +                   exp_4
+#&gt; 15:   4         127380734      -   MIR2054          +                   exp_3
+#&gt; 16:   4          46971398      -    GABRA4          -                   exp_4
+#&gt; 17:  11          57153892      +      PRG2          -                   exp_1
+#&gt; 18:  11          57153892      +      PRG2          -                   exp_2
+#&gt; 19:  11          57153892      +      PRG2          -                   exp_4
+#&gt; 20:  11          57153892      +      PRG2          -                   exp_5
+#&gt; 21:  15          56979473      -   ZNF280D          -                   exp_3
+#&gt; 22:  15          76209162      -    FBXO22          +                   exp_4
+#&gt; 23:  15          56979473      -   ZNF280D          -                   exp_5
+#&gt; 24:  10          99253610      +     MMS19          -                   exp_2
+#&gt; 25:  10          38314134      -    ZNF33A          +                   exp_4
+#&gt; 26:  10          99253610      +     MMS19          -                   exp_4
+#&gt; 27:  10          90471211      +      LIPK          +                   exp_5
+#&gt; 28:   1           8744319      -      RERE          -                   exp_2
+#&gt; 29:   1          89274341      +      PKN2          +                   exp_2
+#&gt; 30:   1           8744319      -      RERE          -                   exp_3
+#&gt; 31:   1          89274341      +      PKN2          +                   exp_3
+#&gt; 32:   2          33962502      + LINC01317          +                   exp_2
+#&gt; 33:   2          42521808      +      EML4          +                   exp_2
+#&gt; 34:   2          33962502      + LINC01317          +                   exp_3
+#&gt; 35:   5         152257562      + LINC01470          -                   exp_1
+#&gt; 36:   5          68342842      + LINC02198          -                   exp_1
+#&gt; 37:   9          77314074      +      RORB          +                   exp_5
+#&gt; 38:   8         137120365      +   KHDRBS3          +                   exp_2
+#&gt; 39:   8          87341169      -      WWP1          +                   exp_2
+#&gt; 40:   8          63731501      +    NKAIN3          +                   exp_3
+#&gt; 41:   8         137120365      +   KHDRBS3          +                   exp_5
+#&gt; 42:  12          88546429      -     TMTC3          +                   exp_2
+#&gt; 43:  12          88546429      -     TMTC3          +                   exp_5
+#&gt; 44:  18          69964312      -     CBLN2          -                   exp_4
+#&gt; 45:   X          41046822      +     USP9X          +                   exp_1
+#&gt; 46:   X          41046822      +     USP9X          +                   exp_4
+#&gt; 47:  22          17468972      -      GAB4          -                   exp_3
+#&gt; 48:  22          17468972      -      GAB4          -                   exp_5
+#&gt; 49:   3         137078019      -    IL20RB          +                   exp_1
+#&gt; 50:   3         157949340      -     RSRC1          +                   exp_2
+#&gt; 51:   3         137078019      -    IL20RB          +                   exp_2
+#&gt; 52:  16          53709727      -  RPGRIP1L          -                   exp_1
+#&gt; 53:  16          53709727      -  RPGRIP1L          -                   exp_5
+#&gt;     chr integration_locus strand  GeneName GeneStrand CompleteAmplificationID
+#&gt;         Value Value_RelAbundance Value_PercAbundance
+#&gt;  1: 94925.982        0.132693720          13.2693720
+#&gt;  2: 61143.203        0.098832448           9.8832448
+#&gt;  3: 68981.022        0.109473298          10.9473298
+#&gt;  4: 99324.680        0.270349560          27.0349560
+#&gt;  5: 83873.375        0.117243667          11.7243667
+#&gt;  6: 60410.179        0.095871318           9.5871318
+#&gt;  7: 47565.936        0.075487427           7.5487427
+#&gt;  8: 68463.189        0.110664541          11.0664541
+#&gt;  9: 46666.038        0.100913331          10.0913331
+#&gt; 10: 84163.039        0.136041926          13.6041926
+#&gt; 11: 70063.925        0.190705383          19.0705383
+#&gt; 12: 29285.895        0.046476892           4.6476892
+#&gt; 13: 25408.730        0.054945302           5.4945302
+#&gt; 14: 76745.114        0.165958059          16.5958059
+#&gt; 15: 42858.058        0.068015996           6.8015996
+#&gt; 16:  3736.397        0.008079801           0.8079801
+#&gt; 17: 29272.930        0.079677314           7.9677314
+#&gt; 18: 36743.994        0.051363148           5.1363148
+#&gt; 19: 34218.930        0.073996987           7.3996987
+#&gt; 20: 74588.496        0.120565546          12.0565546
+#&gt; 21: 63860.204        0.101346528          10.1346528
+#&gt; 22: 79029.953        0.170898928          17.0898928
+#&gt; 23:  8036.752        0.012990682           1.2990682
+#&gt; 24: 25255.111        0.035303239           3.5303239
+#&gt; 25: 97414.558        0.210654858          21.0654858
+#&gt; 26: 82334.313        0.178044466          17.8044466
+#&gt; 27: 30430.395        0.049187976           4.9187976
+#&gt; 28: 85050.007        0.118888440          11.8888440
+#&gt; 29: 12566.615        0.017566433           1.7566433
+#&gt; 30: 36910.659        0.058577438           5.8577438
+#&gt; 31: 61319.669        0.097314685           9.7314685
+#&gt; 32: 20246.969        0.028302532           2.8302532
+#&gt; 33: 73181.449        0.102297796          10.2297796
+#&gt; 34: 98047.224        0.155601535          15.5601535
+#&gt; 35: 92426.509        0.251573586          25.1573586
+#&gt; 36:  4388.195        0.011944127           1.1944127
+#&gt; 37: 55204.486        0.089233050           8.9233050
+#&gt; 38: 39071.423        0.054616580           5.4616580
+#&gt; 39: 67667.341        0.094589817           9.4589817
+#&gt; 40: 38778.586        0.061541849           6.1541849
+#&gt; 41: 92915.404        0.150189332          15.0189332
+#&gt; 42: 19758.601        0.027619859           2.7619859
+#&gt; 43: 39607.146        0.064021362           6.4021362
+#&gt; 44:  4799.085        0.010377819           1.0377819
+#&gt; 45: 37705.982        0.102631043          10.2631043
+#&gt; 46: 12083.681        0.026130449           2.6130449
+#&gt; 47: 82099.900        0.130293036          13.0293036
+#&gt; 48: 10109.592        0.016341239           1.6341239
+#&gt; 49: 23931.627        0.065138944           6.5138944
+#&gt; 50: 59266.776        0.082846960           8.2846960
+#&gt; 51: 97768.952        0.136667809          13.6667809
+#&gt; 52: 10279.687        0.027980043           2.7980043
+#&gt; 53: 93993.451        0.151931898          15.1931898
+#&gt;         Value Value_RelAbundance Value_PercAbundance
+#&gt; 
+#&gt; $quant_totals
+#&gt; </span><span style='color: #949494;'># A tibble: 5 x 2</span><span>
+#&gt;   CompleteAmplificationID Value_tot
+#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>                       </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>
+#&gt; </span><span style='color: #BCBCBC;'>1</span><span> exp_2                     </span><span style='text-decoration: underline;'>715</span><span>377.
+#&gt; </span><span style='color: #BCBCBC;'>2</span><span> exp_5                     </span><span style='text-decoration: underline;'>618</span><span>655.
+#&gt; </span><span style='color: #BCBCBC;'>3</span><span> exp_3                     </span><span style='text-decoration: underline;'>630</span><span>117.
+#&gt; </span><span style='color: #BCBCBC;'>4</span><span> exp_1                     </span><span style='text-decoration: underline;'>367</span><span>394.
+#&gt; </span><span style='color: #BCBCBC;'>5</span><span> exp_4                     </span><span style='text-decoration: underline;'>462</span><span>437.
+#&gt; </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

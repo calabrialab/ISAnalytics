@@ -19,7 +19,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.11</span>
       </span>
     </div>
 
@@ -121,6 +121,13 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
+  <a href="https://calabrialab.github.io/ISAnalytics/dev/">
+    <span class="fas fa-code-branch"></span>
+     
+    DEVEL
+  </a>
+</li>
+<li>
   <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa-github fa-lg"></span>
      
@@ -274,7 +281,7 @@ sequence count matrix.</p></td>
         <td>
           <p><code><a href="compute_abundance.html">compute_abundance()</a></code> </p>
         </td>
-        <td><p>Computes the abundance of every integration in the sample.</p></td>
+        <td><p>Computes the abundance for every integration event in the input data frame.</p></td>
       </tr><tr>
         
         <td>
@@ -300,7 +307,8 @@ matrices.</p></td>
         <td>
           <p><code><a href="top_integrations.html">top_integrations()</a></code> </p>
         </td>
-        <td><p>Sorts and keeps the top n integration sites in a data frame.</p></td>
+        <td><p>Sorts and keeps the top n integration sites based on the values
+in a given column.</p></td>
       </tr><tr>
         
         <td>

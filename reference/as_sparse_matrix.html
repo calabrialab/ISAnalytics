@@ -20,7 +20,7 @@ form. — as_sparse_matrix • ISAnalytics</title>
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/slate/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -85,7 +85,7 @@ is needed by a specific function (mainly from other packages)." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.11</span>
       </span>
     </div>
 
@@ -127,6 +127,13 @@ is needed by a specific function (mainly from other packages)." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
+  <a href="https://calabrialab.github.io/ISAnalytics/dev/">
+    <span class="fas fa-code-branch"></span>
+     
+    DEVEL
+  </a>
+</li>
+<li>
   <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa-github fa-lg"></span>
      
@@ -224,8 +231,15 @@ is a single multi-quantification matrix or a list of matrices</p></li>
     package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
 <span class='op'>)</span>
 <span class='va'>matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a></span><span class='op'>(</span><span class='va'>path</span><span class='op'>)</span>
-<span class='va'>sparse</span> <span class='op'>&lt;-</span> <span class='fu'>as_sparse_matrix</span><span class='op'>(</span><span class='va'>matrix</span><span class='op'>)</span>
-</div></pre>
+</div><div class='output co'>#&gt; <span class='message'>Warning: compression format not supported by fread</span>
+#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span><span> File will be read using readr</span></div><div class='output co'>#&gt; <span class='message'>Reading file...</span>
+#&gt; <span class='message'></span><span style='color: #0000BB;'>ℹ</span><span> Mode: classic</span></div><div class='output co'>#&gt; <span class='message'>*** File info *** </span>
+#&gt; <span class='message'>* --- Matrix type: NEW</span>
+#&gt; <span class='message'>* --- Annotated: TRUE</span>
+#&gt; <span class='message'>* --- Dimensions: 50 x 10</span>
+#&gt; <span class='message'>* --- Read mode:  classic</span></div><div class='output co'>#&gt; <span class='message'>Reshaping...</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   5%  |                                                                              |======                                                                |   9%  |                                                                              |==========                                                            |  14%  |                                                                              |=============                                                         |  18%  |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  32%  |                                                                              |=========================                                             |  36%  |                                                                              |=============================                                         |  41%  |                                                                              |================================                                      |  45%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================                                |  55%  |                                                                              |=========================================                             |  59%  |                                                                              |=============================================                         |  64%  |                                                                              |================================================                      |  68%  |                                                                              |===================================================                   |  73%  |                                                                              |======================================================                |  77%  |                                                                              |=========================================================             |  82%  |                                                                              |============================================================          |  86%  |                                                                              |================================================================      |  91%  |                                                                              |===================================================================   |  95%  |                                                                              |======================================================================| 100%
+#&gt; </div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='input'><span class='va'>sparse</span> <span class='op'>&lt;-</span> <span class='fu'>as_sparse_matrix</span><span class='op'>(</span><span class='va'>matrix</span><span class='op'>)</span>
+</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
