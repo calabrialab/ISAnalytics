@@ -173,6 +173,7 @@ specify as your workbench or root. The structure always follows this schema:
       * bcmuxall
       * bed
       * iss
+        * Pools (concatenatePoolIDSeqRun)
       * quality
       * quantification
         * Pools (concatenatePoolIDSeqRun)
@@ -288,9 +289,8 @@ association_file
 
 If you have the "widgets" option active, this will produce a visual HTML report 
 of the results of the alignment check, either in Rstudio or in your browser.  
-If projects or pools are missing you will be notified: until you fix those 
-problems, those elements will be ignored until you re-import the association 
-file.
+If projects or pools are missing you will be notified so you can check and
+fix them.
 
 If you're not interested in scanning the file system you can set the 'root' 
 parameter to NULL and this step will be skipped.
@@ -313,6 +313,39 @@ withr::with_options(list(ISAnalytics.widgets = FALSE), {
 })
 association_file_filtered
 ```
+
+Finally there is also the option of importing directly Vispa2 stats,
+that are located in the "iss" folder of the project, and merge them
+directly in the association file for later usage. See the next section
+for more detail on this.
+
+# Importing Vispa2 stats files
+
+Vispa2 runs automatically produce summary files for each pool holding 
+information that can be useful for other analyses downstream, 
+so it is reccomended to import them in the first steps of the workflow.
+To do that, you can use `import_Vispa2_stats`:
+
+```{r}
+withr::with_options(list(ISAnalytics.widgets = FALSE), {
+  vispa_stats <- import_Vispa2_stats(
+  association_file = association_file_filtered, 
+  join_with_af = FALSE
+)
+})
+```
+
+The function requires as input the already imported and file system aligned
+association file and it will scan the iss folder for files that match some
+known prefixes (defaults are already provided but you can change them as you
+see fit). You can either choose to join the imported data frames with the 
+association file in input and obtain a single data frame or keep it as it is,
+just set the parameter `join_with_af` accordingly.
+At the end of the process an HTML report is produced, signaling potential
+problems.
+
+You can directly call this function when you import the association file
+by setting the `import_iss` argument of `import_association_file` to TRUE.
 
 # Importing multiple matrices in parallel
 

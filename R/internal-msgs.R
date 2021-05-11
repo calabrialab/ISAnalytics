@@ -1,13 +1,5 @@
 ### Convenience functions for errors and warnings ###
 
-.af_correctness_warning <- function() {
-    paste(
-        "Columns found in the imported association file differ from",
-        "the default values in 'association_file_columns()' ",
-        "problems may arise in some functions"
-    )
-}
-
 # Signals the user that file system alignment can't be performed because
 # 'PathToFolderProjectID' is missing.
 # USED IN:
@@ -42,7 +34,8 @@
     checks) {
     c(
         "*** Association file import summary ***",
-        i = "For detailed report please set option 'ISAnalytics.widgets' to TRUE",
+        i = paste("For detailed report please set option",
+                  "'ISAnalytics.widgets' to TRUE"),
         paste0("Parsing problems detected: ", !is.null(pars_prob)),
         paste0("Date parsing problems: ", !is.null(dates_prob)),
         paste0("Column problems detected: ", !is.null(cols_prob)),
@@ -66,8 +59,42 @@
     )
 }
 
+# Signals that the association file must be imported and aligned with fs.
+# USED IN:
+# - import_Vispa2_stats
+.af_not_imported_err <- function() {
+    c("The association file must be a data frame",
+      paste("Import the association file via",
+            "`import_association_file()` with file system alignment"),
+      i = "See `?import_association_file` and `?import_Vispa2_stats`"
+      )
+}
+
+# Signals that the association file must be aligned with fs.
+# USED IN:
+# - import_Vispa2_stats
+.af_not_aligned_err <- function() {
+    c("The association file has been imported without file system alignment",
+      paste("Import the association file via",
+            "`import_association_file()` with file system alignment"),
+      i = "See `?import_association_file` and `?import_Vispa2_stats`"
+    )
+}
+
+# USED IN:
+# - import_Vispa2_stats
+.missing_needed_cols <- function(missing) {
+    c("Some required columns are missing",
+      i = paste("Missing columns:", paste0(missing, collapse = ", "))
+      )
+}
+
 .widgets_error <- function() {
     paste("Unable to produce widget report, skipping this step")
+}
+
+.widgets_print_error <- function() {
+  paste("Unable to print widget report, skipping this step")
 }
 
 .widgets_save_error <- function() {
@@ -170,24 +197,6 @@
     )
 }
 
-.warning_update_after_alignment <- function(root) {
-    paste0("One or more projects were not found in the file ",
-        "system starting from ", root, ", please check your ",
-        "association file for errors and/or your file system.",
-        "Until you re-import the association file these ",
-        "missing files will be ignored.",
-        collapse = ""
-    )
-}
-
-# @keywords internal
-.quant_types_error <- function() {
-    paste(
-        "The list names must be quantification types",
-        ", see quantification_types() for reference"
-    )
-}
-
 # @keywords internal
 .missing_num_cols_error <- function() {
     paste("No numeric columns found")
@@ -195,11 +204,10 @@
 
 # @keywords internal
 .non_quant_cols_msg <- function(x) {
-    paste(c(
-        "Found numeric columns that are not quantification values:",
-        "these columns will be copied in all resulting matrices.",
-        "Found: ", x
-    ), collapse = "\n")
+    c(paste("Found numeric columns that are not quantification values -",
+        "these columns will be copied in all resulting matrices."),
+        i = paste0("Found: ", paste0(x, collapse = ", "))
+    )
 }
 
 # @keywords internal
@@ -235,10 +243,9 @@
 
 # @keywords internal
 .nas_introduced_msg <- function() {
-    paste("NAs were introduced while producing the data frame.",
-        "The possible cause for this is:",
-        "some quantification matrices were not imported for all pools",
-        sep = "\n"
+    c("NAs were introduced while producing the data frame.",
+      i = paste("The possible cause for this is:",
+        "some quantification matrices were not imported for all pools")
     )
 }
 
@@ -285,6 +292,7 @@
 # USED IN:
 # - compute_abundance
 # - top_integrations
+# - outliers_by_pool_fragments
 .missing_user_cols_error <- function(missing_cols) {
     c(paste(
         "Some or all of the input column names were not found",
@@ -389,4 +397,20 @@
 
 .key_not_found <- function() {
     paste("One or more columns in the sample keys were not found in x")
+}
+
+.not_min_key_err <- function(missing) {
+  c("The aggregation key must contain the minimal required key",
+    x = paste("Missing columns:",
+              paste0(missing, collapse = ", ")))
+}
+
+.agg_key_not_found_err <- function(df, key) {
+  c(paste("The aggregation key was not found in", df),
+    i = paste("Aggregation key used:", paste0(key, collapse = ", ")))
+}
+
+.meta_not_agg_err <- function() {
+  c("Metadata appears to not be aggregated by the provided aggregation key",
+    i = paste("See `?aggregate_metadata`"))
 }

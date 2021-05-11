@@ -51,6 +51,11 @@ and Annotation of Vector Integration Sites}
 \item \code{\link{remove_collisions}}
 \item \code{\link{realign_after_collisions}}
 }
+\item Removal of outliers from raw reads
+\itemize{
+\item \code{\link{outlier_filter}}
+\item \code{\link{outliers_by_pool_fragments}}
+}
 \item Recalibration functions:
 \itemize{
 \item \code{\link{compute_near_integrations}}

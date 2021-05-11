@@ -56,75 +56,25 @@ test_that("comparison_matrix throws error if input is incorrect", {
     expect_error({
         comp <- comparison_matrix(list(seqCount = "a"))
     })
-    expect_error(
-        {
-            comp <- comparison_matrix(
-                list(
-                    seqCount = matrices_correct$seqCount,
-                    fragmentEstimate = matrices_correct$fragmentEstimate %>%
-                        dplyr::select(-.data$chr)
-                )
-            )
-        },
-        regexp = .non_ISM_error()
-    )
-    expect_error(
-        {
-            comp <- comparison_matrix(
-                list(
-                    seqCount = matrices_correct$seqCount,
-                    fragmentEstimate = matrices_correct$fragmentEstimate %>%
-                        dplyr::select(-.data$CompleteAmplificationID)
-                )
-            )
-        },
-        regexp = .non_ISM_error()
-    )
-    expect_error(
-        {
-            comp <- comparison_matrix(
-                list(
-                    seqCount = matrices_correct$seqCount,
-                    fragmentEstimate = matrices_correct$fragmentEstimate %>%
-                        dplyr::select(-.data$Value)
-                )
-            )
-        },
-        regexp = .non_ISM_error()
-    )
 })
 
 test_that("comparison_matrix notifies NA introduction", {
-    op <- options(ISAnalytics.verbose = TRUE)
-    on.exit(options(op))
-    expect_message(
-        {
-            comp <- comparison_matrix(matrices_incorr)
-        },
-        regexp = .nas_introduced_msg()
-    )
+    withr::local_options(list(ISAnalytics.verbose = TRUE))
+    expect_message({
+        comp <- comparison_matrix(matrices_incorr)
+    })
 })
 
 test_that("comparison_matrix produces correct output", {
-    expect_message(
-        {
-            comp <- comparison_matrix(matrices_correct)
-        },
-        regexp = NA
-    )
+    comp <- comparison_matrix(matrices_correct)
     expect_true(all(c("fragmentEstimate", "seqCount") %in% colnames(comp)))
     expect_true(nrow(comp) == nrow(matrices_correct$seqCount))
 })
 
 test_that("comparison_matrix supports custom names", {
-    expect_message(
-        {
-            comp <- comparison_matrix(matrices_correct,
-                seqCount = "sc",
-                fragmentEstimate = "fe"
-            )
-        },
-        regexp = NA
+    comp <- comparison_matrix(matrices_correct,
+        seqCount = "sc",
+        fragmentEstimate = "fe"
     )
     expect_true(all(c("fe", "sc") %in% colnames(comp)))
     expect_true(nrow(comp) == nrow(matrices_correct$seqCount))
@@ -151,35 +101,9 @@ test_that("separate_quant_matrices stops if param incorrect", {
         sep <- separate_quant_matrices(list(a = smpl, b = smpl))
     })
     # Must be an integration matrix
-    expect_error(
-        {
-            sep <- separate_quant_matrices(tibble::tibble(a = c(1, 2, 3)))
-        },
-        regexp = .non_ISM_error()
-    )
-    # Must contain CompleteAmplificationID column
-    expect_error(
-        {
-            sep <- separate_quant_matrices(tibble::tibble(
-                chr = c("1", "2", "3"),
-                integration_locus = c(1263, 1264, 1265),
-                strand = c("+", "+", "+")
-            ))
-        },
-        regexp = .missing_complAmpID_error()
-    )
-    # Must contain numeric columns
-    expect_error(
-        {
-            sep <- separate_quant_matrices(tibble::tibble(
-                chr = c("1", "2", "3"),
-                integration_locus = c(1263, 1264, 1265),
-                strand = c("+", "+", "+"),
-                CompleteAmplificationID = c("ID1", "ID2", "ID3")
-            ))
-        },
-        regexp = .missing_num_cols_error()
-    )
+    expect_error({
+        sep <- separate_quant_matrices(tibble::tibble(a = c(1, 2, 3)))
+    })
     # Must contain at least one quantification
     expect_error(
         {
@@ -189,21 +113,22 @@ test_that("separate_quant_matrices stops if param incorrect", {
                 strand = c("+", "+", "+"),
                 CompleteAmplificationID = c("ID1", "ID2", "ID3"),
                 random_col = c(6483, 486, 873)
-            ))
+            ), key = c(mandatory_IS_vars(), "CompleteAmplificationID"))
         },
         regexp = .non_quant_cols_error()
     )
 })
 
 test_that("separate_quant_matrices warns if additional columns", {
-    op <- options(ISAnalytics.verbose = TRUE)
-    on.exit(options(op))
-    expect_message(
-        {
-            sep <- separate_quant_matrices(smpl)
-        },
-        regexp = .non_quant_cols_msg("random_col")
-    )
+    withr::local_options(list(ISAnalytics.verbose = TRUE))
+    expect_message({
+        sep <- separate_quant_matrices(smpl,
+            key = c(
+                mandatory_IS_vars(),
+                "CompleteAmplificationID"
+            )
+        )
+    })
     expected_output <- list(
         fragmentEstimate =
             tibble::tibble(
@@ -250,7 +175,8 @@ test_that("separate_quant_matrices supports custom names", {
     colnames(smpl)[c(5, 6)] <- c("fe", "sc")
     sep <- separate_quant_matrices(smpl,
         fragmentEstimate = "fe",
-        seqCount = "sc"
+        seqCount = "sc",
+        key = c(mandatory_IS_vars(), "CompleteAmplificationID")
     )
     expected_output <- list(
         fragmentEstimate =

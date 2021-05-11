@@ -102,21 +102,39 @@ devtools::install_github("calabrialab/ISAnalytics",
                          ref = "master")
 ```
 
-# Current functionality
-
--   Import integration matrices from files: more info with
-    `vignette("How to use import functions", package = "ISAnalytics")`
--   Collision removal: more info with
-    `vignette("Collision removal functionality", package = "ISAnalytics")`
--   Aggregation: more info with
-    `vignette("Working with aggregate functions", package = "ISAnalytics")`
--   Re-calibration functions: `compute_near_integrations`
--   Analysis functions: `compute_abundance`, `comparison_matrix`
-    `separate_quant_matrices`, others
--   Plotting functions: `CIS_volcano_plot`
--   Utility functions
-
 # NEWS
+
+# ISAnalytics 1.1.11 (2021-05-11)
+
+## NEW FUNCTIONALITY
+
+-   `HSC_population_size_estimate` and `HSC_population_plot` allow
+    estimates on hematopoietic stem cell population size
+-   Importing of Vispa2 stats per pool now has a dedicated function,
+    `import_Vispa2_stats`
+-   `outlier_filter` and `outliers_by_pool_fragments` offer a mean to
+    filter poorly represented samples based on custom outliers tests
+
+## VISIBLE USER CHANGES
+
+-   The argument `import_stats` of `aggregate_metadata` is officially
+    deprecated in favor of `import_Vispa2_stats`
+-   `aggregate_metadata` is now a lot more flexible on what operations
+    can be performed on columns via the new argument
+    `aggregating_functions`
+-   `import_association_file` allows directly for the import of Vispa2
+    stats and converts time points to months and years where not already
+    present
+-   File system alignment of `import_association_file` now produces 3
+    separate columns for paths
+-   `separate_quant_matrices` and `comparison_matrix` now do not require
+    mandatory columns other than the quantifications - this allows for
+    separation or joining also for aggregated matrices
+
+## FIXES
+
+-   Fixed a minor issue in `CIS_volcano_plot` that caused duplication of
+    some labels if highlighted genes were provided in input
 
 # ISAnalytics 1.1.10 (2021-04-08)
 
@@ -347,8 +365,10 @@ ISanalytics is officially on bioconductor!
 # TO DO in future updates
 
 -   [ ] Add further plot wrappers
--   [ ] New functionality: raw reads flagging/filtering
--   [ ] New functionality: HSCs population size estimate
+-   [x] New functionality: raw reads flagging/filtering (ISAnalytics
+    1.1.11)
+-   [x] New functionality: HSCs population size estimate (ISAnalytics
+    1.1.11)
 -   [ ] New functionality: genomic annotation
 -   [ ] Obtain a system to visualize interactive reports based on shiny
     (possibly replacing self-contained HTML reports)

@@ -1,5 +1,61 @@
 #### ---- Internals for HTML widgets construction ----####
 
+.produce_widget <- function(widget_function, ...) {
+    dots <- rlang::list2(...)
+    widg <- withCallingHandlers(expr = {
+        withRestarts({
+            rlang::exec(.fn = widget_function, !!!dots)
+        },
+        widget_fail = function() {
+            rlang::inform(.widgets_error())
+            NULL
+        })
+    }, error = function(cnd) {
+        invokeRestart("widget_fail")
+    })
+    widg
+}
+
+.print_widget <- function(widget, else_verbose = NULL) {
+    withCallingHandlers(expr = {
+        withRestarts({
+            print(widget)
+        }, print_err = function() {
+            rlang::inform(.widgets_print_error())
+        })
+    }, error = function(cnd) {
+        rlang::inform(conditionMessage(cnd))
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            else_verbose
+        }
+        invokeRestart("print_err")
+    })
+}
+
+#' @importFrom fs is_dir dir_exists dir_create path
+#' @importFrom htmltools save_html
+.export_widget_file <- function(widget, path, def_file_name) {
+    export_widget_path <- if (fs::is_dir(path)) {
+        if (!fs::dir_exists(path)) {
+            fs::dir_create(path)
+        }
+        fs::path(
+            path,
+            def_file_name
+        )
+    } else {
+        path
+    }
+    withCallingHandlers(
+        expr = {
+            htmltools::save_html(widget, export_widget_path)
+        },
+        error = function(cnd) {
+            warning(.widgets_save_error())
+        }
+    )
+}
+
 # Default theme for reactable widgets
 #' @importFrom reactable reactableTheme
 .default_theme <- function() {
@@ -18,8 +74,19 @@
 # Generates a standardized reactable widget for the input df
 #' @importFrom reactable reactable colDef
 .generate_react_table <- function(df, ...) {
-    styled_df <- reactable::reactable(
-        df,
+    dots <- rlang::list2(...)
+    if (!"defaultColDef" %in% names(dots)) {
+        def <- list(defaultColDef = reactable::colDef(
+            headerStyle = list(fontSize = "18px", paddingLeft = "15px"),
+            align = "left", sortable = TRUE, resizable = TRUE,
+            filterable = TRUE, style = list(paddingLeft = "15px"),
+            header = function(value) gsub("_", " ", value, fixed = TRUE)
+        ))
+        dots <- append(dots, def)
+    }
+    styled_df <- rlang::exec(
+        reactable::reactable,
+        data = df,
         striped = TRUE,
         sortable = TRUE,
         showSortable = TRUE,
@@ -36,14 +103,9 @@
         showPagination = TRUE,
         resizable = TRUE,
         theme = .default_theme(),
-        defaultColDef = reactable::colDef(
-            headerStyle = list(fontSize = "18px", paddingLeft = "15px"),
-            align = "left", sortable = TRUE, resizable = TRUE,
-            filterable = TRUE, style = list(paddingLeft = "15px"),
-            header = function(value) gsub("_", " ", value, fixed = TRUE)
-        ),
-        ...
+        !!!dots
     )
+    styled_df
 }
 
 # Generates a reactable formatted for the sharing matrix (conditional coloring)
@@ -1241,10 +1303,19 @@
 #
 # @return A widget
 .iss_import_widget <- function(report) {
+    nothing_to_rep <- htmltools::div(
+        id = "section-content",
+        htmltools::div("Nothing to report", id = "simple_txt")
+    )
+    malf_expl <- paste0("One or more of the minimum required columns ",
+                       "were missing. The minimum required columns are: ",
+                       paste0(.stats_columns_min(), collapse = ", "),
+                       ". Check your stats files for possible problems.")
+    dupl_expl <- paste0("More than one file was found with the same prefix",
+                        " for all prefixes - impossible to decide which",
+                        " file to import")
+    not_found_expl <- paste0("The file or the iss folder were not found")
     cols <- list(
-        ProjectID = reactable::colDef(
-            filterable = TRUE
-        ),
         Imported = reactable::colDef(
             style = function(value) {
                 color <- if (value == TRUE) {
@@ -1260,10 +1331,88 @@
                 )
             },
             align = "center"
+        ),
+        info = reactable::colDef(
+            show = FALSE
+        ),
+        reason = reactable::colDef(
+            show = FALSE
         )
     )
+    row_details <- function(index, report) {
+        content <- if (report$Imported[index] == TRUE) {
+            nothing_to_rep
+        } else {
+            reason <- report$reason[index]
+            reason <- if (reason == "MALFORMED") {
+                paste0(c(reason, malf_expl), collapse = " - ")
+            } else if (reason == "DUPLICATES") {
+                paste0(c(reason, dupl_expl), collapse = " - ")
+            } else if (reason == "NOT FOUND") {
+                paste0(c(reason, not_found_expl), collapse = " - ")
+            }
+            info <- report$info[index]
+            info_cont <- if (is.na(info)) {
+                nothing_to_rep
+            } else if (is.list(info)) {
+                if (is.data.frame(info[[1]])) {
+                  .generate_react_table(info[[1]])
+                } else if (is.null(info[[1]])) {
+                    nothing_to_rep
+                } else {
+                    if (all(info[[1]] == "NOT FOUND")) {
+                        if (is.na((report[[.path_cols_names()$iss]])[index])) {
+                            htmltools::p(style = paste(
+                                "padding-left: 40px"),
+                                "VISPA2 stats folder is missing")
+                        } else {
+                            htmltools::p(style = paste(
+                                "padding-left: 40px"),
+                                "No stats files found in the iss folder")
+                        }
+                    } else {
+                        htmltools::p(style = paste(
+                            "padding-left: 40px"), info)
+                    }
+                }
+            } else {
+                if (info == "NOT FOUND") {
+                    if (is.na((report[[.path_cols_names()$iss]])[index])) {
+                        htmltools::p(style = paste(
+                            "padding-left: 40px"),
+                            "VISPA2 stats folder is missing")
+                    } else {
+                        htmltools::p(style = paste(
+                            "padding-left: 40px"),
+                            "No stats files found in the iss folder")
+                    }
+                }
+                htmltools::p(style = paste(
+                    "padding-left: 40px"), info)
+            }
+            htmltools::div(
+                htmltools::h4("NOT IMPORTED BECAUSE"),
+                htmltools::p(reason, style = paste(
+                    "padding-left: 40px")),
+                htmltools::h4("ADDITIONAL INFO"),
+                info_cont
+            )
+        }
+        htmltools::div(
+            style = paste(
+                "padding-left: 40px;",
+                "padding-right: 40px;",
+                "padding-bottom: 20px"
+            ),
+            htmltools::h3("DETAILS"),
+            content
+        )
+    }
 
-    styled_df <- .generate_react_table(report, columns = cols)
+    styled_df <- .generate_react_table(report, columns = cols,
+                                       details = function(index) {
+                                           row_details(index, report)
+                                       })
 
     widget <- htmltools::tags$html(
         htmltools::tags$head(
@@ -1276,11 +1425,32 @@
                 htmltools::div("Here is a summary of all files actually
                 imported.
         If you see 'FALSE' in the column Imported, some errors might have
-        occurred and the function was unable to import the file or simply no
-        path was found for that stats file.",
+        occurred and the function was unable to import the file.
+        Expand the rows for more detail.",
                     id = "subtitle"
                 ),
                 styled_df
+            )
+        )
+    )
+    htmltools::browsable(widget)
+}
+
+.missing_iss_widget <- function(missing_iss) {
+    styled_df <- .generate_react_table(missing_iss)
+    widget <- htmltools::tags$html(
+        htmltools::tags$head(
+            htmltools::tags$style(.widget_css())
+        ),
+        htmltools::tags$body(
+            htmltools::h2("MISSING STATS FOR SAMPLES"),
+            htmltools::div(
+                id = "section-content",
+                htmltools::div("A summary of the samples for which no
+                               corresponding stats were found",
+        id = "subtitle"
+                ),
+        styled_df
             )
         )
     )
@@ -1309,6 +1479,353 @@
                 htmltools::div("Recalibration map", id = "subtitle"),
                 styled_df
             )
+        )
+    )
+    htmltools::browsable(widget)
+}
+
+#---- raw reads ----#
+#' @importFrom plotly plot_ly
+#' @import dplyr
+#' @importFrom stringr str_detect
+#' @import htmltools
+#' @importFrom reactable colDef colFormat
+#' @importFrom purrr map_chr
+#' @importFrom tibble tibble add_row
+.outliers_report_widg <- function(by_pool,
+    pool_col,
+    norm_test,
+    key,
+    flag_logic,
+    outlier_thresh,
+    log2_req,
+    removed_nas,
+    removed_zeros,
+    non_proc_pools,
+    flag_df) {
+    li_pool_opt <- if (by_pool) {
+        htmltools::tags$li("The test was run for each pool")
+    } else {
+        htmltools::tags$li("The test was NOT run for each pool")
+    }
+    li_norm_test <- if (norm_test) {
+        htmltools::tags$li("Calculations performed only
+                      if distribution found normal")
+    } else {
+        htmltools::tags$li("Normality test not performed")
+    }
+    li_key <- htmltools::tags$li(paste(
+        "Calculations performed on columns:",
+        paste0(key, collapse = ", ")
+    ))
+    li_thresh <- htmltools::tags$li(paste(
+        "Outlier p-value threshold:",
+        outlier_thresh
+    ))
+    li_logic <- if (length(key) > 1) {
+        base_flag <- purrr::map_chr(key, function(k) {
+            paste0(
+                "(tdist_", k, " < ", outlier_thresh,
+                " & zscore_", k, " < 0)"
+            )
+        })
+        if (length(flag_logic) == 1) {
+            flag_logic <- rep_len(x = flag_logic, length(key) - 1)
+        }
+        combined <- rbind(base_flag, c(flag_logic, ""))
+        htmltools::tags$li(paste(
+            "Key length > 1, flagging formula used: ",
+            paste(combined, collapse = " ")
+        ))
+    } else {
+        base_flag <- paste0(
+                "(tdist_", key, " < ", outlier_thresh,
+                " & zscore_", key, " < 0)"
+            )
+        htmltools::tags$li(paste(
+            "Flagging formula used: ",
+            paste(base_flag)
+        ))
+    }
+    li_log2 <- if (log2_req) {
+        htmltools::tags$li("Log2 transformation prior to calculations")
+    } else {
+        NULL
+    }
+
+    styled_removed_nas <- .generate_react_table(
+        removed_nas %>%
+        dplyr::select(
+            dplyr::all_of(pool_col),
+            .data$CompleteAmplificationID,
+            dplyr::all_of(key)
+        ))
+    styled_removed_zeros <- if (log2_req) {
+        htmltools::tags$body(
+            htmltools::h3("Negative or zero values (log2 transformation)"),
+            .generate_react_table(removed_zeros)
+        )
+    } else {
+        NULL
+    }
+
+    styled_unproc_pool <- if (by_pool) {
+        htmltools::tags$body(
+            htmltools::h3("Unprocessed samples (per pool test)"),
+            .generate_react_table(non_proc_pools, groupBy = pool_col)
+        )
+    } else {
+        NULL
+    }
+
+    unprocessed_perc_tot <- tibble::tibble(
+        abs = nrow(flag_df %>%
+            dplyr::filter(.data$processed == FALSE)),
+        perc = (nrow(flag_df %>%
+            dplyr::filter(.data$processed == FALSE)) /
+            nrow(flag_df))
+    )
+    styled_perc_tot <- .generate_react_table_mini(unprocessed_perc_tot,
+        perc_cols = "perc"
+    )
+    unprocessed_perc_diff <- tibble::tibble(
+        abs = c(nrow(removed_nas)),
+        perc_on_unprocessed = c(nrow(removed_nas) /
+            unprocessed_perc_tot$abs[1]),
+        perc_on_total = c(nrow(removed_nas) / nrow(flag_df)),
+        reason = c("NAs in key")
+    )
+    if (log2_req) {
+        unprocessed_perc_diff <- unprocessed_perc_diff %>%
+            tibble::add_row(
+                abs = c(nrow(removed_zeros)),
+                perc_on_unprocessed = c(nrow(removed_zeros) /
+                    unprocessed_perc_tot$abs[1]),
+                perc_on_total = c(nrow(removed_zeros) / nrow(flag_df)),
+                reason = c("Values <= 0")
+            )
+    }
+    unprocessed_perc_diff <- unprocessed_perc_diff %>%
+        tibble::add_row(
+            abs = c(unprocessed_perc_tot$abs[1] -
+                sum(unprocessed_perc_diff$abs)),
+            perc_on_unprocessed = c((unprocessed_perc_tot$abs[1] -
+                sum(unprocessed_perc_diff$abs)) /
+                unprocessed_perc_tot$abs[1]),
+            perc_on_total = c((unprocessed_perc_tot$abs[1] -
+                sum(unprocessed_perc_diff$abs)) / nrow(flag_df)),
+            reason = c("Pool samples < min samples")
+        )
+    styled_perc_diff <- .generate_react_table_mini(unprocessed_perc_diff,
+        perc_cols = c(
+            "perc_on_unprocessed",
+            "perc_on_total"
+        )
+    )
+
+    flagged_perc <- tibble::tibble(
+        abs = nrow(flag_df %>%
+            dplyr::filter(.data$to_remove == TRUE)),
+        perc = (nrow(flag_df %>%
+            dplyr::filter(.data$to_remove == TRUE)) /
+            nrow(flag_df))
+    )
+    styled_flagged_perc <- .generate_react_table_mini(flagged_perc,
+        perc_cols = "perc"
+    )
+
+    col_def <- list(
+        processed = reactable::colDef(
+            align = "center",
+            style = function(value) {
+                color <- if (value == TRUE) {
+                    "black"
+                } else {
+                    "#d61e1e"
+                }
+                list(
+                    color = color, paddingLeft = "15px",
+                    fontWeight = "bold",
+                    fontSize = "20px"
+                )
+            },
+            cell = function(value) {
+                toupper(value)
+            }
+        ),
+        to_remove = reactable::colDef(
+            align = "center",
+            style = function(value) {
+                color <- if (value == TRUE) {
+                    "#d61e1e"
+                } else {
+                    "black"
+                }
+                list(
+                    color = color, paddingLeft = "15px",
+                    fontWeight = "bold",
+                    fontSize = "20px"
+                )
+            }, cell = function(value) {
+                if (value == TRUE) paste("\u2691", value) else value
+            }
+        )
+    )
+
+    styled_final <- .generate_react_table(
+        flag_df,
+        columns = col_def, defaultSorted = list(to_remove = "desc"),
+        defaultColDef = reactable::colDef(
+            headerStyle = list(fontSize = "18px", paddingLeft = "15px"),
+            align = "left", sortable = TRUE, resizable = TRUE,
+            filterable = TRUE, style = list(paddingLeft = "15px"),
+            header = function(value) gsub("_", " ", value, fixed = TRUE),
+            format = reactable::colFormat(digits = 4, separators = TRUE)
+        )
+    )
+
+    plot_col_style <- list(
+        reactable::colDef(
+            cell = function(values) {
+                if (all(is.na(values))) {
+                    NA
+                } else {
+                    plotly::plot_ly(
+                        x = values[!is.na(values)], type = "histogram",
+                        width = 200, height = 150
+                    )
+                }
+            }
+        )
+    )
+
+    styled_distr <- if (by_pool) {
+        if (log2_req) {
+            data <- flag_df %>%
+                dplyr::select(
+                    dplyr::all_of(pool_col),
+                    dplyr::contains("log2")
+                ) %>%
+                dplyr::group_by(dplyr::across(pool_col)) %>%
+                dplyr::summarise(dplyr::across(dplyr::contains("log2"),
+                    ~ list(.x),
+                    .names = "{.col}"
+                ))
+            log2_cols <- colnames(data)[stringr::str_detect(
+                colnames(data),
+                "log2"
+            )]
+            coldef <- rep(plot_col_style, length(log2_cols))
+            names(coldef) <- log2_cols
+            htmltools::div(
+                id = "section-content",
+                htmltools::div("Distributions for each pool"),
+                .generate_react_table(data,
+                    columns = coldef,
+                    groupBy = pool_col
+                )
+            )
+        } else {
+            data <- flag_df %>%
+                dplyr::select(
+                    dplyr::all_of(pool_col),
+                    dplyr::all_of(key)
+                ) %>%
+                dplyr::group_by(dplyr::across(pool_col)) %>%
+                dplyr::summarise(dplyr::across(key,
+                    ~ list(.x),
+                    .names = "{.col}"
+                ))
+            coldef <- rep(plot_col_style, length(key))
+            names(coldef) <- key
+            htmltools::div(
+                id = "section-content",
+                htmltools::div("Distributions for each pool"),
+                .generate_react_table(data,
+                    columns = coldef,
+                    groupBy = pool_col
+                )
+            )
+        }
+    } else {
+        if (log2_req) {
+            data <- flag_df %>%
+                dplyr::select(dplyr::contains("log2")) %>%
+                dplyr::summarise(dplyr::across(
+                    .fns = ~ list(.x),
+                    .names = "{.col}"
+                ))
+            log2_cols <- colnames(data)[stringr::str_detect(
+                colnames(data),
+                "log2"
+            )]
+            coldef <- rep(plot_col_style, length(log2_cols))
+            names(coldef) <- log2_cols
+            htmltools::div(
+                id = "section-content",
+                htmltools::div("Distributions"),
+                .generate_react_table(data, columns = coldef)
+            )
+        } else {
+            data <- flag_df %>%
+                dplyr::select(dplyr::all_of(key)) %>%
+                dplyr::summarise(dplyr::across(key,
+                    ~ list(.x),
+                    .names = "{.col}"
+                ))
+            coldef <- rep(plot_col_style, length(key))
+            names(coldef) <- key
+            htmltools::div(
+                id = "section-content",
+                htmltools::div("Distributions"),
+                .generate_react_table(data, columns = coldef)
+            )
+        }
+    }
+
+    widget <- htmltools::tags$html(
+        htmltools::tags$head(
+            htmltools::tags$style(.widget_css())
+        ),
+        htmltools::tags$body(
+            htmltools::h1("RAW READS OUTLIERS REPORT"),
+            htmltools::h3(lubridate::today()),
+            htmltools::h2("PARAMETER CHOICE AND SETTINGS"),
+            htmltools::div(
+                id = "section-content",
+                htmltools::tags$ul(
+                    li_pool_opt,
+                    li_norm_test,
+                    li_key,
+                    li_thresh,
+                    li_logic,
+                    li_log2
+                )
+            ),
+            htmltools::h2("UNPROCESSED READS"),
+            htmltools::h3("NAs in key columns"),
+            htmltools::div(
+                id = "section-content",
+                htmltools::div("These reads were not further processed
+                                       because NAs were found in one or more
+                                       of the key columns",
+                    id = "subtitle"
+                )
+            ),
+            styled_removed_nas,
+            styled_removed_zeros,
+            styled_unproc_pool,
+            htmltools::h2("SUMMARY"),
+            htmltools::h3("Total unprocessed reads"),
+            styled_perc_tot,
+            htmltools::h3("Unprocessed reads summary"),
+            styled_perc_diff,
+            htmltools::h3("Flagged reads"),
+            styled_flagged_perc,
+            htmltools::h3("Flagged metadata"),
+            styled_final,
+            htmltools::h3("Data distribution"),
+            styled_distr
         )
     )
     htmltools::browsable(widget)

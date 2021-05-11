@@ -68,219 +68,222 @@
 #' op <- options(ISAnalytics.widgets = FALSE)
 #'
 #' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
+#'   package = "ISAnalytics"
 #' )
 #' root_correct <- system.file("extdata", "fs.zip",
-#'     package = "ISAnalytics"
+#'   package = "ISAnalytics"
 #' )
 #' root_correct <- unzip_file_system(root_correct, "fs")
 #'
 #' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     association_file = path_AF, root = root_correct,
-#'     quantification_type = c("seqCount", "fragmentEstimate"),
-#'     matrix_type = "annotated", workers = 2, patterns = NULL,
-#'     matching_opt = "ANY",
-#'     dates_format = "dmy"
+#'   association_file = path_AF, root = root_correct,
+#'   quantification_type = c("seqCount", "fragmentEstimate"),
+#'   matrix_type = "annotated", workers = 2, patterns = NULL,
+#'   matching_opt = "ANY",
+#'   dates_format = "dmy"
 #' )
 #'
 #' cis <- CIS_grubbs(matrices)
 #' plot <- CIS_volcano_plot(cis)
 #' options(op)
 CIS_volcano_plot <- function(x,
-    onco_db_file = system.file("extdata",
-        "201806_uniprot-Proto-oncogene.tsv.xz",
-        package = "ISAnalytics"
-    ),
-    tumor_suppressors_db_file = system.file("extdata",
-        "201806_uniprot-Tumor-suppressor.tsv.xz",
-        package = "ISAnalytics"
-    ),
-    species = "human",
-    known_onco = known_clinical_oncogenes(),
-    suspicious_genes =
-        clinical_relevant_suspicious_genes(),
-    significance_threshold = 0.05,
-    annotation_threshold_ontots = 0.1,
-    highlight_genes = NULL,
-    title_prefix = NULL,
-    return_df = FALSE) {
-    ## Check params
-    stopifnot(is.data.frame(x))
-    stopifnot(is.character(onco_db_file) & length(onco_db_file) == 1)
-    stopifnot(is.character(tumor_suppressors_db_file) &
-        length(tumor_suppressors_db_file) == 1)
-    stopifnot(is.character(species))
-    stopifnot(is.data.frame(known_onco))
-    stopifnot(is.data.frame(suspicious_genes))
-    stopifnot(is.numeric(significance_threshold) |
-        is.integer(significance_threshold) &
-            length(significance_threshold) == 1)
-    stopifnot(is.numeric(annotation_threshold_ontots) |
-        is.integer(annotation_threshold_ontots) &
-            length(annotation_threshold_ontots) == 1)
-    stopifnot(is.null(title_prefix) || (is.character(title_prefix) &
-        length(title_prefix == 1)))
-    stopifnot(is.null(highlight_genes) || is.character(highlight_genes))
-    stopifnot(is.logical(return_df))
-    if (is.null(title_prefix)) {
-        title_prefix <- ""
+                             onco_db_file = system.file("extdata",
+                               "201806_uniprot-Proto-oncogene.tsv.xz",
+                               package = "ISAnalytics"
+                             ),
+                             tumor_suppressors_db_file = system.file("extdata",
+                               "201806_uniprot-Tumor-suppressor.tsv.xz",
+                               package = "ISAnalytics"
+                             ),
+                             species = "human",
+                             known_onco = known_clinical_oncogenes(),
+                             suspicious_genes =
+                               clinical_relevant_suspicious_genes(),
+                             significance_threshold = 0.05,
+                             annotation_threshold_ontots = 0.1,
+                             highlight_genes = NULL,
+                             title_prefix = NULL,
+                             return_df = FALSE) {
+  ## Check params
+  stopifnot(is.data.frame(x))
+  stopifnot(is.character(onco_db_file) & length(onco_db_file) == 1)
+  stopifnot(is.character(tumor_suppressors_db_file) &
+    length(tumor_suppressors_db_file) == 1)
+  stopifnot(is.character(species))
+  stopifnot(is.data.frame(known_onco))
+  stopifnot(is.data.frame(suspicious_genes))
+  stopifnot(is.numeric(significance_threshold) |
+    is.integer(significance_threshold) &
+      length(significance_threshold) == 1)
+  stopifnot(is.numeric(annotation_threshold_ontots) |
+    is.integer(annotation_threshold_ontots) &
+      length(annotation_threshold_ontots) == 1)
+  stopifnot(is.null(title_prefix) || (is.character(title_prefix) &
+    length(title_prefix == 1)))
+  stopifnot(is.null(highlight_genes) || is.character(highlight_genes))
+  stopifnot(is.logical(return_df))
+  if (is.null(title_prefix)) {
+    title_prefix <- ""
+  }
+  ## Load onco and ts
+  oncots_to_use <- .load_onco_ts_genes(
+    onco_db_file,
+    tumor_suppressors_db_file,
+    species
+  )
+  ## Check if CIS function was already called
+  min_cis_col <- c(
+    "tdist_bonferroni_default", "tdist_fdr",
+    "neg_zscore_minus_log2_int_freq_tolerance"
+  )
+  cis_grubbs_df <- if (!all(min_cis_col %in% colnames(x))) {
+    if (getOption("ISAnalytics.verbose") == TRUE) {
+      message(paste("Calculating CIS_grubbs for x..."))
     }
-    ## Load onco and ts
-    oncots_to_use <- .load_onco_ts_genes(
-        onco_db_file,
-        tumor_suppressors_db_file,
-        species
+    CIS_grubbs(x)
+  } else {
+    x
+  }
+  ## Join all dfs by gene
+  cis_grubbs_df <- cis_grubbs_df %>%
+    dplyr::left_join(oncots_to_use, by = "GeneName") %>%
+    dplyr::left_join(known_onco, by = "GeneName") %>%
+    dplyr::left_join(suspicious_genes, by = "GeneName")
+  ## Add info to CIS
+  cis_grubbs_df <- cis_grubbs_df %>%
+    dplyr::mutate(minus_log_p = -log(.data$tdist_bonferroni_default,
+      base = 10
+    ))
+  cis_grubbs_df <- cis_grubbs_df %>%
+    dplyr::mutate(
+      minus_log_p_fdr = -log(.data$tdist_fdr, base = 10),
+      positive_outlier_and_significant = ifelse(
+        test = !is.na(.data$tdist_fdr) &
+          .data$tdist_fdr < significance_threshold,
+        yes = TRUE,
+        no = FALSE
+      )
     )
-    ## Check if CIS function was already called
-    min_cis_col <- c(
-        "tdist_bonferroni_default", "tdist_fdr",
-        "neg_zscore_minus_log2_int_freq_tolerance"
-    )
-    cis_grubbs_df <- if (!all(min_cis_col %in% colnames(x))) {
-        if (getOption("ISAnalytics.verbose") == TRUE) {
-            message(paste("Calculating CIS_grubbs for x..."))
-        }
-        CIS_grubbs(x)
-    } else {
-        x
-    }
-    ## Join all dfs by gene
-    cis_grubbs_df <- cis_grubbs_df %>%
-        dplyr::left_join(oncots_to_use, by = "GeneName") %>%
-        dplyr::left_join(known_onco, by = "GeneName") %>%
-        dplyr::left_join(suspicious_genes, by = "GeneName")
-    ## Add info to CIS
-    cis_grubbs_df <- cis_grubbs_df %>%
-        dplyr::mutate(minus_log_p = -log(.data$tdist_bonferroni_default,
-            base = 10
-        ))
-    cis_grubbs_df <- cis_grubbs_df %>%
-        dplyr::mutate(
-            minus_log_p_fdr = -log(.data$tdist_fdr, base = 10),
-            positive_outlier_and_significant = ifelse(
-                test = !is.na(.data$tdist_fdr) &
-                    .data$tdist_fdr < significance_threshold,
-                yes = TRUE,
-                no = FALSE
-            )
+  cis_grubbs_df <- cis_grubbs_df %>%
+    dplyr::mutate(
+      KnownGeneClass = ifelse(
+        is.na(.data$Onco1_TS2),
+        yes = "Other",
+        no = ifelse(.data$Onco1_TS2 == 1,
+          yes = "OncoGene",
+          no = "TumSuppressor"
         )
-    cis_grubbs_df <- cis_grubbs_df %>%
-        dplyr::mutate(
-            KnownGeneClass = ifelse(
-                is.na(.data$Onco1_TS2),
-                yes = "Other",
-                no = ifelse(.data$Onco1_TS2 == 1,
-                    yes = "OncoGene",
-                    no = "TumSuppressor"
-                )
-            ),
-            CriticalForInsMut = ifelse(!is.na(.data$KnownClonalExpansion),
-                yes = TRUE, no = FALSE
-            )
-        )
-    significance_threshold_minus_log_p <- -log(significance_threshold,
-        base = 10
+      ),
+      CriticalForInsMut = ifelse(!is.na(.data$KnownClonalExpansion),
+        yes = TRUE, no = FALSE
+      )
     )
-    annotation_threshold_ontots_log <- -log(annotation_threshold_ontots,
-        base = 10
-    )
-    ## Trace plot
-    plot_cis_fdr_slice <- ggplot2::ggplot(
-        data = cis_grubbs_df,
-        ggplot2::aes_(
-            y = ~minus_log_p_fdr,
-            x = ~neg_zscore_minus_log2_int_freq_tolerance,
-            color = ~KnownGeneClass,
-            fill = ~KnownGeneClass
-        ),
-        na.rm = TRUE, se = TRUE
+  significance_threshold_minus_log_p <- -log(significance_threshold,
+    base = 10
+  )
+  annotation_threshold_ontots_log <- -log(annotation_threshold_ontots,
+    base = 10
+  )
+  ## Trace plot
+  plot_cis_fdr_slice <- ggplot2::ggplot(
+    data = cis_grubbs_df,
+    ggplot2::aes_(
+      y = ~minus_log_p_fdr,
+      x = ~neg_zscore_minus_log2_int_freq_tolerance,
+      color = ~KnownGeneClass,
+      fill = ~KnownGeneClass
+    ),
+    na.rm = TRUE, se = TRUE
+  ) +
+    ggplot2::geom_point(alpha = .5, size = 3) +
+    ggplot2::geom_hline(
+      yintercept = significance_threshold_minus_log_p,
+      color = "black", size = 1, show.legend = TRUE, linetype = "dashed"
     ) +
-        ggplot2::geom_point(alpha = .5, size = 3) +
-        ggplot2::geom_hline(
-            yintercept = significance_threshold_minus_log_p,
-            color = "black", size = 1, show.legend = TRUE, linetype = "dashed"
-        ) +
-        ggplot2::scale_y_continuous(limits = c(0, max(c(
-            (significance_threshold_minus_log_p + 0.5),
-            max(cis_grubbs_df$minus_log_p_fdr, na.rm = TRUE)
-        ), na.rm = TRUE))) +
-        ggplot2::scale_x_continuous(breaks = seq(-4, 4, 2)) +
-        ggrepel::geom_label_repel(
-            data = dplyr::filter(
-                cis_grubbs_df,
-                .data$tdist_fdr < significance_threshold
-            ),
-            ggplot2::aes_(label = ~GeneName),
-            box.padding = ggplot2::unit(0.35, "lines"),
-            point.padding = ggplot2::unit(0.3, "lines"),
-            color = "white",
-            segment.color = "black",
-            max.overlaps = Inf
-        ) +
-        ggplot2::theme(
-            strip.text.y = ggplot2::element_text(
-                size = 16,
-                colour = "blue",
-                angle = 270
-            ),
-            strip.text.x = ggplot2::element_text(
-                size = 16,
-                colour = "blue",
-                angle = 0
-            )
-        ) +
-        ggplot2::theme(strip.text = ggplot2::element_text(
-            face = "bold",
-            size = 16
-        )) +
-        ggplot2::theme(
-            axis.text.x = ggplot2::element_text(size = 16),
-            axis.text.y = ggplot2::element_text(size = 16),
-            axis.title = ggplot2::element_text(size = 16),
-            plot.title = ggplot2::element_text(size = 20)
-        ) +
-        ggplot2::labs(
-            title = paste(
-                title_prefix,
-                "- Volcano plot of IS gene frequency and",
-                "CIS results"
-            ),
-            y = "P-value Grubbs test (-log10(p))",
-            x = "Integration frequency (log2)",
-            size = "Avg Transcr. Len",
-            color = "Onco TumSupp Genes",
-            subtitle = paste0(
-                "Significance threshold for annotation",
-                " labeling: P-value < ", significance_threshold,
-                "(FDR adjusted; ",
-                "-log = ", (round(-log(significance_threshold, base = 10), 3)),
-                ").\nOnco/TS genes source: UniProt (other genes ",
-                "labeled as 'Other'). Annotated if P-value > ",
-                round(annotation_threshold_ontots_log, 3), "\nexcept ",
-                "selected genes to be highlighted"
-            )
-        )
-    if (!is.null(highlight_genes) && !purrr::is_empty(highlight_genes)) {
-        ## Look for the genes (case insensitive)
-        to_highlight <- cis_grubbs_df %>%
-            dplyr::filter(stringr::str_to_lower(.data$GeneName) %in%
-                stringr::str_to_lower(highlight_genes))
-        plot_cis_fdr_slice <- plot_cis_fdr_slice +
-            ggrepel::geom_label_repel(
-                data = to_highlight,
-                ggplot2::aes_(label = ~GeneName),
-                box.padding = ggplot2::unit(0.35, "lines"),
-                point.padding = ggplot2::unit(0.3, "lines"),
-                color = "white",
-                segment.color = "black",
-                max.overlaps = Inf
-            )
-    }
-    if (return_df) {
-        return(list(plot = plot_cis_fdr_slice, df = cis_grubbs_df))
-    } else {
-        return(plot_cis_fdr_slice)
-    }
+    ggplot2::scale_y_continuous(limits = c(0, max(c(
+      (significance_threshold_minus_log_p + 0.5),
+      max(cis_grubbs_df$minus_log_p_fdr, na.rm = TRUE)
+    ), na.rm = TRUE))) +
+    ggplot2::scale_x_continuous(breaks = seq(-4, 4, 2)) +
+    ggrepel::geom_label_repel(
+      data = dplyr::filter(
+        cis_grubbs_df,
+        .data$tdist_fdr < significance_threshold
+      ),
+      ggplot2::aes_(label = ~GeneName),
+      box.padding = ggplot2::unit(0.35, "lines"),
+      point.padding = ggplot2::unit(0.3, "lines"),
+      color = "white",
+      segment.color = "black",
+      max.overlaps = Inf
+    ) +
+    ggplot2::theme(
+      strip.text.y = ggplot2::element_text(
+        size = 16,
+        colour = "blue",
+        angle = 270
+      ),
+      strip.text.x = ggplot2::element_text(
+        size = 16,
+        colour = "blue",
+        angle = 0
+      )
+    ) +
+    ggplot2::theme(strip.text = ggplot2::element_text(
+      face = "bold",
+      size = 16
+    )) +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(size = 16),
+      axis.text.y = ggplot2::element_text(size = 16),
+      axis.title = ggplot2::element_text(size = 16),
+      plot.title = ggplot2::element_text(size = 20)
+    ) +
+    ggplot2::labs(
+      title = paste(
+        title_prefix,
+        "- Volcano plot of IS gene frequency and",
+        "CIS results"
+      ),
+      y = "P-value Grubbs test (-log10(p))",
+      x = "Integration frequency (log2)",
+      size = "Avg Transcr. Len",
+      color = "Onco TumSupp Genes",
+      subtitle = paste0(
+        "Significance threshold for annotation",
+        " labeling: P-value < ", significance_threshold,
+        "(FDR adjusted; ",
+        "-log = ", (round(-log(significance_threshold, base = 10), 3)),
+        ").\nOnco/TS genes source: UniProt (other genes ",
+        "labeled as 'Other'). Annotated if P-value > ",
+        round(annotation_threshold_ontots_log, 3), "\nexcept ",
+        "selected genes to be highlighted"
+      )
+    )
+  if (!is.null(highlight_genes) && !purrr::is_empty(highlight_genes)) {
+    ## Look for the genes (case insensitive)
+    to_highlight <- cis_grubbs_df %>%
+      dplyr::filter(
+        stringr::str_to_lower(.data$GeneName) %in%
+          stringr::str_to_lower(highlight_genes),
+        .data$tdist_fdr >= significance_threshold
+      )
+    plot_cis_fdr_slice <- plot_cis_fdr_slice +
+      ggrepel::geom_label_repel(
+        data = to_highlight,
+        ggplot2::aes_(label = ~GeneName),
+        box.padding = ggplot2::unit(0.35, "lines"),
+        point.padding = ggplot2::unit(0.3, "lines"),
+        color = "white",
+        segment.color = "black",
+        max.overlaps = Inf
+      )
+  }
+  if (return_df) {
+    return(list(plot = plot_cis_fdr_slice, df = cis_grubbs_df))
+  } else {
+    return(plot_cis_fdr_slice)
+  }
 }
 
 #' Known clinical oncogenes (for mouse and human).
@@ -294,10 +297,10 @@ CIS_volcano_plot <- function(x,
 #' @examples
 #' known_clinical_oncogenes()
 known_clinical_oncogenes <- function() {
-    tibble::tibble(
-        GeneName = c("MECOM", "CCND2", "TAL1", "LMO2", "HMGA2"),
-        KnownClonalExpansion = TRUE
-    )
+  tibble::tibble(
+    GeneName = c("MECOM", "CCND2", "TAL1", "LMO2", "HMGA2"),
+    KnownClonalExpansion = TRUE
+  )
 }
 
 #' Clinical relevant suspicious genes (for mouse and human).
@@ -311,13 +314,109 @@ known_clinical_oncogenes <- function() {
 #' @examples
 #' clinical_relevant_suspicious_genes()
 clinical_relevant_suspicious_genes <- function() {
-    tibble::tibble(
-        GeneName = c(
-            "DNMT3A", "TET2", "ASXL1",
-            "JAK2", "CBL", "TP53"
-        ),
-        ClinicalRelevance = TRUE,
-        DOIReference =
-            "https://doi.org/10.1182/blood-2018-01-829937"
+  tibble::tibble(
+    GeneName = c(
+      "DNMT3A", "TET2", "ASXL1",
+      "JAK2", "CBL", "TP53"
+    ),
+    ClinicalRelevance = TRUE,
+    DOIReference =
+      "https://doi.org/10.1182/blood-2018-01-829937"
+  )
+}
+
+#' Plot of the estimated HSC population size for each patient.
+#'
+#' @param estimates The estimates data frame, obtained via
+#' \code{\link{HSC_population_size_estimate}}
+#' @param project_name The project name, will be included in the plot title
+#' @param timepoints Which time points to plot? One between "All",
+#' "Stable" and "Consecutive"
+#' @param models Name of the models to plot (as they appear in the column
+#' of the estimates)
+#'
+#' @family Plotting functions
+#'
+#' @import dplyr
+#' @import ggplot2
+#'
+#' @return A plot
+#' @export
+#'
+#' @examples
+#' op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
+#' path_AF <- system.file("extdata", "ex_association_file.tsv",
+#'     package = "ISAnalytics"
+#' )
+#' root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+#' root_correct <- unzip_file_system(root_correct, "fs")
+#' association_file <- import_association_file(path_AF, root_correct,
+#'     dates_format = "dmy"
+#' )
+#' aggregated_meta <- aggregate_metadata(association_file)
+#' matrices <- import_parallel_Vispa2Matrices_auto(
+#'     association_file = association_file, root = NULL,
+#'     quantification_type = c("fragmentEstimate", "seqCount"),
+#'     matrix_type = "annotated", workers = 2, matching_opt = "ANY"
+#' )
+#' agg <- aggregate_values_by_key(
+#'     x = matrices,
+#'     association_file = association_file,
+#'     value_cols = "seqCount"
+#' )
+#' estimate <- HSC_population_size_estimate(x = agg,
+#' metadata = aggregated_meta,
+#' stable_timepoints = NULL)
+#' p <- HSC_population_plot(estimate, "PROJECT1")
+#' options(op)
+HSC_population_plot <- function(estimates,
+                                project_name,
+                                timepoints = "Consecutive",
+                                models = "Mth Chao (LB)") {
+    if (is.null(estimates)) {
+        return(NULL)
+    }
+  ## Pre-filter
+  df <- estimates %>%
+    dplyr::filter(
+      .data$Timepoints %in% timepoints,
+      .data$Model %in% models
     )
+  p <- ggplot2::ggplot(
+    data = df,
+    ggplot2::aes_(
+      y = ~PopSize,
+      x = ~TimePoint_to,
+      color = ~SubjectID
+    ),
+    na.rm = TRUE, se = TRUE
+  ) +
+    ggplot2::geom_point(alpha = .5) +
+    ggplot2::geom_line(size = 2, alpha = .7) +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(size = 14),
+      axis.text.y = ggplot2::element_text(size = 14),
+      axis.title = ggplot2::element_text(size = 16),
+      plot.title = ggplot2::element_text(size = 20),
+      strip.text.x = ggplot2::element_text(
+        size = 14,
+        colour = "darkblue",
+        angle = 0,
+        face = "bold"
+      ),
+      strip.text.y = ggplot2::element_text(
+        size = 14,
+        colour = "darkred",
+        angle = 270,
+        face = "bold"
+      )
+    ) +
+    ggplot2::labs(
+      title = paste(project_name, "- HSC Population size"),
+      x = "Time Point (months after GT)",
+      y = "HSC size (Chao model with bias correction)",
+      colour = "Patient",
+      subtitle = "IS from Myeloid PB cells as surrogate of HSC."
+    )
+  p
 }

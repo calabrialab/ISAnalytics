@@ -94,13 +94,9 @@
 #' @keywords internal
 #
 # @return A character vector of column names
-.find_exp_cols <- function(x) {
+.find_exp_cols <- function(x, to_exclude) {
     stopifnot(is.data.frame(x))
-    default_cols <- c(
-        mandatory_IS_vars(), annotation_IS_vars(),
-        "CompleteAmplificationID"
-    )
-    remaining <- colnames(x)[!colnames(x) %in% default_cols]
+    remaining <- colnames(x)[!colnames(x) %in% to_exclude]
     remaining_numeric <- purrr::map_lgl(remaining, function(y) {
         exp <- rlang::expr(`$`(x, !!y))
         exp <- rlang::eval_tidy(exp)
@@ -127,37 +123,6 @@
 #### ---- Internals for matrix import ----####
 
 #---- USED IN : import_single_Vispa2Matrix ----
-
-# Internal function to convert a messy matrix to a tidy data frame
-#
-# @description Uses the suite of functions provided by the
-# tidyverse to produce a more dense and ordered structure.
-# This function is not exported and should be called in other importing
-# functions.
-#
-# @param df Messy tibble to convert to tidy
-# @keywords internal
-#
-# @return a tidy tibble
-#' @importFrom rlang .data
-#' @importFrom tidyr pivot_longer
-#' @importFrom dplyr arrange all_of filter
-#' @importFrom forcats fct_inseq as_factor
-.messy_to_tidy <- function(df) {
-    exp_cols <- which(!(colnames(df) %in% c(
-        mandatory_IS_vars(),
-        annotation_IS_vars()
-    )))
-    isadf_tidy <- df %>%
-        tidyr::pivot_longer(
-            cols = dplyr::all_of(exp_cols),
-            names_to = "CompleteAmplificationID",
-            values_to = "Value",
-            values_drop_na = TRUE
-        ) %>%
-        dplyr::filter(.data$Value > 0)
-    isadf_tidy
-}
 
 # Internal function to auto-detect the type of IS based on the headers.
 #
@@ -353,9 +318,9 @@
         before <- as_file %>% dplyr::select(dplyr::all_of(date_cols))
         as_file <- as_file %>%
             dplyr::mutate(dplyr::across(date_cols,
-                .fns = ~ lubridate::parse_date_time(.x,
+                .fns = ~ lubridate::as_date(lubridate::parse_date_time(.x,
                     orders = date_format
-                )
+                ))
             ))
         date_failures <- purrr::map_dfr(date_cols, function(col) {
             before_col <- purrr::pluck(before, col)
@@ -388,10 +353,10 @@
 # @param df The imported association file (data.frame or tibble)
 # @param root_folder Path to the root folder
 # @keywords internal
-#' @importFrom dplyr select distinct mutate bind_rows
-#' @importFrom fs dir_ls
-#' @importFrom purrr pmap is_empty reduce map_dbl
-#' @importFrom stringr str_replace_all str_extract_all
+#' @importFrom dplyr select distinct mutate
+#' @importFrom fs dir_ls path dir_exists
+#' @importFrom purrr pmap_dfr is_empty
+#' @importFrom stringr str_replace_all
 #' @importFrom tibble tibble
 #
 # @return A data frame containing, for each ProjectID and
@@ -408,89 +373,70 @@
             .data$PathToFolderProjectID
         ) %>%
         dplyr::distinct()
-    root_regexp <- stringr::str_replace_all(root_folder, "\\/", "\\\\/")
-    if (root_folder == "") {
-        results_df <- purrr::pmap(
-            temp_df,
-            function(...) {
-                cur <- tibble::tibble(...)
-                pattern <- paste0(
-                    "^", root_regexp,
-                    stringr::str_replace_all(
-                        cur$PathToFolderProjectID, "\\/", "\\\\/"
-                    ),
-                    "\\/quantification\\/",
-                    cur$concatenatePoolIDSeqRun, "$"
-                )
-                pattern <- stringr::str_replace_all(pattern,
-                    pattern = "\\\\\\/\\\\\\/",
-                    replacement = "\\\\/"
-                )
-                dirExists <- file.exists(cur$PathToFolderProjectID)
-                value <- if (!dirExists) {
-                    NA_character_
-                } else {
-                    tree_struct <- fs::dir_ls(
-                        path = cur$PathToFolderProjectID, recurse = TRUE,
-                        type = "directory", fail = FALSE
+    path_cols <- .path_cols_names()
+    results_df <- purrr::pmap_dfr(
+        temp_df,
+        function(...) {
+            cur <- tibble::tibble(...)
+            if (is.na(cur$PathToFolderProjectID)) {
+                return(cur %>%
+                    dplyr::mutate(
+                        !!path_cols$project := NA_character_,
+                        !!path_cols$quant := NA_character_,
+                        !!path_cols$iss := NA_character_
+                    ))
+            }
+            project_folder <- fs::path(
+                fs::path(root_folder),
+                cur$PathToFolderProjectID
+            )
+            quant_folder <- fs::path(
+                "quantification",
+                fs::path(cur$concatenatePoolIDSeqRun)
+            )
+            iss_folder <- fs::path(
+                "iss",
+                fs::path(cur$concatenatePoolIDSeqRun)
+            )
+            dirExists <- fs::dir_exists(project_folder)
+            if (!dirExists) {
+                return(cur %>%
+                    dplyr::mutate(
+                        !!path_cols$project := NA_character_,
+                        !!path_cols$quant := NA_character_,
+                        !!path_cols$iss := NA_character_
+                    ))
+            }
+            quant_found <- fs::dir_ls(
+                path = project_folder, recurse = TRUE,
+                type = "directory", fail = FALSE,
+                regexp = quant_folder
+            )
+            if (length(quant_found) == 0) {
+                quant_found <- NA_character_
+            }
+            iss_found <- fs::dir_ls(
+                path = project_folder, recurse = TRUE,
+                type = "directory", fail = FALSE,
+                regexp = iss_folder
+            )
+            if (length(iss_found) == 0) {
+                iss_found <- NA_character_
+            }
+            return(
+                cur %>%
+                    dplyr::mutate(
+                        !!path_cols$project := project_folder,
+                        !!path_cols$quant := quant_found,
+                        !!path_cols$iss := iss_found
                     )
-                    found <- stringr::str_extract_all(tree_struct, pattern)
-                    found <- unlist(found)
-                    if (purrr::is_empty(found)) {
-                        NA_character_
-                    } else {
-                        found
-                    }
-                }
-                tibble::tibble(
-                    ProjectID = cur$ProjectID,
-                    concatenatePoolIDSeqRun =
-                        cur$concatenatePoolIDSeqRun,
-                    Path = value
-                )
-            }
-        )
-    } else {
-        tree_struct <- fs::dir_ls(
-            path = root_folder, recurse = TRUE,
-            type = "directory", fail = FALSE
-        )
-        results_df <- purrr::pmap(
-            temp_df,
-            function(...) {
-                cur <- tibble::tibble(...)
-                pattern <- paste0(
-                    "^", root_regexp,
-                    stringr::str_replace_all(
-                        cur$PathToFolderProjectID, "\\/", "\\\\/"
-                    ),
-                    "\\/quantification\\/",
-                    cur$concatenatePoolIDSeqRun, "$"
-                )
-                pattern <- stringr::str_replace_all(pattern,
-                    pattern = "\\\\\\/\\\\\\/",
-                    replacement = "\\\\/"
-                )
-                found <- stringr::str_extract_all(tree_struct, pattern)
-                found <- unlist(found)
-                value <- if (purrr::is_empty(found)) {
-                    NA_character_
-                } else {
-                    found
-                }
-                tibble::tibble(
-                    ProjectID = cur$ProjectID,
-                    concatenatePoolIDSeqRun =
-                        cur$concatenatePoolIDSeqRun,
-                    Path = value
-                )
-            }
-        )
-    }
-    checker_df <- purrr::reduce(results_df, dplyr::bind_rows) %>%
+            )
+        }
+    )
+    checker_df <- results_df %>%
         dplyr::mutate(
-            Found = ifelse(!is.na(.data$Path), TRUE, FALSE),
-            .before = .data$Path
+            Found = ifelse(!is.na(.data[[path_cols$project]]), TRUE, FALSE),
+            .before = .data[[path_cols$project]]
         )
     checker_df
 }
@@ -508,21 +454,257 @@
 # @keywords internal
 #
 # @return An updated association file with absolute paths
+#' @importFrom dplyr left_join select
 .update_af_after_alignment <- function(as_file, checks, root) {
-    # Finally import modified association file
-    checks <- checks %>%
-        dplyr::select(
-            .data$ProjectID, .data$concatenatePoolIDSeqRun,
-            .data$Path
-        )
     as_file <- as_file %>%
-        dplyr::left_join(checks, by = c("ProjectID", "concatenatePoolIDSeqRun"))
+        dplyr::left_join(checks %>%
+            dplyr::select(
+                -.data$PathToFolderProjectID,
+                -.data$Found
+            ),
+        by = c("ProjectID", "concatenatePoolIDSeqRun")
+        )
     as_file
+}
+
+#---- USED IN : import_Vispa2_stats ----
+
+# Finds automatically the path on disk to each stats file.
+#
+#' @import dplyr
+#' @importFrom purrr pmap_dfr detect_index
+#' @importFrom tibble tibble
+#' @importFrom fs dir_ls
+#' @importFrom rlang .data
+# @keywords internal
+# @return A tibble with columns: ProjectID, concatenatePoolIDSeqRun,
+# Path_iss (or designated dynamic name), stats_files, info
+.stats_report <- function(association_file, prefixes) {
+    path_col_names <- .path_cols_names()
+    temp <- association_file %>%
+        dplyr::select(
+            .data$ProjectID,
+            .data$concatenatePoolIDSeqRun,
+            .data[[path_col_names$iss]]
+        ) %>%
+        dplyr::distinct()
+    # If paths are all NA return
+    if (all(is.na(temp[[path_col_names$iss]]))) {
+        return(temp %>% dplyr::mutate(
+            stats_files = NA_character_,
+            info = NULL
+        ))
+    }
+    match_pattern <- function(pattern, temp_row) {
+        if (is.na(temp_row[[path_col_names$iss]])) {
+            return(tibble::tibble(pattern = pattern, file = NA_character_))
+        }
+        # For each prefix pattern search in the iss folder
+        # Note: there can be
+        # - a single file matching the prefix (ideal)
+        # - multiple files matching
+        # - no file matching
+        files <- fs::dir_ls(temp_row[[path_col_names$iss]],
+            type = "file", fail = FALSE,
+            regexp = pattern
+        )
+        if (length(files) == 0) {
+            files <- NA_character_
+        }
+        tibble::tibble(pattern = pattern, file = files)
+    }
+    stats_paths <- purrr::pmap_dfr(temp, function(...) {
+        temp_row <- tibble::tibble(...)
+        matches <- purrr::map_dfr(prefixes, ~ match_pattern(.x, temp_row))
+        if (all(is.na(matches$file))) {
+            # No stats files found for all prefixes
+            return(temp_row %>%
+                dplyr::mutate(
+                    stats_files = NA_character_,
+                    info = list("NOT FOUND")
+                ))
+        }
+        if (length(which(!is.na(matches$file))) == 1) {
+            return(temp_row %>%
+                dplyr::mutate(
+                    stats_files = (matches %>%
+                        dplyr::filter(!is.na(.data$file)) %>%
+                        dplyr::pull(.data$file)),
+                    info = NA
+                ))
+        }
+        # Get the count of files found for each pattern and order them
+        # as preference - preferred pattern is the first in the prefixes
+        # parameter
+        pattern_counts <- matches %>%
+            dplyr::mutate(pattern = factor(.data$pattern,
+                levels = prefixes
+            )) %>%
+            dplyr::filter(!is.na(.data$file)) %>%
+            dplyr::group_by(.data$pattern) %>%
+            dplyr::tally() %>%
+            dplyr::arrange(.data$pattern)
+        one_index <- purrr::detect_index(pattern_counts$n, ~ .x == 1)
+        if (one_index == 0) {
+            ## Means there are duplicates for all patterns, gets reported
+            ## but no files will be imported
+            return(temp_row %>%
+                dplyr::mutate(
+                    stats_files = NA_character_,
+                    info = list(matches %>%
+                        dplyr::filter(!is.na(.data$file)))
+                ))
+        } else {
+            ## Pick the file with the pattern that has a count of 1 (no
+            ## duplicates)
+            chosen_pattern <- pattern_counts$pattern[one_index]
+            return(temp_row %>%
+                dplyr::mutate(
+                    stats_files = matches %>%
+                        dplyr::filter(.data$pattern == chosen_pattern) %>%
+                        dplyr::pull(.data$file),
+                    info = NA
+                ))
+        }
+    })
+    stats_paths
+}
+
+# Imports all found Vispa2 stats files.
+#
+#' @import BiocParallel
+#' @importFrom purrr map_chr pmap_dfr reduce is_empty
+#' @import dplyr
+#' @importFrom tibble tibble
+#' @importFrom data.table fread
+# @keywords internal
+#
+# @return A list with the imported stats and a report of imported files. If no
+# files were imported returns NULL instead
+.import_stats_iss <- function(association_file, prefixes) {
+    # Obtain paths
+    stats_paths <- .stats_report(association_file, prefixes)
+    if (all(is.na(stats_paths$stats_files))) {
+        stats_paths <- stats_paths %>% dplyr::mutate(Imported = FALSE)
+        evaluate <- function(x) {
+            if (is.list(x)) {
+                if (is.data.frame(x)[[1]]) {
+                    return("DUPLICATES")
+                }
+                if (is.na(x[[1]]) | is.null(x[[1]])) {
+                    return(NA_character_)
+                }
+                return(x[[1]])
+            }
+            if (is.na(x)) {
+                return(NA_character_)
+            }
+            return(x)
+        }
+        condition <- purrr::map_chr(stats_paths$info, evaluate)
+        stats_paths <- stats_paths %>% dplyr::mutate(reason = condition)
+        return(list(stats = NULL, report = stats_paths))
+    }
+    # Setup parallel workers and import
+    # Register backend according to platform
+    if (.Platform$OS.type == "windows") {
+        p <- BiocParallel::SnowParam(
+            stop.on.error = FALSE,
+            tasks = length(stats_paths$stats_files),
+            progressbar = getOption("ISAnalytics.verbose"),
+            exportglobals = FALSE
+        )
+    } else {
+        p <- BiocParallel::MulticoreParam(
+            stop.on.error = FALSE,
+            tasks = length(stats_paths$stats_files),
+            progressbar = getOption("ISAnalytics.verbose"),
+            exportglobals = FALSE
+        )
+    }
+    FUN <- function(x) {
+        if (is.na(x)) {
+            return(NULL)
+        }
+        stats <- data.table::fread(
+            file = x, sep = "\t",
+            na.strings = c("", "NA", "na", "NONE"),
+            data.table = TRUE
+        )
+        ok <- .check_stats(stats)
+        if (ok == TRUE) {
+            return(stats %>%
+                dplyr::mutate(TAG = stringr::str_replace_all(
+                    .data$TAG,
+                    pattern = "\\.", replacement = ""
+                )))
+        } else {
+            return("MALFORMED")
+        }
+    }
+    stats_dfs <- BiocParallel::bptry(
+        BiocParallel::bplapply(stats_paths$stats_files,
+            FUN,
+            BPPARAM = p
+        )
+    )
+    BiocParallel::bpstop(p)
+    correct <- purrr::map_chr(stats_dfs, function(x) {
+        if (all(is.data.frame(x))) {
+            "TRUE"
+        } else if (is.null(x)) {
+            "FALSE"
+        } else {
+            x
+        }
+    })
+    stats_paths <- stats_paths %>%
+        dplyr::mutate(Imported = correct)
+    stats_paths <- purrr::pmap_dfr(stats_paths, function(...) {
+        row <- tibble::tibble(...)
+        condition <- if (row$Imported == "MALFORMED") {
+            "MALFORMED"
+        } else if (row$Imported == "TRUE") {
+            NA_character_
+        } else {
+            if (!is.na(row$info) & is.list(row$info)) {
+                if (is.data.frame(row$info[[1]])) {
+                    "DUPLICATES"
+                } else if (is.null(row$info[[1]])) {
+                    NA_character_
+                } else {
+                    row$info[[1]]
+                }
+            } else {
+                row$info
+            }
+        }
+        row %>%
+            dplyr::mutate(reason = condition) %>%
+            dplyr::mutate(Imported = dplyr::if_else(
+                condition = (.data$Imported == "MALFORMED"),
+                true = FALSE,
+                false = as.logical(.data$Imported)
+            ))
+    })
+    stats_dfs <- stats_dfs[stats_paths$Imported]
+    # Bind rows in single tibble for all files
+    if (purrr::is_empty(stats_dfs)) {
+        return(list(stats = NULL, report = stats_paths))
+    }
+    stats_dfs <- purrr::reduce(stats_dfs, function(x, y) {
+        x %>%
+            dplyr::bind_rows(y) %>%
+            dplyr::distinct()
+    })
+    list(stats = stats_dfs, report = stats_paths)
 }
 
 #---- USED IN : import_parallel_Vispa2Matrices_interactive ----
 
 # Helper function to be used internally to treat association file.
+#' @importFrom rlang inform enexpr eval_tidy parse_expr
+#' @importFrom purrr is_empty map2_chr
 .manage_association_file <- function(association_file,
     root, padding, format,
     delimiter, filter) {
@@ -988,94 +1170,89 @@
 # @keywords internal
 #' @importFrom tibble tibble
 #' @importFrom fs dir_ls as_fs_path
-#' @importFrom purrr map reduce map_dbl
-#' @importFrom stringr str_detect
-#' @importFrom dplyr select distinct bind_rows mutate
+#' @importFrom purrr pmap_dfr cross_df
+#' @importFrom stringr str_replace_all
+#' @import dplyr
 #' @importFrom tidyr nest
 #
 # @return A tibble containing all found files, including duplicates and missing
 .lookup_matrices <- function(association_file,
     quantification_type,
     matrix_type) {
+    path_col_names <- .path_cols_names()
     temp <- association_file %>%
         dplyr::select(
             .data$ProjectID,
             .data$concatenatePoolIDSeqRun,
-            .data$Path
+            .data[[path_col_names$quant]]
         ) %>%
         dplyr::distinct()
-    # Regex for matrix type matching
-    matrix_type_regexp <- paste0("\\.no0\\.annotated")
-    # Map, for each row in temp
-    lups <- purrr::pmap(temp, function(...) {
-        # Obtain a tibble with all the columns in temp but a single row
-        current <- tibble::tibble(...)
-        # Scan file system starting from Path
-        files_found <- fs::dir_ls(path = current$Path)
-        # Map for each quantification type requested
-        matching <- purrr::map(quantification_type, function(x) {
-            # Are there files with the requested quantification type in the
-            # scanned folder?
-            file_regexp <- paste0("\\_", x, "\\_", "matrix")
-            detected <- unlist(stringr::str_detect(files_found,
-                pattern = file_regexp
-            ))
-            found <- if (length(files_found[detected]) > 0) {
-                # If yes subset and in the subset find only the ones that match
-                # the matrix type regex
-                files_found <- files_found[detected]
-                detected <- unlist(stringr::str_detect(files_found,
-                    pattern = matrix_type_regexp
-                ))
-                type_match <- if (matrix_type == "annotated") {
-                    # If the wanted matrix type is annotated
-                    if (length(detected) > 0) {
-                        # If some paths were found to contain the type regex
-                        # then return the subsetted vector of file paths
-                        files_found[detected]
-                    } else {
-                        # If no paths were found to contain the type regex
-                        # return NA
-                        NA_character_
-                    }
-                } else {
-                    # If the wanted matrix is NOT annotated
-                    if (length(files_found[detected]) > 0) {
-                        # If some paths were found to contain the type regex
-                        if (length(files_found[!detected]) > 0) {
-                            # If the files_found MINUS the detected ones is
-                            # not an empty set then return the set
-                            files_found[!detected]
-                        } else {
-                            # If the files_found MINUS the detected ones is an
-                            # empty set then return NA
-                            NA_character_
-                        }
-                    } else {
-                        # If there were no paths that matched the type regex
-                        # simply return the original files_found
-                        files_found
-                    }
-                }
-            } else {
-                NA_character_
+    ## Obtain a df with all possible combination of suffixes for each
+    ## quantification
+    ms <- if (matrix_type == "annotated") {
+        .matrix_annotated_suffixes()
+    } else {
+        .matrix_not_annotated_suffixes()
+    }
+    cross <- purrr::cross_df(list(
+        quant = quantification_type,
+        ms = ms
+    ))
+    cross <- cross %>%
+        dplyr::mutate(suffix = paste0(
+            .data$quant,
+            "_matrix",
+            .data$ms,
+            ".tsv"
+        )) %>%
+        dplyr::mutate(suffix = stringr::str_replace_all(
+            .data$suffix,
+            "\\.",
+            "\\\\."
+        ))
+    ## For each row in temp (aka for each ProjectID and
+    ## concatenatePoolIDSeqRun) scan the quantification folder
+    lups <- purrr::pmap_dfr(temp, function(...) {
+        temp_row <- tibble::tibble(...)
+        found <- purrr::pmap_dfr(cross, function(...) {
+            ## For each quantification scan the folder for the
+            ## corresponding suffixes
+            cross_row <- tibble::tibble(...)
+            matches <- fs::dir_ls(temp_row[[path_col_names$quant]],
+                type = "file", fail = FALSE,
+                regexp = cross_row$suffix
+            )
+            if (length(matches) == 0) {
+                matches <- NA_character_
             }
             tibble::tibble(
-                Quantification_type = x,
-                Files_found = fs::as_fs_path(found)
+                Quantification_type = cross_row$quant,
+                Files_found = matches
             )
         })
-        matching <- purrr::reduce(matching, dplyr::bind_rows) %>%
-            dplyr::mutate(Files_found = fs::as_fs_path(.data$Files_found))
-
+        found <- found %>%
+            dplyr::group_by(.data$Quantification_type) %>%
+            dplyr::distinct() %>%
+            dplyr::group_modify(~ {
+                if (nrow(.x) > 1) {
+                    if (any(is.na(.x$Files_found)) &
+                        !all(is.na(.x$Files_found))) {
+                        .x %>%
+                            dplyr::filter(!is.na(.data$Files_found))
+                    } else {
+                        .x
+                    }
+                } else {
+                    .x
+                }
+            })
         tibble::tibble(
-            ProjectID = current$ProjectID,
-            concatenatePoolIDSeqRun = current$concatenatePoolIDSeqRun,
-            matching
+            ProjectID = temp_row$ProjectID,
+            concatenatePoolIDSeqRun = temp_row$concatenatePoolIDSeqRun,
+            found
         )
     })
-
-    lups <- purrr::reduce(lups, dplyr::bind_rows) %>%
+    lups <- lups %>%
         tidyr::nest(Files = c(.data$Quantification_type, .data$Files_found))
     lups <- .trace_anomalies(lups)
     lups
@@ -2243,20 +2420,6 @@
 
 #---- USED IN : aggregate_metadata ----
 
-# Minimal association_file variable set.
-#
-# Contains the names of the columns of the association file that are a minimum
-# requirement to perform aggregation.
-# @keywords internal
-#
-# @return A character vector
-.min_var_set <- function() {
-    c(
-        "FusionPrimerPCRDate", "LinearPCRDate", "VCN", "DNAngUsed", "Kapa",
-        "ulForPool", "Path"
-    )
-}
-
 # Minimal stats column set.
 #
 # Contains the name of the columns that are a minimum requirement for
@@ -2285,197 +2448,68 @@
     }
 }
 
-# Finds automatically the path on disk to each stats file.
-#
-# @param association_file The association file
+# Aggregates the association file based on the function table.
 #' @import dplyr
-#' @importFrom purrr pmap_dfr pmap_df
-#' @importFrom tibble as_tibble tibble add_column
-#' @importFrom stringr str_extract str_extract_all str_detect
-#' @importFrom fs dir_exists dir_ls
-#' @importFrom tidyr unnest unite
-#' @importFrom rlang .data
-# @keywords internal
-# @return A tibble with ProjectID and the absolute path on disk to each file
-# if found
-.stats_report <- function(association_file) {
-    # Obtain unique projectID and path
-    temp <- association_file %>%
-        dplyr::select(.data$ProjectID, .data$Path) %>%
-        dplyr::distinct()
-    # If paths are all NA return
-    if (all(is.na(temp$Path))) {
-        return(NULL)
-    }
-    pattern <- "stats\\.sequence*"
-    # Obtain paths to iss folder (as ../iss/pool)
-    stats_paths <- purrr::pmap_dfr(temp, function(...) {
-        current <- tibble::tibble(...)
-        if (is.na(current$Path)) {
-            l <- list(ProjectID = current$ProjectID, stats_path = NA_character_)
-            tibble::as_tibble(l)
-        } else {
-            path_split <- unlist(fs::path_split(current$Path))
-            path_split[path_split == "quantification"] <- "iss"
-            pj_path <- fs::path_join(path_split)
-            l <- list(ProjectID = current$ProjectID, stats_path = pj_path)
-            tibble::as_tibble(l)
-        }
-    })
-    stats_paths <- stats_paths %>% dplyr::distinct()
-    # Find all stats files in iss folders
-    stats_paths <- purrr::pmap_df(stats_paths, function(...) {
-        cur <- tibble::tibble(...)
-        # Check if folder exists
-        # Set to NA the iss folders not found
-        if (!fs::dir_exists(cur$stats_path)) {
-            cur$stats_path <- NA_character_
-            cur %>% tibble::add_column(stats_files = list(NA_character_))
-        } else {
-            files_in_iss <- unlist(fs::dir_ls(cur$stats_path,
-                regexp = pattern,
-                type = "file"
-            ))
-            cur %>% tibble::add_column(stats_files = list(files_in_iss))
-        }
-    })
-    stats_paths <- stats_paths %>%
-        tidyr::unnest(.data$stats_files)
-}
-
-# Imports all found Vispa2 stats files.
-#
-# @param association_file The association file
-#' @import BiocParallel
-#' @importFrom tibble as_tibble
-#' @importFrom purrr map2_lgl reduce is_empty
-#' @importFrom dplyr mutate bind_rows distinct
-# @keywords internal
-#
-# @return A list with the imported stats and a report of imported files. If no
-# files were imported returns NULL instead
-.import_stats_iss <- function(association_file) {
-    # Obtain paths
-    stats_paths <- .stats_report(association_file)
-    if (is.null(stats_paths)) {
-        return(NULL)
-    }
-    # Setup parallel workers and import
-    # Register backend according to platform
-    if (.Platform$OS.type == "windows") {
-        p <- BiocParallel::SnowParam(stop.on.error = FALSE)
-    } else {
-        p <- BiocParallel::MulticoreParam(
-            stop.on.error = FALSE
-        )
-    }
-    FUN <- function(x) {
-        stats <- utils::read.csv(
-            file = x, sep = "\t", stringsAsFactors = FALSE,
-            check.names = FALSE
-        )
-        stats <- tibble::as_tibble(stats)
-        ok <- .check_stats(stats)
-        if (ok == TRUE) {
-            return(stats)
-        } else {
-            return(NULL)
-        }
-    }
-    suppressMessages(suppressWarnings({
-        stats_dfs <- BiocParallel::bptry(
-            BiocParallel::bplapply(stats_paths$stats_files, FUN, BPPARAM = p)
-        )
-    }))
-    BiocParallel::bpstop(p)
-    correct <- BiocParallel::bpok(stats_dfs)
-    correct <- purrr::map2_lgl(stats_dfs, correct, function(x, y) {
-        if (is.null(x)) {
-            FALSE
-        } else {
-            y
-        }
-    })
-    stats_paths <- stats_paths %>% dplyr::mutate(Imported = correct)
-    stats_dfs <- stats_dfs[correct]
-    # Bind rows in single tibble for all files
-    if (purrr::is_empty(stats_dfs)) {
-        return(NULL)
-    }
-    stats_dfs <- purrr::reduce(stats_dfs, function(x, y) {
-        x %>%
-            dplyr::bind_rows(y) %>%
-            dplyr::distinct()
-    })
-    list(stats_dfs, stats_paths)
-}
-
-# Performs eventual join with stats and aggregation.
-#
-# @param association_file The imported association file
-# @param stats The imported stats df
-# @param grouping_keys The names of the columns to group by
-#' @import dplyr
-#' @importFrom rlang .data
-#' @importFrom stringr str_replace_all
-#' @importFrom tidyr unite
+#' @importFrom rlang .data is_function is_formula
+#' @importFrom tibble tibble
+#' @importFrom purrr pmap_df
 # @keywords internal
 #
 # @return A tibble
-.join_and_aggregate <- function(association_file, stats, grouping_keys) {
-    iss_cols <- .agg_iss_cols()
-    # If stats not null join with af
-    if (!is.null(stats)) {
-        stats <- stats %>% dplyr::mutate(TAG = stringr::str_replace_all(
-            .data$TAG,
-            pattern = "\\.", replacement = ""
-        ))
-        association_file <- association_file %>%
-            dplyr::left_join(stats,
-                by = c(
-                    "concatenatePoolIDSeqRun" = "POOL",
-                    "TagSequence" = "TAG"
-                )
-            )
+.aggregate_meta <- function(association_file, grouping_keys, function_tbl) {
+    ## Discard columns that are not present in the af
+    function_tbl <- function_tbl %>%
+        dplyr::filter(.data$Column %in% colnames(association_file))
+    ## If no columns are left return
+    if (nrow(function_tbl) == 0) {
+        return(NULL)
     }
-    iss_cols_pres <- iss_cols[iss_cols %in% colnames(association_file)]
-    suppressWarnings({
-        aggregated <- association_file %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of(grouping_keys))) %>%
-            dplyr::summarise(dplyr::across(
-                .cols = c(
-                    .data$FusionPrimerPCRDate,
-                    .data$LinearPCRDate
-                ),
-                .fns = ~ min(.x, na.rm = TRUE),
-                .names = "{.col}_min"
-            ),
-            dplyr::across(
-                .cols = c(
-                    .data$VCN,
-                    .data$DNAngUsed,
-                    .data$Kapa
-                ),
-                .fns = ~ mean(.x, na.rm = TRUE),
-                .names = "{.col}_avg"
-            ),
-            dplyr::across(
-                .cols = c(
-                    .data$DNAngUsed,
-                    .data$ulForPool,
-                    iss_cols_pres
-                ),
-                .fns = ~ sum(.x, na.rm = TRUE),
-                .names = "{.col}_sum"
-            ),
-            .groups = "drop"
-            ) %>%
-            tidyr::unite(
-                col = "AggregateMeta", dplyr::all_of(grouping_keys),
-                sep = "_", remove = FALSE
-            )
-    })
-    return(aggregated)
+    function_tbl <- function_tbl %>%
+        tidyr::nest(cols = .data$Column)
+    apply_function <- function(Function, Args, Output_colname, cols) {
+        Function <- list(Function)
+        Args <- list(Args)
+        row <- tibble::tibble(Function, Args,
+            Output_colname,
+            cols = list(cols)
+        )
+        if (rlang::is_formula(row$Function[[1]])) {
+            res <- association_file %>%
+                dplyr::group_by(dplyr::across(dplyr::all_of(grouping_keys))) %>%
+                dplyr::summarise(
+                    dplyr::across(
+                        dplyr::all_of(row$cols[[1]]$Column),
+                        .fns = row$Function[[1]],
+                        .names = row$Output_colname
+                    ),
+                    .groups = "drop"
+                )
+            return(res)
+        }
+        if (rlang::is_function(row$Function[[1]])) {
+            args <- if (is.na(row$Args[[1]]) | is.null(is.na(row$Args[[1]]))) {
+                list()
+            } else {
+                row$Args[[1]]
+            }
+            res <- association_file %>%
+                dplyr::group_by(dplyr::across(dplyr::all_of(grouping_keys))) %>%
+                dplyr::summarise(
+                    dplyr::across(
+                        .cols = dplyr::all_of(row$cols[[1]]$Column),
+                        .fns = row$Function[[1]],
+                        .names = row$Output_colname,
+                        !!!args
+                    ),
+                    .groups = "drop"
+                )
+            return(res)
+        }
+        return(NULL)
+    }
+    agg <- purrr::pmap(function_tbl, apply_function)
+    agg <- purrr::reduce(agg, ~ dplyr::full_join(.x, .y, by = grouping_keys))
+    return(agg)
 }
 
 #---- USED IN : aggregate_values_by_key ----
@@ -2498,12 +2532,13 @@
 # @keywords internal
 #
 # @return A list of tibbles with aggregated values
-.aggregate_lambda <- function(x, af, key, value_cols, lambda, group) {
+.aggregate_lambda <- function(x, af, key, value_cols, lambda, group,
+    join_af_by) {
     # Vectorize
     aggregated_matrices <- purrr::map(x, function(y) {
         cols <- c(colnames(y), key)
         agg <- y %>%
-            dplyr::left_join(af, by = "CompleteAmplificationID") %>%
+            dplyr::left_join(af, by = dplyr::all_of(join_af_by)) %>%
             dplyr::select(dplyr::all_of(cols)) %>%
             dplyr::group_by(dplyr::across(dplyr::all_of(c(group, key)))) %>%
             dplyr::summarise(dplyr::across(
@@ -2914,17 +2949,15 @@
             function(set, name) {
                 df <- x[[name]]
                 if (!all(set %in% colnames(df))) {
-                    stop(.missing_user_cols_list_error(set, name),
-                        call. = FALSE
-                    )
+                    rlang::abort(.missing_user_cols_list_error(set, name))
                 }
                 purrr::walk(set, function(col) {
                     expr <- rlang::expr(`$`(df, !!col))
                     if (!is.numeric(rlang::eval_tidy(expr)) &&
                         !is.integer(rlang::eval_tidy(expr))) {
-                        stop(.non_num_user_cols_error(),
-                            call. = FALSE
-                        )
+                        rlang::abort(.non_num_user_cols_error(
+                            rlang::eval_tidy(expr)
+                        ))
                     }
                 })
             }
@@ -2932,7 +2965,9 @@
     } else {
         if (is.data.frame(x)) {
             if (!all(cols_to_compare %in% colnames(x))) {
-                stop(.missing_user_cols_error(), call. = FALSE)
+                rlang::abort(.missing_user_cols_error(
+                    cols_to_compare[!cols_to_compare %in% colnames(x)]
+                ))
             }
             ### Check they're numeric
             all_numeric <- purrr::map_lgl(cols_to_compare, function(col) {
@@ -2941,19 +2976,27 @@
                     is.integer(rlang::eval_tidy(expr))
             })
             if (!all(all_numeric)) {
-                stop(.non_num_user_cols_error(), call. = FALSE)
+                rlang::abort(
+                    .non_num_user_cols_error(
+                        cols_to_compare[!all_numeric]
+                    )
+                )
             }
         } else {
             purrr::walk(x[names_to_mod], function(ddf) {
                 if (!all(cols_to_compare %in% colnames(ddf))) {
-                    stop(.missing_user_cols_error(), call. = FALSE)
+                    rlang::abort(
+                        .missing_user_cols_error(
+                            cols_to_compare[!cols_to_compare %in% colnames(ddf)]
+                        )
+                    )
                 }
                 purrr::walk(cols_to_compare, function(col) {
                     expr <- rlang::expr(`$`(ddf, !!col))
                     if (!is.numeric(rlang::eval_tidy(expr)) &&
                         !is.integer(rlang::eval_tidy(expr))) {
-                        stop(.non_num_user_cols_error(),
-                            call. = FALSE
+                        rlang::abort(
+                            .non_num_user_cols_error(rlang::eval_tidy(expr))
                         )
                     }
                 })
@@ -3280,24 +3323,617 @@
     return(onco_tumsup)
 }
 
-#' @importFrom fs is_dir dir_exists dir_create path
-#' @importFrom htmltools save_html
-.export_widget_file <- function(widget, path, def_file_name) {
-    if (fs::is_dir(path)) {
-        if (!fs::dir_exists(path)) {
-            fs::dir_create(path)
+
+#---- USED IN : outliers_by_pool_fragments ----
+# Actual computation of statistical test on pre-filtered metadata (no NA values)
+#' @importFrom rlang inform
+#' @import dplyr
+#' @importFrom BiocParallel MulticoreParam SnowParam bplapply bpstop
+#' @importFrom tibble add_column
+#' @importFrom purrr reduce
+#' @importFrom magrittr `%>%`
+.pool_frag_calc <- function(meta,
+    key,
+    by_pool,
+    normality_test,
+    normality_threshold,
+    pool_col,
+    min_samples_per_pool,
+    log2) {
+    log2_removed_report <- NULL
+    if (log2) {
+        ## discard values < = 0 and report removed
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            rlang::inform("Log2 transformation, removing values <= 0")
         }
-        export_widget_path <- fs::path(
-            path,
-            def_file_name
+        old_meta <- meta
+        meta <- meta %>%
+            dplyr::filter(dplyr::across(dplyr::all_of(key), ~ .x > 0))
+        log2_removed_report <- old_meta %>%
+            dplyr::anti_join(meta, by = "CompleteAmplificationID") %>%
+            dplyr::select(
+                dplyr::all_of(pool_col),
+                .data$CompleteAmplificationID,
+                dplyr::all_of(key)
+            ) %>%
+            dplyr::distinct()
+    }
+    if (by_pool) {
+        # Group by pool
+        grouped <- meta %>%
+            dplyr::group_by(dplyr::across({{ pool_col }})) %>%
+            dplyr::add_tally(name = "sample_count")
+        split <- grouped %>%
+            dplyr::filter(.data$sample_count >= min_samples_per_pool) %>%
+            dplyr::select(-.data$sample_count) %>%
+            dplyr::group_split()
+        p <- if (.Platform$OS.type == "windows") {
+            BiocParallel::SnowParam(
+                tasks = length(split),
+                progressbar = getOption("ISAnalytics.verbose"),
+                exportglobals = FALSE
+            )
+        } else {
+            BiocParallel::MulticoreParam(
+                tasks = length(split),
+                progressbar = getOption("ISAnalytics.verbose"),
+                exportglobals = FALSE
+            )
+        }
+        test_res <- BiocParallel::bplapply(
+            X = split,
+            FUN = .process_pool_frag,
+            key = key,
+            normality_test = normality_test,
+            normality_threshold = normality_threshold,
+            log2 = log2
+        )
+        BiocParallel::bpstop(p)
+        test_res <- purrr::reduce(test_res, dplyr::bind_rows)
+        test_res <- test_res %>% tibble::add_column(processed = TRUE)
+        # Groups not processed because not enough samples
+        non_proc <- grouped %>%
+            dplyr::ungroup() %>%
+            dplyr::filter(.data$sample_count < min_samples_per_pool) %>%
+            dplyr::select(-.data$sample_count) %>%
+            dplyr::mutate(processed = FALSE)
+        final <- test_res %>% dplyr::bind_rows(non_proc)
+        # Rows not processed because log2 requested and value <= 0
+        if (exists("old_meta")) {
+            log2_removed <- old_meta %>%
+                dplyr::anti_join(meta, by = "CompleteAmplificationID") %>%
+                dplyr::mutate(processed = FALSE)
+            final <- final %>% dplyr::bind_rows(log2_removed)
+        }
+        return(list(
+            metadata = final,
+            removed_zeros = log2_removed_report,
+            non_proc_samples = grouped %>%
+                dplyr::ungroup() %>%
+                dplyr::filter(.data$sample_count < min_samples_per_pool)
+        ))
+    } else {
+        test_res <- .process_pool_frag(
+            chunk = meta,
+            key = key,
+            normality_test = normality_test,
+            normality_threshold = normality_threshold,
+            log2 = log2
+        )
+        final <- test_res %>% dplyr::mutate(processed = TRUE)
+        # Rows not processed because log2 requested and value <= 0
+        if (exists("old_meta")) {
+            log2_removed <- old_meta %>%
+                dplyr::filter(dplyr::across(dplyr::all_of(key), ~ .x <= 0)) %>%
+                dplyr::mutate(processed = FALSE)
+            final <- final %>% dplyr::bind_rows(log2_removed)
+        }
+        return(list(
+            metadata = final,
+            removed_zeros = log2_removed_report
+        ))
+    }
+}
+
+# Only computes for each key the actual calculations (either on pool chunk
+# or entire df)
+#' @importFrom purrr map reduce flatten
+#' @importFrom dplyr bind_cols
+.process_pool_frag <- function(chunk, key, normality_test,
+    normality_threshold,
+    log2) {
+    res <- purrr::map(key, ~ .tests_pool_frag(
+        x = chunk[[.x]],
+        suffix = .x,
+        normality_test = normality_test,
+        normality_threshold = normality_threshold,
+        log2 = log2
+    ))
+    res <- purrr::reduce(
+        list(og = chunk, purrr::flatten(res)),
+        dplyr::bind_cols
+    )
+    res
+}
+
+# Computation on single vectors (columns)
+#' @importFrom stats dt shapiro.test
+#' @importFrom tibble tibble
+.tests_pool_frag <- function(x,
+    suffix, normality_test,
+    normality_threshold,
+    log2) {
+    if (log2) {
+        x <- log2(x)
+    }
+    norm <- NA
+    zscore <- NA
+    tstudent <- NA
+    tdist <- NA
+    if (normality_test) {
+        withCallingHandlers(
+            {
+                withRestarts(
+                    {
+                        shapiro_test <- stats::shapiro.test(x)
+                        norm <- shapiro_test$p.value >= normality_threshold
+                        if (norm) {
+                            zscore <- scale(x)
+                            zscore <- zscore[, 1]
+                            count <- length(x)
+                            tstudent <- sqrt(
+                                ((count * (count - 2) * (zscore)^2) /
+                                    ((count - 1)^2 - count * (zscore)^2))
+                            )
+                            tdist <- stats::dt(tstudent, df = count - 2)
+                        }
+                    },
+                    test_err = function() {
+                        rlang::inform(
+                            c("Unable to perform normality test, skipping"))
+                    }
+                )
+            },
+            error = function(cnd) {
+                rlang::inform(cnd$message)
+                invokeRestart("test_err")
+            }
+        )
+    } else {
+        zscore <- scale(x)
+        zscore <- zscore[, 1]
+        count <- length(x)
+        tstudent <- sqrt(
+            ((count * (count - 2) * (zscore)^2) /
+                ((count - 1)^2 - count * (zscore)^2))
+        )
+        tdist <- stats::dt(tstudent, df = count - 2)
+    }
+    results <- if (log2) {
+        tibble::tibble(
+            "log2_{suffix}" := x,
+            "normality_{suffix}" := norm,
+            "zscore_{suffix}" := zscore,
+            "tstudent_{suffix}" := tstudent,
+            "tdist_{suffix}" := tdist
+        )
+    } else {
+        tibble::tibble(
+            "normality_{suffix}" := norm,
+            "zscore_{suffix}" := zscore,
+            "tstudent_{suffix}" := tstudent,
+            "tdist_{suffix}" := tdist
         )
     }
-    withCallingHandlers(
-        expr = {
-            htmltools::save_html(widget, export_widget_path)
-        },
-        error = function(cnd) {
-            warning(.widgets_save_error())
+    return(results)
+}
+
+# Flag logic to use on a single key component
+# returns a logical vector
+#' @importFrom purrr pmap_lgl
+.flag_cond_outliers_pool_frag <- function(proc,
+    tdist,
+    zscore,
+    outlier_threshold) {
+    # basic flag condition is tdist < out.thresh AND zscore < 0
+    purrr::pmap_lgl(list(proc, tdist, zscore), function(p, t, z) {
+        if (p == FALSE) {
+            return(FALSE)
+        }
+        if (is.na(t) | is.na(z)) {
+            return(FALSE)
+        }
+        return(t < outlier_threshold & z < 0)
+    })
+}
+
+# Obtain and apply global logic on multiple columns based on the single
+# key logic
+#' @importFrom tibble tibble
+.apply_flag_logic <- function(..., logic) {
+    all_flags <- tibble::tibble(...)
+    partial <- NULL
+    index <- 1
+    for (op in logic) {
+        switch(op,
+            "AND" = {
+                if (is.null(partial)) {
+                    partial <- all_flags[[1]] & all_flags[[2]]
+                    index <- 3
+                } else {
+                    partial <- partial & all_flags[[index]]
+                    index <- index + 1
+                }
+            },
+            "OR" = {
+                if (is.null(partial)) {
+                    partial <- all_flags[[1]] | all_flags[[2]]
+                    index <- 3
+                } else {
+                    partial <- partial | all_flags[[index]]
+                    index <- index + 1
+                }
+            },
+            "XOR" = {
+                if (is.null(partial)) {
+                    partial <- xor(all_flags[[1]], all_flags[[2]])
+                    index <- 3
+                } else {
+                    partial <- xor(partial, all_flags[[index]])
+                    index <- index + 1
+                }
+            },
+            "NAND" = {
+                if (is.null(partial)) {
+                    partial <- !(all_flags[[1]] & all_flags[[2]])
+                    index <- 3
+                } else {
+                    partial <- !(partial & all_flags[[index]])
+                    index <- index + 1
+                }
+            },
+            "NOR" = {
+                if (is.null(partial)) {
+                    partial <- !(all_flags[[1]] | all_flags[[2]])
+                    index <- 3
+                } else {
+                    partial <- !(partial | all_flags[[index]])
+                    index <- index + 1
+                }
+            },
+            "XNOR" = {
+                if (is.null(partial)) {
+                    partial <- !xor(all_flags[[1]], all_flags[[2]])
+                    index <- 3
+                } else {
+                    partial <- !xor(partial, all_flags[[index]])
+                    index <- index + 1
+                }
+            }
+        )
+    }
+    return(partial)
+}
+
+#---- USED IN : HSC_population_size_estimate ----
+# Calculates population estimates (all)
+#' @importFrom purrr map_lgl detect_index
+#' @import dplyr
+#' @importFrom tidyr pivot_wider
+.estimate_pop <- function(df,
+    seqCount_column,
+    timepoint_column,
+    annotation_cols,
+    stable_timepoints,
+    subject) {
+    # --- STABLE TIMEPOINTS?
+    found_stable <- purrr::map_lgl(
+        stable_timepoints,
+        ~ .x %in%
+            as.numeric(df[[timepoint_column]])
+    )
+    first_stable_index <- if (length(found_stable) > 0) {
+        purrr::detect_index(found_stable, ~ .x == TRUE)
+    } else {
+        0
+    }
+    stable_tps <- if (first_stable_index > 0) {
+        TRUE
+    } else {
+        FALSE
+    }
+    # --- OBTAIN MATRIX (ALL TPs)
+    matrix_desc <- df %>%
+        dplyr::mutate(bin = 1) %>%
+        dplyr::select(-.data[[seqCount_column]]) %>%
+        tidyr::pivot_wider(
+            names_from = c(
+                "CellType",
+                "Tissue",
+                timepoint_column
+            ),
+            values_from = .data$bin,
+            names_sort = TRUE,
+            values_fill = 0
+        ) %>%
+        dplyr::select(-c(mandatory_IS_vars(), annotation_cols)) %>%
+        as.matrix()
+    # --- OBTAIN MATRIX (STABLE TPs)
+    patient_slice_stable <- if (first_stable_index > 0) {
+        first_stable <- stable_timepoints[first_stable_index]
+        df %>%
+            dplyr::filter(as.numeric(.data[[timepoint_column]]) >=
+                first_stable) %>%
+            dplyr::mutate(bin = 1) %>%
+            dplyr::select(-.data[[seqCount_column]]) %>%
+            tidyr::pivot_wider(
+                names_from = c(
+                    "CellType",
+                    "Tissue",
+                    timepoint_column
+                ),
+                values_from = .data$bin,
+                names_sort = TRUE,
+                values_fill = 0
+            ) %>%
+            dplyr::select(-c(mandatory_IS_vars(), annotation_cols)) %>%
+            as.matrix()
+    } else {
+        NULL
+    }
+
+    timecaptures <- length(colnames(matrix_desc))
+    cols_estimate_mcm <- c("Model", "abundance", "stderr")
+    # --- ESTIMATES
+    ## models0
+    ### Estimate abundance without bias correction nor het
+    #### For all tps
+    models0_all <- .closed_m0_est(
+        matrix_desc = matrix_desc,
+        timecaptures = timecaptures,
+        cols_estimate_mcm = cols_estimate_mcm,
+        subject = subject, stable = FALSE
+    )
+    #### For the slice (first stable - last tp)
+    models0_stable <- if (!is.null(patient_slice_stable) &&
+                          ncol(patient_slice_stable) > 1) {
+        .closed_m0_est(
+            matrix_desc = patient_slice_stable,
+            timecaptures = length(colnames(patient_slice_stable)),
+            cols_estimate_mcm = cols_estimate_mcm,
+            subject = subject, stable = TRUE
+        )
+    } else {
+        NULL
+    }
+    ## BC models
+    ### Estimate abundance without bias correction nor het
+    models_bc_all <- .closed_mthchaobc_est(
+        matrix_desc = matrix_desc,
+        timecaptures = timecaptures,
+        cols_estimate_mcm = cols_estimate_mcm,
+        subject = subject, stable = FALSE
+    )
+    models_bc_stable <- if (!is.null(patient_slice_stable) &&
+                            ncol(patient_slice_stable) > 1) {
+        .closed_mthchaobc_est(
+            matrix_desc = patient_slice_stable,
+            timecaptures = length(colnames(patient_slice_stable)),
+            cols_estimate_mcm = cols_estimate_mcm,
+            subject = subject, stable = TRUE
+        )
+    } else {
+        NULL
+    }
+    ## Consecutive timepoints
+    ### Model m0 bc
+    estimate_consecutive_m0 <- if (ncol(matrix_desc) > 1) {
+        .consecutive_m0bc_est(
+            matrix_desc = matrix_desc,
+            cols_estimate_mcm = cols_estimate_mcm,
+            subject = subject
+        )
+    } else {
+        NULL
+    }
+    ### Model Mth
+    estimate_consecutive_mth <- if (stable_tps & ncol(matrix_desc) > 2) {
+        # - Note: pass the whole matrix, not only stable slice
+        .consecutive_mth_est(
+            matrix_desc = matrix_desc,
+            cols_estimate_mcm = cols_estimate_mcm,
+            subject = subject
+        )
+    } else {
+        NULL
+    }
+    results <- models0_all %>%
+        dplyr::bind_rows(models0_stable) %>%
+        dplyr::bind_rows(models_bc_all) %>%
+        dplyr::bind_rows(models_bc_stable) %>%
+        dplyr::bind_rows(estimate_consecutive_m0) %>%
+        dplyr::bind_rows(estimate_consecutive_mth)
+    results
+}
+
+#' @importFrom Rcapture closedp.0
+#' @importFrom purrr flatten_chr
+#' @importFrom stringr str_split
+#' @importFrom tibble as_tibble add_column
+#' @importFrom dplyr select all_of
+.closed_m0_est <- function(matrix_desc, timecaptures, cols_estimate_mcm,
+    subject, stable) {
+    ### Estimate abundance without bias correction nor het
+    models0 <- Rcapture::closedp.0(matrix_desc,
+        dfreq = FALSE,
+        dtype = "hist",
+        t = timecaptures,
+        t0 = timecaptures,
+        neg = FALSE
+    )
+    splitted_col_nms1 <- purrr::flatten_chr(stringr::str_split(
+        colnames(matrix_desc)[1],
+        pattern = "_"
+    ))
+    splitted_col_nmsn <- purrr::flatten_chr(stringr::str_split(
+        colnames(matrix_desc)[ncol(matrix_desc)],
+        pattern = "_"
+    ))
+    tp_string <- if (stable) {
+        "Stable"
+    } else {
+        "All"
+    }
+    estimate_results <- tibble::as_tibble(models0$results,
+        rownames = "Model"
+    ) %>%
+        dplyr::select(dplyr::all_of(cols_estimate_mcm)) %>%
+        tibble::add_column(
+            SubjectID = subject,
+            Timepoints = tp_string,
+            CellType = splitted_col_nms1[1],
+            Tissue = splitted_col_nms1[2],
+            TimePoint_from = as.numeric(splitted_col_nms1[3]),
+            TimePoint_to = as.numeric(splitted_col_nmsn[3]),
+            ModelType = "ClosedPopulation",
+            ModelSetUp = "models0"
+        )
+    estimate_results
+}
+
+#' @importFrom Rcapture closedp.bc
+#' @importFrom purrr flatten_chr
+#' @importFrom stringr str_split
+#' @importFrom tibble as_tibble add_column
+#' @importFrom dplyr select all_of
+.closed_mthchaobc_est <- function(matrix_desc, timecaptures, cols_estimate_mcm,
+    subject, stable) {
+    mthchaobc <- Rcapture::closedp.bc(matrix_desc,
+        dfreq = FALSE,
+        dtype = "hist",
+        t = timecaptures,
+        t0 = timecaptures,
+        m = c("M0", "Mt", "Mth")
+    )
+    splitted_col_nms1 <- purrr::flatten_chr(stringr::str_split(
+        colnames(matrix_desc)[1],
+        pattern = "_"
+    ))
+    splitted_col_nmsn <- purrr::flatten_chr(stringr::str_split(
+        colnames(matrix_desc)[ncol(matrix_desc)],
+        pattern = "_"
+    ))
+    tp_string <- if (stable) {
+        "Stable"
+    } else {
+        "All"
+    }
+    estimate_results_chaobc <- tibble::as_tibble(mthchaobc$results,
+        rownames = "Model"
+    ) %>%
+        dplyr::select(dplyr::all_of(cols_estimate_mcm)) %>%
+        tibble::add_column(
+            SubjectID = subject,
+            Timepoints = tp_string,
+            CellType = splitted_col_nms1[1],
+            Tissue = splitted_col_nms1[2],
+            TimePoint_from = as.numeric(splitted_col_nms1[3]),
+            TimePoint_to = as.numeric(splitted_col_nmsn[3]),
+            ModelType = "ClosedPopulation",
+            ModelSetUp = "mthchaobc"
+        )
+    estimate_results_chaobc
+}
+
+#' @importFrom Rcapture closedp.bc
+#' @importFrom purrr flatten_chr map2_dfr
+#' @importFrom stringr str_split
+#' @importFrom tibble as_tibble add_column
+#' @importFrom dplyr select all_of
+.consecutive_m0bc_est <- function(matrix_desc, cols_estimate_mcm, subject) {
+    ## Consecutive timepoints
+    indexes <- seq(from = 1, to = ncol(matrix_desc) - 1, by = 1)
+    purrr::map2_dfr(
+        indexes,
+        indexes + 1,
+        function(t1, t2) {
+            sub_matrix <- matrix_desc[, seq(from = t1, to = t2, by = 1)]
+            splitted_col_nms1 <- purrr::flatten_chr(stringr::str_split(
+                colnames(sub_matrix)[1],
+                pattern = "_"
+            ))
+            splitted_col_nmsn <- purrr::flatten_chr(stringr::str_split(
+                colnames(sub_matrix)[ncol(sub_matrix)],
+                pattern = "_"
+            ))
+            patient_trend_M0 <- Rcapture::closedp.bc(sub_matrix,
+                dfreq = FALSE,
+                dtype = "hist",
+                t = 2,
+                t0 = 2,
+                m = c("M0")
+            )
+            results <- tibble::as_tibble(patient_trend_M0$results,
+                rownames = "Model"
+            ) %>%
+                dplyr::select(dplyr::all_of(cols_estimate_mcm)) %>%
+                tibble::add_column(
+                    SubjectID = subject,
+                    Timepoints = "Consecutive",
+                    CellType = splitted_col_nms1[1],
+                    Tissue = splitted_col_nms1[2],
+                    TimePoint_from = as.numeric(splitted_col_nms1[3]),
+                    TimePoint_to = as.numeric(splitted_col_nmsn[3]),
+                    ModelType = "ClosedPopulation",
+                    ModelSetUp = "models0BC"
+                )
+            results
+        }
+    )
+}
+
+#' @importFrom Rcapture closedp.bc
+#' @importFrom purrr flatten_chr map2_dfr
+#' @importFrom stringr str_split
+#' @importFrom tibble as_tibble add_column
+#' @importFrom dplyr select all_of
+.consecutive_mth_est <- function(matrix_desc, cols_estimate_mcm, subject) {
+    indexes_s <- seq(from = 1, to = ncol(matrix_desc) - 2, by = 1)
+    purrr::map2_dfr(
+        indexes_s,
+        indexes_s + 2,
+        function(t1, t2) {
+            sub_matrix <- matrix_desc[, seq(from = t1, to = t2, by = 1)]
+            splitted_col_nms1 <- purrr::flatten_chr(stringr::str_split(
+                colnames(sub_matrix)[1],
+                pattern = "_"
+            ))
+            splitted_col_nmsn <- purrr::flatten_chr(stringr::str_split(
+                colnames(sub_matrix)[ncol(sub_matrix)],
+                pattern = "_"
+            ))
+            patient_trend_Mth <- Rcapture::closedp.bc(sub_matrix,
+                dfreq = FALSE,
+                dtype = "hist",
+                t = 3, t0 = 3,
+                m = c("Mth"),
+                h = "Chao"
+            )
+            result <- tibble::as_tibble(patient_trend_Mth$results,
+                rownames = "Model"
+            ) %>%
+                dplyr::select(dplyr::all_of(cols_estimate_mcm)) %>%
+                tibble::add_column(
+                    SubjectID = subject,
+                    Timepoints = "Consecutive",
+                    CellType = splitted_col_nms1[1],
+                    Tissue = splitted_col_nms1[2],
+                    TimePoint_from = as.numeric(splitted_col_nms1[3]),
+                    TimePoint_to = as.numeric(splitted_col_nmsn[3]),
+                    ModelType = "ClosedPopulation",
+                    ModelSetUp = "modelMTHBC"
+                )
+            result
         }
     )
 }

@@ -11,7 +11,8 @@ separate_quant_matrices(
   seqCount = "seqCount",
   barcodeCount = "barcodeCount",
   cellCount = "cellCount",
-  ShsCount = "ShsCount"
+  ShsCount = "ShsCount",
+  key = c(mandatory_IS_vars(), annotation_IS_vars(), "CompleteAmplificationID")
 )
 }
 \arguments{
@@ -32,6 +33,8 @@ in input}
 
 \item{ShsCount}{Name of the shs count values column
 in input}
+
+\item{key}{Key columns to perform the joining operation}
 }
 \value{
 A named list of tibbles, where names are quantification types

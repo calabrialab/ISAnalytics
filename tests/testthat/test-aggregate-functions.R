@@ -1,13 +1,12 @@
 library(ISAnalytics)
+func_name <- c(
+    ".aggregate_meta", "aggregate_metadata",
+    "aggregate_values_by_key"
+)
 
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
-op <- withr::local_options(
-    ISAnalytics.widgets = FALSE,
-    ISAnalytics.verbose = FALSE
-)
-
 # Path to example association file
 path_af <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
@@ -18,167 +17,81 @@ path_root_correct <- system.file("extdata", "fs.zip",
     package = "ISAnalytics"
 )
 root_correct <- unzip_file_system(path_root_correct, "fs")
-# Path to incorrect file system example
-root_err <- system.file("extdata", "fserr.zip",
-    package = "ISAnalytics"
-)
-
-root_err <- unzip_file_system(root_err, "fserr")
 
 # Association file
-association_file <- import_association_file(path_af, root_correct,
-    dates_format = "dmy"
+association_file <- withr::with_options(
+    list(ISAnalytics.widgets = FALSE, ISAnalytics.verbose = FALSE),
+    {
+        import_association_file(path_af, root_correct,
+            dates_format = "dmy", filter_for = list(ProjectID = "CLOEXP"),
+            import_iss = TRUE
+        )
+    }
 )
-suppressWarnings({
-    association_file_err <- import_association_file(path_af, root_err,
-        dates_format = "dmy"
-    )
-})
 
 # Matrices
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = path_af, root = root_correct,
+matrices <- withr::with_options(
+    list(ISAnalytics.widgets = FALSE, ISAnalytics.verbose = FALSE),
+    {
+    import_parallel_Vispa2Matrices_auto(
+    association_file = association_file,
     quantification_type = c("seqCount", "fragmentEstimate"),
     matrix_type = "annotated", workers = 2, patterns = NULL,
     matching_opt = "ANY",
     dates_format = "dmy", multi_quant_matrix = FALSE
+)})
+
+# Standard grouping keys
+key <- c(
+    "SubjectID",
+    "CellMarker",
+    "Tissue",
+    "TimePoint"
 )
 
 #------------------------------------------------------------------------------#
-# Tests .stats_report
+# Tests .aggregate_meta
 #------------------------------------------------------------------------------#
-test_that(".stats_report returns NULL if all paths are NA", {
-    association_file_mod <- association_file
-    association_file_mod$Path <- rep_len(
-        NA_character_,
-        length(association_file_mod$Path)
+test_that(paste(func_name[1], "aggregates correct default"), {
+    aggreg_meta <- .aggregate_meta(association_file,
+        grouping_keys = key,
+        function_tbl = default_meta_agg()
     )
-    stats_rep <- .stats_report(association_file_mod)
-    expect_null(stats_rep)
-    # Or filtering af
-    af_filtered <- association_file_err %>%
-        dplyr::filter(.data$ProjectID == "PROJECT1101")
-    stats_rep <- .stats_report(af_filtered)
-    expect_null(stats_rep)
+    expect_true(aggreg_meta %>% nrow() == 4)
 })
 
-test_that(".stats_report returns correctly for both af", {
-    stats_rep <- .stats_report(association_file)
-    expect_true(all(!is.na(stats_rep$stats_files)))
-    stats_rep <- .stats_report(association_file_err)
-    expect_true(any(is.na(stats_rep$stats_path)))
-})
-
-#------------------------------------------------------------------------------#
-# Tests .import_stats_iss
-#------------------------------------------------------------------------------#
-test_that(".import_stats_iss returns null if nothing to import", {
-    af_filtered <- association_file_err %>%
-        dplyr::filter(.data$ProjectID == "PROJECT1101")
-    stats <- .import_stats_iss(af_filtered)
-    expect_null(stats)
-})
-
-test_that(".import_stats_iss detects missing/malformed files", {
-    stats <- .import_stats_iss(association_file_err)
-    report <- stats[[2]]
-    expect_true(all((report %>%
-        dplyr::filter(.data$ProjectID == "PROJECT1100")
-    )$Imported == FALSE))
-    expect_true(all((report %>%
-        dplyr::filter(.data$ProjectID == "CLOEXP")
-    )$Imported == TRUE))
-})
-
-test_that(".import_stats_iss returns NULL if no files were imported", {
-    af_filtered <- association_file_err %>%
-        dplyr::filter(.data$ProjectID == "PROJECT1100")
-    stats <- .import_stats_iss(af_filtered)
-    expect_null(stats)
-})
-
-#------------------------------------------------------------------------------#
-# Tests .join_and_aggregate
-#------------------------------------------------------------------------------#
-test_that(".join_and_aggregate correctly join and aggregate for stats", {
-    af_filtered <- association_file %>%
-        dplyr::filter(.data$ProjectID == "CLOEXP")
-    stats <- .import_stats_iss(af_filtered)
-    agg <- .join_and_aggregate(
-        af_filtered, stats[[1]],
-        c(
-            "SubjectID", "CellMarker",
-            "Tissue", "TimePoint"
+test_that(paste(func_name[1], "ignores column if not present"), {
+    func_table <- default_meta_agg() %>%
+        tibble::add_row(
+            Column = "A", Function = list(~ sum(.x)), Args = NA,
+            Output_colname = "{.col}_sum"
         )
+    aggreg_meta <- .aggregate_meta(association_file,
+        grouping_keys = key,
+        function_tbl = func_table
     )
-    expect_equal(agg$VCN_avg, c(0.7, 2.8, 4.3, 9.89), ignore_attr = TRUE)
-    expect_true(all(agg$DNAngUsed_avg == 100))
-    expect_equal(agg$Kapa_avg, c(26.54667, 59.81000, 79.80333, 85.87000),
-        tolerance = .5, ignore_attr = TRUE
-    )
-    expect_true(all(agg$DNAngUsed_sum == 300))
-    expect_equal(agg$ulForPool_sum, c(25.7, 12.29, 7.98, 7.46),
-        ignore_attr = TRUE
-    )
-    expect_equal(agg$BARCODE_MUX_sum, c(4872448, 8573674, 5841068, 6086489),
-        ignore_attr = TRUE
-    )
-    expect_equal(
-        agg$TRIMMING_FINAL_LTRLC_sum,
-        c(4863932, 8549992, 5818598, 6062299),
-        ignore_attr = TRUE
-    )
-    expect_equal(
-        agg$LV_MAPPED_sum,
-        c(2114395, 3485464, 2923561, 2484034),
-        ignore_attr = TRUE
-    )
-    expect_equal(
-        agg$BWA_MAPPED_OVERALL_sum,
-        c(2619004, 4751887, 2631197, 3297007),
-        ignore_attr = TRUE
-    )
-    expect_equal(
-        agg$ISS_MAPPED_PP_sum,
-        c(2386173, 3746655, 1938140, 2330286),
-        ignore_attr = TRUE
-    )
+    expect_true(!"A_sum" %in% colnames(aggreg_meta))
 })
 
-test_that(".join_and_aggregate correctly join and aggregate for af only", {
-    af_filtered <- association_file %>%
-        dplyr::filter(.data$ProjectID == "CLOEXP")
-    agg <- .join_and_aggregate(
-        af_filtered, NULL,
-        c(
-            "SubjectID", "CellMarker",
-            "Tissue", "TimePoint"
-        )
+test_that(paste(func_name[1], "works for mixed function formula"), {
+    func_table <- tibble::tribble(
+        ~Column, ~Function, ~Args, ~Output_colname,
+        "FusionPrimerPCRDate", ~ min(.x, na.rm = TRUE), NA, "{.col}_min",
+        "FusionPrimerPCRDate", min, list(na.rm = TRUE), "{.col}_min_fun"
     )
-    expect_equal(agg$VCN_avg, c(0.7, 2.8, 4.3, 9.89), ignore_attr = TRUE)
-    expect_true(all(agg$DNAngUsed_avg == 100))
-    expect_equal(agg$Kapa_avg, c(26.54667, 59.81000, 79.80333, 85.87000),
-        tolerance = .5, ignore_attr = TRUE
+    aggreg_meta <- .aggregate_meta(association_file,
+        grouping_keys = key,
+        function_tbl = func_table
     )
-    expect_true(all(agg$DNAngUsed_sum == 300))
-    expect_equal(agg$ulForPool_sum, c(25.7, 12.29, 7.98, 7.46),
-        ignore_attr = TRUE
-    )
-    expect_true(all(!.stats_columns_min() %in% colnames(agg)))
+    expect_true(all(aggreg_meta$FusionPrimerPCRDate_min ==
+        aggreg_meta$FusionPrimerPCRDate_min_fun))
 })
 
 #------------------------------------------------------------------------------#
 # Tests aggregate_metadata
 #------------------------------------------------------------------------------#
 # Test input
-test_that("aggregate_metadata stops if af is missing mandatory columns", {
-    association_file <- association_file %>%
-        dplyr::select(-c(.data$FusionPrimerPCRDate))
-    expect_error({
-        agg_meta <- aggregate_metadata(association_file = association_file)
-    })
-})
-test_that("aggregate_metadata stops if grouping keys is null", {
+test_that(paste(func_name[2], "stops if grouping keys is null"), {
     expect_error({
         agg_meta <- aggregate_metadata(
             association_file = association_file,
@@ -186,7 +99,7 @@ test_that("aggregate_metadata stops if grouping keys is null", {
         )
     })
 })
-test_that("aggregate_metadata stops if grouping keys is not a char vector", {
+test_that(paste(func_name[2], "stops if grouping keys is not a char vector"), {
     expect_error({
         agg_meta <- aggregate_metadata(
             association_file = association_file,
@@ -200,7 +113,7 @@ test_that("aggregate_metadata stops if grouping keys is not a char vector", {
         )
     })
 })
-test_that("aggregate_metadata stops if grouping keys are missing from af", {
+test_that(paste(func_name[2], "stops if grouping keys are missing from af"), {
     expect_error({
         agg_meta <- aggregate_metadata(
             association_file = association_file,
@@ -215,27 +128,36 @@ test_that("aggregate_metadata stops if grouping keys are missing from af", {
     })
 })
 
-test_that("aggregate_metadata stops if import_stats is not logical", {
-    expect_error({
+test_that(paste(func_name[2], "warns deprecation of import_stats"), {
+    expect_deprecated({
         agg_meta <- aggregate_metadata(
             association_file = association_file,
-            import_stats = 1
+            import_stats = TRUE
         )
     })
-    expect_error({
-        agg_meta <- aggregate_metadata(
+})
+
+test_that(paste(func_name[2], "warns if no columns found"), {
+    func_table <- tibble::tribble(
+        ~Column, ~Function, ~Args, ~Output_colname,
+        "A", ~ min(.x, na.rm = TRUE), NA, "{.col}_min",
+        "B", min, list(na.rm = TRUE), "{.col}_min_fun"
+    )
+    expect_message({
+        aggreg_meta <- aggregate_metadata(
             association_file = association_file,
-            import_stats = c(TRUE, TRUE, FALSE)
+            grouping_keys = key,
+            aggregating_functions = func_table
         )
     })
+    expect_null(aggreg_meta)
 })
 
 #------------------------------------------------------------------------------#
 # Tests aggregate_values_by_key
 #------------------------------------------------------------------------------#
-
 # Test input
-test_that("aggregate_values_by_key stops if x incorrect", {
+test_that(paste(func_name[3], "stops if x incorrect"), {
     expect_error({
         agg <- aggregate_values_by_key(
             x = 1,
@@ -281,18 +203,15 @@ test_that("aggregate_values_by_key stops if x incorrect", {
     mod_list <- purrr::map(matrices, function(m) {
         m %>% dplyr::select(-c("CompleteAmplificationID"))
     })
-    expect_error(
-        {
-            agg <- aggregate_values_by_key(
-                mod_list,
-                association_file
-            )
-        },
-        regexp = .missing_complAmpID_error()
-    )
+    expect_error({
+        agg <- aggregate_values_by_key(
+            mod_list,
+            association_file
+        )
+    })
 })
 
-test_that("aggregate_values_by_key stops if key is incorrect", {
+test_that(paste(func_name[3], "stops if key is incorrect"), {
     expect_error({
         agg <- aggregate_values_by_key(
             x = matrices$seqCount,
@@ -322,7 +241,7 @@ test_that("aggregate_values_by_key stops if key is incorrect", {
     )
 })
 
-test_that("aggregate_values_by_key stops if lambda is incorrect", {
+test_that(paste(func_name[3], "stops if lambda is incorrect"), {
     expect_error({
         agg <- aggregate_values_by_key(
             x = isadf,
@@ -349,7 +268,7 @@ test_that("aggregate_values_by_key stops if lambda is incorrect", {
     })
 })
 
-test_that("aggregate_values_by_key stops if group is incorrect", {
+test_that(paste(func_name[3], "stops if group is incorrect"), {
     expect_error({
         agg <- aggregate_values_by_key(
             x = matrices$seqCount,
@@ -370,7 +289,7 @@ test_that("aggregate_values_by_key stops if group is incorrect", {
 })
 
 # Test Values
-test_that("aggregate_values_by_key succeeds for single IS matrix", {
+test_that(paste(func_name[3], "succeeds for single IS matrix"), {
     expect_error(
         {
             agg <- aggregate_values_by_key(matrices$seqCount, association_file)
@@ -396,7 +315,7 @@ test_that("aggregate_values_by_key succeeds for single IS matrix", {
     ) %in% colnames(agg)))
 })
 
-test_that("aggregate_values_by_key succeeds for list of IS matrices", {
+test_that(paste(func_name[3], "succeeds for list of IS matrices"), {
     expect_error(
         {
             agg <- aggregate_values_by_key(matrices, association_file)

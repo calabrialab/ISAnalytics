@@ -11,7 +11,9 @@ import_association_file(
   dates_format = "ymd",
   separator = "\\t",
   filter_for = NULL,
-  export_widget_path = NULL
+  import_iss = FALSE,
+  export_widget_path = NULL,
+  ...
 )
 }
 \arguments{
@@ -36,11 +38,16 @@ for which the value of the column "ProjectID" is one of the specified
 values. If multiple columns are present in the list all filtering
 conditions are applied as a logical AND.}
 
+\item{import_iss}{Import Vispa2 stats and merge them with the
+association file?}
+
 \item{export_widget_path}{A path on disk to save produced widgets or NULL
 if the user doesn't wish to save the html file}
+
+\item{...}{Additional arguments to pass to \code{\link{import_Vispa2_stats}}}
 }
 \value{
-A tibble with the contents of the association file plus a column
+A tibble with the contents of the association file plus columns
 containing the path in the file system for every project and pool if found.
 }
 \description{
@@ -96,6 +103,7 @@ options(op)
 \code{\link{date_formats}}
 
 Other Import functions: 
+\code{\link{import_Vispa2_stats}()},
 \code{\link{import_parallel_Vispa2Matrices_auto}()},
 \code{\link{import_parallel_Vispa2Matrices_interactive}()},
 \code{\link{import_single_Vispa2Matrix}()}

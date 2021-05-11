@@ -196,10 +196,13 @@ import_single_Vispa2Matrix <- function(path,
 #' for which the value of the column "ProjectID" is one of the specified
 #' values. If multiple columns are present in the list all filtering
 #' conditions are applied as a logical AND.
+#' @param import_iss Import Vispa2 stats and merge them with the
+#' association file?
 #' @param export_widget_path A path on disk to save produced widgets or NULL
 #' if the user doesn't wish to save the html file
+#' @param ... Additional arguments to pass to \code{\link{import_Vispa2_stats}}
 #' @family Import functions
-#' @return A tibble with the contents of the association file plus a column
+#' @return A tibble with the contents of the association file plus columns
 #' containing the path in the file system for every project and pool if found.
 #' @details The import series of functions is designed to work in combination
 #' with the use of Vispa2 pipeline, please refer to this article for more
@@ -229,7 +232,11 @@ import_single_Vispa2Matrix <- function(path,
 #' @export
 #'
 #' @importFrom purrr map_lgl set_names is_empty
-#' @importFrom rlang inform
+#' @importFrom rlang inform abort dots_list exec
+#' @importFrom htmltools tagList browsable
+#' @importFrom tibble add_column
+#' @import dplyr
+#' @importFrom stringr str_pad
 #' @importFrom magrittr `%>%`
 #' @seealso \code{\link{date_formats}}
 #' @examples
@@ -245,7 +252,9 @@ import_association_file <- function(path,
     root = NULL, tp_padding = 4, dates_format = "ymd",
     separator = "\t",
     filter_for = NULL,
-    export_widget_path = NULL) {
+    import_iss = FALSE,
+    export_widget_path = NULL,
+    ...) {
     # Check parameters
     stopifnot(is.character(path) & length(path) == 1)
     stopifnot((is.character(root) & length(root) == 1) || (is.null(root)))
@@ -257,6 +266,14 @@ import_association_file <- function(path,
         is.integer(tp_padding)) & length(tp_padding) == 1)
     stopifnot(length(dates_format) == 1 & dates_format %in% date_formats())
     stopifnot(is.character(separator) && length(separator) == 1)
+    stopifnot(is.logical(import_iss) && length(import_iss) == 1)
+    if (import_iss & is.null(root)) {
+        rlang::abort(paste(
+            "Can't import Vispa2 stats files without",
+            "file system alignment. Provide the appropriate",
+            "root."
+        ))
+    }
     # Check filter
     stopifnot(is.null(filter_for) ||
         (is.list(filter_for) && !is.null(names(filter_for))))
@@ -292,7 +309,57 @@ import_association_file <- function(path,
         col_probs,
         missing_dates
     )))
-    if (something_to_report) {
+    ## Fix timepoints
+    if (!"TimepointMonths" %in% colnames(as_file)) {
+        as_file <- as_file %>%
+            tibble::add_column(TimepointMonths = NA_real_)
+    }
+    if (!"TimepointYears" %in% colnames(as_file)) {
+        as_file <- as_file %>%
+            tibble::add_column(TimepointYears = NA_real_)
+    }
+    as_file <- as_file %>%
+        dplyr::mutate(
+            TimepointMonths = dplyr::if_else(
+                condition = is.na(.data$TimepointMonths),
+                false = .data$TimepointMonths,
+                true = dplyr::if_else(
+                    condition = as.numeric(.data$TimePoint) == 0,
+                    true = 0,
+                    false = dplyr::if_else(
+                        condition = as.numeric(.data$TimePoint) > 0 &
+                            as.numeric(.data$TimePoint) < 30,
+                        true = ceiling(as.numeric(.data$TimePoint) / 30),
+                        false = round(as.numeric(.data$TimePoint) / 30)
+                    )
+                )
+            ),
+            TimepointYears = dplyr::if_else(
+                condition = is.na(.data$TimepointYears),
+                false = .data$TimepointYears,
+                true = dplyr::if_else(
+                    condition = as.numeric(.data$TimePoint) == 0,
+                    true = 0,
+                    false = dplyr::if_else(
+                        condition = as.numeric(.data$TimePoint) > 0 &
+                            as.numeric(.data$TimePoint) < 360,
+                        true = ceiling(as.numeric(.data$TimePoint) / 360),
+                        false = round(as.numeric(.data$TimePoint) / 360)
+                    )
+                )
+            )
+        ) %>%
+        dplyr::mutate(
+            TimepointMonths = stringr::str_pad(
+                as.character(.data$TimepointMonths),
+                pad = "0", side = "left", width = 2
+            ),
+            TimepointYears = stringr::str_pad(
+                as.character(.data$TimepointYears),
+                pad = "0", side = "left", width = 2
+            ),
+        )
+    widget <- if (something_to_report) {
         summary_report <- .summary_af_import_msg(
             pars_prob = parsing_problems, dates_prob = date_problems,
             cols_prob = col_probs, crit_na = missing_dates,
@@ -305,49 +372,261 @@ import_association_file <- function(path,
             )
         )
         if (getOption("ISAnalytics.widgets") == TRUE) {
-            withCallingHandlers(
-                expr = {
-                    withRestarts(
-                        {
-                            widg <- .checker_widget(
-                                parsing_problems,
-                                date_problems,
-                                checks,
-                                col_probs,
-                                missing_dates
-                            )
-                            print(widg)
-                        },
-                        print_err = function() {
-                            rlang::inform(.widgets_error())
-                            if (getOption("ISAnalytics.verbose") == TRUE) {
-                                rlang::inform(summary_report,
-                                    class = "summary_report"
-                                )
-                            }
-                        }
-                    )
-                },
-                error = function(cnd) {
-                    rlang::inform(conditionMessage(cnd))
-                    invokeRestart("print_err")
-                }
+            .produce_widget(".checker_widget",
+                parsing_probs = parsing_problems,
+                date_probs = date_problems,
+                checker_df = checks,
+                col_probs = col_probs,
+                critical_nas = missing_dates
             )
-            if (!is.null(export_widget_path)) {
-                .export_widget_file(
-                    widg,
-                    export_widget_path, "af_import_report.html"
-                )
-            }
         } else if (getOption("ISAnalytics.verbose") == TRUE) {
             rlang::inform(summary_report,
                 class = "summary_report"
             )
+            NULL
+        } else {
+            NULL
         }
+    }
+    if (import_iss) {
+        dots <- rlang::dots_list(.named = TRUE)
+        dots <- dots[!names(dots) %in% c(
+            "association_file",
+            "export_widget_path",
+            "join_with_af"
+        )]
+        stats <- withCallingHandlers(
+            {
+                withRestarts(
+                    {
+                        rlang::exec(import_Vispa2_stats,
+                            association_file = as_file,
+                            export_widget_path = "INTERNAL",
+                            join_with_af = TRUE,
+                            !!!dots
+                        )
+                    },
+                    fail_stats = function() {
+                        rlang::inform("Issues in importing stats files, skipping")
+                    }
+                )
+            },
+            error = function(err) {
+                rlang::inform(err$message)
+                invokeRestart("fail_stats")
+            }
+        )
+        if (!is.null(stats)) {
+            as_file <- stats$stats
+            if (getOption("ISAnalytics.widgets") == TRUE) {
+                widget <- htmltools::browsable(
+                    htmltools::tagList(
+                        widget, stats$report_w
+                    )
+                )
+            }
+        }
+    }
+    if (!is.null(widget)) {
+        .print_widget(widget, else_verbose = {
+            rlang::inform(summary_report,
+                class = "summary_report"
+            )
+        })
+    } else if (getOption("ISAnalytics.verbose") == TRUE) {
+        rlang::inform(summary_report,
+            class = "summary_report"
+        )
+    }
+    if (!is.null(export_widget_path)) {
+        .export_widget_file(widget,
+            path = export_widget_path,
+            def_file_name = "af_import_report.html"
+        )
     }
     as_file
 }
 
+#' Import Vispa2 stats given the aligned association file.
+#'
+#' \lifecycle{experimental}
+#' Imports all the Vispa2 stats files for each pool provided the association
+#' file has been aligned with the file system
+#' (see \code{\link{import_association_file}}).
+#'
+#' @param association_file The file system aligned association file
+#' (contains columns with absolute paths to the 'iss' folder)
+#' @param file_prefixes A character vector with known file prefixes
+#'  to match on file names. NOTE: the elements represent regular expressions.
+#'  For defaults see \link{default_iss_file_prefixes}.
+#' @param join_with_af Logical, if TRUE the imported stats files will be
+#' merged with the association file, if false a single data frame holding
+#' only the stats will be returned.
+#' @param pool_col A single string. What is the name of the pool column
+#' used in the Vispa2 run? This will be used as a key to perform a join
+#' operation with the stats files `POOL` column.
+#' @param export_widget_path Either NULL or the path on disk where the
+#' widget report should be saved.
+#'
+#' @family Import functions
+#' @importFrom rlang inform abort
+#' @importFrom stats setNames
+#' @import dplyr
+#' @importFrom htmltools browsable tagList
+#'
+#' @return A data frame
+#' @export
+#'
+#' @examples
+#' op <- options("ISAnalytics.widgets" = FALSE)
+#' path <- system.file("extdata", "ex_association_file.tsv",
+#'     package = "ISAnalytics"
+#' )
+#' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+#' root <- unzip_file_system(root_pth, "fs")
+#' association_file <- import_association_file(path, root, dates_format = "dmy")
+#' af_with_stats <- import_Vispa2_stats(association_file)
+#' options(op)
+import_Vispa2_stats <- function(association_file,
+    file_prefixes = default_iss_file_prefixes(),
+    join_with_af = TRUE,
+    pool_col = "concatenatePoolIDSeqRun",
+    export_widget_path = NULL) {
+    ## Check param
+    if (!is.data.frame(association_file)) {
+        rlang::abort(.af_not_imported_err())
+    }
+    path_cols <- .path_cols_names()
+    if (!path_cols$iss %in% colnames(association_file)) {
+        rlang::abort(.af_not_aligned_err())
+    }
+    min_cols <- c("ProjectID", "concatenatePoolIDSeqRun", path_cols$iss)
+    if (!all(min_cols %in% colnames(association_file))) {
+        rlang::abort(
+            .missing_needed_cols(
+                min_cols[!min_cols %in% colnames(association_file)]
+            )
+        )
+    }
+    stopifnot(is.character(file_prefixes))
+    stopifnot(is.logical(join_with_af))
+    join_with_af <- join_with_af[1]
+    if (join_with_af) {
+        stopifnot(is.character(pool_col) & length(pool_col) == 1)
+        stopifnot(pool_col %in% colnames(association_file))
+    }
+    ## export path has a special placeholder "INTERNAL" for calling
+    ## the function inside import_association_file
+    stopifnot(is.null(export_widget_path) || is.character(export_widget_path))
+    ## Import
+    stats <- .import_stats_iss(
+        association_file = association_file,
+        prefixes = file_prefixes
+    )
+    report <- stats$report
+    stats <- stats$stats
+    ## Produce widget report if requested
+    widget_stats_import <- if (getOption("ISAnalytics.widgets") == TRUE) {
+        .produce_widget(".iss_import_widget", report = report)
+    } else {
+        NULL
+    }
+    ## - IF NO STATS IMPORTED (STATS ARE NULL)
+    if (is.null(stats)) {
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            rlang::inform(paste("No stats files imported"))
+        }
+        if (!is.null(widget_stats_import)) {
+            if (is.null(export_widget_path)) {
+                .print_widget(widget_stats_import)
+            } else if (export_widget_path != "INTERNAL") {
+                .print_widget(widget_stats_import)
+            }
+        }
+        if (!is.null(export_widget_path) && export_widget_path != "INTERNAL") {
+            .export_widget_file(
+                widget_stats_import,
+                export_widget_path,
+                "vispa2_stats_import_report.html"
+            )
+        }
+        if (!is.null(export_widget_path) && export_widget_path == "INTERNAL") {
+            return(list(stats = NULL, report_w = widget_stats_import))
+        } else {
+            return(NULL)
+        }
+    }
+    ## - IF STATS NOT NULL
+    ## Merge if requested
+    if (join_with_af) {
+        association_file <- association_file %>%
+            dplyr::left_join(stats, by = c(
+                stats::setNames("POOL", pool_col),
+                "TagSequence" = "TAG"
+            ))
+        ## Detect potential problems
+        missing_stats <- association_file %>%
+            dplyr::filter(is.na(.data$RUN_NAME)) %>%
+            dplyr::select(
+                .data$ProjectID,
+                .data$concatenatePoolIDSeqRun,
+                dplyr::all_of(pool_col),
+                .data$CompleteAmplificationID
+            ) %>%
+            dplyr::distinct()
+        widget_stats_import <- if (getOption("ISAnalytics.widgets") == TRUE) {
+            miss_widget <- .produce_widget(".missing_iss_widget",
+                missing_iss = missing_stats
+            )
+            htmltools::browsable(
+                htmltools::tagList(widget_stats_import, miss_widget)
+            )
+        } else {
+            NULL
+        }
+        if (!is.null(widget_stats_import)) {
+            if (is.null(export_widget_path)) {
+                .print_widget(widget_stats_import)
+            } else if (export_widget_path != "INTERNAL") {
+                .print_widget(widget_stats_import)
+            }
+        }
+        if (!is.null(export_widget_path) && export_widget_path != "INTERNAL") {
+            .export_widget_file(
+                widget_stats_import,
+                export_widget_path,
+                "vispa2_stats_import_report.html"
+            )
+        }
+        if (!is.null(export_widget_path) && export_widget_path == "INTERNAL") {
+            return(list(
+                stats = association_file,
+                report_w = widget_stats_import
+            ))
+        } else {
+            return(association_file)
+        }
+    }
+    if (!is.null(widget_stats_import)) {
+        if (is.null(export_widget_path)) {
+            .print_widget(widget_stats_import)
+        } else if (export_widget_path != "INTERNAL") {
+            .print_widget(widget_stats_import)
+        }
+    }
+    if (!is.null(export_widget_path) && export_widget_path != "INTERNAL") {
+        .export_widget_file(
+            widget_stats_import,
+            export_widget_path,
+            "vispa2_stats_import_report.html"
+        )
+    }
+    if (!is.null(export_widget_path) && export_widget_path == "INTERNAL") {
+        return(list(stats = stats, report_w = widget_stats_import))
+    } else {
+        return(stats)
+    }
+}
 
 #' Import integration matrices based on the association file.
 #'
@@ -816,4 +1095,18 @@ matching_options <- function() {
 #' date_formats()
 date_formats <- function() {
     c("ymd", "ydm", "mdy", "myd", "dmy", "dym", "yq")
+}
+
+
+#' Default regex prefixes for Vispa2 stats files.
+#'
+#' Note that each element is a regular expression.
+#'
+#' @return A character vector of regexes
+#' @export
+#'
+#' @examples
+#' default_iss_file_prefixes()
+default_iss_file_prefixes <- function() {
+    c("stats\\.sequence.", "stats\\.matrix.")
 }

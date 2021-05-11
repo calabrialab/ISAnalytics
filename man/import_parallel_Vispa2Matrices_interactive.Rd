@@ -84,6 +84,7 @@ matrices <- import_parallel_Vispa2Matrices_interactive(
 \code{\link{import_association_file}}
 
 Other Import functions: 
+\code{\link{import_Vispa2_stats}()},
 \code{\link{import_association_file}()},
 \code{\link{import_parallel_Vispa2Matrices_auto}()},
 \code{\link{import_single_Vispa2Matrix}()}

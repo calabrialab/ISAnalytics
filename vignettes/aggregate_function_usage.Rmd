@@ -154,19 +154,21 @@ options("ISAnalytics.widgets" = TRUE)
 We refer to information contained in the association file as "metadata": 
 sometimes it's useful to obtain collective information based on a certain 
 group of variables we're interested in. The function `aggregate_metadata` 
-does just that, according to the grouping variables, meaning the names of 
+does just that: according to the grouping variables, meaning the names of 
 the columns in the association file to perform a `group_by` operation with, 
-creates a summary which includes:
+creates a summary. You can fully customize the summary by providing a 
+"function table" which tells the function which operation should be 
+applied to which column and what name to give to the output column.
+A default is already supplied:
 
-* `FusionPrimerPCRDate_min` - The minimum date in the group for this variable
-* `LinearPCRDate_min` - The minimum date in the group for this variable
-* `VCN_avg` - The mean of "VCN" column for each group
-* `DNAngUsed_avg` - The mean of "DNAngUsed "column for each group
-* `Kapa_avg` - The mean of "Kapa" column for each group
-* `DNAngUsed_sum` - The sum of "DNAngUsed" column for each group
-* `ulForPool_sum` - The sum of "ulForPool" column for each group
-* `AggregateMeta_sum` - A string obtained by concatenation of all 
-of the grouping variables separated by "_"
+```{r echo=TRUE}
+knitr::kable(default_meta_agg()) 
+```
+
+You can either provide purrr-style lambdas (as given in the example above),
+or simply specify the name of the function and additional parameters as a 
+list in a separated column. If you choose to provide your own table you
+should maintain the column names for the function to work properly.
 
 ## Typical workflow
 
@@ -191,56 +193,20 @@ withr::with_options(list(ISAnalytics.widgets = FALSE), {
 Perform aggregation:
 
 ```{r}
-aggregated_meta <- aggregate_metadata(association_file,
+aggregated_meta <- aggregate_metadata(
+  association_file,
     grouping_keys = c(
         "SubjectID",
         "CellMarker",
-        "Tissue", "TimePoint"
-    ),
-    import_stats = FALSE
+        "Tissue", 
+        "TimePoint"
+    )
 )
 ```
 
 ```{r echo=FALSE}
 knitr::kable(aggregated_meta)
 ```
-
-As you can see there is an additional parameter you can set, `import_stats`: 
-if set to `TRUE`, the function will automatically look into the file system you 
-provided as root when you imported the association file and will try to locate 
-first the `iss` folder for each project and then all Vispa2 "stats" files.  
-Vispa2 stats contain useful information that is not included in the association 
-file and is linked to the single Vispa2 run. In some cases it's useful to 
-perform aggregation on those info too. If you set the parameter to `TRUE`, 
-besides the columns mentioned before you will also have:
-
-* `BARCODE_MUX_sum` - The sum of the "BARCODE_MUX" column for the group
-* `TRIMMING_FINAL_LTRLC_sum` - The sum of the "TRIMMING_FINAL_LTRLC" column for 
-the group
-* `LV_MAPPED_sum` - The sum of the "LV_MAPPED" column for the group
-* `BWA_MAPPED_OVERALL_sum` - The sum of the "BWA_MAPPED_OVERALL" column for the 
-group
-* `ISS_MAPPED_PP_sum` - The sum of the "ISS_MAPPED_PP" column for the group
-
-```{r}
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    aggregated_meta <- aggregate_metadata(association_file,
-        grouping_keys = c(
-            "SubjectID", "CellMarker",
-            "Tissue", "TimePoint"
-        ),
-        import_stats = TRUE
-    )
-})
-```
-
-```{r echo=FALSE}
-knitr::kable(aggregated_meta)
-```
-
-If you have the option `ISAnalytics.widgets` set to TRUE, this will produce a 
-report in HTML format that tells you which stats files were imported. 
-To avoid this, you can set the option to FALSE.
 
 # Aggregation of values by key
 
@@ -293,8 +259,9 @@ You can change the value of the parameter key as you see fit. This parameter
 should contain one or multiple columns of the association file that you want 
 to include in the grouping when performing the aggregation. 
 The default value is set to `c("SubjectID", "CellMarker",
-"Tissue", "TimePoint")` (same default key as the `aggregate_metadata` 
-function.
+"Tissue", "TimePoint")`
+(same default key as the `aggregate_metadata` 
+function).
 
 ```{r}
 agg1 <- aggregate_values_by_key(

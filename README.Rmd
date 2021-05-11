@@ -89,28 +89,17 @@ devtools::install_github("calabrialab/ISAnalytics",
                          ref = "master")
 ```
 
-# Current functionality
-
-* Import integration matrices from files: more info with `vignette("How to use import functions", package = "ISAnalytics")`
-* Collision removal: more info with `vignette("Collision removal functionality", package = "ISAnalytics")`
-* Aggregation: more info with `vignette("Working with aggregate functions", package = "ISAnalytics")`
-* Re-calibration functions: `compute_near_integrations`
-* Analysis functions: `compute_abundance`, `comparison_matrix` `separate_quant_matrices`, others
-* Plotting functions: `CIS_volcano_plot`
-* Utility functions
-
 # NEWS
 
 ```{r child="NEWS.md"}
 
 ```
 
-
 # TO DO in future updates  
 
 - [ ] Add further plot wrappers
-- [ ] New functionality: raw reads flagging/filtering
-- [ ] New functionality: HSCs population size estimate
+- [X] New functionality: raw reads flagging/filtering (ISAnalytics 1.1.11)
+- [X] New functionality: HSCs population size estimate (ISAnalytics 1.1.11)
 - [ ] New functionality: genomic annotation
 - [ ] Obtain a system to visualize interactive reports based on shiny (possibly
 replacing self-contained HTML reports)

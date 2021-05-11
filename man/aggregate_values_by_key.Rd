@@ -10,7 +10,8 @@ aggregate_values_by_key(
   value_cols = "Value",
   key = c("SubjectID", "CellMarker", "Tissue", "TimePoint"),
   lambda = list(sum = ~sum(.x, na.rm = TRUE)),
-  group = c(mandatory_IS_vars(), annotation_IS_vars())
+  group = c(mandatory_IS_vars(), annotation_IS_vars()),
+  join_af_by = "CompleteAmplificationID"
 )
 }
 \arguments{
@@ -31,12 +32,17 @@ See details section.}
 
 \item{group}{Other variables to include in the grouping besides \code{key},
 can be set to NULL}
+
+\item{join_af_by}{A character vector representing the joining key
+between the matrix and the metadata. Useful to re-aggregate already
+aggregated matrices.}
 }
 \value{
-A list of tibbles or a single tibble according to input
+A list of tibbles or a single tibble aggregated according to
+the specified arguments
 }
 \description{
-\lifecycle{experimental}
+\lifecycle{maturing}
 Performs aggregation on values contained in the integration matrices based
 on the key and the specified lambda. For more details on how to use this
 function:
@@ -106,6 +112,7 @@ options(op)
 }
 \seealso{
 Other Aggregate functions: 
-\code{\link{aggregate_metadata}()}
+\code{\link{aggregate_metadata}()},
+\code{\link{default_meta_agg}()}
 }
 \concept{Aggregate functions}

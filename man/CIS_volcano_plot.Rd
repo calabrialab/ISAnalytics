@@ -107,23 +107,27 @@ parameter (DOIReference column is optional):\if{html}{\out{<div class="r">}}\pre
 op <- options(ISAnalytics.widgets = FALSE)
 
 path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
+  package = "ISAnalytics"
 )
 root_correct <- system.file("extdata", "fs.zip",
-    package = "ISAnalytics"
+  package = "ISAnalytics"
 )
 root_correct <- unzip_file_system(root_correct, "fs")
 
 matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = path_AF, root = root_correct,
-    quantification_type = c("seqCount", "fragmentEstimate"),
-    matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY",
-    dates_format = "dmy"
+  association_file = path_AF, root = root_correct,
+  quantification_type = c("seqCount", "fragmentEstimate"),
+  matrix_type = "annotated", workers = 2, patterns = NULL,
+  matching_opt = "ANY",
+  dates_format = "dmy"
 )
 
 cis <- CIS_grubbs(matrices)
 plot <- CIS_volcano_plot(cis)
 options(op)
+}
+\seealso{
+Other Plotting functions: 
+\code{\link{HSC_population_plot}()}
 }
 \concept{Plotting functions}

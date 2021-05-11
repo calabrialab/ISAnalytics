@@ -23,6 +23,8 @@ path_root_err <- system.file("extdata", "fserr.zip",
     package = "ISAnalytics"
 )
 root_err <- unzip_file_system(path_root_err, "fserr")
+
+path_cols <- .path_cols_names()
 #------------------------------------------------------------------------------#
 # Tests .read_af
 #------------------------------------------------------------------------------#
@@ -48,7 +50,9 @@ test_that(paste(func_name[2], "finds all projects for correct fs"), {
     )
     checks <- .check_file_system_alignment(read_res$af, root_correct)
     expect_true(all(checks$Found == TRUE))
-    expect_true(all(!is.na(checks$Path)))
+    expect_true(all(!is.na(checks[[path_cols$project]])))
+    expect_true(all(!is.na(checks[[path_cols$quant]])))
+    expect_true(all(!is.na(checks[[path_cols$iss]])))
 })
 
 test_that(paste(func_name[2], "finds missing projects for incorrect fs"), {
@@ -57,29 +61,39 @@ test_that(paste(func_name[2], "finds missing projects for incorrect fs"), {
         ProjectID = "PROJECT1101",
         concatenatePoolIDSeqRun = "ABY-LR-PL4-POOL54-2"
     )
+    missing_iss <- list(
+        ProjectID = "PROJECT1100",
+        concatenatePoolIDSeqRun = "ABX-LR-PL6-POOL15-1"
+    )
     read_res <- .read_af(test_af_path,
         padding = 4, date_format = "dmy",
         delimiter = "\t"
     )
     checks <- .check_file_system_alignment(read_res$af, root_err)
     expect_false(all(checks$Found == TRUE))
-    expect_false(all(!is.na(checks$Path)))
+    expect_false(all(!is.na(checks[[path_cols$project]])))
+    missing_row <- checks %>%
+        dplyr::filter(
+            .data$ProjectID == missing_project$ProjectID,
+            .data$concatenatePoolIDSeqRun ==
+                missing_project$concatenatePoolIDSeqRun)
     expect_equal(
-        (checks %>%
-            dplyr::filter(
-                .data$ProjectID == missing_project$ProjectID,
-                .data$concatenatePoolIDSeqRun ==
-                    missing_project$concatenatePoolIDSeqRun
-            ))$Found, FALSE
+        missing_row$Found, FALSE
     )
-    expect_equal(
-        (checks %>%
-            dplyr::filter(
-                .data$ProjectID == missing_project$ProjectID,
-                .data$concatenatePoolIDSeqRun ==
-                    missing_project$concatenatePoolIDSeqRun
-            ))$Path,
-        NA_character_
+    expect_true(is.na(missing_row[[path_cols$project]]))
+    expect_true(
+        is.na(missing_row[[path_cols$quant]])
+    )
+    expect_true(
+        is.na(missing_row[[path_cols$iss]])
+    )
+    missing_row_iss <- checks %>%
+        dplyr::filter(
+            .data$ProjectID == missing_iss$ProjectID,
+            .data$concatenatePoolIDSeqRun ==
+                missing_iss$concatenatePoolIDSeqRun)
+    expect_true(
+        is.na(missing_row_iss[[path_cols$iss]])
     )
 })
 
@@ -240,8 +254,8 @@ test_that(paste(func_name[4], "imports with defaults"), {
         class = "summary_report"
     )
     ### Check all have same dim
-    expect_true(all(dim(af1) == c(49, 66)))
-    expect_true(all(c(dim(af2), dim(af3)) == c(49, 67)))
+    expect_true(all(dim(af1) == c(49, 68)))
+    expect_true(all(c(dim(af2), dim(af3)) == c(49, 71)))
 })
 
 test_that(paste(func_name[4], "imports with filtering"), {

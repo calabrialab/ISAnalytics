@@ -26,6 +26,7 @@
 #' * Import functions:
 #'   * \code{\link{import_single_Vispa2Matrix}}
 #'   * \code{\link{import_association_file}}
+#'   * \code{\link{import_Vispa2_stats}}
 #'   * \code{\link{import_parallel_Vispa2Matrices_interactive}}
 #'   * \code{\link{import_parallel_Vispa2Matrices_auto}}
 #' * Aggregation functions:
@@ -34,6 +35,9 @@
 #' * Collision removal functions:
 #'   * \code{\link{remove_collisions}}
 #'   * \code{\link{realign_after_collisions}}
+#' * Removal of outliers from raw reads
+#'   * \code{\link{outlier_filter}}
+#'   * \code{\link{outliers_by_pool_fragments}}
 #' * Recalibration functions:
 #'   * \code{\link{compute_near_integrations}}
 #' * Analysis functions:
@@ -45,8 +49,11 @@
 #'   * \code{\link{sample_statistics}}
 #'   * \code{\link{CIS_grubbs}}
 #'   * \code{\link{cumulative_count_union}}
+#' * HSC population size estimate:
+#'   * \code{\link{HSC_population_size_estimate}}
 #' * Plotting functions:
 #'   * \code{\link{CIS_volcano_plot}}
+#'   * \code{\link{HSC_population_plot}}
 #' * Utility functions:
 #'   * \code{\link{generate_blank_association_file}}
 #'   * \code{\link{generate_Vispa2_launch_AF}}

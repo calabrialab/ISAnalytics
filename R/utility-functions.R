@@ -164,7 +164,9 @@ as_sparse_matrix <- function(x, fragmentEstimate = "fragmentEstimate",
         if (.check_complAmpID(x) == FALSE) {
             stop(.missing_complAmpID_error())
         }
-        num_cols <- .find_exp_cols(x)
+        num_cols <- .find_exp_cols(x, c(mandatory_IS_vars(),
+                                        annotation_IS_vars(),
+                                        "CompleteAmplificationID"))
         if (purrr::is_empty(num_cols)) {
             stop(.missing_num_cols_error())
         }

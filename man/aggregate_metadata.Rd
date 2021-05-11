@@ -7,24 +7,33 @@
 aggregate_metadata(
   association_file,
   grouping_keys = c("SubjectID", "CellMarker", "Tissue", "TimePoint"),
-  import_stats = TRUE
+  aggregating_functions = default_meta_agg(),
+  import_stats = lifecycle::deprecated()
 )
 }
 \arguments{
 \item{association_file}{The imported association file
-(via \code{import_association_file})}
+(via link{import_association_file})}
 
 \item{grouping_keys}{A character vector of column names to form a group}
 
-\item{import_stats}{Should Vispa2 stats files be imported and included?}
+\item{aggregating_functions}{A data frame containing specifications
+of the functions to be applied to columns in the association file during
+aggregation. It defaults to \link{default_meta_agg}. The structure of
+this data frame should be maintained if the user wishes to change the
+defaults.}
+
+\item{import_stats}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The import
+of VISPA2 stats has been moved to its dedicated function,
+see \link{import_Vispa2_stats}.}
 }
 \value{
-A tibble
+An aggregated data frame
 }
 \description{
-\lifecycle{experimental}
-Groups metadata by grouping_keys and returns a summary of info for each
-group. For more details on how to use this function:
+\lifecycle{maturing}
+Groups metadata by the specified grouping keys and returns a
+summary of info for each group. For more details on how to use this function:
 \code{vignette("Working with aggregate functions", package = "ISAnalytics")}
 }
 \examples{
@@ -37,11 +46,12 @@ root_correct <- unzip_file_system(root_correct, "fs")
 association_file <- import_association_file(path_AF, root_correct,
     dates_format = "dmy"
 )
-aggregated_meta <- aggregate_metadata(association_file, import_stats = FALSE)
+aggregated_meta <- aggregate_metadata(association_file)
 options(op)
 }
 \seealso{
 Other Aggregate functions: 
-\code{\link{aggregate_values_by_key}()}
+\code{\link{aggregate_values_by_key}()},
+\code{\link{default_meta_agg}()}
 }
 \concept{Aggregate functions}

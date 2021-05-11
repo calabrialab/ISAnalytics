@@ -51,6 +51,7 @@ reference:
     Importing integration matrices and metadata from files
 - contents:
   - import_association_file
+  - import_Vispa2_stats
   - import_single_Vispa2Matrix
   - import_parallel_Vispa2Matrices_interactive
   - import_parallel_Vispa2Matrices_auto
@@ -65,6 +66,10 @@ reference:
 - title: "Recalibration functions"
 - contents:
   - compute_near_integrations
+- title: "Removal of outliers from raw reads"
+- contents:
+  - outlier_filter
+  - outliers_by_pool_fragments
 - title: "Analysis functions"
 - contents:
   - compute_abundance
@@ -75,9 +80,13 @@ reference:
   - sample_statistics
   - CIS_grubbs
   - cumulative_count_union
+- title: "HSC population estimate"
+- contents:
+  - HSC_population_size_estimate
 - title: "Plotting functions"
 - contents:
   - CIS_volcano_plot
+  - HSC_population_plot
 - title: "Utility functions"
 - contents:
   - as_sparse_matrix
@@ -97,6 +106,10 @@ reference:
   - default_stats
   - clinical_relevant_suspicious_genes
   - known_clinical_oncogenes
+  - available_outlier_tests
+  - blood_lineages_default
+  - default_iss_file_prefixes
+  - default_meta_agg
 - title: "Package overview"
 - contents:
   - ISAnalytics

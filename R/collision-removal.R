@@ -91,7 +91,10 @@ remove_collisions <- function(x,
         ## Check if it contains the "Value" column. If not find all numeric
         ## columns that are not default columns
         quantifications_cols <- if (.check_value_col(x) == FALSE) {
-            found <- .find_exp_cols(x)
+            found <- .find_exp_cols(x,
+                                    c(mandatory_IS_vars(),
+                                      annotation_IS_vars(),
+                                      "CompleteAmplificationID"))
             if (purrr::is_empty(found)) {
                 stop(.missing_num_cols_error())
             }

@@ -14,3 +14,4 @@ coverage:
         informational: true
 ignore:
   - "R/internal-widgets.R"
+  - "R/plotting-functions.R"

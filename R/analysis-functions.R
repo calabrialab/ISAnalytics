@@ -194,14 +194,6 @@ comparison_matrix <- function(x,
     ShsCount = "ShsCount") {
     stopifnot(is.list(x) & !is.data.frame(x))
     stopifnot(all(names(x) %in% quantification_types()))
-    purrr::walk(x, function(m) {
-        mand <- .check_mandatory_vars(m)
-        amp <- .check_complAmpID(m)
-        val <- .check_value_col(m)
-        if (any(c(mand, amp, val) == FALSE)) {
-            stop(.non_ISM_error())
-        }
-    })
     stopifnot(is.character(fragmentEstimate) & length(fragmentEstimate) == 1)
     stopifnot(is.character(seqCount) & length(seqCount) == 1)
     stopifnot(is.character(barcodeCount) & length(barcodeCount) == 1)
@@ -221,8 +213,11 @@ comparison_matrix <- function(x,
         matrix1 %>%
             dplyr::full_join(matrix2, by = commoncols)
     })
-    if (any(is.na(result)) & getOption("ISAnalytics.verbose") == TRUE) {
-        message(.nas_introduced_msg())
+    na_introduced <- purrr::map_lgl(param_names, function(p) {
+        any(is.na(result[[p]]))
+    })
+    if (any(na_introduced) & getOption("ISAnalytics.verbose") == TRUE) {
+        rlang::inform(.nas_introduced_msg())
     }
     result
 }
@@ -248,6 +243,7 @@ comparison_matrix <- function(x,
 #' in input
 #' @param ShsCount Name of the shs count values column
 #' in input
+#' @param key Key columns to perform the joining operation
 #'
 #' @importFrom purrr is_empty map set_names
 #' @importFrom dplyr rename
@@ -278,21 +274,24 @@ comparison_matrix <- function(x,
 #' )
 #' separated_matrix <- separate_quant_matrices(matrices)
 #' options(op)
-separate_quant_matrices <- function(x, fragmentEstimate = "fragmentEstimate",
+separate_quant_matrices <- function(
+    x,
+    fragmentEstimate = "fragmentEstimate",
     seqCount = "seqCount",
     barcodeCount = "barcodeCount",
     cellCount = "cellCount",
-    ShsCount = "ShsCount") {
+    ShsCount = "ShsCount",
+    key = c(mandatory_IS_vars(),
+            annotation_IS_vars(),
+            "CompleteAmplificationID")
+    ) {
     stopifnot(is.data.frame(x))
-    if (.check_mandatory_vars(x) == FALSE) {
-        stop(.non_ISM_error())
+    if (!all(key %in% colnames(x))) {
+        rlang::abort(.missing_user_cols_error(key[!key %in% colnames(x)]))
     }
-    if (.check_complAmpID(x) == FALSE) {
-        stop(.missing_complAmpID_error())
-    }
-    num_cols <- .find_exp_cols(x)
+    num_cols <- .find_exp_cols(x, key)
     if (purrr::is_empty(num_cols)) {
-        stop(.missing_num_cols_error())
+        rlang::abort(.missing_num_cols_error())
     }
     stopifnot(is.character(fragmentEstimate) & length(fragmentEstimate) == 1)
     stopifnot(is.character(seqCount) & length(seqCount) == 1)
@@ -307,24 +306,16 @@ separate_quant_matrices <- function(x, fragmentEstimate = "fragmentEstimate",
     )
     to_copy <- if (any(!num_cols %in% param_col)) {
         if (all(!num_cols %in% param_col)) {
-            stop(.non_quant_cols_error())
+            rlang::abort(.non_quant_cols_error())
         }
         num_cols[!num_cols %in% param_col]
     }
     num_cols <- param_col[param_col %in% num_cols]
-    annot <- if (.is_annotated(x)) {
-        annotation_IS_vars()
-    } else {
-        character(0)
-    }
     if (!purrr::is_empty(to_copy) & getOption("ISAnalytics.verbose") == TRUE) {
-        message(.non_quant_cols_msg(to_copy))
+        rlang::inform(.non_quant_cols_msg(to_copy))
     }
     separated <- purrr::map(num_cols, function(quant) {
-        x[c(
-            mandatory_IS_vars(), annot, "CompleteAmplificationID",
-            to_copy, quant
-        )] %>% dplyr::rename(Value = quant)
+        x[c(key, to_copy, quant)] %>% dplyr::rename(Value = quant)
     }) %>% purrr::set_names(names(num_cols))
     separated
 }

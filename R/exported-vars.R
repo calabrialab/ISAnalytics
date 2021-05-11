@@ -98,6 +98,8 @@ association_file_columns <- function() {
     )
 }
 
+# Internal: associates column types with column names for a more precise
+# import
 .af_col_types <- function(mode) {
     if (mode == "fread") {
         types <- list(
@@ -137,9 +139,6 @@ association_file_columns <- function() {
         return(types)
     }
     if (mode == "readr") {
-        # date_format <- unlist(strsplit(date_format))
-        # date_format <- paste0("%", date_format)
-        # date_format <- paste0(date_format, collapse = "%.")
         types <- list(
             ProjectID = "c", FUSIONID = "c", PoolID = "c", TagSequence = "c",
             SubjectID = "c", VectorType = "c", VectorID = "c",
@@ -178,6 +177,23 @@ association_file_columns <- function() {
         )
         return(types)
     }
+}
+
+# Internal: used for file system alignment in import_association_file,
+# gives the names of the columns that respectively contain:
+# - the absolute path on disk of the project
+# - the path to the quantification folder
+# - the path to the iss folder
+.path_cols_names <- function() {
+    list(project = "Path", quant = "Path_quant", iss = "Path_iss")
+}
+
+.matrix_annotated_suffixes <- function() {
+    c(".no0.annotated")
+}
+
+.matrix_not_annotated_suffixes <- function() {
+    c("")
 }
 
 #' Names of the columns of the association file to consider for
@@ -220,4 +236,9 @@ reduced_AF_columns <- function() {
 
 .supported_fread_compression_formats <- function() {
     c("gz", "bz2")
+}
+
+
+flag_logics <- function() {
+    c("AND", "OR", "XOR", "NAND", "NOR", "XNOR")
 }
