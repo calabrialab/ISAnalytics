@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - RELEASE_3_12
+      - RELEASE_3_13
       - master
 
 name: pkgdown
@@ -16,7 +16,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v1
         with:
-          r-version: 'devel'
+          r-version: 'release'
 
       - uses: r-lib/actions/setup-pandoc@v1
 
