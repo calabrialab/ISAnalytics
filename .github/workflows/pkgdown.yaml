@@ -36,6 +36,10 @@ jobs:
         run: |
           sudo apt-get install -y libcurl4-openssl-dev
         shell: bash
+      - name: Install textshaping
+        run: |
+          install.packages("textshaping")
+        shell: Rscript {0}
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
