@@ -7,7 +7,7 @@ name: pkgdown
 
 jobs:
   pkgdown:
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -15,7 +15,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v1
         with:
-          r-version: '4.1'
+          r-version: "4.1.0"
 
       - uses: r-lib/actions/setup-pandoc@v1
 
@@ -26,24 +26,17 @@ jobs:
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
 
-      - name: Cache R packages
+      - name: Restore R package cache
         uses: actions/cache@v2
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
-      - name: Install libcurl
-        run: |
-          sudo apt-get install -y libcurl4-openssl-dev
-        shell: bash
-      - name: Install textshaping
-        run: |
-          install.packages("textshaping")
-        shell: Rscript {0}
+
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
-          install.packages("pkgdown")
+          install.packages("pkgdown", type = "binary")
         shell: Rscript {0}
 
       - name: Install package
