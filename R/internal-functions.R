@@ -392,11 +392,13 @@
             )
             quant_folder <- fs::path(
                 "quantification",
-                fs::path(cur$concatenatePoolIDSeqRun)
+                fs::path(cur$concatenatePoolIDSeqRun),
+                "$"
             )
             iss_folder <- fs::path(
                 "iss",
-                fs::path(cur$concatenatePoolIDSeqRun)
+                fs::path(cur$concatenatePoolIDSeqRun),
+                "$"
             )
             dirExists <- fs::dir_exists(project_folder)
             if (!dirExists) {

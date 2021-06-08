@@ -200,6 +200,8 @@ import_single_Vispa2Matrix <- function(path,
 #' association file?
 #' @param export_widget_path A path on disk to save produced widgets or NULL
 #' if the user doesn't wish to save the html file
+#' @param convert_tp Should be time points be converted into months and
+#' years?
 #' @param ... Additional arguments to pass to \code{\link{import_Vispa2_stats}}
 #' @family Import functions
 #' @return A tibble with the contents of the association file plus columns

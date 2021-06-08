@@ -13,6 +13,7 @@ import_association_file(
   filter_for = NULL,
   import_iss = FALSE,
   export_widget_path = NULL,
+  convert_tp = TRUE,
   ...
 )
 }
@@ -43,6 +44,9 @@ association file?}
 
 \item{export_widget_path}{A path on disk to save produced widgets or NULL
 if the user doesn't wish to save the html file}
+
+\item{convert_tp}{Should be time points be converted into months and
+years?}
 
 \item{...}{Additional arguments to pass to \code{\link{import_Vispa2_stats}}}
 }
