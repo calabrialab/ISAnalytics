@@ -38,6 +38,7 @@ and Annotation of Vector Integration Sites}
 \itemize{
 \item \code{\link{import_single_Vispa2Matrix}}
 \item \code{\link{import_association_file}}
+\item \code{\link{import_Vispa2_stats}}
 \item \code{\link{import_parallel_Vispa2Matrices_interactive}}
 \item \code{\link{import_parallel_Vispa2Matrices_auto}}
 }
@@ -71,9 +72,14 @@ and Annotation of Vector Integration Sites}
 \item \code{\link{CIS_grubbs}}
 \item \code{\link{cumulative_count_union}}
 }
+\item HSC population size estimate:
+\itemize{
+\item \code{\link{HSC_population_size_estimate}}
+}
 \item Plotting functions:
 \itemize{
 \item \code{\link{CIS_volcano_plot}}
+\item \code{\link{HSC_population_plot}}
 }
 \item Utility functions:
 \itemize{

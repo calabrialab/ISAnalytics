@@ -1,5 +1,13 @@
 \title{ISAnalytics News}
 
+# ISAnalytics 1.2.1 (2021-06-08)
+
+## MINOR UPDATES
+* Added more default stats functions to `default_stats`
+* Added optional automatic conversion of time points in months and years
+when importing association file
+* Minor fixes in `generate_Vispa2_launch_AF`
+
 # ISAnalytics 1.1.11 (2021-05-11)
 
 ## NEW FUNCTIONALITY
