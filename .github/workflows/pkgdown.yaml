@@ -15,7 +15,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v1
         with:
-          r-version: '4.1-prerelease'
+          r-version: release
 
       - uses: r-lib/actions/setup-pandoc@v1
 
