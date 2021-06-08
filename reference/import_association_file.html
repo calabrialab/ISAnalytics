@@ -84,7 +84,7 @@ two." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
       </span>
     </div>
 
@@ -171,7 +171,10 @@ two.</p>
   dates_format <span class='op'>=</span> <span class='st'>"ymd"</span>,
   separator <span class='op'>=</span> <span class='st'>"\t"</span>,
   filter_for <span class='op'>=</span> <span class='cn'>NULL</span>,
-  export_widget_path <span class='op'>=</span> <span class='cn'>NULL</span>
+  import_iss <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  export_widget_path <span class='op'>=</span> <span class='cn'>NULL</span>,
+  convert_tp <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -211,15 +214,29 @@ values. If multiple columns are present in the list all filtering
 conditions are applied as a logical AND.</p></td>
     </tr>
     <tr>
+      <th>import_iss</th>
+      <td><p>Import Vispa2 stats and merge them with the
+association file?</p></td>
+    </tr>
+    <tr>
       <th>export_widget_path</th>
       <td><p>A path on disk to save produced widgets or NULL
 if the user doesn't wish to save the html file</p></td>
+    </tr>
+    <tr>
+      <th>convert_tp</th>
+      <td><p>Should be time points be converted into months and
+years?</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional arguments to pass to <code><a href='import_Vispa2_stats.html'>import_Vispa2_stats</a></code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A tibble with the contents of the association file plus a column
+    <p>A tibble with the contents of the association file plus columns
 containing the path in the file system for every project and pool if found.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
@@ -255,6 +272,7 @@ If 'NULL' the file system alignment step is skipped.</p>
 
     <div class='dont-index'><p><code><a href='date_formats.html'>date_formats</a></code></p>
 <p>Other Import functions: 
+<code><a href='import_Vispa2_stats.html'>import_Vispa2_stats</a>()</code>,
 <code><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a>()</code>,
 <code><a href='import_parallel_Vispa2Matrices_interactive.html'>import_parallel_Vispa2Matrices_interactive</a>()</code>,
 <code><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a>()</code></p></div>
@@ -268,13 +286,19 @@ If 'NULL' the file system alignment step is skipped.</p>
 <span class='va'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_pth</span>, <span class='st'>"fs"</span><span class='op'>)</span>
 <span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'>import_association_file</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>root</span>, dates_format <span class='op'>=</span> <span class='st'>"dmy"</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
-#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span><span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
+#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
+#&gt; <span class='message'>* Parsing problems detected: TRUE</span>
+#&gt; <span class='message'>* Date parsing problems: TRUE</span>
+#&gt; <span class='message'>* Column problems detected: TRUE</span>
+#&gt; <span class='message'>* NAs found in important columns: TRUE</span>
+#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
+#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
 #&gt; <span class='message'>* Parsing problems detected: TRUE</span>
 #&gt; <span class='message'>* Date parsing problems: TRUE</span>
 #&gt; <span class='message'>* Column problems detected: TRUE</span>
 #&gt; <span class='message'>* NAs found in important columns: TRUE</span>
 #&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
-</div></span></pre>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -89,7 +89,7 @@ remove_collisions before, there is no need to call this function." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
       </span>
     </div>
 
@@ -215,7 +215,13 @@ must be quantification types (<code><a href='quantification_types.html'>quantifi
     dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>
 <span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
-#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span><span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
+#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
+#&gt; <span class='message'>* Parsing problems detected: TRUE</span>
+#&gt; <span class='message'>* Date parsing problems: TRUE</span>
+#&gt; <span class='message'>* Column problems detected: TRUE</span>
+#&gt; <span class='message'>* NAs found in important columns: TRUE</span>
+#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
+#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
 #&gt; <span class='message'>* Parsing problems detected: TRUE</span>
 #&gt; <span class='message'>* Date parsing problems: TRUE</span>
 #&gt; <span class='message'>* Column problems detected: TRUE</span>
@@ -228,106 +234,106 @@ must be quantification types (<code><a href='quantification_types.html'>quantifi
     multi_quant_matrix <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span>
 </div><div class='output co'>#&gt; [1] "--- REPORT: FILES IMPORTED ---"
-#&gt; </span><span style='color: #949494;'># A tibble: 8 x 5</span><span>
+#&gt; <span style='color: #949494;'># A tibble: 8 x 5</span>
 #&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>              
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> CLOEXP      POOL6-1                 fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> CLOEXP      POOL6-1                 seqCount           
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           
-#&gt; </span><span style='color: #BCBCBC;'>7</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           
-#&gt; </span><span style='color: #BCBCBC;'>8</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>              
+#&gt; <span style='color: #BCBCBC;'>1</span> CLOEXP      POOL6-1                 fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>2</span> PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>3</span> PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>4</span> PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>5</span> CLOEXP      POOL6-1                 seqCount           
+#&gt; <span style='color: #BCBCBC;'>6</span> PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           
+#&gt; <span style='color: #BCBCBC;'>7</span> PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           
+#&gt; <span style='color: #BCBCBC;'>8</span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
 #&gt;   Files_chosen                                                                  
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;fs::path&gt;</span><span>                                                                    
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;fs::path&gt;</span>                                                                    
+#&gt; <span style='color: #BCBCBC;'>1</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
+#&gt; <span style='color: #BCBCBC;'>2</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>3</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>4</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>5</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
+#&gt; <span style='color: #BCBCBC;'>6</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>7</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>8</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
 #&gt;   Imported
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>   
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> TRUE    
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> TRUE    
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> TRUE    
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> TRUE    
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> TRUE    
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> TRUE    
-#&gt; </span><span style='color: #BCBCBC;'>7</span><span> TRUE    
-#&gt; </span><span style='color: #BCBCBC;'>8</span><span> TRUE    
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span>   
+#&gt; <span style='color: #BCBCBC;'>1</span> TRUE    
+#&gt; <span style='color: #BCBCBC;'>2</span> TRUE    
+#&gt; <span style='color: #BCBCBC;'>3</span> TRUE    
+#&gt; <span style='color: #BCBCBC;'>4</span> TRUE    
+#&gt; <span style='color: #BCBCBC;'>5</span> TRUE    
+#&gt; <span style='color: #BCBCBC;'>6</span> TRUE    
+#&gt; <span style='color: #BCBCBC;'>7</span> TRUE    
+#&gt; <span style='color: #BCBCBC;'>8</span> TRUE    
 #&gt; [1] "--- SUMMARY OF FILES CHOSEN FOR IMPORT ---"
-#&gt; </span><span style='color: #949494;'># A tibble: 8 x 4</span><span>
+#&gt; <span style='color: #949494;'># A tibble: 8 x 4</span>
 #&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>              
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> CLOEXP      POOL6-1                 fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> CLOEXP      POOL6-1                 seqCount           
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           
-#&gt; </span><span style='color: #BCBCBC;'>7</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>8</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>              
+#&gt; <span style='color: #BCBCBC;'>1</span> CLOEXP      POOL6-1                 fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>2</span> CLOEXP      POOL6-1                 seqCount           
+#&gt; <span style='color: #BCBCBC;'>3</span> PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>4</span> PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           
+#&gt; <span style='color: #BCBCBC;'>5</span> PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>6</span> PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           
+#&gt; <span style='color: #BCBCBC;'>7</span> PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>8</span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
 #&gt;   Files_chosen                                                                  
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;fs::path&gt;</span><span>                                                                    
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;fs::path&gt;</span>                                                                    
+#&gt; <span style='color: #BCBCBC;'>1</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
+#&gt; <span style='color: #BCBCBC;'>2</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
+#&gt; <span style='color: #BCBCBC;'>3</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>4</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>5</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>6</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>7</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>8</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
 #&gt; [1] "--- INTEGRATION MATRICES FOUND REPORT ---"
-#&gt; </span><span style='color: #949494;'># A tibble: 8 x 5</span><span>
+#&gt; <span style='color: #949494;'># A tibble: 8 x 5</span>
 #&gt;   ProjectID   concatenatePoolIDSeqRun Anomalies Quantification_type
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                   </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>     </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>              
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> CLOEXP      POOL6-1                 FALSE     fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> CLOEXP      POOL6-1                 FALSE     seqCount           
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     seqCount           
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     seqCount           
-#&gt; </span><span style='color: #BCBCBC;'>7</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     fragmentEstimate   
-#&gt; </span><span style='color: #BCBCBC;'>8</span><span> PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     seqCount           
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>              
+#&gt; <span style='color: #BCBCBC;'>1</span> CLOEXP      POOL6-1                 FALSE     fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>2</span> CLOEXP      POOL6-1                 FALSE     seqCount           
+#&gt; <span style='color: #BCBCBC;'>3</span> PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>4</span> PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     seqCount           
+#&gt; <span style='color: #BCBCBC;'>5</span> PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>6</span> PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     seqCount           
+#&gt; <span style='color: #BCBCBC;'>7</span> PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     fragmentEstimate   
+#&gt; <span style='color: #BCBCBC;'>8</span> PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     seqCount           
 #&gt;   Files_found                                                                   
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;fs::path&gt;</span><span>                                                                    
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/VA/CLOEXP/quan</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>5</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>6</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1100/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>7</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…
-#&gt; </span><span style='color: #BCBCBC;'>8</span><span> </span><span style='color: #BB0000;font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpWPuXBB/fs/PROJECT1101/qu</span><span>…</div><div class='input'><span class='va'>sc_matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='remove_collisions.html'>remove_collisions</a></span><span class='op'>(</span><span class='va'>matrices</span><span class='op'>$</span><span class='va'>seqCount</span>, <span class='va'>association_file</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 1 x 3</span><span>
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;fs::path&gt;</span>                                                                    
+#&gt; <span style='color: #BCBCBC;'>1</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
+#&gt; <span style='color: #BCBCBC;'>2</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
+#&gt; <span style='color: #BCBCBC;'>3</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>4</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>5</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>6</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>7</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
+#&gt; <span style='color: #BCBCBC;'>8</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…</div><div class='input'><span class='va'>sc_matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='remove_collisions.html'>remove_collisions</a></span><span class='op'>(</span><span class='va'>matrices</span><span class='op'>$</span><span class='va'>seqCount</span>, <span class='va'>association_file</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Found additional data relative to some projects that are not included in the imported matrices. Here is a summary</span></div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 1 x 3</span>
 #&gt;   ProjectID   PoolID           
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>       </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>            
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> PROJECT1101 ABY-LR-PL4-POOL54
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>            
+#&gt; <span style='color: #BCBCBC;'>1</span> PROJECT1101 ABY-LR-PL4-POOL54
 #&gt;   CompleteAmplificationID                                                       
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                                                                         
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14_VA2020-mix14_lenti_737.p…</div><div class='output co'>#&gt; <span class='message'>Identifying collisions...</span></div><div class='output co'>#&gt; <span class='message'>Processing collisions...</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                                                                         
+#&gt; <span style='color: #BCBCBC;'>1</span> PROJECT1101_ABY-LR-PL4-POOL54_LTR51LC51_VA2020-mix14_VA2020-mix14_lenti_737.p…</div><div class='output co'>#&gt; <span class='message'>Identifying collisions...</span></div><div class='output co'>#&gt; <span class='message'>Processing collisions...</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |======================================================================| 100%
 #&gt; 
 #&gt; [1] "--- SUMMARY ---"
-#&gt; </span><span style='color: #949494;'># A tibble: 4 x 7</span><span>
+#&gt; <span style='color: #949494;'># A tibble: 4 x 7</span>
 #&gt;   SubjectID    count_integrations_before sumSeqReads_before
-#&gt;   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                            </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span>              </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span> VA2020-mix10                      </span><span style='text-decoration: underline;'>2</span><span>092           10</span><span style='text-decoration: underline;'>099</span><span>664
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span> VA2020-mix11                      </span><span style='text-decoration: underline;'>1</span><span>332           15</span><span style='text-decoration: underline;'>955</span><span>128
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span> VA2020-mix12                       896            8</span><span style='text-decoration: underline;'>172</span><span>644
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span> VA2020-mix13                      </span><span style='text-decoration: underline;'>1</span><span>584           10</span><span style='text-decoration: underline;'>035</span><span>460
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                            <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>              <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span> VA2020-mix10                      <span style='text-decoration: underline;'>2</span>092           10<span style='text-decoration: underline;'>099</span>664
+#&gt; <span style='color: #BCBCBC;'>2</span> VA2020-mix11                      <span style='text-decoration: underline;'>1</span>332           15<span style='text-decoration: underline;'>955</span>128
+#&gt; <span style='color: #BCBCBC;'>3</span> VA2020-mix12                       896            8<span style='text-decoration: underline;'>172</span>644
+#&gt; <span style='color: #BCBCBC;'>4</span> VA2020-mix13                      <span style='text-decoration: underline;'>1</span>584           10<span style='text-decoration: underline;'>035</span>460
 #&gt;   count_integrations_after sumSeqReads_after delta_integrations delta_seqReads
-#&gt;                      </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span>             </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>              </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span>          </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>1</span><span>                     </span><span style='text-decoration: underline;'>1</span><span>714           5</span><span style='text-decoration: underline;'>052</span><span>150                378        5</span><span style='text-decoration: underline;'>047</span><span>514
-#&gt; </span><span style='color: #BCBCBC;'>2</span><span>                      994           7</span><span style='text-decoration: underline;'>980</span><span>886                338        7</span><span style='text-decoration: underline;'>974</span><span>242
-#&gt; </span><span style='color: #BCBCBC;'>3</span><span>                      614           4</span><span style='text-decoration: underline;'>088</span><span>054                282        4</span><span style='text-decoration: underline;'>084</span><span>590
-#&gt; </span><span style='color: #BCBCBC;'>4</span><span>                     </span><span style='text-decoration: underline;'>1</span><span>258           5</span><span style='text-decoration: underline;'>019</span><span>402                326        5</span><span style='text-decoration: underline;'>016</span><span>058</div><div class='output co'>#&gt; <span class='message'>Finished! You provided a single sequence count as matrix, to re-align other related matrices see ?realign_after_collisions</span></div><div class='input'><span class='va'>others</span> <span class='op'>&lt;-</span> <span class='va'>matrices</span><span class='op'>[</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>matrices</span><span class='op'>)</span> <span class='op'>%in%</span> <span class='st'>"seqCount"</span><span class='op'>]</span>
+#&gt;                      <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>             <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>              <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>          <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>                     <span style='text-decoration: underline;'>1</span>714           5<span style='text-decoration: underline;'>052</span>150                378        5<span style='text-decoration: underline;'>047</span>514
+#&gt; <span style='color: #BCBCBC;'>2</span>                      994           7<span style='text-decoration: underline;'>980</span>886                338        7<span style='text-decoration: underline;'>974</span>242
+#&gt; <span style='color: #BCBCBC;'>3</span>                      614           4<span style='text-decoration: underline;'>088</span>054                282        4<span style='text-decoration: underline;'>084</span>590
+#&gt; <span style='color: #BCBCBC;'>4</span>                     <span style='text-decoration: underline;'>1</span>258           5<span style='text-decoration: underline;'>019</span>402                326        5<span style='text-decoration: underline;'>016</span>058</div><div class='output co'>#&gt; <span class='message'>Finished! You provided a single sequence count as matrix, to re-align other related matrices see ?realign_after_collisions</span></div><div class='input'><span class='va'>others</span> <span class='op'>&lt;-</span> <span class='va'>matrices</span><span class='op'>[</span><span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='op'>(</span><span class='va'>matrices</span><span class='op'>)</span> <span class='op'>%in%</span> <span class='st'>"seqCount"</span><span class='op'>]</span>
 <span class='va'>aligned_matrices</span> <span class='op'>&lt;-</span> <span class='fu'>realign_after_collisions</span><span class='op'>(</span><span class='va'>sc_matrix</span>, <span class='va'>others</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
-</div></span></pre>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -10,6 +10,12 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/CIS_volcano_plot.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/HSC_population_plot.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/HSC_population_size_estimate.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/ISAnalytics.html</loc>
   </url>
   <url>
@@ -26,6 +32,12 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/association_file_columns.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/available_outlier_tests.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/blood_lineages_default.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/clinical_relevant_suspicious_genes.html</loc>
@@ -49,6 +61,12 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/date_formats.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/default_iss_file_prefixes.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/default_meta_agg.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/default_stats.html</loc>
   </url>
   <url>
@@ -56,6 +74,9 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/generate_blank_association_file.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/import_Vispa2_stats.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/import_association_file.html</loc>
@@ -77,6 +98,12 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/matching_options.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/outlier_filter.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/outliers_by_pool_fragments.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/quantification_types.html</loc>

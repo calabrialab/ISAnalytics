@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
       </span>
     </div>
 
@@ -178,6 +178,12 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="import_Vispa2_stats.html">import_Vispa2_stats()</a></code> </p>
+        </td>
+        <td><p>Import Vispa2 stats given the aligned association file.</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="import_single_Vispa2Matrix.html">import_single_Vispa2Matrix()</a></code> </p>
         </td>
         <td><p>Import a single integration matrix from file</p></td>
@@ -267,6 +273,31 @@ sequence count matrix.</p></td>
     </tbody><tbody>
       <tr>
         <th colspan="2">
+          <h2 id="section-removal-of-outliers-from-raw-reads" class="hasAnchor"><a href="#section-removal-of-outliers-from-raw-reads" class="anchor"></a>Removal of outliers from raw reads</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="outlier_filter.html">outlier_filter()</a></code> </p>
+        </td>
+        <td><p>Filter out outliers in metadata, identified by the chosen outlier test.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="outliers_by_pool_fragments.html">outliers_by_pool_fragments()</a></code> </p>
+        </td>
+        <td><p>Identify and flag outliers based on pool fragments.</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
           <h2 id="section-analysis-functions" class="hasAnchor"><a href="#section-analysis-functions" class="anchor"></a>Analysis functions</h2>
           <p class="section-desc"></p>
         </th>
@@ -332,6 +363,25 @@ the metadata data frame accordingly.</p></td>
     </tbody><tbody>
       <tr>
         <th colspan="2">
+          <h2 id="section-hsc-population-estimate" class="hasAnchor"><a href="#section-hsc-population-estimate" class="anchor"></a>HSC population estimate</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="HSC_population_size_estimate.html">HSC_population_size_estimate()</a></code> </p>
+        </td>
+        <td><p>Hematopoietic stem cells population size estimate.</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
           <h2 id="section-plotting-functions" class="hasAnchor"><a href="#section-plotting-functions" class="anchor"></a>Plotting functions</h2>
           <p class="section-desc"></p>
         </th>
@@ -347,6 +397,12 @@ the metadata data frame accordingly.</p></td>
           <p><code><a href="CIS_volcano_plot.html">CIS_volcano_plot()</a></code> </p>
         </td>
         <td><p>Trace volcano plot for computed CIS data.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="HSC_population_plot.html">HSC_population_plot()</a></code> </p>
+        </td>
+        <td><p>Plot of the estimated HSC population size for each patient.</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -470,6 +526,31 @@ Vispa2 launch.</p></td>
           <p><code><a href="known_clinical_oncogenes.html">known_clinical_oncogenes()</a></code> </p>
         </td>
         <td><p>Known clinical oncogenes (for mouse and human).</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="available_outlier_tests.html">available_outlier_tests()</a></code> </p>
+        </td>
+        <td><p>A character vector containing all the names of the currently supported
+outliers tests that can be called in the function outlier_filter.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="blood_lineages_default.html">blood_lineages_default()</a></code> </p>
+        </td>
+        <td><p>Default blood lineages info</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="default_iss_file_prefixes.html">default_iss_file_prefixes()</a></code> </p>
+        </td>
+        <td><p>Default regex prefixes for Vispa2 stats files.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="default_meta_agg.html">default_meta_agg()</a></code> </p>
+        </td>
+        <td><p>Default metadata aggregation function table</p></td>
       </tr>
     </tbody><tbody>
       <tr>

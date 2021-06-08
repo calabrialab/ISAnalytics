@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.11</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
       </span>
     </div>
 
@@ -165,50 +165,28 @@
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>default_stats</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; $diversity
-#&gt; function (x, index = "shannon", MARGIN = 1, base = exp(1)) 
-#&gt; {
-#&gt;     x &lt;- drop(as.matrix(x))
-#&gt;     if (!is.numeric(x)) 
-#&gt;         stop("input data must be numeric")
-#&gt;     if (any(x &lt; 0, na.rm = TRUE)) 
-#&gt;         stop("input data must be non-negative")
-#&gt;     INDICES &lt;- c("shannon", "simpson", "invsimpson")
-#&gt;     index &lt;- match.arg(index, INDICES)
-#&gt;     if (length(dim(x)) &gt; 1) {
-#&gt;         total &lt;- apply(x, MARGIN, sum)
-#&gt;         x &lt;- sweep(x, MARGIN, total, "/")
-#&gt;     }
-#&gt;     else {
-#&gt;         x &lt;- x/(total &lt;- sum(x))
-#&gt;     }
-#&gt;     if (index == "shannon") 
-#&gt;         x &lt;- -x * log(x, base)
-#&gt;     else x &lt;- x * x
-#&gt;     if (length(dim(x)) &gt; 1) 
-#&gt;         H &lt;- apply(x, MARGIN, sum, na.rm = TRUE)
-#&gt;     else H &lt;- sum(x, na.rm = TRUE)
-#&gt;     if (index == "simpson") 
-#&gt;         H &lt;- 1 - H
-#&gt;     else if (index == "invsimpson") 
-#&gt;         H &lt;- 1/H
-#&gt;     if (any(NAS &lt;- is.na(total))) 
-#&gt;         H[NAS] &lt;- NA
-#&gt;     H
-#&gt; }
-#&gt; &lt;bytecode: 0x7fc0f0297c80&gt;
-#&gt; &lt;environment: namespace:vegan&gt;
+</div><div class='output co'>#&gt; $shannon
+#&gt; ~vegan::diversity(.x, index = "shannon")
+#&gt; &lt;environment: 0x7ff92e912af8&gt;
+#&gt; 
+#&gt; $simpson
+#&gt; ~vegan::diversity(.x, index = "simpson")
+#&gt; &lt;environment: 0x7ff92e912af8&gt;
+#&gt; 
+#&gt; $invsimpson
+#&gt; ~vegan::diversity(.x, index = "invsimpson")
+#&gt; &lt;environment: 0x7ff92e912af8&gt;
 #&gt; 
 #&gt; $sum
 #&gt; ~sum(.x, na.rm = TRUE)
-#&gt; &lt;environment: 0x7fc108041510&gt;
+#&gt; &lt;environment: 0x7ff92e912af8&gt;
 #&gt; 
 #&gt; $count
 #&gt; function (x)  .Primitive("length")
 #&gt; 
 #&gt; $describe
 #&gt; ~tibble::as_tibble(psych::describe(.x))
-#&gt; &lt;environment: 0x7fc108041510&gt;
+#&gt; &lt;environment: 0x7ff92e912af8&gt;
 #&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

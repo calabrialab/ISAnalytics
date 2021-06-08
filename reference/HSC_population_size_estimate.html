@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Performs aggregation on metadata contained in the association file. — aggregate_metadata • ISAnalytics</title>
+<title>Hematopoietic stem cells population size estimate. — HSC_population_size_estimate • ISAnalytics</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,12 +46,11 @@
 
 
 
-<meta property="og:title" content="Performs aggregation on metadata contained in the association file. — aggregate_metadata" />
+<meta property="og:title" content="Hematopoietic stem cells population size estimate. — HSC_population_size_estimate" />
 <meta property="og:description" content="
 
-Groups metadata by the specified grouping keys and returns a
-summary of info for each group. For more details on how to use this function:
-vignette(&quot;Working with aggregate functions&quot;, package = &quot;ISAnalytics&quot;)" />
+Hematopoietic stem cells population size estimate with capture-recapture
+models." />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -151,62 +150,114 @@ vignette(&quot;Working with aggregate functions&quot;, package = &quot;ISAnalyti
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Performs aggregation on metadata contained in the association file.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/aggregate-functions.R'><code>R/aggregate-functions.R</code></a></small>
-    <div class="hidden name"><code>aggregate_metadata.Rd</code></div>
+    <h1>Hematopoietic stem cells population size estimate.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/population-size-estimate.R'><code>R/population-size-estimate.R</code></a></small>
+    <div class="hidden name"><code>HSC_population_size_estimate.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#experimental'><img src='figures/lifecycle-experimental.svg' alt='[Experimental]' /></a>
 
-Groups metadata by the specified grouping keys and returns a
-summary of info for each group. For more details on how to use this function:
-<code>vignette("Working with aggregate functions", package = "ISAnalytics")</code></p>
+Hematopoietic stem cells population size estimate with capture-recapture
+models.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>aggregate_metadata</span><span class='op'>(</span>
-  <span class='va'>association_file</span>,
-  grouping_keys <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span>,
-  aggregating_functions <span class='op'>=</span> <span class='fu'><a href='default_meta_agg.html'>default_meta_agg</a></span><span class='op'>(</span><span class='op'>)</span>,
-  import_stats <span class='op'>=</span> <span class='fu'>lifecycle</span><span class='fu'>::</span><span class='fu'><a href='https://lifecycle.r-lib.org/reference/deprecated.html'>deprecated</a></span><span class='op'>(</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>HSC_population_size_estimate</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  <span class='va'>metadata</span>,
+  stable_timepoints <span class='op'>=</span> <span class='cn'>NULL</span>,
+  aggregation_key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span>,
+  blood_lineages <span class='op'>=</span> <span class='fu'><a href='blood_lineages_default.html'>blood_lineages_default</a></span><span class='op'>(</span><span class='op'>)</span>,
+  timepoint_column <span class='op'>=</span> <span class='st'>"TimePoint"</span>,
+  seqCount_column <span class='op'>=</span> <span class='st'>"seqCount_sum"</span>,
+  seqCount_threshold <span class='op'>=</span> <span class='fl'>3</span>,
+  nIS_threshold <span class='op'>=</span> <span class='fl'>5</span>,
+  cell_type <span class='op'>=</span> <span class='st'>"MYELOID"</span>,
+  tissue_type <span class='op'>=</span> <span class='st'>"PB"</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>association_file</th>
-      <td><p>The imported association file
-(via linkimport_association_file)</p></td>
+      <th>x</th>
+      <td><p>An aggregated integration matrix. See details.</p></td>
     </tr>
     <tr>
-      <th>grouping_keys</th>
-      <td><p>A character vector of column names to form a group</p></td>
+      <th>metadata</th>
+      <td><p>An aggregated association file. See details.</p></td>
     </tr>
     <tr>
-      <th>aggregating_functions</th>
-      <td><p>A data frame containing specifications
-of the functions to be applied to columns in the association file during
-aggregation. It defaults to <a href='default_meta_agg.html'>default_meta_agg</a>. The structure of
-this data frame should be maintained if the user wishes to change the
-defaults.</p></td>
+      <th>stable_timepoints</th>
+      <td><p>A numeric vector or NULL if there are no
+stable time points.</p></td>
     </tr>
     <tr>
-      <th>import_stats</th>
-      <td><p><a href='https://lifecycle.r-lib.org/articles/stages.html#deprecated'><img src='figures/lifecycle-deprecated.svg' alt='[Deprecated]' /></a> The import
-of VISPA2 stats has been moved to its dedicated function,
-see <a href='import_Vispa2_stats.html'>import_Vispa2_stats</a>.</p></td>
+      <th>aggregation_key</th>
+      <td><p>A character vector indicating the key used for
+aggregating x and metadata. Note that x and metadata should always be
+aggregated with the same key.</p></td>
+    </tr>
+    <tr>
+      <th>blood_lineages</th>
+      <td><p>A data frame containing information on the blood
+lineages. Users can supply their own, provided the columns <code>CellMarker</code> and
+<code>CellType</code> are present.</p></td>
+    </tr>
+    <tr>
+      <th>timepoint_column</th>
+      <td><p>What is the name of the time point column to use?
+Note that this column must be present in the key.</p></td>
+    </tr>
+    <tr>
+      <th>seqCount_column</th>
+      <td><p>What is the name of the column in x holding the
+values of sequence count quantification?</p></td>
+    </tr>
+    <tr>
+      <th>seqCount_threshold</th>
+      <td><p>A single numeric value. After re-aggregating <code>x</code>,
+rows with a value greater or equal will be kept, the others will be
+discarded.</p></td>
+    </tr>
+    <tr>
+      <th>nIS_threshold</th>
+      <td><p>A single numeric value. If a group (row) in the
+metadata data frame has a count of distinct integration sites strictly
+greater than this number it will be kept, otherwise discarded.</p></td>
+    </tr>
+    <tr>
+      <th>cell_type</th>
+      <td><p>The cell types to include in the models. Note that
+the matching is case-insensitive.</p></td>
+    </tr>
+    <tr>
+      <th>tissue_type</th>
+      <td><p>The tissue types to include in the models. Note that
+the matching is case-insensitive.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An aggregated data frame</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+    <p>A data frame with the results of the estimates</p>
+    <h2 class="hasAnchor" id="input-formats"><a class="anchor" href="#input-formats"></a>Input formats</h2>
 
-    <div class='dont-index'><p>Other Aggregate functions: 
-<code><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a>()</code>,
-<code><a href='default_meta_agg.html'>default_meta_agg</a>()</code></p></div>
+    <p>Both <code>x</code> and <code>metadata</code> should be supplied to the function in aggregated
+format (ideally through the use of <code><a href='aggregate_metadata.html'>aggregate_metadata</a></code>
+and <code><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></code>).
+Note that the <code>aggregation_key</code>, aka the vector of column names used for
+aggregation, must contain at least the columns SubjectID, CellMarker,
+Tissue and a time point column (the user can specify the name of the
+column in the argument <code>timepoint_column</code>).</p>
+    <h2 class="hasAnchor" id="on-time-points"><a class="anchor" href="#on-time-points"></a>On time points</h2>
+
+    <p>If <code>stable_timepoints</code> is a vector with length &gt; 1, the function will look
+for the first available stable time point and slice the data from that
+time point onward. If NULL is supplied instead, it means there are no
+stable time points available. Note that 0 time points are ALWAYS discarded.
+Also, to be included in the analysis, a group must have at least 2
+distinct non-zero time points.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='st'>"ISAnalytics.widgets"</span> <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='st'>"ISAnalytics.verbose"</span> <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
@@ -218,7 +269,20 @@ see <a href='import_Vispa2_stats.html'>import_Vispa2_stats</a>.</p></td>
 <span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>path_AF</span>, <span class='va'>root_correct</span>,
     dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>
 <span class='op'>)</span>
-<span class='va'>aggregated_meta</span> <span class='op'>&lt;-</span> <span class='fu'>aggregate_metadata</span><span class='op'>(</span><span class='va'>association_file</span><span class='op'>)</span>
+<span class='va'>aggregated_meta</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_metadata.html'>aggregate_metadata</a></span><span class='op'>(</span><span class='va'>association_file</span><span class='op'>)</span>
+<span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></span><span class='op'>(</span>
+    association_file <span class='op'>=</span> <span class='va'>association_file</span>, root <span class='op'>=</span> <span class='cn'>NULL</span>,
+    quantification_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>,
+    matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>, workers <span class='op'>=</span> <span class='fl'>2</span>, matching_opt <span class='op'>=</span> <span class='st'>"ANY"</span>
+<span class='op'>)</span>
+<span class='va'>agg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
+    x <span class='op'>=</span> <span class='va'>matrices</span>,
+    association_file <span class='op'>=</span> <span class='va'>association_file</span>,
+    value_cols <span class='op'>=</span> <span class='st'>"seqCount"</span>
+<span class='op'>)</span>
+<span class='va'>estimate</span> <span class='op'>&lt;-</span> <span class='fu'>HSC_population_size_estimate</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>agg</span>,
+metadata <span class='op'>=</span> <span class='va'>aggregated_meta</span>,
+stable_timepoints <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
 </div></pre>
   </div>

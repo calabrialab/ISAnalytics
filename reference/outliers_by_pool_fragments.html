@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Creates a reduced association file for Vispa2 run,
-given project and pool — generate_Vispa2_launch_AF • ISAnalytics</title>
+<title>Identify and flag outliers based on pool fragments. — outliers_by_pool_fragments • ISAnalytics</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -47,10 +46,10 @@ given project and pool — generate_Vispa2_launch_AF • ISAnalytics</title>
 
 
 
-<meta property="og:title" content="Creates a reduced association file for Vispa2 run,
-given project and pool — generate_Vispa2_launch_AF" />
-<meta property="og:description" content="The function selects the appropriate columns and prepares a file for the
-launch of Vispa2 pipeline for each project/pool pair specified." />
+<meta property="og:title" content="Identify and flag outliers based on pool fragments. — outliers_by_pool_fragments" />
+<meta property="og:description" content="
+
+Identify and flag outliers" />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -150,77 +149,136 @@ launch of Vispa2 pipeline for each project/pool pair specified." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Creates a reduced association file for Vispa2 run,
-given project and pool</h1>
-    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/utility-functions.R'><code>R/utility-functions.R</code></a></small>
-    <div class="hidden name"><code>generate_Vispa2_launch_AF.Rd</code></div>
+    <h1>Identify and flag outliers based on pool fragments.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/raw-reads-filtering.R'><code>R/raw-reads-filtering.R</code></a></small>
+    <div class="hidden name"><code>outliers_by_pool_fragments.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function selects the appropriate columns and prepares a file for the
-launch of Vispa2 pipeline for each project/pool pair specified.</p>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#experimental'><img src='figures/lifecycle-experimental.svg' alt='[Experimental]' /></a>
+
+Identify and flag outliers</p>
     </div>
 
-    <pre class="usage"><span class='fu'>generate_Vispa2_launch_AF</span><span class='op'>(</span><span class='va'>association_file</span>, <span class='va'>project</span>, <span class='va'>pool</span>, <span class='va'>path</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>outliers_by_pool_fragments</span><span class='op'>(</span>
+  <span class='va'>metadata</span>,
+  key <span class='op'>=</span> <span class='st'>"BARCODE_MUX"</span>,
+  outlier_p_value_threshold <span class='op'>=</span> <span class='fl'>0.05</span>,
+  normality_test <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  normality_p_value_threshold <span class='op'>=</span> <span class='fl'>0.05</span>,
+  transform_log2 <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  per_pool_test <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  pool_col <span class='op'>=</span> <span class='st'>"PoolID"</span>,
+  min_samples_per_pool <span class='op'>=</span> <span class='fl'>5</span>,
+  flag_logic <span class='op'>=</span> <span class='st'>"AND"</span>,
+  keep_calc_cols <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  save_widget_path <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>association_file</th>
-      <td><p>The imported association file (via
-<code>import_association_file</code>)</p></td>
+      <th>metadata</th>
+      <td><p>The metadata data frame</p></td>
     </tr>
     <tr>
-      <th>project</th>
-      <td><p>A vector of characters containing project names</p></td>
+      <th>key</th>
+      <td><p>A character vector of numeric column names</p></td>
     </tr>
     <tr>
-      <th>pool</th>
-      <td><p>A vector of characters containing pool names.
-<strong>NOTE: the names should refer to the values contained in the
-PoolID column of the association file and NOT the
-concatenatePoolIDSeqRun column!</strong></p></td>
+      <th>outlier_p_value_threshold</th>
+      <td><p>The p value threshold for a read to be
+considered an outlier</p></td>
     </tr>
     <tr>
-      <th>path</th>
-      <td><p>A single string representing the path to the folder where files
-should be written. If the folder doesn't exist it will be created.</p></td>
+      <th>normality_test</th>
+      <td><p>Perform normality test? Normality is assessed for
+each column in the key using Shapiro-Wilk test and if the values do not
+follow a normal distribution, other calculations are skipped</p></td>
+    </tr>
+    <tr>
+      <th>normality_p_value_threshold</th>
+      <td><p>Normality threshold</p></td>
+    </tr>
+    <tr>
+      <th>transform_log2</th>
+      <td><p>Perform a log2 trasformation on values prior the
+actual calculations?</p></td>
+    </tr>
+    <tr>
+      <th>per_pool_test</th>
+      <td><p>Perform the test for each pool?</p></td>
+    </tr>
+    <tr>
+      <th>pool_col</th>
+      <td><p>A character vector of the names of the columns that
+uniquely identify a pool</p></td>
+    </tr>
+    <tr>
+      <th>min_samples_per_pool</th>
+      <td><p>The minimum number of samples that a pool
+needs to contain in order to be processed - relevant only if
+<code>per_pool_test = TRUE</code></p></td>
+    </tr>
+    <tr>
+      <th>flag_logic</th>
+      <td><p>A character vector of logic operators to obtain a
+global flag formula - only relevant if the key is longer than one.
+All operators must be chosen between:
+AND, OR, XOR, NAND, NOR, XNOR</p></td>
+    </tr>
+    <tr>
+      <th>keep_calc_cols</th>
+      <td><p>Keep the calculation columns in the output data frame?</p></td>
+    </tr>
+    <tr>
+      <th>save_widget_path</th>
+      <td><p>Either null or a string containing the path
+on disk where the report should be saved</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>returns NULL</p>
+    <p>A data frame of metadata with the column <code>to_remove</code></p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Note: the function is vectorized, meaning you can specify more than
-one project and more than one pool as vectors of characters, but you must
-ensure that:</p><ul>
-<li><p>Both <code>project</code> and <code>pool</code> vectors have the same length</p></li>
-<li><p>You correclty type names in corresponding positions, for example
-c("CLOEXP", "PROJECT1100", "PROJECT1100") - c("POOL6", "ABX-LR-PL5-POOL14-1",
-"ABX-LR-PL6-POOL15-1"). If you type a pool in the position of a corresponding
-project that doesn't match no file will be produced since that pool doesn't
-exist in the corresponding project.</p></li>
+    <p>This particular test calculates for each column in the key</p><ul>
+<li><p>The zscore of the values</p></li>
+<li><p>The tstudent of the values</p></li>
+<li><p>The the distribution of the tstudent values</p></li>
 </ul>
 
+<p>Optionally the test can be performed for each pool and a normality test
+can be run prior the actual calculations.
+Samples are flagged if this condition is respected:</p><ul>
+<li><p>tdist &lt; outlier_p_value_threshold &amp; zscore &lt; 0</p></li>
+</ul>
+
+<p>If the key contains more than one column an additional flag logic can be
+specified for combining the results.
+Example:
+let's suppose the key contains the names of two columns, X and Y
+<code>key = c("X", "Y")</code>
+if we specify the the argument <code>flag_logic = "AND"</code> then the reads will
+be flagged based on this global condition:
+(tdist_X &lt; outlier_p_value_threshold &amp; zscore_X &lt; 0) AND
+(tdist_Y &lt; outlier_p_value_threshold &amp; zscore_Y &lt; 0)</p>
+<p>The user can specify one or more logical operators that will be applied
+in sequence.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Utility functions: 
-<code><a href='as_sparse_matrix.html'>as_sparse_matrix</a>()</code>,
-<code><a href='generate_blank_association_file.html'>generate_blank_association_file</a>()</code>,
-<code><a href='unzip_file_system.html'>unzip_file_system</a>()</code></p></div>
+    <div class='dont-index'><p>Other Outlier tests: 
+<code><a href='available_outlier_tests.html'>available_outlier_tests</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='st'>"ISAnalytics.widgets"</span> <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>temp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>
-<span class='va'>path_af</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
+    <pre class="examples"><div class='input'><span class='va'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span>ISAnalytics.widgets <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+
+<span class='va'>path_AF</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
     package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
 <span class='op'>)</span>
-<span class='va'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
-<span class='va'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_pth</span>, <span class='st'>"fs"</span><span class='op'>)</span>
-<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>path_af</span>, <span class='va'>root</span>,
+<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>path_AF</span>, root <span class='op'>=</span> <span class='cn'>NULL</span>,
     dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>
 <span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
@@ -229,14 +287,14 @@ exist in the corresponding project.</p></li>
 #&gt; <span class='message'>* Date parsing problems: TRUE</span>
 #&gt; <span class='message'>* Column problems detected: TRUE</span>
 #&gt; <span class='message'>* NAs found in important columns: TRUE</span>
-#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
+#&gt; <span class='message'>* File system alignment: skipped</span></div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
 #&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
 #&gt; <span class='message'>* Parsing problems detected: TRUE</span>
 #&gt; <span class='message'>* Date parsing problems: TRUE</span>
 #&gt; <span class='message'>* Column problems detected: TRUE</span>
 #&gt; <span class='message'>* NAs found in important columns: TRUE</span>
-#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='input'><span class='fu'>generate_Vispa2_launch_AF</span><span class='op'>(</span><span class='va'>association_file</span>, <span class='st'>"CLOEXP"</span>, <span class='st'>"POOL6"</span>, <span class='va'>temp</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
+#&gt; <span class='message'>* File system alignment: skipped</span></div><div class='input'><span class='va'>filtered_af</span> <span class='op'>&lt;-</span> <span class='fu'>outliers_by_pool_fragments</span><span class='op'>(</span><span class='va'>association_file</span>, key <span class='op'>=</span> <span class='st'>"VCN"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Removing NAs from data...</span></div><div class='output co'>#&gt; <span class='message'>Log2 transformation, removing values &lt;= 0</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

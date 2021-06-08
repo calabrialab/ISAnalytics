@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Import integration matrices based on the association file. — import_parallel_Vispa2Matrices_interactive • ISAnalytics</title>
+<title>Default metadata aggregation function table — default_meta_agg • ISAnalytics</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,12 +46,8 @@
 
 
 
-<meta property="og:title" content="Import integration matrices based on the association file. — import_parallel_Vispa2Matrices_interactive" />
-<meta property="og:description" content="
-
-These functions are designed to import the appropriate
-integration matrix files given the association file and the root folder of
-the file system where Vispa2 matrices are generated." />
+<meta property="og:title" content="Default metadata aggregation function table — default_meta_agg" />
+<meta property="og:description" content="A default columns-function specifications for aggregate_metadata" />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -151,116 +147,59 @@ the file system where Vispa2 matrices are generated." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Import integration matrices based on the association file.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/import-functions.R'><code>R/import-functions.R</code></a></small>
-    <div class="hidden name"><code>import_parallel_Vispa2Matrices_interactive.Rd</code></div>
+    <h1>Default metadata aggregation function table</h1>
+    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/aggregate-functions.R'><code>R/aggregate-functions.R</code></a></small>
+    <div class="hidden name"><code>default_meta_agg.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
-
-These functions are designed to import the appropriate
-integration matrix files given the association file and the root folder of
-the file system where Vispa2 matrices are generated.</p>
+    <p>A default columns-function specifications for <a href='aggregate_metadata.html'>aggregate_metadata</a></p>
     </div>
 
-    <pre class="usage"><span class='fu'>import_parallel_Vispa2Matrices_interactive</span><span class='op'>(</span>
-  <span class='va'>association_file</span>,
-  <span class='va'>quantification_type</span>,
-  matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>,
-  workers <span class='op'>=</span> <span class='fl'>2</span>,
-  multi_quant_matrix <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  export_report_path <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>...</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>default_meta_agg</span><span class='op'>(</span><span class='op'>)</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>association_file</th>
-      <td><p>A single string containing the path to the
-association file on disk, or a data frame resulting from a previous call to
-<code>import_association_file</code></p></td>
-    </tr>
-    <tr>
-      <th>quantification_type</th>
-      <td><p>A vector of requested quantification_types. Must
-be one in <code><a href='quantification_types.html'>quantification_types()</a></code></p></td>
-    </tr>
-    <tr>
-      <th>matrix_type</th>
-      <td><p>A single string representing the type of matrices to
-be imported. Can only be one in <code>"annotated"</code> or <code>"not_annotated"</code></p></td>
-    </tr>
-    <tr>
-      <th>workers</th>
-      <td><p>A single integer representing the number
-of parallel workers to use for the import</p></td>
-    </tr>
-    <tr>
-      <th>multi_quant_matrix</th>
-      <td><p>If set to TRUE will produce a
-multi-quantification matrix (data frame) through <code>comparison_matrix</code>
-instead of a list.</p></td>
-    </tr>
-    <tr>
-      <th>export_report_path</th>
-      <td><p>A path on disk to save produced import report
-or NULL if the user doesn't wish to save the html file</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>&lt;<code><a href='https://rlang.r-lib.org/reference/dyn-dots.html'>dynamic-dots</a></code>&gt; Additional named arguments
-to pass to <code>ìmport_association_file</code> and <code>comparison_matrix</code></p></td>
-    </tr>
-    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named list of data frames containing data from
-all imported integration
-matrices, divided by quantification type or a multi-quantification matrix</p>
+    <p>A data frame</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Import family functions are designed to work in combination with
-Vispa2, for more details on this take a look here:
-<a href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/'>VISPA2:
-A Scalable Pipeline for High-Throughput Identification
-and Annotation of Vector Integration Sites</a>.<br />
-For more details on how to properly use these functions, refer to the
-vignette - vignette("how_to_import_functions")</p>
-    <h2 class="hasAnchor" id="interactive-version"><a class="anchor" href="#interactive-version"></a>Interactive version</h2>
+    <p>This data frame contains four columns:</p><ul>
+<li><p><code>Column</code>: holds the name of the column in the association file that
+should be processed</p></li>
+<li><p><code>Function</code>: contains either the name of a function (e.g. mean)
+or a purrr-style lambda (e.g. <code>~ mean(.x, na.rm = TRUE)</code>). This function
+will be applied to the corresponding column specified in <code>Column</code></p></li>
+<li><p><code>Args</code>: optional additional arguments to pass to the corresponding
+function. This is relevant ONLY if the corresponding <code>Function</code> is a
+simple function and not a purrr-style lambda.</p></li>
+<li><p><code>Output_colname</code>: a <code>glue</code> specification that will be used to determine
+a unique output column name. See <a href='https://glue.tidyverse.org/reference/glue.html'>glue</a> for more details.</p></li>
+</ul>
 
-    
-
-<p>The interactive version of import_parallel_Vispa2Matrices asks user for input
-and allows a more detailed choice of projects to import, pools to import and,
-if necessary, duplicate files. During the execution, a series of reports is
-shown in html format.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='comparison_matrix.html'>comparison_matrix</a></code>,
-<code><a href='import_association_file.html'>import_association_file</a></code></p>
-<p>Other Import functions: 
-<code><a href='import_Vispa2_stats.html'>import_Vispa2_stats</a>()</code>,
-<code><a href='import_association_file.html'>import_association_file</a>()</code>,
-<code><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a>()</code>,
-<code><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a>()</code></p></div>
+    <div class='dont-index'><p>Other Aggregate functions: 
+<code><a href='aggregate_metadata.html'>aggregate_metadata</a>()</code>,
+<code><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='co'># Can't run because it's interactive and requires user input</span>
-<span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'>import_parallel_Vispa2Matrices_interactive</span><span class='op'>(</span>
-    <span class='va'>association_file</span>,
-    <span class='va'>quantification_type</span>,
-    matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>,
-    workers <span class='op'>=</span> <span class='fl'>2</span>,
-    multi_quant_matrix <span class='op'>=</span> <span class='cn'>FALSE</span>,
-    export_report_path <span class='op'>=</span> <span class='cn'>NULL</span>,
-<span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'>default_meta_agg</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 12 x 4</span>
+#&gt;    Column               Function  Args  Output_colname
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                <span style='color: #949494; font-style: italic;'>&lt;list&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>         
+#&gt; <span style='color: #BCBCBC;'> 1</span> FusionPrimerPCRDate  <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_min    
+#&gt; <span style='color: #BCBCBC;'> 2</span> LinearPCRDate        <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_min    
+#&gt; <span style='color: #BCBCBC;'> 3</span> VCN                  <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_avg    
+#&gt; <span style='color: #BCBCBC;'> 4</span> ng DNA corrected     <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_avg    
+#&gt; <span style='color: #BCBCBC;'> 5</span> Kapa                 <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_avg    
+#&gt; <span style='color: #BCBCBC;'> 6</span> ng DNA corrected     <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_sum    
+#&gt; <span style='color: #BCBCBC;'> 7</span> ulForPool            <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_sum    
+#&gt; <span style='color: #BCBCBC;'> 8</span> BARCODE_MUX          <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_sum    
+#&gt; <span style='color: #BCBCBC;'> 9</span> TRIMMING_FINAL_LTRLC <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_sum    
+#&gt; <span style='color: #BCBCBC;'>10</span> LV_MAPPED            <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_sum    
+#&gt; <span style='color: #BCBCBC;'>11</span> BWA_MAPPED_OVERALL   <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_sum    
+#&gt; <span style='color: #BCBCBC;'>12</span> ISS_MAPPED_PP        <span style='color: #949494;'>&lt;formula&gt;</span> <span style='color: #BB0000;'>NA</span>    {.col}_sum    </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
