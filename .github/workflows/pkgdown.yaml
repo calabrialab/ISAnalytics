@@ -1,7 +1,6 @@
 on:
   push:
     branches:
-      - RELEASE_3_13
       - master
 
 name: pkgdown

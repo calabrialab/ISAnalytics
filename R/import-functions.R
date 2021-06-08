@@ -254,6 +254,7 @@ import_association_file <- function(path,
     filter_for = NULL,
     import_iss = FALSE,
     export_widget_path = NULL,
+    convert_tp = TRUE,
     ...) {
     # Check parameters
     stopifnot(is.character(path) & length(path) == 1)
@@ -310,55 +311,45 @@ import_association_file <- function(path,
         missing_dates
     )))
     ## Fix timepoints
-    if (!"TimepointMonths" %in% colnames(as_file)) {
+    if (convert_tp) {
+        if (!"TimepointMonths" %in% colnames(as_file)) {
+            as_file <- as_file %>%
+                tibble::add_column(TimepointMonths = NA_real_)
+        }
+        if (!"TimepointYears" %in% colnames(as_file)) {
+            as_file <- as_file %>%
+                tibble::add_column(TimepointYears = NA_real_)
+        }
         as_file <- as_file %>%
-            tibble::add_column(TimepointMonths = NA_real_)
-    }
-    if (!"TimepointYears" %in% colnames(as_file)) {
-        as_file <- as_file %>%
-            tibble::add_column(TimepointYears = NA_real_)
-    }
-    as_file <- as_file %>%
-        dplyr::mutate(
-            TimepointMonths = dplyr::if_else(
-                condition = is.na(.data$TimepointMonths),
-                false = .data$TimepointMonths,
-                true = dplyr::if_else(
-                    condition = as.numeric(.data$TimePoint) == 0,
-                    true = 0,
-                    false = dplyr::if_else(
-                        condition = as.numeric(.data$TimePoint) > 0 &
-                            as.numeric(.data$TimePoint) < 30,
-                        true = ceiling(as.numeric(.data$TimePoint) / 30),
-                        false = round(as.numeric(.data$TimePoint) / 30)
+            dplyr::mutate(
+                TimepointMonths = dplyr::if_else(
+                        condition = as.numeric(.data$TimePoint) == 0,
+                        true = 0,
+                        false = dplyr::if_else(
+                            condition = as.numeric(.data$TimePoint) > 0 &
+                                as.numeric(.data$TimePoint) < 30,
+                            true = ceiling(as.numeric(.data$TimePoint) / 30),
+                            false = round(as.numeric(.data$TimePoint) / 30)
+                        )
+                    ),
+                TimepointYears = dplyr::if_else(
+                        condition = as.numeric(.data$TimePoint) == 0,
+                        true = 0,
+                        false = ceiling(as.numeric(.data$TimePoint) / 360)
                     )
-                )
-            ),
-            TimepointYears = dplyr::if_else(
-                condition = is.na(.data$TimepointYears),
-                false = .data$TimepointYears,
-                true = dplyr::if_else(
-                    condition = as.numeric(.data$TimePoint) == 0,
-                    true = 0,
-                    false = dplyr::if_else(
-                        condition = as.numeric(.data$TimePoint) > 0 &
-                            as.numeric(.data$TimePoint) < 360,
-                        true = ceiling(as.numeric(.data$TimePoint) / 360),
-                        false = round(as.numeric(.data$TimePoint) / 360)
-                    )
-                )
+                ) %>%
+            dplyr::mutate(
+                TimepointMonths = stringr::str_pad(
+                    as.character(.data$TimepointMonths),
+                    pad = "0", side = "left", width = 2
+                ),
+                TimepointYears = stringr::str_pad(
+                    as.character(.data$TimepointYears),
+                    pad = "0", side = "left", width = 2
+                ),
             )
-        ) %>%
-        dplyr::mutate(
-            TimepointMonths = stringr::str_pad(
-                as.character(.data$TimepointMonths),
-                pad = "0", side = "left", width = 2
-            ),
-            TimepointYears = stringr::str_pad(
-                as.character(.data$TimepointYears),
-                pad = "0", side = "left", width = 2
-            ),
-        )
+    }
+
     widget <- if (something_to_report) {
         summary_report <- .summary_af_import_msg(
             pars_prob = parsing_problems, dates_prob = date_problems,

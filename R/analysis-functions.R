@@ -1258,7 +1258,9 @@ cumulative_count_union <- function(x,
 #' default_stats()
 default_stats <- function() {
     list(
-        diversity = vegan::diversity,
+        shannon = ~ vegan::diversity(.x, index = "shannon"),
+        simpson = ~ vegan::diversity(.x, index = "simpson"),
+        invsimpson = ~ vegan::diversity(.x, index = "invsimpson"),
         sum = ~ sum(.x, na.rm = TRUE),
         count = length,
         describe = ~ tibble::as_tibble(psych::describe(.x))
