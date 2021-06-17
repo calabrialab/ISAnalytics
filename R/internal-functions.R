@@ -2429,8 +2429,7 @@
 # @return A character vector
 .stats_columns_min <- function() {
     c(
-        "POOL", "TAG", "BARCODE_MUX", "TRIMMING_FINAL_LTRLC",
-        "LV_MAPPED", "BWA_MAPPED_OVERALL", "ISS_MAPPED_PP"
+        "POOL", "TAG", "BARCODE_MUX"
     )
 }
 
