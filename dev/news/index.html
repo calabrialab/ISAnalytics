@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.1.10</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.1</span>
       </span>
     </div>
 
@@ -118,16 +118,16 @@
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
-<li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
   <a href="https://calabrialab.github.io/ISAnalytics/">
     <span class="fas fa-code-branch"></span>
      
     RELEASE
   </a>
 </li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li>
+<li>
   <a href="https://github.com/calabrialab/ISAnalytics/">
     <span class="fab fa-github fa-lg"></span>
      
@@ -150,12 +150,80 @@
       <small>Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="isanalytics-1110-2021-04-08" class="section level1">
-<h1 class="page-header" data-toc-text="1.1.10">
-<a href="#isanalytics-1110-2021-04-08" class="anchor"></a>ISAnalytics 1.1.10 (2021-04-08)</h1>
+    <div id="isanalytics-131-2021-06-24" class="section level1">
+<h1 class="page-header" data-toc-text="1.3.1">
+<a href="#isanalytics-131-2021-06-24" class="anchor"></a>ISAnalytics 1.3.1 (2021-06-24)</h1>
+<div id="new-functionality" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-functionality" class="anchor"></a>NEW FUNCTIONALITY</h2>
+<ul>
+<li>
+<code>is_sharing</code> computes the sharing of IS between groups</li>
+<li>
+<code>sharing_heatmap</code> allows visualization of sharing data through heatmaps</li>
+<li>
+<code>integration_alluvial_plot</code> allows visualization of integration sites distribution in groups over time.</li>
+<li>
+<code>top_abund_tableGrob</code> can be used in combination with the previous function or by itself to obtain a summary of top abundant integrations as an R graphic (tableGrob) object that can be combined with plots.</li>
+</ul>
+</div>
+<div id="minor-updates" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-updates" class="anchor"></a>MINOR UPDATES</h2>
+<ul>
+<li>Added more default stats functions to <code>default_stats</code>
+</li>
+<li>Added optional automatic conversion of time points in months and years when importing association file</li>
+<li>Minor fixes in <code>generate_Vispa2_launch_AF</code>
+</li>
+</ul>
+</div>
+</div>
+    <div id="isanalytics-1111-2021-05-11" class="section level1">
+<h1 class="page-header" data-toc-text="1.1.11">
+<a href="#isanalytics-1111-2021-05-11" class="anchor"></a>ISAnalytics 1.1.11 (2021-05-11)</h1>
+<div id="new-functionality-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-functionality-1" class="anchor"></a>NEW FUNCTIONALITY</h2>
+<ul>
+<li>
+<code>HSC_population_size_estimate</code> and <code>HSC_population_plot</code> allow estimates on hematopoietic stem cell population size</li>
+<li>Importing of Vispa2 stats per pool now has a dedicated function, <code>import_Vispa2_stats</code>
+</li>
+<li>
+<code>outlier_filter</code> and <code>outliers_by_pool_fragments</code> offer a mean to filter poorly represented samples based on custom outliers tests</li>
+</ul>
+</div>
+<div id="visible-user-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#visible-user-changes" class="anchor"></a>VISIBLE USER CHANGES</h2>
+<ul>
+<li>The argument <code>import_stats</code> of <code>aggregate_metadata</code> is officially deprecated in favor of <code>import_Vispa2_stats</code>
+</li>
+<li>
+<code>aggregate_metadata</code> is now a lot more flexible on what operations can be performed on columns via the new argument <code>aggregating_functions</code>
+</li>
+<li>
+<code>import_association_file</code> allows directly for the import of Vispa2 stats and converts time points to months and years where not already present</li>
+<li>File system alignment of <code>import_association_file</code> now produces 3 separate columns for paths</li>
+<li>
+<code>separate_quant_matrices</code> and <code>comparison_matrix</code> now do not require mandatory columns other than the quantifications - this allows for separation or joining also for aggregated matrices</li>
+</ul>
+</div>
 <div id="fixes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fixes" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Fixed a minor issue in <code>CIS_volcano_plot</code> that caused duplication of some labels if highlighted genes were provided in input</li>
+</ul>
+</div>
+</div>
+    <div id="isanalytics-1110-2021-04-08" class="section level1">
+<h1 class="page-header" data-toc-text="1.1.10">
+<a href="#isanalytics-1110-2021-04-08" class="anchor"></a>ISAnalytics 1.1.10 (2021-04-08)</h1>
+<div id="fixes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes-1" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed issue in <code>compute_near_integrations</code>: when provided recalibration map export path as a folder now the function works correctly and produces an automatically generated file name</li>
 <li>Fixed issue in <code>aggregate_metadata</code>: now paths to folder that contains Vispa2 stats is looked up correctly. Also, VISPA2 stats columns are aggregated if found in the input data frame independently from the parameter <code>import_stats</code>.</li>
@@ -192,9 +260,9 @@
     <div id="isanalytics-119-2021-02-17" class="section level1">
 <h1 class="page-header" data-toc-text="1.1.9">
 <a href="#isanalytics-119-2021-02-17" class="anchor"></a>ISAnalytics 1.1.9 (2021-02-17)</h1>
-<div id="fixes-1" class="section level2">
+<div id="fixes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-1" class="anchor"></a>FIXES</h2>
+<a href="#fixes-2" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed minor issues in internal functions with absolute file paths &amp; corrected typos</li>
 </ul>
@@ -203,9 +271,9 @@
     <div id="isanalytics-118-2020-02-15" class="section level1">
 <h1 class="page-header" data-toc-text="1.1.8">
 <a href="#isanalytics-118-2020-02-15" class="anchor"></a>ISAnalytics 1.1.8 (2020-02-15)</h1>
-<div id="fixes-2" class="section level2">
+<div id="fixes-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-2" class="anchor"></a>FIXES</h2>
+<a href="#fixes-3" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed minor issues in internal functions to optimize file system alignment</li>
 </ul>
@@ -214,9 +282,9 @@
     <div id="isanalytics-117-2020-02-10" class="section level1">
 <h1 class="page-header" data-toc-text="1.1.7">
 <a href="#isanalytics-117-2020-02-10" class="anchor"></a>ISAnalytics 1.1.7 (2020-02-10)</h1>
-<div id="fixes-3" class="section level2">
+<div id="fixes-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-3" class="anchor"></a>FIXES</h2>
+<a href="#fixes-4" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed minor issues in import_association_file when checking parameters</li>
 </ul>
@@ -232,9 +300,9 @@
 <li>It is now possible to save html reports to file from import_parallel_Vispa2Matrices_auto and import_parallel_Vispa2Matrices_interactive, remove_collisions and compute_near_integrations</li>
 </ul>
 </div>
-<div id="fixes-4" class="section level2">
+<div id="fixes-5" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-4" class="anchor"></a>FIXES</h2>
+<a href="#fixes-5" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed sample_statistics: now functions that have data frame output do not produce nested tables. Flat tables are ready to be saved to file or can be nested.</li>
 <li>Simplified association file check logic in remove_collisions: now function blocks only if the af doesn’t contain the needed columns</li>
@@ -268,9 +336,9 @@
     <div id="isanalytics-113-2020-11-10" class="section level1">
 <h1 class="page-header" data-toc-text="1.1.3">
 <a href="#isanalytics-113-2020-11-10" class="anchor"></a>ISAnalytics 1.1.3 (2020-11-10)</h1>
-<div id="fixes-5" class="section level2">
+<div id="fixes-6" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-5" class="anchor"></a>FIXES</h2>
+<a href="#fixes-6" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Further fixes for printing reports when widgets not available</li>
 <li>Added progress bar to collision processing in <code>remove_collisions</code>
@@ -289,9 +357,9 @@
     <div id="isanalytics-112-2020-11-05" class="section level1">
 <h1 class="page-header" data-toc-text="1.1.2">
 <a href="#isanalytics-112-2020-11-05" class="anchor"></a>ISAnalytics 1.1.2 (2020-11-05)</h1>
-<div id="fixes-6" class="section level2">
+<div id="fixes-7" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-6" class="anchor"></a>FIXES</h2>
+<a href="#fixes-7" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed missing restarts for non-blocking widgets</li>
 </ul>
@@ -300,9 +368,9 @@
     <div id="isanalytics-111-2020-11-04" class="section level1">
 <h1 class="page-header" data-toc-text="1.1.1">
 <a href="#isanalytics-111-2020-11-04" class="anchor"></a>ISAnalytics 1.1.1 (2020-11-04)</h1>
-<div id="fixes-7" class="section level2">
+<div id="fixes-8" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-7" class="anchor"></a>FIXES</h2>
+<a href="#fixes-8" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Functions that make use of widgets do not interrupt execution anymore if errors are thrown while producing or printing the widgets</li>
 <li>Optimized widget printing for importing functions</li>

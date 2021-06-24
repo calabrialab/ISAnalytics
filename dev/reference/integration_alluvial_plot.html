@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Performs aggregation on metadata contained in the association file. — aggregate_metadata • ISAnalytics</title>
+<title>Alluvial plots for IS distribution in time. — integration_alluvial_plot • ISAnalytics</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,12 +46,13 @@
 
 
 
-<meta property="og:title" content="Performs aggregation on metadata contained in the association file. — aggregate_metadata" />
+<meta property="og:title" content="Alluvial plots for IS distribution in time. — integration_alluvial_plot" />
 <meta property="og:description" content="
 
-Groups metadata by the specified grouping keys and returns a
-summary of info for each group. For more details on how to use this function:
-vignette(&quot;Working with aggregate functions&quot;, package = &quot;ISAnalytics&quot;)" />
+Alluvial plots allow the visualization of integration sites distribution
+in different points in time in the same group.
+This functionality requires the suggested package
+ggalluvial." />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -151,62 +152,104 @@ vignette(&quot;Working with aggregate functions&quot;, package = &quot;ISAnalyti
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Performs aggregation on metadata contained in the association file.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/aggregate-functions.R'><code>R/aggregate-functions.R</code></a></small>
-    <div class="hidden name"><code>aggregate_metadata.Rd</code></div>
+    <h1>Alluvial plots for IS distribution in time.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/plotting-functions.R'><code>R/plotting-functions.R</code></a></small>
+    <div class="hidden name"><code>integration_alluvial_plot.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#experimental'><img src='figures/lifecycle-experimental.svg' alt='[Experimental]' /></a>
 
-Groups metadata by the specified grouping keys and returns a
-summary of info for each group. For more details on how to use this function:
-<code>vignette("Working with aggregate functions", package = "ISAnalytics")</code></p>
+Alluvial plots allow the visualization of integration sites distribution
+in different points in time in the same group.
+This functionality requires the suggested package
+<a href='https://corybrunson.github.io/ggalluvial/'>ggalluvial</a>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>aggregate_metadata</span><span class='op'>(</span>
-  <span class='va'>association_file</span>,
-  grouping_keys <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span>,
-  aggregating_functions <span class='op'>=</span> <span class='fu'><a href='default_meta_agg.html'>default_meta_agg</a></span><span class='op'>(</span><span class='op'>)</span>,
-  import_stats <span class='op'>=</span> <span class='fu'>lifecycle</span><span class='fu'>::</span><span class='fu'><a href='https://lifecycle.r-lib.org/reference/deprecated.html'>deprecated</a></span><span class='op'>(</span><span class='op'>)</span>
+    <pre class="usage"><span class='fu'>integration_alluvial_plot</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  group <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span><span class='op'>)</span>,
+  plot_x <span class='op'>=</span> <span class='st'>"TimePoint"</span>,
+  plot_y <span class='op'>=</span> <span class='st'>"fragmentEstimate_sum_PercAbundance"</span>,
+  alluvia <span class='op'>=</span> <span class='fu'><a href='mandatory_IS_vars.html'>mandatory_IS_vars</a></span><span class='op'>(</span><span class='op'>)</span>,
+  alluvia_plot_y_threshold <span class='op'>=</span> <span class='fl'>1</span>,
+  top_abundant_tbl <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>association_file</th>
-      <td><p>The imported association file
-(via linkimport_association_file)</p></td>
+      <th>x</th>
+      <td><p>A data frame. See details.</p></td>
     </tr>
     <tr>
-      <th>grouping_keys</th>
-      <td><p>A character vector of column names to form a group</p></td>
+      <th>group</th>
+      <td><p>Character vector containing the column names that identify
+unique groups.</p></td>
     </tr>
     <tr>
-      <th>aggregating_functions</th>
-      <td><p>A data frame containing specifications
-of the functions to be applied to columns in the association file during
-aggregation. It defaults to <a href='default_meta_agg.html'>default_meta_agg</a>. The structure of
-this data frame should be maintained if the user wishes to change the
-defaults.</p></td>
+      <th>plot_x</th>
+      <td><p>Column name to plot on the x axis</p></td>
     </tr>
     <tr>
-      <th>import_stats</th>
-      <td><p><a href='https://lifecycle.r-lib.org/articles/stages.html#deprecated'><img src='figures/lifecycle-deprecated.svg' alt='[Deprecated]' /></a> The import
-of VISPA2 stats has been moved to its dedicated function,
-see <a href='import_Vispa2_stats.html'>import_Vispa2_stats</a>.</p></td>
+      <th>plot_y</th>
+      <td><p>Column name to plot on the y axis</p></td>
+    </tr>
+    <tr>
+      <th>alluvia</th>
+      <td><p>Character vector of column names that uniquely identify
+alluvia</p></td>
+    </tr>
+    <tr>
+      <th>alluvia_plot_y_threshold</th>
+      <td><p>Numeric value. Everything below this
+threshold on y will be plotted in grey and aggregated. See details.</p></td>
+    </tr>
+    <tr>
+      <th>top_abundant_tbl</th>
+      <td><p>Logical. Produce the summary top abundant tables
+via <a href='top_abund_tableGrob.html'>top_abund_tableGrob</a>?</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional arguments to pass on to <a href='top_abund_tableGrob.html'>top_abund_tableGrob</a></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An aggregated data frame</p>
+    <p>For each group a list with the associated plot and optionally
+the summary tableGrob</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Input data frame</h3>
+
+
+<p>The input data frame must contain all the columns specified in the
+arguments <code>group</code>, <code>plot_x</code>, <code>plot_y</code> and <code>alluvia</code>. The standard
+input for this function is the data frame obtained via the
+<a href='compute_abundance.html'>compute_abundance</a> function.</p>
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Plotting threshold on y</h3>
+
+
+<p>The plotting threshold on the quantification on the y axis has the
+function to highlight only relevant information on the plot and reduce
+computation time. The default value is 1, that acts on the default column
+plotted on the y axis which holds a percentage value. This translates
+in natural language roughly as "highlight with colours only those
+integrations (alluvia) that at least in 1 point in time have an
+abundance value &gt;= 1 %". The remaining integrations will be plotted in
+grey in the strata.</p>
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Aggregate functions: 
-<code><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a>()</code>,
-<code><a href='default_meta_agg.html'>default_meta_agg</a>()</code></p></div>
+    <div class='dont-index'><p>Other Plotting functions: 
+<code><a href='CIS_volcano_plot.html'>CIS_volcano_plot</a>()</code>,
+<code><a href='HSC_population_plot.html'>HSC_population_plot</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='st'>"ISAnalytics.widgets"</span> <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='st'>"ISAnalytics.verbose"</span> <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
@@ -218,8 +261,23 @@ see <a href='import_Vispa2_stats.html'>import_Vispa2_stats</a>.</p></td>
 <span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>path_AF</span>, <span class='va'>root_correct</span>,
     dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>
 <span class='op'>)</span>
-<span class='va'>aggregated_meta</span> <span class='op'>&lt;-</span> <span class='fu'>aggregate_metadata</span><span class='op'>(</span><span class='va'>association_file</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
+<span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></span><span class='op'>(</span>
+    association_file <span class='op'>=</span> <span class='va'>association_file</span>, root <span class='op'>=</span> <span class='cn'>NULL</span>,
+    quantification_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>,
+    matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>, workers <span class='op'>=</span> <span class='fl'>2</span>, matching_opt <span class='op'>=</span> <span class='st'>"ANY"</span>
+<span class='op'>)</span>
+<span class='va'>agg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
+    x <span class='op'>=</span> <span class='va'>matrices</span>,
+    association_file <span class='op'>=</span> <span class='va'>association_file</span>,
+    value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>abundance</span> <span class='op'>&lt;-</span> <span class='fu'><a href='compute_abundance.html'>compute_abundance</a></span><span class='op'>(</span><span class='va'>agg</span>,
+    columns <span class='op'>=</span> <span class='st'>"fragmentEstimate_sum"</span>,
+    key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span>
+<span class='op'>)</span>
+<span class='va'>plots</span> <span class='op'>&lt;-</span> <span class='fu'>integration_alluvial_plot</span><span class='op'>(</span><span class='va'>abundance</span>, top_abundant_tbl <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |==================                                                    |  25%  |                                                                              |===================================                                   |  50%  |                                                                              |====================================================                  |  75%  |                                                                              |======================================================================| 100%
+#&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

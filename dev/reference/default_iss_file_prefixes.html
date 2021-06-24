@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Possible choices for the matching_opt parameter. — matching_options • ISAnalytics</title>
+<title>Default regex prefixes for Vispa2 stats files. — default_iss_file_prefixes • ISAnalytics</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,8 @@
 
 
 
-<meta property="og:title" content="Possible choices for the matching_opt parameter. — matching_options" />
-<meta property="og:description" content="These are all the possible values for the matching_opt parameter in
-import_parallel_vispa2Matrices_auto." />
+<meta property="og:title" content="Default regex prefixes for Vispa2 stats files. — default_iss_file_prefixes" />
+<meta property="og:description" content="Note that each element is a regular expression." />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -148,43 +147,25 @@ import_parallel_vispa2Matrices_auto." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Possible choices for the <code>matching_opt</code> parameter.</h1>
+    <h1>Default regex prefixes for Vispa2 stats files.</h1>
     <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/import-functions.R'><code>R/import-functions.R</code></a></small>
-    <div class="hidden name"><code>matching_options.Rd</code></div>
+    <div class="hidden name"><code>default_iss_file_prefixes.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>These are all the possible values for the <code>matching_opt</code> parameter in
-<code>import_parallel_vispa2Matrices_auto</code>.</p>
+    <p>Note that each element is a regular expression.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>matching_options</span><span class='op'>(</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>default_iss_file_prefixes</span><span class='op'>(</span><span class='op'>)</span></pre>
 
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A vector of characters for matching_opt</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The values "ANY", "ALL" and "OPTIONAL", represent how the patterns
-should be matched, more specifically</p><ul>
-<li><p>ANY = look only for files that match AT LEAST one of the
-patterns specified</p></li>
-<li><p>ALL = look only for files that match ALL of the patterns specified</p></li>
-<li><p>OPTIONAL = look preferentially for files that match, in order, all
-patterns or any pattern and if no match is found return what is found (keep
-in mind that duplicates are discarded in automatic mode)</p></li>
-</ul>
-
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></code></p>
-<p>Other Import functions helpers: 
-<code><a href='quantification_types.html'>quantification_types</a>()</code></p></div>
+    <p>A character vector of regexes</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>opts</span> <span class='op'>&lt;-</span> <span class='fu'>matching_options</span><span class='op'>(</span><span class='op'>)</span>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'>default_iss_file_prefixes</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "stats\\.sequence." "stats\\.matrix."  </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Converts tidy integration matrices in the original sparse matrix
-form. — as_sparse_matrix • ISAnalytics</title>
+<title>Sharing of integration sites between given groups. — is_sharing • ISAnalytics</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -47,12 +46,14 @@ form. — as_sparse_matrix • ISAnalytics</title>
 
 
 
-<meta property="og:title" content="Converts tidy integration matrices in the original sparse matrix
-form. — as_sparse_matrix" />
+<meta property="og:title" content="Sharing of integration sites between given groups. — is_sharing" />
 <meta property="og:description" content="
 
-This function is particularly useful when a sparce matrix structure
-is needed by a specific function (mainly from other packages)." />
+Computes the amount of integrations shared between the groups identified
+by the fields in the group_key argument.
+An integration site is always identified by the triple
+(chr, integration_locus, strand), thus these columns must be present
+in the input data frame." />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -152,26 +153,26 @@ is needed by a specific function (mainly from other packages)." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Converts tidy integration matrices in the original sparse matrix
-form.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/utility-functions.R'><code>R/utility-functions.R</code></a></small>
-    <div class="hidden name"><code>as_sparse_matrix.Rd</code></div>
+    <h1>Sharing of integration sites between given groups.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/analysis-functions.R'><code>R/analysis-functions.R</code></a></small>
+    <div class="hidden name"><code>is_sharing.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#experimental'><img src='figures/lifecycle-experimental.svg' alt='[Experimental]' /></a>
 
-This function is particularly useful when a sparce matrix structure
-is needed by a specific function (mainly from other packages).</p>
+Computes the amount of integrations shared between the groups identified
+by the fields in the <code>group_key</code> argument.
+An integration site is always identified by the triple
+<code>(chr, integration_locus, strand)</code>, thus these columns must be present
+in the input data frame.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>as_sparse_matrix</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>is_sharing</span><span class='op'>(</span>
   <span class='va'>x</span>,
-  fragmentEstimate <span class='op'>=</span> <span class='st'>"fragmentEstimate"</span>,
-  seqCount <span class='op'>=</span> <span class='st'>"seqCount"</span>,
-  barcodeCount <span class='op'>=</span> <span class='st'>"barcodeCount"</span>,
-  cellCount <span class='op'>=</span> <span class='st'>"cellCount"</span>,
-  ShsCount <span class='op'>=</span> <span class='st'>"ShsCount"</span>
+  group_key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span>,
+  is_count <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  relative_is_sharing <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -179,52 +180,78 @@ is needed by a specific function (mainly from other packages).</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A single tidy integration matrix or a list of integration
-matrices. Supports also multi-quantification matrices
-obtained via <a href='comparison_matrix.html'>comparison_matrix</a></p></td>
+      <td><p>An integration matrix, aka a data frame containing the columns
+chr
+integration_locus
+strand. See details.</p></td>
     </tr>
     <tr>
-      <th>fragmentEstimate</th>
-      <td><p>For multi-quantification matrix support:
-the name of the fragment estimate values column</p></td>
+      <th>group_key</th>
+      <td><p>Character vector of column names which identify a
+single group. An associated group id will be derived by concatenating
+the values of these fields, separated by "_"</p></td>
     </tr>
     <tr>
-      <th>seqCount</th>
-      <td><p>For multi-quantification matrix support:
-the name of the sequence count values column</p></td>
+      <th>is_count</th>
+      <td><p>Logical, if TRUE returns also the count of IS for
+each group</p></td>
     </tr>
     <tr>
-      <th>barcodeCount</th>
-      <td><p>For multi-quantification matrix support:
-the name of the barcode count values column</p></td>
-    </tr>
-    <tr>
-      <th>cellCount</th>
-      <td><p>For multi-quantification matrix support:
-the name of the cell count values column</p></td>
-    </tr>
-    <tr>
-      <th>ShsCount</th>
-      <td><p>For multi-quantification matrix support:
-the name of the Shs Count values column</p></td>
+      <th>relative_is_sharing</th>
+      <td><p>Logical, if TRUE also returns the relative
+sharing. See details.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Depending on input, 2 possible outputs:</p><ul>
-<li><p>A single sparce matrix (tibble) if input is a single quantification
-matrix</p></li>
-<li><p>A list of sparce matrices divided by quantification if input
-is a single multi-quantification matrix or a list of matrices</p></li>
+    <p>A named list of data frames or a single data frame</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Input data frame</h3>
+
+
+<p>The data frame provided in input must be in a suitable format for the
+calculations to be accurate. Please note that this function does not
+perform any sort of aggregation, it only relies on counts of
+distinct integration sites.</p>
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Outputs</h3>
+
+
+<p>By default the function outputs a list of 2 data frames:</p><ul>
+<li><p>The classical sharing data frame with absolute values.
+If the argument <code>relative_is_sharing</code> is set to TRUE it also contains
+the relative sharing (see below).</p></li>
+<li><p>The count of distinct IS for each group</p></li>
 </ul>
+
+<p>The relative sharing is calculated, for each pair of groups (A, B) as
+3 separate columns</p><ul>
+<li><p>Shared over A: (∩(A,B) / |A|) * 100</p></li>
+<li><p>Shared over B: (∩(A,B) / |B|) * 100</p></li>
+<li><p>Shared over union: (∩(A,B) / |∪(A,B)|) * 100</p></li>
+</ul>
+
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Plotting sharing</h3>
+
+
+<p>The sharing data obtained can be easily plotted in a heatmap via the
+function <code><a href='sharing_heatmap.html'>sharing_heatmap</a></code>.</p>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Utility functions: 
-<code><a href='generate_Vispa2_launch_AF.html'>generate_Vispa2_launch_AF</a>()</code>,
-<code><a href='generate_blank_association_file.html'>generate_blank_association_file</a>()</code>,
-<code><a href='unzip_file_system.html'>unzip_file_system</a>()</code></p></div>
+    <div class='dont-index'><p>Other Analysis functions: 
+<code><a href='CIS_grubbs.html'>CIS_grubbs</a>()</code>,
+<code><a href='comparison_matrix.html'>comparison_matrix</a>()</code>,
+<code><a href='compute_abundance.html'>compute_abundance</a>()</code>,
+<code><a href='cumulative_count_union.html'>cumulative_count_union</a>()</code>,
+<code><a href='sample_statistics.html'>sample_statistics</a>()</code>,
+<code><a href='separate_quant_matrices.html'>separate_quant_matrices</a>()</code>,
+<code><a href='threshold_filter.html'>threshold_filter</a>()</code>,
+<code><a href='top_integrations.html'>top_integrations</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_annotated_ISMatrix.tsv.xz"</span>,
@@ -238,7 +265,7 @@ is a single multi-quantification matrix or a list of matrices</p></li>
 #&gt; <span class='message'>* --- Annotated: TRUE</span>
 #&gt; <span class='message'>* --- Dimensions: 50 x 10</span>
 #&gt; <span class='message'>* --- Read mode:  classic</span></div><div class='output co'>#&gt; <span class='message'>Reshaping...</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   5%  |                                                                              |======                                                                |   9%  |                                                                              |==========                                                            |  14%  |                                                                              |=============                                                         |  18%  |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  32%  |                                                                              |=========================                                             |  36%  |                                                                              |=============================                                         |  41%  |                                                                              |================================                                      |  45%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================                                |  55%  |                                                                              |=========================================                             |  59%  |                                                                              |=============================================                         |  64%  |                                                                              |================================================                      |  68%  |                                                                              |===================================================                   |  73%  |                                                                              |======================================================                |  77%  |                                                                              |=========================================================             |  82%  |                                                                              |============================================================          |  86%  |                                                                              |================================================================      |  91%  |                                                                              |===================================================================   |  95%  |                                                                              |======================================================================| 100%
-#&gt; </div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='input'><span class='va'>sparse</span> <span class='op'>&lt;-</span> <span class='fu'>as_sparse_matrix</span><span class='op'>(</span><span class='va'>matrix</span><span class='op'>)</span>
+#&gt; </div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='input'><span class='va'>sharing</span> <span class='op'>&lt;-</span> <span class='fu'>is_sharing</span><span class='op'>(</span><span class='va'>matrix</span>, group_key <span class='op'>=</span> <span class='st'>"CompleteAmplificationID"</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

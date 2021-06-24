@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Converts tidy integration matrices in the original sparse matrix
-form. — as_sparse_matrix • ISAnalytics</title>
+<title>Plot IS sharing heatmaps. — sharing_heatmap • ISAnalytics</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -47,12 +46,10 @@ form. — as_sparse_matrix • ISAnalytics</title>
 
 
 
-<meta property="og:title" content="Converts tidy integration matrices in the original sparse matrix
-form. — as_sparse_matrix" />
+<meta property="og:title" content="Plot IS sharing heatmaps. — sharing_heatmap" />
 <meta property="og:description" content="
 
-This function is particularly useful when a sparce matrix structure
-is needed by a specific function (mainly from other packages)." />
+Displays the IS sharing calculated via is_sharing as heatmaps." />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -152,79 +149,83 @@ is needed by a specific function (mainly from other packages)." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Converts tidy integration matrices in the original sparse matrix
-form.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/utility-functions.R'><code>R/utility-functions.R</code></a></small>
-    <div class="hidden name"><code>as_sparse_matrix.Rd</code></div>
+    <h1>Plot IS sharing heatmaps.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/plotting-functions.R'><code>R/plotting-functions.R</code></a></small>
+    <div class="hidden name"><code>sharing_heatmap.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#experimental'><img src='figures/lifecycle-experimental.svg' alt='[Experimental]' /></a>
 
-This function is particularly useful when a sparce matrix structure
-is needed by a specific function (mainly from other packages).</p>
+Displays the IS sharing calculated via <a href='is_sharing.html'>is_sharing</a> as heatmaps.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>as_sparse_matrix</span><span class='op'>(</span>
-  <span class='va'>x</span>,
-  fragmentEstimate <span class='op'>=</span> <span class='st'>"fragmentEstimate"</span>,
-  seqCount <span class='op'>=</span> <span class='st'>"seqCount"</span>,
-  barcodeCount <span class='op'>=</span> <span class='st'>"barcodeCount"</span>,
-  cellCount <span class='op'>=</span> <span class='st'>"cellCount"</span>,
-  ShsCount <span class='op'>=</span> <span class='st'>"ShsCount"</span>
+    <pre class="usage"><span class='fu'>sharing_heatmap</span><span class='op'>(</span>
+  <span class='va'>sharing_df</span>,
+  show_on_x <span class='op'>=</span> <span class='st'>"group1"</span>,
+  show_on_y <span class='op'>=</span> <span class='st'>"group2"</span>,
+  absolute_sharing_col <span class='op'>=</span> <span class='st'>"shared"</span>,
+  title_annot <span class='op'>=</span> <span class='cn'>NULL</span>,
+  plot_relative_sharing <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  rel_sharing_col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"on_g1"</span>, <span class='st'>"on_union"</span><span class='op'>)</span>,
+  show_perc_symbol_rel <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  interactive <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A single tidy integration matrix or a list of integration
-matrices. Supports also multi-quantification matrices
-obtained via <a href='comparison_matrix.html'>comparison_matrix</a></p></td>
+      <th>sharing_df</th>
+      <td><p>The data frame containing the IS sharing data</p></td>
     </tr>
     <tr>
-      <th>fragmentEstimate</th>
-      <td><p>For multi-quantification matrix support:
-the name of the fragment estimate values column</p></td>
+      <th>show_on_x</th>
+      <td><p>Name of the column to plot on the x axis</p></td>
     </tr>
     <tr>
-      <th>seqCount</th>
-      <td><p>For multi-quantification matrix support:
-the name of the sequence count values column</p></td>
+      <th>show_on_y</th>
+      <td><p>Name of the column to plot on the y axis</p></td>
     </tr>
     <tr>
-      <th>barcodeCount</th>
-      <td><p>For multi-quantification matrix support:
-the name of the barcode count values column</p></td>
+      <th>absolute_sharing_col</th>
+      <td><p>Name of the column that contains the absolute
+values of IS sharing</p></td>
     </tr>
     <tr>
-      <th>cellCount</th>
-      <td><p>For multi-quantification matrix support:
-the name of the cell count values column</p></td>
+      <th>title_annot</th>
+      <td><p>Additional text to display in the title</p></td>
     </tr>
     <tr>
-      <th>ShsCount</th>
-      <td><p>For multi-quantification matrix support:
-the name of the Shs Count values column</p></td>
+      <th>plot_relative_sharing</th>
+      <td><p>Logical. Compute heatmaps also for relative
+sharing?</p></td>
+    </tr>
+    <tr>
+      <th>rel_sharing_col</th>
+      <td><p>Names of the columns to consider as relative sharing.
+The function is going to plot one heatmap per column in this argument.</p></td>
+    </tr>
+    <tr>
+      <th>show_perc_symbol_rel</th>
+      <td><p>Logical. Only relevant if <code>plot_relative_sharing</code>
+is set to TRUE, should the percentage symbol be displayed in relative
+heatmaps?</p></td>
+    </tr>
+    <tr>
+      <th>interactive</th>
+      <td><p>Logical. Requires the package
+<a href='https://plotly.com/r/getting-started/'>plotly</a> is required for this
+functionality. Returns the heatmaps as interactive HTML widgets.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Depending on input, 2 possible outputs:</p><ul>
-<li><p>A single sparce matrix (tibble) if input is a single quantification
-matrix</p></li>
-<li><p>A list of sparce matrices divided by quantification if input
-is a single multi-quantification matrix or a list of matrices</p></li>
-</ul>
-
+    <p>A list of plots or widgets</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>Other Utility functions: 
-<code><a href='generate_Vispa2_launch_AF.html'>generate_Vispa2_launch_AF</a>()</code>,
-<code><a href='generate_blank_association_file.html'>generate_blank_association_file</a>()</code>,
-<code><a href='unzip_file_system.html'>unzip_file_system</a>()</code></p></div>
+    <div class='dont-index'><p><a href='is_sharing.html'>is_sharing</a></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_annotated_ISMatrix.tsv.xz"</span>,
@@ -238,8 +239,10 @@ is a single multi-quantification matrix or a list of matrices</p></li>
 #&gt; <span class='message'>* --- Annotated: TRUE</span>
 #&gt; <span class='message'>* --- Dimensions: 50 x 10</span>
 #&gt; <span class='message'>* --- Read mode:  classic</span></div><div class='output co'>#&gt; <span class='message'>Reshaping...</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   5%  |                                                                              |======                                                                |   9%  |                                                                              |==========                                                            |  14%  |                                                                              |=============                                                         |  18%  |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  32%  |                                                                              |=========================                                             |  36%  |                                                                              |=============================                                         |  41%  |                                                                              |================================                                      |  45%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================                                |  55%  |                                                                              |=========================================                             |  59%  |                                                                              |=============================================                         |  64%  |                                                                              |================================================                      |  68%  |                                                                              |===================================================                   |  73%  |                                                                              |======================================================                |  77%  |                                                                              |=========================================================             |  82%  |                                                                              |============================================================          |  86%  |                                                                              |================================================================      |  91%  |                                                                              |===================================================================   |  95%  |                                                                              |======================================================================| 100%
-#&gt; </div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='input'><span class='va'>sparse</span> <span class='op'>&lt;-</span> <span class='fu'>as_sparse_matrix</span><span class='op'>(</span><span class='va'>matrix</span><span class='op'>)</span>
-</div></pre>
+#&gt; </div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='input'><span class='va'>sharing</span> <span class='op'>&lt;-</span> <span class='fu'><a href='is_sharing.html'>is_sharing</a></span><span class='op'>(</span><span class='va'>matrix</span>, group_key <span class='op'>=</span> <span class='st'>"CompleteAmplificationID"</span><span class='op'>)</span>
+<span class='va'>heatmaps</span> <span class='op'>&lt;-</span> <span class='fu'>sharing_heatmap</span><span class='op'>(</span><span class='va'>sharing</span><span class='op'>$</span><span class='va'>sharing</span><span class='op'>)</span>
+<span class='va'>heatmaps</span><span class='op'>$</span><span class='va'>absolute</span>
+</div><div class='img'><img src='sharing_heatmap-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

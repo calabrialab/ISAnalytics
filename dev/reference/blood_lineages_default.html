@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Possible choices for the matching_opt parameter. — matching_options • ISAnalytics</title>
+<title>Default blood lineages info — blood_lineages_default • ISAnalytics</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,10 @@
 
 
 
-<meta property="og:title" content="Possible choices for the matching_opt parameter. — matching_options" />
-<meta property="og:description" content="These are all the possible values for the matching_opt parameter in
-import_parallel_vispa2Matrices_auto." />
+<meta property="og:title" content="Default blood lineages info — blood_lineages_default" />
+<meta property="og:description" content="A default table with info relative to different blood lineages associated
+with cell markers that can be supplied as a parameter to
+HSC_population_size_estimate" />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -148,43 +149,40 @@ import_parallel_vispa2Matrices_auto." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Possible choices for the <code>matching_opt</code> parameter.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/import-functions.R'><code>R/import-functions.R</code></a></small>
-    <div class="hidden name"><code>matching_options.Rd</code></div>
+    <h1>Default blood lineages info</h1>
+    <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/population-size-estimate.R'><code>R/population-size-estimate.R</code></a></small>
+    <div class="hidden name"><code>blood_lineages_default.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>These are all the possible values for the <code>matching_opt</code> parameter in
-<code>import_parallel_vispa2Matrices_auto</code>.</p>
+    <p>A default table with info relative to different blood lineages associated
+with cell markers that can be supplied as a parameter to
+<code><a href='HSC_population_size_estimate.html'>HSC_population_size_estimate</a></code></p>
     </div>
 
-    <pre class="usage"><span class='fu'>matching_options</span><span class='op'>(</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>blood_lineages_default</span><span class='op'>(</span><span class='op'>)</span></pre>
 
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A vector of characters for matching_opt</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>The values "ANY", "ALL" and "OPTIONAL", represent how the patterns
-should be matched, more specifically</p><ul>
-<li><p>ANY = look only for files that match AT LEAST one of the
-patterns specified</p></li>
-<li><p>ALL = look only for files that match ALL of the patterns specified</p></li>
-<li><p>OPTIONAL = look preferentially for files that match, in order, all
-patterns or any pattern and if no match is found return what is found (keep
-in mind that duplicates are discarded in automatic mode)</p></li>
-</ul>
-
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></code></p>
-<p>Other Import functions helpers: 
-<code><a href='quantification_types.html'>quantification_types</a>()</code></p></div>
+    <p>A data frame</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>opts</span> <span class='op'>&lt;-</span> <span class='fu'>matching_options</span><span class='op'>(</span><span class='op'>)</span>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'>blood_lineages_default</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 47 x 6</span>
+#&gt;    CellMarker Keywords CellType  HematoLineage SuperGroup LineageByPurity
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>         <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>          
+#&gt; <span style='color: #BCBCBC;'> 1</span> CD13       MYELO    Myeloid   Myeloid       CD13       Myeloid        
+#&gt; <span style='color: #BCBCBC;'> 2</span> CD14       MYELO    Myeloid   Myeloid       CD14       Myeloid        
+#&gt; <span style='color: #BCBCBC;'> 3</span> CD15       MYELO    Myeloid   Myeloid       CD15       Myeloid        
+#&gt; <span style='color: #BCBCBC;'> 4</span> CD19       B        B         Lymphoid      CD19       Lymphoid       
+#&gt; <span style='color: #BCBCBC;'> 5</span> CD3        T        T         Lymphoid      CD3        Lymphoid       
+#&gt; <span style='color: #BCBCBC;'> 6</span> CD34       CD34     CD34      CD34          CD34       CD34           
+#&gt; <span style='color: #BCBCBC;'> 7</span> CD34Molmed CD34     Other     Other         Other      Other          
+#&gt; <span style='color: #BCBCBC;'> 8</span> CD34NEG    CD34     Other     Other         Other      Other          
+#&gt; <span style='color: #BCBCBC;'> 9</span> CD36       TE       Erythroid Erythroid     CD36       Erythroid      
+#&gt; <span style='color: #BCBCBC;'>10</span> CD4        T        T         Lymphoid      CD3        Lymphoid       
+#&gt; <span style='color: #949494;'># … with 37 more rows</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
