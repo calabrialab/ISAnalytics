@@ -260,7 +260,7 @@ An example on how to access them:</p>
 <code class="sourceCode R"><span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>
 <span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_correct</span>, <span class="st">"fs"</span><span class="op">)</span>
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="http://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span><span class="op">(</span><span class="va">root_correct</span><span class="op">)</span>
-<span class="co">#&gt; /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//Rtmp4zuGrE/fs</span>
+<span class="co">#&gt; /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpAZE4sh/fs</span>
 <span class="co">#&gt; ├── PROJECT1100</span>
 <span class="co">#&gt; │   ├── bam</span>
 <span class="co">#&gt; │   ├── bcmuxall</span>
@@ -821,8 +821,8 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt; 2 CLOEXP    POOL6-1                 seqCount           </span>
 <span class="co">#&gt;   Files_chosen                                                                  </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fs/VA/CLOEXP/quan…</span>
 <span class="co">#&gt;   Imported</span>
 <span class="co">#&gt;   &lt;lgl&gt;   </span>
 <span class="co">#&gt; 1 TRUE    </span>
@@ -835,8 +835,8 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt; 2 CLOEXP    POOL6-1                 seqCount           </span>
 <span class="co">#&gt;   Files_chosen                                                                  </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fs/VA/CLOEXP/quan…</span>
 <span class="co">#&gt; [1] "--- INTEGRATION MATRICES FOUND REPORT ---"</span>
 <span class="co">#&gt; # A tibble: 2 x 5</span>
 <span class="co">#&gt;   ProjectID concatenatePoolIDSeqRun Anomalies Quantification_type</span>
@@ -845,8 +845,8 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt; 2 CLOEXP    POOL6-1                 FALSE     seqCount           </span>
 <span class="co">#&gt;   Files_found                                                                   </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fs/VA/CLOEXP/quan…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fs/VA/CLOEXP/quan…</span>
 <span class="va">matrices_auto</span>
 <span class="co">#&gt; # A tibble: 1,476 x 8</span>
 <span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand CompleteAmplificationID   </span>
@@ -868,7 +868,7 @@ Both functions rely on the association file and some basic parameters, most nota
 <code class="sourceCode R"><span class="va">root_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fserr.zip"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>
 <span class="va">root_err</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_err</span>, <span class="st">"fserr"</span><span class="op">)</span>
 <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="http://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span><span class="op">(</span><span class="va">root_err</span><span class="op">)</span>
-<span class="co">#&gt; /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//Rtmp4zuGrE/fserr</span>
+<span class="co">#&gt; /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T//RtmpAZE4sh/fserr</span>
 <span class="co">#&gt; ├── PROJECT1100</span>
 <span class="co">#&gt; │   ├── bam</span>
 <span class="co">#&gt; │   ├── bcmuxall</span>
@@ -941,8 +941,8 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt; 2 CLOEXP    POOL6-1                 seqCount           </span>
 <span class="co">#&gt;   Files_chosen                                                                  </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fserr/VA/CLOEXP/q…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fserr/VA/CLOEXP/q…</span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fserr/VA/CLOEXP/q…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fserr/VA/CLOEXP/q…</span>
 <span class="co">#&gt;   Imported</span>
 <span class="co">#&gt;   &lt;lgl&gt;   </span>
 <span class="co">#&gt; 1 TRUE    </span>
@@ -955,8 +955,8 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt; 2 CLOEXP    POOL6-1                 seqCount           </span>
 <span class="co">#&gt;   Files_chosen                                                                  </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fserr/VA/CLOEXP/q…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fserr/VA/CLOEXP/q…</span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fserr/VA/CLOEXP/q…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fserr/VA/CLOEXP/q…</span>
 <span class="co">#&gt; [1] "--- INTEGRATION MATRICES FOUND REPORT ---"</span>
 <span class="co">#&gt; # A tibble: 2 x 5</span>
 <span class="co">#&gt;   ProjectID concatenatePoolIDSeqRun Anomalies Quantification_type</span>
@@ -965,8 +965,8 @@ Both functions rely on the association file and some basic parameters, most nota
 <span class="co">#&gt; 2 CLOEXP    POOL6-1                 FALSE     seqCount           </span>
 <span class="co">#&gt;   Files_found                                                                   </span>
 <span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fserr/VA/CLOEXP/q…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmp4zuGrE/fserr/VA/CLOEXP/q…</span>
+<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fserr/VA/CLOEXP/q…</span>
+<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpAZE4sh/fserr/VA/CLOEXP/q…</span>
 <span class="va">matrices_auto</span>
 <span class="co">#&gt; # A tibble: 1,476 x 8</span>
 <span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand CompleteAmplificationID   </span>
