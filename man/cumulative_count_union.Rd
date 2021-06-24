@@ -111,6 +111,7 @@ Other Analysis functions:
 \code{\link{CIS_grubbs}()},
 \code{\link{comparison_matrix}()},
 \code{\link{compute_abundance}()},
+\code{\link{is_sharing}()},
 \code{\link{sample_statistics}()},
 \code{\link{separate_quant_matrices}()},
 \code{\link{threshold_filter}()},

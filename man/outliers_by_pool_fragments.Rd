@@ -96,7 +96,8 @@ op <- options(ISAnalytics.widgets = FALSE)
 path_AF <- system.file("extdata", "ex_association_file.tsv",
     package = "ISAnalytics"
 )
-association_file <- import_association_file(path_AF, root = NULL,
+association_file <- import_association_file(path_AF,
+    root = NULL,
     dates_format = "dmy"
 )
 filtered_af <- outliers_by_pool_fragments(association_file, key = "VCN")

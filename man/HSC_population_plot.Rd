@@ -50,14 +50,17 @@ agg <- aggregate_values_by_key(
     association_file = association_file,
     value_cols = "seqCount"
 )
-estimate <- HSC_population_size_estimate(x = agg,
-metadata = aggregated_meta,
-stable_timepoints = NULL)
+estimate <- HSC_population_size_estimate(
+    x = agg,
+    metadata = aggregated_meta,
+    stable_timepoints = NULL
+)
 p <- HSC_population_plot(estimate, "PROJECT1")
 options(op)
 }
 \seealso{
 Other Plotting functions: 
-\code{\link{CIS_volcano_plot}()}
+\code{\link{CIS_volcano_plot}()},
+\code{\link{integration_alluvial_plot}()}
 }
 \concept{Plotting functions}

@@ -34,8 +34,10 @@
     checks) {
     c(
         "*** Association file import summary ***",
-        i = paste("For detailed report please set option",
-                  "'ISAnalytics.widgets' to TRUE"),
+        i = paste(
+            "For detailed report please set option",
+            "'ISAnalytics.widgets' to TRUE"
+        ),
         paste0("Parsing problems detected: ", !is.null(pars_prob)),
         paste0("Date parsing problems: ", !is.null(dates_prob)),
         paste0("Column problems detected: ", !is.null(cols_prob)),
@@ -64,10 +66,12 @@
 # - import_Vispa2_stats
 .af_not_imported_err <- function() {
     c("The association file must be a data frame",
-      paste("Import the association file via",
-            "`import_association_file()` with file system alignment"),
-      i = "See `?import_association_file` and `?import_Vispa2_stats`"
-      )
+        paste(
+            "Import the association file via",
+            "`import_association_file()` with file system alignment"
+        ),
+        i = "See `?import_association_file` and `?import_Vispa2_stats`"
+    )
 }
 
 # Signals that the association file must be aligned with fs.
@@ -75,9 +79,11 @@
 # - import_Vispa2_stats
 .af_not_aligned_err <- function() {
     c("The association file has been imported without file system alignment",
-      paste("Import the association file via",
-            "`import_association_file()` with file system alignment"),
-      i = "See `?import_association_file` and `?import_Vispa2_stats`"
+        paste(
+            "Import the association file via",
+            "`import_association_file()` with file system alignment"
+        ),
+        i = "See `?import_association_file` and `?import_Vispa2_stats`"
     )
 }
 
@@ -85,8 +91,8 @@
 # - import_Vispa2_stats
 .missing_needed_cols <- function(missing) {
     c("Some required columns are missing",
-      i = paste("Missing columns:", paste0(missing, collapse = ", "))
-      )
+        i = paste("Missing columns:", paste0(missing, collapse = ", "))
+    )
 }
 
 .widgets_error <- function() {
@@ -94,7 +100,7 @@
 }
 
 .widgets_print_error <- function() {
-  paste("Unable to print widget report, skipping this step")
+    paste("Unable to print widget report, skipping this step")
 }
 
 .widgets_save_error <- function() {
@@ -204,9 +210,11 @@
 
 # @keywords internal
 .non_quant_cols_msg <- function(x) {
-    c(paste("Found numeric columns that are not quantification values -",
-        "these columns will be copied in all resulting matrices."),
-        i = paste0("Found: ", paste0(x, collapse = ", "))
+    c(paste(
+        "Found numeric columns that are not quantification values -",
+        "these columns will be copied in all resulting matrices."
+    ),
+    i = paste0("Found: ", paste0(x, collapse = ", "))
     )
 }
 
@@ -244,8 +252,10 @@
 # @keywords internal
 .nas_introduced_msg <- function() {
     c("NAs were introduced while producing the data frame.",
-      i = paste("The possible cause for this is:",
-        "some quantification matrices were not imported for all pools")
+        i = paste(
+            "The possible cause for this is:",
+            "some quantification matrices were not imported for all pools"
+        )
     )
 }
 
@@ -400,17 +410,31 @@
 }
 
 .not_min_key_err <- function(missing) {
-  c("The aggregation key must contain the minimal required key",
-    x = paste("Missing columns:",
-              paste0(missing, collapse = ", ")))
+    c("The aggregation key must contain the minimal required key",
+        x = paste(
+            "Missing columns:",
+            paste0(missing, collapse = ", ")
+        )
+    )
 }
 
 .agg_key_not_found_err <- function(df, key) {
-  c(paste("The aggregation key was not found in", df),
-    i = paste("Aggregation key used:", paste0(key, collapse = ", ")))
+    c(paste("The aggregation key was not found in", df),
+        i = paste("Aggregation key used:", paste0(key, collapse = ", "))
+    )
 }
 
 .meta_not_agg_err <- function() {
-  c("Metadata appears to not be aggregated by the provided aggregation key",
-    i = paste("See `?aggregate_metadata`"))
+    c("Metadata appears to not be aggregated by the provided aggregation key",
+        i = paste("See `?aggregate_metadata`")
+    )
+}
+
+# Error message displayed for suggestion packages that are not installed
+# but required by the called function
+.missing_pkg_error <- function(pkg) {
+    c("Missing package",
+        x = paste("Package", pkg, "is required for this functionality."),
+        i = paste0('To install: `install.packages("', pkg, '")`')
+    )
 }

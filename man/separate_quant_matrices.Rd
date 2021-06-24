@@ -73,6 +73,7 @@ Other Analysis functions:
 \code{\link{comparison_matrix}()},
 \code{\link{compute_abundance}()},
 \code{\link{cumulative_count_union}()},
+\code{\link{is_sharing}()},
 \code{\link{sample_statistics}()},
 \code{\link{threshold_filter}()},
 \code{\link{top_integrations}()}

@@ -48,14 +48,13 @@ aggregate_metadata <- function(association_file,
         "TimePoint"
     ),
     aggregating_functions = default_meta_agg(),
-    import_stats = lifecycle::deprecated()
-    ) {
+    import_stats = lifecycle::deprecated()) {
     # Check parameters
     stopifnot(is.data.frame(association_file))
     stopifnot(!is.null(grouping_keys))
     stopifnot(is.character(grouping_keys))
     keys_missing <- grouping_keys[!grouping_keys %in%
-                                      colnames(association_file)]
+        colnames(association_file)]
     if (!purrr::is_empty(keys_missing)) {
         rlang::abort(.missing_user_cols_error(keys_missing))
     }
@@ -64,19 +63,26 @@ aggregate_metadata <- function(association_file,
             when = "1.1.11",
             what = "aggregate_metadata(import_stats)",
             details = c("Import Vispa2 stats functionality moved",
-                        i = paste("Please use `import_Vispa2_stats()`",
-                                  "or",
-                                  "`import_association_file(import_iss = TRUE)`",
-                                  "instead."))
+                i = paste(
+                    "Please use `import_Vispa2_stats()`",
+                    "or",
+                    "`import_association_file(import_iss = TRUE)`",
+                    "instead."
+                )
+            )
         )
     }
-    aggregated <- .aggregate_meta(association_file = association_file,
-                                  grouping_keys = grouping_keys,
-                                  function_tbl = aggregating_functions)
+    aggregated <- .aggregate_meta(
+        association_file = association_file,
+        grouping_keys = grouping_keys,
+        function_tbl = aggregating_functions
+    )
     if (is.null(aggregated)) {
-        rlang::inform(paste("No columns in `aggregating_functions$Column`",
-                            "was found in column names of the association",
-                            "file. Nothing to return."))
+        rlang::inform(paste(
+            "No columns in `aggregating_functions$Column`",
+            "was found in column names of the association",
+            "file. Nothing to return."
+        ))
     }
     aggregated
 }
@@ -109,7 +115,7 @@ aggregate_metadata <- function(association_file,
 #' default_meta_agg()
 default_meta_agg <- function() {
     tibble::tribble(
-        ~ Column, ~ Function, ~ Args, ~ Output_colname,
+        ~Column, ~Function, ~Args, ~Output_colname,
         "FusionPrimerPCRDate", ~ suppressWarnings(min(.x, na.rm = TRUE)),
         NA, "{.col}_min",
         "LinearPCRDate", ~ suppressWarnings(min(.x, na.rm = TRUE)),
@@ -252,12 +258,19 @@ aggregate_values_by_key <- function(x,
                 rlang::abort(.non_ISM_error())
             }
             if (!all(join_af_by %in% colnames(df))) {
-                rlang::abort(c(x = paste("Missing common columns",
-                                         "to join metadata"),
-                               i = paste("Missing: ",
-                                         paste0(join_af_by[!join_af_by %in%
-                                                               colnames(df)],
-                                                collapse = ", "))))
+                rlang::abort(c(
+                    x = paste(
+                        "Missing common columns",
+                        "to join metadata"
+                    ),
+                    i = paste(
+                        "Missing: ",
+                        paste0(join_af_by[!join_af_by %in%
+                            colnames(df)],
+                        collapse = ", "
+                        )
+                    )
+                ))
             }
             if (!all(value_cols %in% colnames(df))) {
                 rlang::abort(.missing_user_cols_error(
@@ -283,12 +296,19 @@ aggregate_values_by_key <- function(x,
             rlang::abort(.non_ISM_error())
         }
         if (!all(join_af_by %in% colnames(x))) {
-            rlang::abort(c(x = paste("Missing common columns",
-                                     "to join metadata"),
-                           i = paste("Missing: ",
-                                     paste0(join_af_by[!join_af_by %in%
-                                                           colnames(x)],
-                                            collapse = ", "))))
+            rlang::abort(c(
+                x = paste(
+                    "Missing common columns",
+                    "to join metadata"
+                ),
+                i = paste(
+                    "Missing: ",
+                    paste0(join_af_by[!join_af_by %in%
+                        colnames(x)],
+                    collapse = ", "
+                    )
+                )
+            ))
         }
         if (!all(value_cols %in% colnames(x))) {
             rlang::abort(.missing_user_cols_error(

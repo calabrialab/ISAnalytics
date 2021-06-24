@@ -274,17 +274,17 @@ comparison_matrix <- function(x,
 #' )
 #' separated_matrix <- separate_quant_matrices(matrices)
 #' options(op)
-separate_quant_matrices <- function(
-    x,
+separate_quant_matrices <- function(x,
     fragmentEstimate = "fragmentEstimate",
     seqCount = "seqCount",
     barcodeCount = "barcodeCount",
     cellCount = "cellCount",
     ShsCount = "ShsCount",
-    key = c(mandatory_IS_vars(),
-            annotation_IS_vars(),
-            "CompleteAmplificationID")
-    ) {
+    key = c(
+        mandatory_IS_vars(),
+        annotation_IS_vars(),
+        "CompleteAmplificationID"
+    )) {
     stopifnot(is.data.frame(x))
     if (!all(key %in% colnames(x))) {
         rlang::abort(.missing_user_cols_error(key[!key %in% colnames(x)]))
@@ -715,6 +715,7 @@ sample_statistics <- function(x, metadata,
             ))
         }
     })
+
     result <- x %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(sample_key))) %>%
         dplyr::summarise(dplyr::across(
@@ -1243,6 +1244,201 @@ cumulative_count_union <- function(x,
         dplyr::group_by(dplyr::across(dplyr::all_of(key))) %>%
         dplyr::summarise(count = dplyr::n(), .groups = "drop")
     return(res)
+}
+
+#' Sharing of integration sites between given groups.
+#'
+#' \lifecycle{experimental}
+#' Computes the amount of integrations shared between the groups identified
+#' by the fields in the `group_key` argument.
+#' An integration site is always identified by the triple
+#' `(chr, integration_locus, strand)`, thus these columns must be present
+#' in the input data frame.
+#'
+#' @details
+#' ## Input data frame
+#' The data frame provided in input must be in a suitable format for the
+#' calculations to be accurate. Please note that this function does not
+#' perform any sort of aggregation, it only relies on counts of
+#' distinct integration sites.
+#'
+#' ## Outputs
+#' By default the function outputs a list of 2 data frames:
+#' * The classical sharing data frame with absolute values.
+#' If the argument `relative_is_sharing` is set to TRUE it also contains
+#' the relative sharing (see below).
+#' * The count of distinct IS for each group
+#'
+#' The relative sharing is calculated, for each pair of groups (A, B) as
+#' 3 separate columns
+#' \itemize{
+#'   \item Shared over A: (∩(A,B) / |A|) * 100
+#'   \item Shared over B: (∩(A,B) / |B|) * 100
+#'   \item Shared over union: (∩(A,B) / |∪(A,B)|) * 100
+#' }
+#'
+#' ## Plotting sharing
+#' The sharing data obtained can be easily plotted in a heatmap via the
+#' function \code{\link{sharing_heatmap}}.
+#'
+#' @param x An integration matrix, aka a data frame containing the columns
+#' `r mandatory_IS_vars()`. See details.
+#' @param group_key Character vector of column names which identify a
+#' single group. An associated group id will be derived by concatenating
+#' the values of these fields, separated by "_"
+#' @param is_count Logical, if TRUE returns also the count of IS for
+#' each group
+#' @param relative_is_sharing Logical, if TRUE also returns the relative
+#' sharing. See details.
+#'
+#' @family Analysis functions
+#' @return A named list of data frames or a single data frame
+#' @export
+#'
+#' @examples
+#' path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
+#'     package = "ISAnalytics"
+#' )
+#' matrix <- import_single_Vispa2Matrix(path)
+#' sharing <- is_sharing(matrix, group_key = "CompleteAmplificationID")
+is_sharing <- function(x,
+    group_key = c(
+        "SubjectID",
+        "CellMarker",
+        "Tissue",
+        "TimePoint"
+    ),
+    is_count = TRUE,
+    relative_is_sharing = TRUE) {
+    ## Checks
+    stopifnot(is.data.frame(x))
+    stopifnot(is.character(group_key))
+    stopifnot(is.logical(is_count))
+    stopifnot(is.logical(relative_is_sharing))
+    if (!all(group_key %in% colnames(x))) {
+        rlang::abort(
+            .missing_user_cols_error(
+                group_key[!group_key %in% colnames(x)]
+            )
+        )
+    }
+    if (!all(mandatory_IS_vars() %in% colnames(x))) {
+        rlang::abort(
+            .missing_needed_cols(
+                mandatory_IS_vars()[!mandatory_IS_vars() %in% colnames(x)]
+            )
+        )
+    }
+
+    ## --- Nest
+    nested <- x %>%
+        dplyr::select(dplyr::all_of(c(mandatory_IS_vars(), group_key))) %>%
+        dplyr::distinct() %>%
+        tidyr::nest(is_set = mandatory_IS_vars()) %>%
+        tidyr::unite(col = "group_id", group_key)
+
+    ## --- Number of IS for each group
+    is_n <- nested %>%
+        dplyr::transmute(
+            group_id = .data$group_id,
+            num_IS = purrr::map_int(.data$is_set, nrow)
+        )
+
+    ## --- Absolute numeber of IS shared
+    abs_shared_df <- tibble::tibble(
+        group1 = character(0),
+        group2 = character(0),
+        shared = integer(0)
+    )
+    group_ids <- unique(nested$group_id)
+    groups2 <- group_ids
+    for (i in seq_along(group_ids)) {
+        id1 <- group_ids[i]
+        if (i > 1) {
+            groups2 <- groups2[-1]
+        }
+        for (id2 in groups2) {
+            if (id1 != id2) {
+                shared_n <- dplyr::inner_join(
+                    x = (dplyr::filter(nested, .data$group_id == id1) %>%
+                        dplyr::pull(.data$is_set))[[1]],
+                    y = (dplyr::filter(nested, .data$group_id == id2) %>%
+                        dplyr::pull(.data$is_set))[[1]],
+                    by = mandatory_IS_vars()
+                ) %>% nrow()
+                abs_shared_df <- abs_shared_df %>%
+                    tibble::add_case(
+                        group1 = c(id1, id2),
+                        group2 = c(id2, id1),
+                        shared = shared_n
+                    )
+            } else {
+                shared_n <- nrow((dplyr::filter(
+                    nested,
+                    .data$group_id == id1
+                ) %>%
+                    dplyr::pull(.data$is_set))[[1]])
+                abs_shared_df <- abs_shared_df %>%
+                    tibble::add_case(
+                        group1 = id1,
+                        group2 = id2,
+                        shared = shared_n
+                    )
+            }
+        }
+    }
+    ### --- Relative number of IS shared
+    if (relative_is_sharing) {
+        abs_shared_df <- abs_shared_df %>%
+            dplyr::mutate(
+                on_g1 = purrr::pmap_dbl(
+                    list(.data$group1, .data$group2, .data$shared),
+                    function(x, y, s) {
+                        if (x == y) {
+                            100
+                        } else {
+                            x_count <- dplyr::filter(
+                                is_n,
+                                .data$group_id == x
+                            ) %>%
+                                dplyr::pull(.data$num_IS)
+                            (s / x_count) * 100
+                        }
+                    }
+                ),
+                on_g2 = purrr::pmap_dbl(
+                    list(.data$group1, .data$group2, .data$shared),
+                    function(x, y, s) {
+                        if (x == y) {
+                            100
+                        } else {
+                            y_count <- dplyr::filter(
+                                is_n,
+                                .data$group_id == y
+                            ) %>%
+                                dplyr::pull(.data$num_IS)
+                            (s / y_count) * 100
+                        }
+                    }
+                ),
+                on_union = purrr::pmap_dbl(
+                    list(.data$group1, .data$group2, .data$shared),
+                    function(x, y, s) {
+                        x_count <- dplyr::filter(is_n, .data$group_id == x) %>%
+                            dplyr::pull(.data$num_IS)
+                        y_count <- dplyr::filter(is_n, .data$group_id == y) %>%
+                            dplyr::pull(.data$num_IS)
+                        union_count <- (s / (x_count + y_count - s)) * 100
+                    }
+                )
+            )
+    }
+
+    if (!is_count) {
+        return(abs_shared_df)
+    }
+
+    return(list(is_count = is_n, sharing = abs_shared_df))
 }
 
 

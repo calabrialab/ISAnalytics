@@ -33,13 +33,15 @@ association_file <- withr::with_options(
 matrices <- withr::with_options(
     list(ISAnalytics.widgets = FALSE, ISAnalytics.verbose = FALSE),
     {
-    import_parallel_Vispa2Matrices_auto(
-    association_file = association_file,
-    quantification_type = c("seqCount", "fragmentEstimate"),
-    matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY",
-    dates_format = "dmy", multi_quant_matrix = FALSE
-)})
+        import_parallel_Vispa2Matrices_auto(
+            association_file = association_file,
+            quantification_type = c("seqCount", "fragmentEstimate"),
+            matrix_type = "annotated", workers = 2, patterns = NULL,
+            matching_opt = "ANY",
+            dates_format = "dmy", multi_quant_matrix = FALSE
+        )
+    }
+)
 
 # Standard grouping keys
 key <- c(

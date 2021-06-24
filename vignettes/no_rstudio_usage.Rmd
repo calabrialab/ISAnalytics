@@ -64,81 +64,16 @@ write.bibtex(bib, file = "no_rstudio_usage.bib")
 In this vignette we offer support for users that wish to use our package 
 outside of RStudio and optionally in remote servers.
 
-## How to install ISAnalytics
-
-To install the package run the following code:
-
-```{r installBioc, eval=FALSE}
-## For release version
-if(!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("ISAnalytics")
-
-## For devel version
-if(!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-# The following initializes usage of Bioc devel
-BiocManager::install(version='devel')
-BiocManager::install("ISAnalytics")
+```{r echo=FALSE}
+inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAnalytics")
 ```
 
-To install from GitHub:
+```{r child=inst_chunk_path}
 
-```{r installGitHub, eval=FALSE}
-# For release version
-if (!require(devtools)) {
-  install.packages("devtools")
-}
-devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_12",
-                         dependencies = TRUE,
-                         build_vignettes = TRUE)
-
-## Safer option for vignette building issue
-devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_12")
-
-# For devel version
-if (!require(devtools)) {
-  install.packages("devtools")
-}
-devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master",
-                         dependencies = TRUE,
-                         build_vignettes = TRUE)
-
-## Safer option for vignette building issue
-devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master")
 ```
+
 ```{r}
 library(ISAnalytics)
-```
-
-## Setting options
-
-`ISAnalytics` has a verbose option that allows some functions to print 
-additional information to the console while they're executing. 
-To disable this feature do:
-
-```{r OptVerbose, eval=FALSE}
-# DISABLE
-options("ISAnalytics.verbose" = FALSE)
-
-# ENABLE
-options("ISAnalytics.verbose" = TRUE)
-
-```
-
-Some functions also produce report in a user-friendly HTML format, 
-to set this feature:
-
-```{r OptWidg, eval=FALSE}
-# DISABLE HTML REPORTS
-options("ISAnalytics.widgets" = FALSE)
-
-# ENABLE HTML REPORTS
-options("ISAnalytics.widgets" = TRUE)
 ```
 
 # Recommendations

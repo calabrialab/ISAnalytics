@@ -1,0 +1,88 @@
+---
+output: github_document
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Installation and options
+
+## Installation from bioconductor
+
+RELEASE version:
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ISAnalytics")
+```
+
+DEVEL version:
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("ISAnalytics")
+```
+
+## Installation from GitHub
+
+RELEASE:
+```{r eval=FALSE}
+if (!require(devtools)) {
+  install.packages("devtools")
+}
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "RELEASE_3_13",
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
+
+## Safer option for vignette building issue
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "RELEASE_3_13")
+```
+
+DEVEL:
+```{r eval=FALSE}
+if (!require(devtools)) {
+  install.packages("devtools")
+}
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "master",
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
+
+## Safer option for vignette building issue
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "master")
+```
+
+## Setting options
+
+`ISAnalytics` has a verbose option that allows some functions to print 
+additional information to the console while they're executing. 
+To disable this feature do:
+
+```{r OptVerbose, eval=FALSE}
+# DISABLE
+options("ISAnalytics.verbose" = FALSE)
+
+# ENABLE
+options("ISAnalytics.verbose" = TRUE)
+
+```
+
+Some functions also produce report in a user-friendly HTML format, 
+to set this feature:
+
+```{r OptWidg, eval=FALSE}
+# DISABLE HTML REPORTS
+options("ISAnalytics.widgets" = FALSE)
+
+# ENABLE HTML REPORTS
+options("ISAnalytics.widgets" = TRUE)
+```
+

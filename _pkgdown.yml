@@ -41,7 +41,7 @@ navbar:
         href: articles/how_to_import_functions.html
       - text: Using ISAnalytics without RStudio support
         href: articles/no_rstudio_usage.html
-    devel-v:
+    release-v:
       icon: fas fa-code-branch
       text: RELEASE
       href: https://calabrialab.github.io/ISAnalytics/
@@ -80,6 +80,7 @@ reference:
   - sample_statistics
   - CIS_grubbs
   - cumulative_count_union
+  - is_sharing
 - title: "HSC population estimate"
 - contents:
   - HSC_population_size_estimate
@@ -87,6 +88,9 @@ reference:
 - contents:
   - CIS_volcano_plot
   - HSC_population_plot
+  - integration_alluvial_plot
+  - top_abund_tableGrob
+  - sharing_heatmap
 - title: "Utility functions"
 - contents:
   - as_sparse_matrix

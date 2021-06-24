@@ -49,11 +49,15 @@
 #'   * \code{\link{sample_statistics}}
 #'   * \code{\link{CIS_grubbs}}
 #'   * \code{\link{cumulative_count_union}}
+#'   * \code{\link{is_sharing}}
 #' * HSC population size estimate:
 #'   * \code{\link{HSC_population_size_estimate}}
 #' * Plotting functions:
 #'   * \code{\link{CIS_volcano_plot}}
 #'   * \code{\link{HSC_population_plot}}
+#'   * \code{\link{sharing_heatmap}}
+#'   * \code{\link{integration_alluvial_plot}}
+#'   * \code{\link{top_abund_tableGrob}}
 #' * Utility functions:
 #'   * \code{\link{generate_blank_association_file}}
 #'   * \code{\link{generate_Vispa2_launch_AF}}
@@ -65,6 +69,8 @@
 #' * \code{vignette("Collision removal functionality",
 #' package = "ISAnalytics")}
 #' * \code{vignette("Working with aggregate functions",
+#' package = "ISAnalytics")}
+#' * \code{vignette("Using ISAnalytics without RStudio support",
 #' package = "ISAnalytics")}
 #'
 #' @docType package

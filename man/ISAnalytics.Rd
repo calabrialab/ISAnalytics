@@ -71,6 +71,7 @@ and Annotation of Vector Integration Sites}
 \item \code{\link{sample_statistics}}
 \item \code{\link{CIS_grubbs}}
 \item \code{\link{cumulative_count_union}}
+\item \code{\link{is_sharing}}
 }
 \item HSC population size estimate:
 \itemize{
@@ -80,6 +81,9 @@ and Annotation of Vector Integration Sites}
 \itemize{
 \item \code{\link{CIS_volcano_plot}}
 \item \code{\link{HSC_population_plot}}
+\item \code{\link{sharing_heatmap}}
+\item \code{\link{integration_alluvial_plot}}
+\item \code{\link{top_abund_tableGrob}}
 }
 \item Utility functions:
 \itemize{
@@ -98,6 +102,8 @@ and Annotation of Vector Integration Sites}
 \item \code{vignette("Collision removal functionality",
 package = "ISAnalytics")}
 \item \code{vignette("Working with aggregate functions",
+package = "ISAnalytics")}
+\item \code{vignette("Using ISAnalytics without RStudio support",
 package = "ISAnalytics")}
 }
 }

@@ -1341,7 +1341,7 @@ test_that("remove_collisions stops if there's no seqCount matrix", {
 })
 
 test_that("remove_collisions throws warning info from af", {
-    expect_warning(
+    expect_message(
         {
             invisible(capture.output({
                 rc <- remove_collisions(

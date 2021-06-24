@@ -102,9 +102,11 @@ agg <- aggregate_values_by_key(
     association_file = association_file,
     value_cols = "seqCount"
 )
-estimate <- HSC_population_size_estimate(x = agg,
-metadata = aggregated_meta,
-stable_timepoints = NULL)
+estimate <- HSC_population_size_estimate(
+    x = agg,
+    metadata = aggregated_meta,
+    stable_timepoints = NULL
+)
 options(op)
 }
 \concept{Population estimates}

@@ -76,7 +76,8 @@ test_that(paste(func_name[2], "finds missing projects for incorrect fs"), {
         dplyr::filter(
             .data$ProjectID == missing_project$ProjectID,
             .data$concatenatePoolIDSeqRun ==
-                missing_project$concatenatePoolIDSeqRun)
+                missing_project$concatenatePoolIDSeqRun
+        )
     expect_equal(
         missing_row$Found, FALSE
     )
@@ -91,7 +92,8 @@ test_that(paste(func_name[2], "finds missing projects for incorrect fs"), {
         dplyr::filter(
             .data$ProjectID == missing_iss$ProjectID,
             .data$concatenatePoolIDSeqRun ==
-                missing_iss$concatenatePoolIDSeqRun)
+                missing_iss$concatenatePoolIDSeqRun
+        )
     expect_true(
         is.na(missing_row_iss[[path_cols$iss]])
     )

@@ -325,21 +325,21 @@ import_association_file <- function(path,
         as_file <- as_file %>%
             dplyr::mutate(
                 TimepointMonths = dplyr::if_else(
-                        condition = as.numeric(.data$TimePoint) == 0,
-                        true = 0,
-                        false = dplyr::if_else(
-                            condition = as.numeric(.data$TimePoint) > 0 &
-                                as.numeric(.data$TimePoint) < 30,
-                            true = ceiling(as.numeric(.data$TimePoint) / 30),
-                            false = round(as.numeric(.data$TimePoint) / 30)
-                        )
-                    ),
-                TimepointYears = dplyr::if_else(
-                        condition = as.numeric(.data$TimePoint) == 0,
-                        true = 0,
-                        false = ceiling(as.numeric(.data$TimePoint) / 360)
+                    condition = as.numeric(.data$TimePoint) == 0,
+                    true = 0,
+                    false = dplyr::if_else(
+                        condition = as.numeric(.data$TimePoint) > 0 &
+                            as.numeric(.data$TimePoint) < 30,
+                        true = ceiling(as.numeric(.data$TimePoint) / 30),
+                        false = round(as.numeric(.data$TimePoint) / 30)
                     )
-                ) %>%
+                ),
+                TimepointYears = dplyr::if_else(
+                    condition = as.numeric(.data$TimePoint) == 0,
+                    true = 0,
+                    false = ceiling(as.numeric(.data$TimePoint) / 360)
+                )
+            ) %>%
             dplyr::mutate(
                 TimepointMonths = stringr::str_pad(
                     as.character(.data$TimepointMonths),

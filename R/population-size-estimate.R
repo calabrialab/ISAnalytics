@@ -83,9 +83,11 @@
 #'     association_file = association_file,
 #'     value_cols = "seqCount"
 #' )
-#' estimate <- HSC_population_size_estimate(x = agg,
-#' metadata = aggregated_meta,
-#' stable_timepoints = NULL)
+#' estimate <- HSC_population_size_estimate(
+#'     x = agg,
+#'     metadata = aggregated_meta,
+#'     stable_timepoints = NULL
+#' )
 #' options(op)
 HSC_population_size_estimate <- function(x,
     metadata,
@@ -150,7 +152,7 @@ HSC_population_size_estimate <- function(x,
     }
     ## Reorder stable timepoints
     if (is.null(stable_timepoints)) {
-      stable_timepoints <- numeric(0)
+        stable_timepoints <- numeric(0)
     }
     stable_timepoints <- sort(stable_timepoints)
     ## Check presence of NumIS column
@@ -159,13 +161,13 @@ HSC_population_size_estimate <- function(x,
             rlang::inform(c("Calculating number of IS for each group..."))
         }
         numIs <- x %>%
-          dplyr::left_join(metadata, by = dplyr::all_of(aggregation_key)) %>%
-          dplyr::group_by(dplyr::across(dplyr::all_of(aggregation_key))) %>%
-          dplyr::distinct(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
-          dplyr::count(name = "NumIS")
+            dplyr::left_join(metadata, by = dplyr::all_of(aggregation_key)) %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(aggregation_key))) %>%
+            dplyr::distinct(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
+            dplyr::count(name = "NumIS")
         metadata <- metadata %>%
-          dplyr::left_join(numIs, by = dplyr::all_of(aggregation_key)) %>%
-          dplyr::distinct()
+            dplyr::left_join(numIs, by = dplyr::all_of(aggregation_key)) %>%
+            dplyr::distinct()
     }
     ## Check blood lineages
     if (!all(c("CellMarker", "CellType") %in% colnames(blood_lineages))) {
@@ -224,7 +226,8 @@ HSC_population_size_estimate <- function(x,
         ### (for each is)
         per_int_sums_low <- re_agg %>%
             dplyr::group_by(dplyr::across(
-              dplyr::all_of(mandatory_IS_vars()))) %>%
+                dplyr::all_of(mandatory_IS_vars())
+            )) %>%
             dplyr::summarise(
                 sum = sum(.data[[seqCount_column]]),
                 .groups = "drop"
@@ -267,15 +270,15 @@ HSC_population_size_estimate <- function(x,
     )
     BiocParallel::bpstop(p)
     population_size <- purrr::reduce(population_size, function(x, y) {
-      if (is.null(x) & is.null(y)) {
-        return(NULL)
-      } else {
-        return(dplyr::bind_rows(x, y))
-      }
+        if (is.null(x) & is.null(y)) {
+            return(NULL)
+        } else {
+            return(dplyr::bind_rows(x, y))
+        }
     })
     if (!is.null(population_size)) {
-      population_size <- population_size %>%
-        dplyr::mutate(PopSize = round(.data$abundance - .data$stderr))
+        population_size <- population_size %>%
+            dplyr::mutate(PopSize = round(.data$abundance - .data$stderr))
     }
     population_size
 }

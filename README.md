@@ -44,7 +44,7 @@ more.
 -   For the devel version: [ISAnalytics Website
     dev](https://calabrialab.github.io/ISAnalytics/dev)
 
-# Installation
+# Installation and options
 
 ## Installation from bioconductor
 
@@ -77,13 +77,13 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_12",
+                         ref = "RELEASE_3_13",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
 
 ## Safer option for vignette building issue
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_12")
+                         ref = "RELEASE_3_13")
 ```
 
 DEVEL:
@@ -102,7 +102,58 @@ devtools::install_github("calabrialab/ISAnalytics",
                          ref = "master")
 ```
 
+## Setting options
+
+`ISAnalytics` has a verbose option that allows some functions to print
+additional information to the console while they’re executing. To
+disable this feature do:
+
+``` r
+# DISABLE
+options("ISAnalytics.verbose" = FALSE)
+
+# ENABLE
+options("ISAnalytics.verbose" = TRUE)
+```
+
+Some functions also produce report in a user-friendly HTML format, to
+set this feature:
+
+``` r
+# DISABLE HTML REPORTS
+options("ISAnalytics.widgets" = FALSE)
+
+# ENABLE HTML REPORTS
+options("ISAnalytics.widgets" = TRUE)
+```
+
 # NEWS
+
+<details>
+<summary>
+Show more
+</summary>
+
+# ISAnalytics 1.3.1 (2021-06-24)
+
+## NEW FUNCTIONALITY
+
+-   `is_sharing` computes the sharing of IS between groups
+-   `sharing_heatmap` allows visualization of sharing data through
+    heatmaps
+-   `integration_alluvial_plot` allows visualization of integration
+    sites distribution in groups over time.
+-   `top_abund_tableGrob` can be used in combination with the previous
+    function or by itself to obtain a summary of top abundant
+    integrations as an R graphic (tableGrob) object that can be combined
+    with plots.
+
+## MINOR UPDATES
+
+-   Added more default stats functions to `default_stats`
+-   Added optional automatic conversion of time points in months and
+    years when importing association file
+-   Minor fixes in `generate_Vispa2_launch_AF`
 
 # ISAnalytics 1.1.11 (2021-05-11)
 
@@ -362,14 +413,15 @@ ISanalytics is officially on bioconductor!
 
 -   Submitted to Bioconductor
 
+</details>
+
 # TO DO in future updates
 
--   [ ] Add further plot wrappers
+-   [x] Add further plot wrappers (ISAnalytics 1.3.1)
 -   [x] New functionality: raw reads flagging/filtering (ISAnalytics
     1.1.11)
 -   [x] New functionality: HSCs population size estimate (ISAnalytics
     1.1.11)
--   [ ] New functionality: genomic annotation
 -   [ ] Obtain a system to visualize interactive reports based on shiny
     (possibly replacing self-contained HTML reports)
 

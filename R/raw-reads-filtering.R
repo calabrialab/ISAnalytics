@@ -29,41 +29,45 @@
 #' path_AF <- system.file("extdata", "ex_association_file.tsv",
 #'     package = "ISAnalytics"
 #' )
-#' association_file <- import_association_file(path_AF, root = NULL,
+#' association_file <- import_association_file(path_AF,
+#'     root = NULL,
 #'     dates_format = "dmy"
 #' )
 #' filtered_af <- outlier_filter(association_file, key = "VCN")
 #' options(op)
 outlier_filter <- function(metadata,
-                           outlier_test = "outliers_by_pool_fragments",
-                           negate = FALSE,
-                           ...) {
-  stopifnot(is.data.frame(metadata))
-  stopifnot(is.character(outlier_test))
-  stopifnot(is.logical(negate))
-  if (length(outlier_test) > 1) {
-    outlier_test <- outlier_test[1]
-  }
-  if (!outlier_test %in% available_outlier_tests()) {
-    rlang::abort(c("Unknown outlier test",
-                   i = paste("To know what outliers tests are available",
-                             "type `available_outlier_tests()`")
-                   ))
-  }
-  dots <- rlang::list2(...)
-  flagged_meta <- rlang::exec(rlang::as_function(outlier_test),
-                metadata = metadata,
-                !!!dots)
-  filtered_meta <- if (negate) {
-    flagged_meta %>%
-      dplyr::filter(.data$to_remove == TRUE) %>%
-      dplyr::select(-.data$to_remove)
-  } else {
-    flagged_meta %>%
-      dplyr::filter(.data$to_remove == FALSE) %>%
-      dplyr::select(-.data$to_remove)
-  }
-  filtered_meta
+    outlier_test = "outliers_by_pool_fragments",
+    negate = FALSE,
+    ...) {
+    stopifnot(is.data.frame(metadata))
+    stopifnot(is.character(outlier_test))
+    stopifnot(is.logical(negate))
+    if (length(outlier_test) > 1) {
+        outlier_test <- outlier_test[1]
+    }
+    if (!outlier_test %in% available_outlier_tests()) {
+        rlang::abort(c("Unknown outlier test",
+            i = paste(
+                "To know what outliers tests are available",
+                "type `available_outlier_tests()`"
+            )
+        ))
+    }
+    dots <- rlang::list2(...)
+    flagged_meta <- rlang::exec(rlang::as_function(outlier_test),
+        metadata = metadata,
+        !!!dots
+    )
+    filtered_meta <- if (negate) {
+        flagged_meta %>%
+            dplyr::filter(.data$to_remove == TRUE) %>%
+            dplyr::select(-.data$to_remove)
+    } else {
+        flagged_meta %>%
+            dplyr::filter(.data$to_remove == FALSE) %>%
+            dplyr::select(-.data$to_remove)
+    }
+    filtered_meta
 }
 
 
@@ -136,7 +140,8 @@ outlier_filter <- function(metadata,
 #' path_AF <- system.file("extdata", "ex_association_file.tsv",
 #'     package = "ISAnalytics"
 #' )
-#' association_file <- import_association_file(path_AF, root = NULL,
+#' association_file <- import_association_file(path_AF,
+#'     root = NULL,
 #'     dates_format = "dmy"
 #' )
 #' filtered_af <- outliers_by_pool_fragments(association_file, key = "VCN")
@@ -356,8 +361,8 @@ outliers_by_pool_fragments <- function(metadata,
         )
     }
     if (!keep_calc_cols) {
-      calc_res <- calc_res %>%
-        dplyr::select(dplyr::all_of(colnames(metadata)), .data$to_remove)
+        calc_res <- calc_res %>%
+            dplyr::select(dplyr::all_of(colnames(metadata)), .data$to_remove)
     }
     calc_res
 }
@@ -372,5 +377,5 @@ outliers_by_pool_fragments <- function(metadata,
 #' @examples
 #' available_outlier_tests()
 available_outlier_tests <- function() {
-  c("outliers_by_pool_fragments")
+    c("outliers_by_pool_fragments")
 }

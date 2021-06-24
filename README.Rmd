@@ -35,72 +35,25 @@ more.
 * For the release version: [ISAnalytics Website release](https://calabrialab.github.io/ISAnalytics/)
 * For the devel version: [ISAnalytics Website dev](https://calabrialab.github.io/ISAnalytics/dev)
 
-# Installation
+```{r child="inst/rmd/install_and_options.Rmd"}
 
-## Installation from bioconductor
-
-RELEASE version:
-```{r eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("ISAnalytics")
-```
-
-DEVEL version:
-```{r eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
-# The following initializes usage of Bioc devel
-BiocManager::install(version='devel')
-
-BiocManager::install("ISAnalytics")
-```
-
-## Installation from GitHub
-
-RELEASE:
-```{r eval=FALSE}
-if (!require(devtools)) {
-  install.packages("devtools")
-}
-devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_12",
-                         dependencies = TRUE,
-                         build_vignettes = TRUE)
-
-## Safer option for vignette building issue
-devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_12")
-```
-
-DEVEL:
-```{r eval=FALSE}
-if (!require(devtools)) {
-  install.packages("devtools")
-}
-devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master",
-                         dependencies = TRUE,
-                         build_vignettes = TRUE)
-
-## Safer option for vignette building issue
-devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master")
 ```
 
 # NEWS
+<details>
+  <summary>Show more</summary>
 
-```{r child="NEWS.md"}
+```{r child="NEWS.Rmd"}
 
 ```
 
+</details>
+
 # TO DO in future updates  
 
-- [ ] Add further plot wrappers
+- [X] Add further plot wrappers (ISAnalytics 1.3.1)
 - [X] New functionality: raw reads flagging/filtering (ISAnalytics 1.1.11)
 - [X] New functionality: HSCs population size estimate (ISAnalytics 1.1.11)
-- [ ] New functionality: genomic annotation
 - [ ] Obtain a system to visualize interactive reports based on shiny (possibly
 replacing self-contained HTML reports)
 
