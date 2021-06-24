@@ -68,7 +68,8 @@ Suggests:
     extraDistr,
     ggalluvial,
     scales,
-    gridExtra
+    gridExtra,
+    R.utils
 VignetteBuilder: knitr
 RdMacros: 
     lifecycle

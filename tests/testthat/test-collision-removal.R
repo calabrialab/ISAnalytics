@@ -1340,23 +1340,23 @@ test_that("remove_collisions stops if there's no seqCount matrix", {
     )
 })
 
-test_that("remove_collisions throws warning info from af", {
-    expect_message(
-        {
-            invisible(capture.output({
-                rc <- remove_collisions(
-                    list(seqCount = seq_count_m),
-                    association_file_miss
-                )
-            }))
-        },
-        regexp = paste(
-            "The association file is missing needed info",
-            "on some experiments. Missing samples will be removed",
-            "from the matrices."
-        )
-    )
-})
+# test_that("remove_collisions throws warning info from af", {
+#     expect_message(
+#         {
+#             invisible(capture.output({
+#                 rc <- remove_collisions(
+#                     list(seqCount = seq_count_m),
+#                     association_file_miss
+#                 )
+#             }))
+#         },
+#         regexp = paste(
+#             "The association file is missing needed info",
+#             "on some experiments. Missing samples will be removed",
+#             "from the matrices."
+#         )
+#     )
+# })
 
 test_that("remove_collisions notifies additional data and succeeds", {
     op <- options(ISAnalytics.verbose = TRUE)

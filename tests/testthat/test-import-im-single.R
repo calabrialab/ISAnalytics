@@ -269,7 +269,8 @@ test_that(paste(func_name, "reads comma delimited"), {
                     withr::with_file(
                         file = tf,
                         code = {
-                            df <- import_single_Vispa2Matrix(tf, separator = ",")
+                            df <- import_single_Vispa2Matrix(tf,
+                                                             separator = ",")
                         }
                     )
                 ),
@@ -315,7 +316,8 @@ test_that(paste(func_name, "reads semicolon delimited"), {
                     withr::with_file(
                         file = tf,
                         code = {
-                            df <- import_single_Vispa2Matrix(tf, separator = ";")
+                            df <- import_single_Vispa2Matrix(tf,
+                                                             separator = ";")
                         }
                     )
                 ),
@@ -428,6 +430,7 @@ test_that(paste(func_name, "reads correctly compressed .gz"), {
 })
 
 test_that(paste(func_name, "reads correctly compressed .bz2"), {
+    testthat::skip_if_not_installed(pkg = "R.utils")
     tf <- withr::local_tempfile(fileext = ".tsv.bz2")
     readr::write_tsv(sample_df, tf)
     expected_summary_msg <- .summary_ism_import_msg(
