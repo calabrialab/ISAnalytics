@@ -60,9 +60,9 @@ the relative sharing (see below).
 The relative sharing is calculated, for each pair of groups (A, B) as
 3 separate columns
 \itemize{
-\item Shared over A: (∩(A,B) / |A|) * 100
-\item Shared over B: (∩(A,B) / |B|) * 100
-\item Shared over union: (∩(A,B) / |∪(A,B)|) * 100
+\item Shared over A: (intersection(A,B) / |A|) * 100
+\item Shared over B: (intersection(A,B) / |B|) * 100
+\item Shared over union: (intersection(A,B) / |union(A,B)|) * 100
 }
 }
 
