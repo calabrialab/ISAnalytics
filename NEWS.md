@@ -1,6 +1,12 @@
 NEWS
 ================
 
+# ISAnalytics 1.3.2 (2021-06-28)
+
+## FIXES
+
+-   Corrected issues in man pages
+
 # ISAnalytics 1.3.1 (2021-06-24)
 
 ## NEW FUNCTIONALITY
