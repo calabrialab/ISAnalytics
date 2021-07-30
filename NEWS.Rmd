@@ -2,7 +2,7 @@
 title: "NEWS"
 output: github_document
 ---
-# ISAnalytics 1.3.3 (TBD)
+# ISAnalytics 1.3.3 (2021-07-30)
 
 ## MAJOR CHANGES
 * Completely reworked interactive HTML report system, for details take

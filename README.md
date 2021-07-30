@@ -137,7 +137,7 @@ options("ISAnalytics.reports" = TRUE)
 Show more
 </summary>
 
-# ISAnalytics 1.3.3 (TBD)
+# ISAnalytics 1.3.3 (2021-07-30)
 
 ## MAJOR CHANGES
 
