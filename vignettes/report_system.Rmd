@@ -98,10 +98,6 @@ the user has permission to write in the given path)
 If report production fails for any reason, functions return their result
 correctly regardless and a warning message is displayed.
 
-# Examples
-
-TODO
-
 # Reproducibility
 
 `R` session information.
