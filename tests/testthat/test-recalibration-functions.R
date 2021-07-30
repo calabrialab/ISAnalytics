@@ -4,7 +4,7 @@ library(ISAnalytics)
 # Global vars
 #------------------------------------------------------------------------------#
 op <- withr::local_options(
-    ISAnalytics.widgets = FALSE,
+    ISAnalytics.reports = FALSE,
     ISAnalytics.verbose = FALSE
 )
 # Samples
@@ -281,16 +281,24 @@ test_that(".sliding_window produces correct output for sample1", {
         num_cols = "Value", max_val_col = "Value",
         produce_map = TRUE
     )
-    expect_equal(result$recalibrated_matrix, expected_for_smpl1_kf)
-    expect_equal(result$map, recalibr_map_smpl1_kf)
+    expect_equal(result$recalibrated_matrix, expected_for_smpl1_kf,
+        ignore_attr = TRUE
+    )
+    expect_equal(result$map, recalibr_map_smpl1_kf,
+        ignore_attr = TRUE
+    )
     result <- .sliding_window(
         x = sample_group1, threshold = 4,
         keep_criteria = "max_value", annotated = FALSE,
         num_cols = "Value", max_val_col = "Value",
         produce_map = TRUE
     )
-    expect_equal(result$recalibrated_matrix, expected_for_smpl1_kf)
-    expect_equal(result$map, recalibr_map_smpl1_kf)
+    expect_equal(result$recalibrated_matrix, expected_for_smpl1_kf,
+        ignore_attr = TRUE
+    )
+    expect_equal(result$map, recalibr_map_smpl1_kf,
+        ignore_attr = TRUE
+    )
 })
 
 test_that(".sliding_window produces correct output for sample2", {
@@ -300,16 +308,24 @@ test_that(".sliding_window produces correct output for sample2", {
         num_cols = "Value", max_val_col = "Value",
         produce_map = TRUE
     )
-    expect_equal(result$recalibrated_matrix, expected_for_smpl2_kf)
-    expect_equal(result$map, recalibr_map_smpl2_kf)
+    expect_equal(result$recalibrated_matrix, expected_for_smpl2_kf,
+        ignore_attr = TRUE
+    )
+    expect_equal(result$map, recalibr_map_smpl2_kf,
+        ignore_attr = TRUE
+    )
     result <- .sliding_window(
         x = sample_group2, threshold = 4,
         keep_criteria = "max_value", annotated = FALSE,
         num_cols = "Value", max_val_col = "Value",
         produce_map = TRUE
     )
-    expect_equal(result$recalibrated_matrix, expected_for_smpl2_mv)
-    expect_equal(result$map, recalibr_map_smpl2_mv)
+    expect_equal(result$recalibrated_matrix, expected_for_smpl2_mv,
+        ignore_attr = TRUE
+    )
+    expect_equal(result$map, recalibr_map_smpl2_mv,
+        ignore_attr = TRUE
+    )
 })
 
 test_that(".sliding_window produces correct output for sample1 - mult column", {
@@ -320,8 +336,12 @@ test_that(".sliding_window produces correct output for sample1 - mult column", {
         max_val_col = "seqCount",
         produce_map = TRUE
     )
-    expect_equal(result$recalibrated_matrix, expected_for_smplmult1_kf)
-    expect_equal(result$map, recalibr_map_smpl1_kf)
+    expect_equal(result$recalibrated_matrix, expected_for_smplmult1_kf,
+        ignore_attr = TRUE
+    )
+    expect_equal(result$map, recalibr_map_smpl1_kf,
+        ignore_attr = TRUE
+    )
     result <- .sliding_window(
         x = sample_group_mult1, threshold = 4,
         keep_criteria = "max_value", annotated = FALSE,
@@ -329,8 +349,12 @@ test_that(".sliding_window produces correct output for sample1 - mult column", {
         max_val_col = "seqCount",
         produce_map = TRUE
     )
-    expect_equal(result$recalibrated_matrix, expected_for_smplmult1_kf)
-    expect_equal(result$map, recalibr_map_smpl1_kf)
+    expect_equal(result$recalibrated_matrix, expected_for_smplmult1_kf,
+        ignore_attr = TRUE
+    )
+    expect_equal(result$map, recalibr_map_smpl1_kf,
+        ignore_attr = TRUE
+    )
 })
 
 test_that(".sliding_window produces correct output for sample2 - mult column", {
@@ -341,8 +365,12 @@ test_that(".sliding_window produces correct output for sample2 - mult column", {
         max_val_col = "seqCount",
         produce_map = TRUE
     )
-    expect_equal(result$recalibrated_matrix, expected_for_smplmult2_kf)
-    expect_equal(result$map, recalibr_map_smpl2_kf)
+    expect_equal(result$recalibrated_matrix, expected_for_smplmult2_kf,
+        ignore_attr = TRUE
+    )
+    expect_equal(result$map, recalibr_map_smpl2_kf,
+        ignore_attr = TRUE
+    )
     result <- .sliding_window(
         x = sample_group_mult2, threshold = 4,
         keep_criteria = "max_value", annotated = FALSE,
@@ -350,191 +378,45 @@ test_that(".sliding_window produces correct output for sample2 - mult column", {
         max_val_col = "seqCount",
         produce_map = TRUE
     )
-    expect_equal(result$recalibrated_matrix, expected_for_smplmult2_mv)
-    expect_equal(result$map, recalibr_map_smpl2_mv)
+    expect_equal(result$recalibrated_matrix, expected_for_smplmult2_mv,
+        ignore_attr = TRUE
+    )
+    expect_equal(result$map, recalibr_map_smpl2_mv,
+        ignore_attr = TRUE
+    )
 })
 
 #------------------------------------------------------------------------------#
 # Tests compute_near_integrations
 #------------------------------------------------------------------------------#
-## Test input
-test_that("compute_near_integrations stops if x is not single tibble", {
-    expect_error({
-        res <- compute_near_integrations(x = 1)
-    })
-    expect_error({
-        res <- compute_near_integrations(x = c(sample_group1, sample_group2))
-    })
-})
-test_that("compute_near_integrations stops if x is not IM", {
-    smpl <- sample_group1 %>% dplyr::select(-c("chr"))
-    expect_error(
-        {
-            res <- compute_near_integrations(x = smpl)
-        },
-        regexp = .non_ISM_error()
-    )
-})
-test_that("compute_near_integrations stops if missing IDs columns", {
-    smpl <- sample_group1 %>% dplyr::select(-c("CompleteAmplificationID"))
-    expect_error(
-        {
-            res <- compute_near_integrations(x = smpl)
-        },
-        regexp = .missing_complAmpID_error()
-    )
-})
-test_that("compute_near_integrations stops if missing any num cols", {
-    smpl <- sample_group1 %>% dplyr::select(-c("Value"))
-    expect_error(
-        {
-            res <- compute_near_integrations(x = smpl)
-        },
-        regexp = .missing_num_cols_error()
-    )
-})
-test_that("compute_near_integrations stops if treshold is incorrect", {
-    expect_error({
-        res <- compute_near_integrations(x = sample_group1, threshold = "5")
-    })
-    expect_error({
-        res <- compute_near_integrations(x = sample_group1, threshold = c(1, 2))
-    })
-})
-test_that("compute_near_integrations stops if keep_criteria is incorrect", {
-    expect_error({
-        res <- compute_near_integrations(
-            x = sample_group1, threshold = 4,
-            keep_criteria = c(1, 2)
-        )
-    })
-    expect_error({
-        res <- compute_near_integrations(
-            x = sample_group1, threshold = 4,
-            keep_criteria = c("a", "b")
-        )
-    })
-    expect_error({
-        res <- compute_near_integrations(
-            x = sample_group1, threshold = 4,
-            keep_criteria = c("max_value", "first")
-        )
-    })
-})
-test_that("compute_near_integrations stops if strand_specific is incorrect", {
-    expect_error({
-        res <- compute_near_integrations(
-            x = sample_group1,
-            strand_specific = "TRUE"
-        )
-    })
-    expect_error({
-        res <- compute_near_integrations(
-            x = sample_group1,
-            strand_specific = c(TRUE, FALSE)
-        )
-    })
-})
-test_that("compute_near_integrations stops if max_value_col is incorrect", {
-    expect_error({
-        res <- compute_near_integrations(
-            x = sample_group1,
-            max_value_column = 1
-        )
-    })
-    expect_error({
-        res <- compute_near_integrations(
-            x = sample_group1,
-            max_value_column = c("a", "b")
-        )
-    })
-})
-test_that("compute_near_integrations stops if map parameters are incorrect", {
-    expect_error({
-        res <- compute_near_integrations(
-            x = sample_group1,
-            map_as_widget = "TRUE"
-        )
-    })
-    expect_error({
-        res <- compute_near_integrations(
-            x = sample_group1,
-            map_as_widget = c(TRUE, FALSE)
-        )
-    })
-    expect_error({
-        res <- compute_near_integrations(
-            x = sample_group1,
-            map_as_file = "TRUE"
-        )
-    })
-    expect_error({
-        res <- compute_near_integrations(
-            x = sample_group1,
-            map_as_file = c(TRUE, FALSE)
-        )
-    })
-})
-test_that("compute_near_integrations stops if max_col not found", {
-    expect_error(
-        {
-            res <- compute_near_integrations(
-                x = sample_group_mult1,
-                keep_criteria = "max_value",
-                max_value_column = "a"
-            )
-        },
-        regexp = .max_val_stop_error("a")
-    )
-})
 ## TEST VALUES
-test_that("compute_near_integrations produces warning for max col", {
-    expect_warning(invisible(capture.output({
-        res <- compute_near_integrations(
-            x = sample_group1,
-            keep_criteria = "max_value",
-            max_value_column = "seqCount",
-            map_as_file = FALSE,
-            file_path = NULL
-        )
-    })), regexp = .using_val_col_warning("seqCount"))
-    expect_equal(res, expected_for_smpl1_kf)
-})
 test_that("compute_near_integrations produces correct output for total", {
     total_simple <- sample_group1 %>% dplyr::bind_rows(sample_group2)
     total_mult <- sample_group_mult1 %>% dplyr::bind_rows(sample_group_mult2)
-    expect_warning(
-        {
-            invisible(capture.output({
-                res <- compute_near_integrations(
-                    x = total_simple,
-                    keep_criteria = "keep_first",
-                    max_value_column = "seqCount",
-                    map_as_file = FALSE
-                )
-            }))
-        },
-        regexp = NA
+    res <- compute_near_integrations(
+        x = total_simple,
+        keep_criteria = "keep_first",
+        max_value_column = "Value",
+        value_columns = c("Value"),
+        map_as_file = FALSE
     )
     expected_simple <- expected_for_smpl1_kf %>%
         dplyr::bind_rows(expected_for_smpl2_kf)
     map_simple_exp <- recalibr_map_smpl1_kf %>%
         dplyr::bind_rows(recalibr_map_smpl2_kf)
-    expect_equal(res, expected_simple)
-    expect_warning(
-        {
-            invisible(capture.output({
-                res <- compute_near_integrations(
-                    x = total_mult,
-                    keep_criteria = "keep_first",
-                    max_value_column = "seqCount",
-                    map_as_file = FALSE
-                )
-            }))
-        },
-        regexp = NA
+    expect_equal(res, expected_simple,
+        ignore_attr = TRUE
+    )
+    res <- compute_near_integrations(
+        x = total_mult,
+        keep_criteria = "keep_first",
+        max_value_column = "seqCount",
+        value_columns = c("seqCount", "fragmentEstimate"),
+        map_as_file = FALSE
     )
     expected_mult <- expected_for_smplmult1_kf %>%
         dplyr::bind_rows(expected_for_smplmult2_kf)
-    expect_equal(res, expected_mult)
+    expect_equal(res, expected_mult,
+        ignore_attr = TRUE
+    )
 })

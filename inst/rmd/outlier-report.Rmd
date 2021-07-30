@@ -1,0 +1,257 @@
+---
+title: "ISAnalytics - Samples outliers report"
+date: "`r Sys.Date()`"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: fill
+    theme:
+      bootswatch: cosmo
+      primary: "#23687A"
+    navbar:
+      - { title: "Website", href: "https://calabrialab.github.io/ISAnalytics/", align: right, icon: "fa-globe" }
+      - { title: "GitHub", href: "https://github.com/calabrialab/ISAnalytics", align: right, icon: "fa-github" }
+params:
+  by_pool: null
+  pool_col: null
+  norm_test: null
+  key: null
+  flag_logic: null
+  outlier_thresh: null
+  log2_req: null
+  removed_nas: null
+  removed_zeros: null
+  non_proc_pools: null
+  flag_df: null
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+options(DT.warn.size = FALSE)
+library(flexdashboard)
+library(DT)
+ok_color <- "#77d983"
+ko_color <- "#e36868"
+```
+
+Pre-processing info {data-orientation=columns}
+===============================================================================
+
+Col1
+-------------------------------------------------------------------------------
+
+```{r}
+abs_unprocessed_reads <- nrow(params$flag_df %>%
+            dplyr::filter(.data$processed == FALSE))
+perc_unprocessed_reads <- (nrow(params$flag_df %>%
+            dplyr::filter(.data$processed == FALSE)) /
+            nrow(params$flag_df))
+unprocessed_perc_diff <- tibble::tibble(
+        abs = c(nrow(params$removed_nas)),
+        perc_on_unprocessed = c(nrow(params$removed_nas) /
+            abs_unprocessed_reads),
+        perc_on_total = c(nrow(params$removed_nas) / nrow(params$flag_df)),
+        reason = c("NAs in key")
+    )
+if (params$log2_req) {
+        unprocessed_perc_diff <- unprocessed_perc_diff %>%
+            tibble::add_row(
+                abs = c(nrow(params$removed_zeros)),
+                perc_on_unprocessed = c(nrow(params$removed_zeros) /
+                    abs_unprocessed_reads),
+                perc_on_total = c(nrow(params$removed_zeros) / nrow(params$flag_df)),
+                reason = c("Values <= 0")
+            )
+}
+unprocessed_perc_diff <- unprocessed_perc_diff %>%
+        tibble::add_row(
+            abs = c(abs_unprocessed_reads -
+                sum(unprocessed_perc_diff$abs)),
+            perc_on_unprocessed = c((abs_unprocessed_reads -
+                sum(unprocessed_perc_diff$abs)) /
+                abs_unprocessed_reads),
+            perc_on_total = c((abs_unprocessed_reads -
+                sum(unprocessed_perc_diff$abs)) / nrow(params$flag_df)),
+            reason = c("Pool samples < min samples")
+)
+```
+
+### Number of unprocessed samples
+```{r}
+valueBox(abs_unprocessed_reads, icon = "fa-filter", color = ifelse(abs_unprocessed_reads == 0, "success", "danger"))
+```
+
+### Percentage of unprocessed samples
+```{r}
+gauge(round(perc_unprocessed_reads, digits = 2),
+      min = 0, max = 100, symbol = "%", 
+      sectors = gaugeSectors(success = c(0,0), danger = c(0.01, 100)))
+```
+
+### Unprocessed samples summary 
+```{r}
+datatable(
+  unprocessed_perc_diff,
+  rownames = FALSE, 
+  options = list(dom = 't'),
+  colnames = c("Absolute", "% on unprocessed", "% on total", "Reason")
+)
+```
+
+Col2 {.tabset .tabset-fade}
+-------------------------------------------------------------------------------
+### Parameter choice and settings
+```{r results='asis'}
+pool_opt <- if (params$by_pool) {
+        "* The test was run for each pool"
+    } else {
+        "* The test was <u>NOT</u> run for each pool"
+    }
+norm_test <- if (params$norm_test) {
+        "* Calculations performed only if data follows normal distribution"
+    } else {
+        "* Normality test not performed"
+    }
+key <- paste("* Calculations performed on columns:",
+             paste0(params$key, collapse = ", ")
+    )
+thresh <- paste("* Outlier p-value threshold:", params$outlier_thresh)
+logic <- if (length(params$key) > 1) {
+        base_flag <- purrr::map_chr(params$key, function(k) {
+            paste0(
+                "(tdist_", k, " < ", params$outlier_thresh,
+                " & zscore_", k, " < 0)"
+            )
+        })
+        if (length(params$flag_logic) == 1) {
+            flag_logic <- rep_len(x = params$flag_logic, length(params$key) - 1)
+        } else {
+            flag_logic <- params$flag_logic
+        }
+        combined <- rbind(base_flag, c(flag_logic, ""))
+        paste(
+            "* Key length > 1, flagging formula used: ",
+            paste(combined, collapse = " ")
+        )
+    } else {
+        base_flag <- paste0(
+            "(tdist_", key, " < ", params$outlier_thresh,
+            " & zscore_", key, " < 0)"
+        )
+        paste(
+            "* Flagging formula used: ",
+            paste(base_flag)
+        )
+    }
+log2 <- if (params$log2_req) {
+        "* Log2 transformation prior to calculations"
+    } else {
+        ""
+    }
+choice_msg <- paste0(c(pool_opt, norm_test, key, thresh, logic, log2), collapse = "\n")
+cat("#### Parameters and options chosen\n\n", choice_msg)
+```
+
+### NAs in key columns
+```{r eval=!is.null(params$removed_nas)}
+na_df <- params$removed_nas %>%
+            dplyr::select(
+                dplyr::all_of(params$pool_col),
+                .data$CompleteAmplificationID,
+                dplyr::all_of(params$key)
+            )
+datatable(
+  na_df,
+  rownames = FALSE
+)
+```
+
+```{r echo=FALSE, eval=is.null(params$removed_nas), results='asis'}
+cat("*Nothing to report*")
+```
+
+### Negative or zero values (log2 transformation)
+```{r eval=!is.null(params$removed_zeros) & params$log2_req}
+datatable(
+  params$removed_zeros,
+  rownames = FALSE
+)
+```
+
+```{r echo=FALSE, eval=!(!is.null(params$removed_zeros) & params$log2_req), results='asis'}
+cat("*Nothing to report*")
+```
+
+### Unprocessed samples (per pool test)
+```{r eval=!is.null(params$non_proc_pools) & params$by_pool}
+datatable(
+  params$non_proc_pools,
+  rownames = FALSE
+)
+```
+
+```{r echo=FALSE, eval=!(!is.null(params$non_proc_pools) & params$by_pool), results='asis'}
+cat("*Nothing to report*")
+```
+
+Post-processing info {data-orientation=rows}
+===============================================================================
+
+Row1 
+-------------------------------------------------------------------------------
+```{r}
+flagged_abs <- nrow(params$flag_df %>%
+            dplyr::filter(.data$to_remove == TRUE))
+flagged_perc <- nrow(params$flag_df %>%
+            dplyr::filter(.data$to_remove == TRUE)) /
+            nrow(params$flag_df)
+```
+
+### Total flagged samples
+```{r}
+valueBox(flagged_abs, icon = "fa-flag")
+```
+
+### Flagged samples on total
+```{r}
+gauge(round(flagged_perc, digits = 2), min = 0, max = 100, symbol = "%",
+      sectors = gaugeSectors(success = c(0,10), warning = c(10.01, 20), danger = c(20.01, 100)))
+```
+
+
+Row2
+-------------------------------------------------------------------------------
+### Flagged samples details
+
+```{r}
+datatable(
+  params$flag_df %>%
+    dplyr::mutate(dplyr::across(c(.data$ProjectID, .data[[params$pool_col]]),
+                                as.factor)),
+  rownames = FALSE,
+  filter = 'top',
+  options = list(
+            order = list(list(1, 'desc'))
+          )
+) %>% 
+  formatStyle(columns = "processed", 
+              color = styleEqual(
+                levels = c(TRUE, FALSE),
+                values = c(ok_color, ko_color)
+              ), fontWeight = "bold", textTransform = "uppercase") %>%
+  formatStyle(columns = "to_remove", 
+              color = styleEqual(
+                levels = c(TRUE, FALSE),
+                values = c(ko_color, "black")
+              ), fontWeight = "bold", textTransform = "uppercase")
+```
+
+Reproducibility {data-orientation=rows}
+===============================================================================
+
+Row1 {data-height=600}
+-------------------------------------------------------------------------------
+
+### Session info {style="width: 95% !important"}
+```{r attr.output='style="max-height: 580px;"'}
+sessionInfo()
+```
+

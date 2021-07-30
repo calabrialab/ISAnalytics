@@ -2,7 +2,7 @@
 % Please edit documentation in R/import-functions.R
 \name{import_parallel_Vispa2Matrices_auto}
 \alias{import_parallel_Vispa2Matrices_auto}
-\title{Import integration matrices based on the association file.}
+\title{Import integration matrices from association file.}
 \usage{
 import_parallel_Vispa2Matrices_auto(
   association_file,
@@ -10,110 +10,18 @@ import_parallel_Vispa2Matrices_auto(
   matrix_type = "annotated",
   workers = 2,
   multi_quant_matrix = TRUE,
-  export_report_path = NULL,
   patterns = NULL,
   matching_opt = matching_options(),
+  export_report_path = NULL,
   ...
 )
 }
-\arguments{
-\item{association_file}{A single string containing the path to the
-association file on disk, or a data frame resulting from a previous call to
-\code{import_association_file}}
-
-\item{quantification_type}{A vector of requested quantification_types. Must
-be one in \code{quantification_types()}}
-
-\item{matrix_type}{A single string representing the type of matrices to
-be imported. Can only be one in \code{"annotated"} or \code{"not_annotated"}}
-
-\item{workers}{A single integer representing the number
-of parallel workers to use for the import}
-
-\item{multi_quant_matrix}{If set to TRUE will produce a
-multi-quantification matrix (data frame) through \code{comparison_matrix}
-instead of a list.}
-
-\item{export_report_path}{A path on disk to save produced import report
-or NULL if the user doesn't wish to save the html file}
-
-\item{patterns}{A character vector of additional patterns to match on file
-names. Please note that patterns must be regular expressions. Can be NULL if
-no patterns needs to be matched.}
-
-\item{matching_opt}{A single value between \code{matching_options}}
-
-\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Additional named arguments
-to pass to \code{ìmport_association_file} and \code{comparison_matrix}}
-}
 \value{
-A named list of data frames containing data from
-all imported integration
-matrices, divided by quantification type or a multi-quantification matrix
+A data frame or a list
 }
 \description{
-\lifecycle{maturing}
-These functions are designed to import the appropriate
-integration matrix files given the association file and the root folder of
-the file system where Vispa2 matrices are generated.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This function was deprecated to avoid redundancy.
+Please refer to \code{\link{import_parallel_Vispa2Matrices}}.
 }
-\details{
-Import family functions are designed to work in combination with
-Vispa2, for more details on this take a look here:
-\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/}{VISPA2:
-A Scalable Pipeline for High-Throughput Identification
-and Annotation of Vector Integration Sites}.\cr
-For more details on how to properly use these functions, refer to the
-vignette - vignette("how_to_import_functions")
-}
-\section{Automatic version}{
-
-The automatic version of import_parallel_Vispa2Matrices doesn't interact with
-the user directly, for this reason options in this modality are more limited
-compared to the interactive version. In automatic version you can't:
-\itemize{
-\item Choose single projects or pools: to have a selection import
-the association file first and filter it according to your needs
-before calling the function
-(more details on this in the vignette)
-\item Choose duplicates: if, after filtering by the specified patterns,
-duplicates are found they are automatically ignored
-}
-}
-
-\section{Interactive version}{
-
-The interactive version of import_parallel_Vispa2Matrices asks user for input
-and allows a more detailed choice of projects to import, pools to import and,
-if necessary, duplicate files. During the execution, a series of reports is
-shown in html format.
-}
-
-\examples{
-op <- options("ISAnalytics.widgets" = FALSE)
-path <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
-)
-root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- unzip_file_system(root_pth, "fs")
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = path,
-    quantification_type = c("fragmentEstimate", "seqCount"),
-    patterns = NULL, matching_opt = "ANY",
-    root = root,
-    dates_format = "dmy",
-    workers = 2
-)
-options(op)
-}
-\seealso{
-\code{\link{matching_options}},
-\url{https://stringr.tidyverse.org/articles/regular-expressions.html}
-
-Other Import functions: 
-\code{\link{import_Vispa2_stats}()},
-\code{\link{import_association_file}()},
-\code{\link{import_parallel_Vispa2Matrices_interactive}()},
-\code{\link{import_single_Vispa2Matrix}()}
-}
-\concept{Import functions}
+\keyword{internal}

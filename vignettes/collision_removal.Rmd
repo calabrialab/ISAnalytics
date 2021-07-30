@@ -16,12 +16,12 @@ output:
 date: "`r doc_date()`"
 package: "`r pkg_ver('ISAnalytics')`"
 vignette: >
-  %\VignetteIndexEntry{Collision removal functionality}
+  %\VignetteIndexEntry{collision_removal}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}  
 ---
 
-```{r setup, include = FALSE}
+```{r GenSetup, include = FALSE}
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
@@ -31,31 +31,21 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
-## Track time spent on making the vignette
-startTime <- Sys.time()
-
 ## Bib setup
-library("knitcitations")
-
-## Load knitcitations with a clean bibliography
-cleanbib()
-cite_options(hyperlink = "to.doc", citation_format = "text", style = "html")
+library("RefManageR")
 
 ## Write bibliography information
 bib <- c(
     R = citation(),
     BiocStyle = citation("BiocStyle")[1],
-    knitcitations = citation("knitcitations")[1],
     knitr = citation("knitr")[1],
+    RefManageR = citation("RefManageR")[1],
     rmarkdown = citation("rmarkdown")[1],
     sessioninfo = citation("sessioninfo")[1],
     testthat = citation("testthat")[1],
     ISAnalytics = citation("ISAnalytics")[1]
 )
-
-write.bibtex(bib, file = "collision_removal.bib")
 ```
 
 # Introduction
@@ -72,222 +62,139 @@ inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAn
 library(ISAnalytics)
 ```
 
-
 ## What is a collision and why should you care?
 
-We're not going into too much detail here, but we're going to explain in a 
-very simple way what is a "collision" and how the function in this package 
-deal with them.
+We're not going into too much detail here, but we're going to explain in a
+very simple way what a "collision" is and how the function in this package
+deals with them.
 
-We say that an integration (aka a unique combination of chromosome, 
-integration locus and strand) is a *collision* if this combination is shared 
-between different independent samples: an independent sample is a unique 
-combination of `ProjectID` and `SubjectID` (where subjects usually represent 
-patients). The reason behind this is that it's highly improbable to observe 
-the very same integration in two different subjects and this phenomenon might 
-be an indicator of some kind of contamination in the sequencing phase or in 
-PCR phase, for this reason we might want to exclude such contamination from 
-our analysis.  
-`ISAnalytics` provides a function that processes the imported data for the 
-removal or reassignment of these "problematic" integrations, 
-`remove_collisions`.
+We say that an integration (aka a unique combination of chromosome,
+integration locus and strand) is a *collision* if this combination is shared
+between different independent samples: an independent sample is a unique
+combination of `ProjectID` and `SubjectID` (where subjects usually represent
+patients). The reason behind this is that it's highly improbable to observe
+the very same integration in two different subjects and this phenomenon might
+be an indicator of some kind of contamination in the sequencing phase or in
+PCR phase, for this reason we might want to exclude such contamination from
+our analysis.
+`ISAnalytics` provides a function that processes the imported data for the
+removal or reassignment of these "problematic" integrations,
+`remove_collisions()`.
 
-The processing is done on the sequence count matrix (after import) and matrices
-of other quantification types are re-aligned accordingly.  
-
+The processing is done using the sequence count value, so the corresponding
+matrix is needed for this operation.
 
 ## The logic behind the function
 
-The `remove_collisions` function follows several logical steps to decide whether
+The `remove_collisions()` function follows several logical
+steps to decide whether
 an integration is a collision and if it is it decides whether to re-assign it or
 remove it entirely based on different criterias.
 
 ### Identifying the collisions
 
-As we said before, a collision is a triplet made of `chr`, `integration locus` 
+As we said before, a collision is a triplet made of `chr`, `integration locus`
 and `strand`, which is shared between different independent samples, aka a pair
-made of `ProjectID` and `SubjectID`. The function uses the information stored 
-in the association file to assess which independent samples are present and 
-counts the number of independent samples for each integration: those who have a 
+made of `ProjectID` and `SubjectID`. The function uses the information stored
+in the association file to assess which independent samples are present and
+counts the number of independent samples for each integration: those who have a
 count > 1 are considered collisions.
+
+```{r echo=FALSE}
+ex_coll <- tibble::tribble(
+  ~ chr, ~ integration_locus, ~ strand, ~ seqCount, ~ CompleteAmplificationID,
+  ~ SubjectID, ~ ProjectID, 
+  "1", 123454,  "+", 653, "SAMPLE1", "SUBJ01", "PJ01",
+  "1", 123454, "+", 456, "SAMPLE2", "SUBJ02", "PJ01"
+)
+knitr::kable(ex_coll, caption = paste("Example of collisions: the same",
+                                      "integration (1, 123454, +) is found",
+                                      "in 2 different independent samples",
+                                      "((SUBJ01, PJ01) & (SUBJ02, PJ01))"))
+```
 
 ### Re-assign vs remove
 
-Once the collisions are identified, the function follows 3 steps where it tries 
-to re-assign the combination to a single independent sample. 
-The criterias are:  
+Once the collisions are identified, the function follows 3 steps where it tries
+to re-assign the combination to a single independent sample.
+The criterias are:
 
-1. Compare dates: if it's possible to have an absolute ordering on dates, the 
-integration is re-assigned to the sample that has the earliest date. If two 
-samples share the same date it's impossible to decide, so the next criteria is 
+1. Compare dates: if it's possible to have an absolute ordering on dates, the
+integration is re-assigned to the sample that has the earliest date. If two
+samples share the same date it's impossible to decide, so the next criteria is
 tested
-2. Compare replicate number: if a sample has the same integration in more than 
-one replicate, it's more probable the integration is not an artifact. If it's 
-possible to have an absolute ordering, the collision is re-assigned to the 
+2. Compare replicate number: if a sample has the same integration in more than
+one replicate, it's more probable the integration is not an artifact. If it's
+possible to have an absolute ordering, the collision is re-assigned to the
 sample whose grouping is largest
-3. Compare the sequence count value: if the previous criteria wasn't sufficient 
-to make a decision, for each group of independent samples it's evaluated the 
-sum of the sequence count value - for each group there is a cumulative value of 
-the sequence count and this is compared to the value of other groups. If there 
-is a single group which has a ratio n times bigger than other groups, this one 
-is chosen for re-assignment. The factor n is passed as a parameter in the 
-function ( `reads_ratio`), the default value is 10.
+3. Compare the sequence count value: if the previous criteria wasn't sufficient
+to make a decision, for each group of independent samples it's evaluated the
+sum of the sequence count value - for each group there is a cumulative value of
+the sequence count and this is compared to the value of other groups. If there
+is a single group which has a ratio n times bigger than other groups, this one
+is chosen for re-assignment. The factor n is passed as a parameter in the
+function (`reads_ratio`), the default value is 10.
 
-If none of the criterias were sufficient to make a decision, the integration 
+If none of the criterias were sufficient to make a decision, the integration
 is simply removed from the matrix.
 
-# Typical workflow
+# Usage
 
-To know more about import functions take a look at the vignette "How to use 
-import functions".
-
-## Import the association file
-
-Import your association file:
-
-```{r import_af}
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    path_AF <- system.file("extdata", "ex_association_file.tsv",
-        package = "ISAnalytics"
-    )
-
-    root_correct <- system.file("extdata", "fs.zip",
-        package = "ISAnalytics"
-    )
-    root_correct <- unzip_file_system(root_correct, "fs")
-    association_file <- import_association_file(path_AF, root_correct, 
-                                                dates_format = "dmy")
-})
+```{r}
+data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+## Multi quantification matrix
+no_coll <- remove_collisions(x = integration_matrices,
+                             association_file = association_file,
+                             report_path = NULL)
+## Matrix list
+separated <- separate_quant_matrices(integration_matrices)
+no_coll_list <- remove_collisions(x = separated,
+                             association_file = association_file,
+                             report_path = NULL)
+## Only sequence count
+no_coll_single <- remove_collisions(x = separated$seqCount,
+                             association_file = association_file,
+                             quant_cols = c(seqCount = "Value"),
+                             report_path = NULL)
 ```
 
-Important notes on the association file:  
+Important notes on the association file:
 
 * You have to be sure your association file is properly filled out. The function
 requires you to specify a date column (by default "SequencingDate"), you have to
 ensure this column doesn't contain NA values or incorrect values.
-* You have to ensure that your association file contains ALL the information 
-regarding CompleteAmplificationIDs present in the matrices you're analyzing - 
-an error is thrown otherwise
-* If you have the verbose option set to true and your association file holds 
-additional information on other samples which for any reason are not present in 
-the matrix you're analyzing, you'll be notified with a console message.
 
-## Import the matrices for your analysis
+The function accepts different inputs, namely:
 
-```{r importMatr}
-# This imports both sequence count and fragment estimate matrices
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    matrices <- import_parallel_Vispa2Matrices_auto(
-        association_file = association_file, root = NULL,
-        quantification_type = c("fragmentEstimate", "seqCount"),
-        matrix_type = "annotated", workers = 2, patterns = NULL,
-        matching_opt = "ANY", multi_quant_matrix = FALSE
-    )
-})
-```
+* A multi-quantification matrix: this is always
+the recommended approach
+* A named list of matrices where names are quantification types in
+`quantification_types()`
+* The single sequence count matrix: this is not the recommended approach
+since it requires a realignment step for other quantification matrices if 
+you have them.
 
-As stated in the introduction, it is fundamental that the sequence count matrix 
-is present for the collision removal process to take place.
+If the option `ISAnalytics.reports` is active, an interactive report in 
+HTML format will be produced at the specified path.
 
-## Process the collisions
+# Re-align other matrices
 
-You can process the collisions in 3 different ways.
-
-### Pass the entire named list to the function
-
-```{r removecoll1}
-# Pass the whole named list
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    matrices_processed <- remove_collisions(
-        x = matrices,
-        association_file = association_file,
-        date_col = "SequencingDate",
-        reads_ratio = 10
-    )
-})
-```
-
-If you have the "widgets" option active, a report file is produced at the end
-that shows the before and after for each subject (and some other details). 
-This report is an HTML widget, so you can save it or export it for future 
-reference if you need it.  
-In this case, collision removal is done on the sequence 
-count matrix and other matrices are re-aligned automatically.
-
-### Give only the sequence count matrix as input
-
-```{r removecoll2}
-# Pass the sequence count matrix only
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    matrices_processed_single <- remove_collisions(
-        x = matrices$seqCount,
-        association_file =
-            association_file,
-        date_col = "SequencingDate",
-        reads_ratio = 10
-    )
-})
-```
-
-If you have the "verbose" option active, a console message will remind you to
-align other matrices if you have them at a later time.
-
-### Support for multi-quantification matrices
-
-If you'd like to avoid the re-alignment phase, you can call collision removal 
-on a multi-quantification matrix obtained via the function `comparison_matrix`:
-
-```{r removecoll3}
-# Obtain multi-quantification matrix
-multi <- comparison_matrix(matrices)
-multi
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    matrices_processed_multi <- remove_collisions(
-        x = multi,
-        association_file =
-            association_file,
-        date_col = "SequencingDate",
-        reads_ratio = 10,
-        seq_count_col = "seqCount"
-    )
-})
-```
-
-As you can see, `comparison_matrix` produces a single integration matrix 
-from the named list of single quantification matrices. This is the recommended
-approach if you don't have specific needs as it negates the necessity of 
-realigning matrices altogether.
-
-## Re-align other matrices
-
-If you have opted for the second way, to realign other matrices you have 
-to call the function `realign_after_collisions`, passing as input the 
-processed sequence count matrix and the named list of other matrices 
-to realign.   
+If you've given as input the standalone sequence count 
+matrix to `remove_collisions()`, to realign other matrices you have
+to call the function `realign_after_collisions()`, passing as input the
+processed sequence count matrix and the named list of other matrices
+to realign.
 **NOTE: the names in the list must be quantification types.**
 
-```{r realign, R.options=options(ISAnalytics.widgets = FALSE)}
-seq_count_proc <- matrices_processed_single
-other_matrices <- matrices[!names(matrices) %in% "seqCount"]
-# Select only matrices that are not relative to sequence count
-other_realigned <- realign_after_collisions(seq_count_proc, other_matrices)
+```{r realign}
+other_realigned <- realign_after_collisions(
+  sc_matrix = no_coll_single,
+  other_matrices = list(fragmentEstimate = separated$fragmentEstimate)
+)
 ```
 
 # Reproducibility
-
-The `r Biocpkg("ISAnalytics")` package `r citep(bib[["ISAnalytics"]])` 
-was made possible thanks to:
-
-* R `r citep(bib[["R"]])`
-* `r Biocpkg("BiocStyle")` `r citep(bib[["BiocStyle"]])`
-* `r CRANpkg("knitcitations")` `r citep(bib[["knitcitations"]])`
-* `r CRANpkg("knitr")` `r citep(bib[["knitr"]])`
-* `r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])`
-* `r CRANpkg("sessioninfo")` `r citep(bib[["sessioninfo"]])`
-* `r CRANpkg("testthat")` `r citep(bib[["testthat"]])`
-
-This package was developed using 
-`r BiocStyle::Githubpkg("lcolladotor/biocthis")`.
 
 `R` session information.
 
@@ -298,19 +205,14 @@ options(width = 120)
 session_info()
 ```
 
-
 # Bibliography
 
-This vignette was generated using `r Biocpkg("BiocStyle")` 
-`r citep(bib[["BiocStyle"]])`
-with `r CRANpkg("knitr")` `r citep(bib[["knitr"]])` and 
-`r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])` 
-running behind the scenes.
+This vignette was generated using `r Biocpkg("BiocStyle")` `r Citep(bib[["BiocStyle"]])`
+with `r CRANpkg("knitr")` `r Citep(bib[["knitr"]])` and `r CRANpkg("rmarkdown")` `r Citep(bib[["rmarkdown"]])` running behind the scenes.
 
-Citations made with `r CRANpkg("knitcitations")` 
-`r citep(bib[["knitcitations"]])`.
+Citations made with `r CRANpkg("RefManageR")` `r Citep(bib[["RefManageR"]])`.
 
-```{r results = "asis", echo = FALSE, warning = FALSE, message = FALSE}
+```{r vignetteBiblio, results = "asis", echo = FALSE, warning = FALSE, message = FALSE}
 ## Print bibliography
-bibliography()
+PrintBibliography(bib, .opts = list(hyperlink = "to.doc", style = "html"))
 ```

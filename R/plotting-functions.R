@@ -4,24 +4,24 @@
 
 #' Trace volcano plot for computed CIS data.
 #'
-#' \lifecycle{experimental}
+#' \lifecycle{stable}
 #' Traces a volcano plot for IS frequency and CIS results.
 #'
 #' @details
 #' ## Input data frame
 #' Users can supply as `x` either a simple integration matrix or a
-#' data frame resulting from the call to \link{CIS_grubbs}
-#' with `add_standard_padjust = TRUE`. In the first case an internal call to
-#' the function `CIS_grubbs` is performed.
+#' data frame resulting from the call to \link{CIS_grubbs}.
+#' In the first case an internal call to
+#' the function `CIS_grubbs()` is performed.
 #'
 #' ## Oncogene and tumor suppressor genes files
 #' These files are included in the package for user convenience and are
 #' simply UniProt files with gene annotations for human and mouse.
-#' For more details on how this files were generated use the help `?filename`
-#' function.
+#' For more details on how this files were generated use the help
+#' `?tumor_suppressors`, `?proto_oncogenes`
 #'
 #' ## Known oncogenes
-#' The default values are contained in a data frame exported by this package,
+#' The default values are included in this package and
 #' it can be accessed by doing:
 #'
 #' ```{r}
@@ -40,61 +40,48 @@
 #'
 #' @param x Either a simple integration matrix or a data frame resulting
 #' from the call to \link{CIS_grubbs} with `add_standard_padjust = TRUE`
-#' @param onco_db_file Uniprot file for proto-oncogenes (see details)
-#' @param tumor_suppressors_db_file Uniprot file for tumor-suppressor genes
-#' @param species One between "human", "mouse" and "all"
+#' @param onco_db_file Uniprot file for proto-oncogenes (see details).
+#' If different from default, should be supplied as a path to a file.
+#' @param tumor_suppressors_db_file Uniprot file for tumor-suppressor genes.
+#' If different from default, should be supplied as a path to a file.
+#' @param species One between `"human"`, `"mouse"` and `"all"`
 #' @param known_onco Data frame with known oncogenes. See details.
 #' @param suspicious_genes Data frame with clinical relevant suspicious
 #' genes. See details.
 #' @param significance_threshold The significance threshold
 #' @param annotation_threshold_ontots Value above which genes are annotated
-#' @param highlight_genes Either NULL or a character vector of genes to be
+#' with colorful labels
+#' @param highlight_genes Either `NULL` or a character vector of genes to be
 #' highlighted in the plot even if they're not above the threshold
-#' @param title_prefix A string to be displayed in the title - usually the
-#' project name and other characterizing info
+#' @param title_prefix A string or character vector to be displayed
+#' in the title - usually the
+#' project name and other characterizing info. If a vector is supplied,
+#' it is concatenated in a single string via `paste()`
 #' @param return_df Return the data frame used to generate the plot?
 #' This can be useful if the user wants to manually modify the plot with
 #' ggplot2. If TRUE the function returns a list containing both the plot
 #' and the data frame.
 #'
-#' @import ggplot2
+#' @importFrom ggplot2 ggplot aes_ geom_point geom_hline scale_y_continuous
+#' @importFrom ggplot2 scale_x_continuous unit theme element_text labs
 #' @importFrom ggrepel geom_label_repel
-#' @import dplyr
+#' @importFrom dplyr left_join mutate filter
+#' @importFrom rlang .data inform
+#' @importFrom purrr is_empty
+#' @importFrom stringr str_to_lower
 #'
 #' @return A plot or a list containing a plot and a data frame
 #' @export
 #'
 #' @examples
-#' op <- options(ISAnalytics.widgets = FALSE)
-#'
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
+#' data("integration_matrices", package = "ISAnalytics")
+#' cis_plot <- CIS_volcano_plot(integration_matrices,
+#'     title_prefix = "PJ01"
 #' )
-#' root_correct <- system.file("extdata", "fs.zip",
-#'     package = "ISAnalytics"
-#' )
-#' root_correct <- unzip_file_system(root_correct, "fs")
-#'
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     association_file = path_AF, root = root_correct,
-#'     quantification_type = c("seqCount", "fragmentEstimate"),
-#'     matrix_type = "annotated", workers = 2, patterns = NULL,
-#'     matching_opt = "ANY",
-#'     dates_format = "dmy"
-#' )
-#'
-#' cis <- CIS_grubbs(matrices)
-#' plot <- CIS_volcano_plot(cis)
-#' options(op)
+#' cis_plot
 CIS_volcano_plot <- function(x,
-    onco_db_file = system.file("extdata",
-        "201806_uniprot-Proto-oncogene.tsv.xz",
-        package = "ISAnalytics"
-    ),
-    tumor_suppressors_db_file = system.file("extdata",
-        "201806_uniprot-Tumor-suppressor.tsv.xz",
-        package = "ISAnalytics"
-    ),
+    onco_db_file = "proto_oncogenes",
+    tumor_suppressors_db_file = "tumor_suppressors",
     species = "human",
     known_onco = known_clinical_oncogenes(),
     suspicious_genes =
@@ -106,24 +93,26 @@ CIS_volcano_plot <- function(x,
     return_df = FALSE) {
     ## Check params
     stopifnot(is.data.frame(x))
-    stopifnot(is.character(onco_db_file) & length(onco_db_file) == 1)
-    stopifnot(is.character(tumor_suppressors_db_file) &
-        length(tumor_suppressors_db_file) == 1)
+    stopifnot(is.character(onco_db_file))
+    onco_db_file <- onco_db_file[1]
+    stopifnot(is.character(tumor_suppressors_db_file))
+    tumor_suppressors_db_file <- tumor_suppressors_db_file[1]
     stopifnot(is.character(species))
     stopifnot(is.data.frame(known_onco))
     stopifnot(is.data.frame(suspicious_genes))
     stopifnot(is.numeric(significance_threshold) |
-        is.integer(significance_threshold) &
-            length(significance_threshold) == 1)
+        is.integer(significance_threshold))
+    significance_threshold <- significance_threshold[1]
     stopifnot(is.numeric(annotation_threshold_ontots) |
-        is.integer(annotation_threshold_ontots) &
-            length(annotation_threshold_ontots) == 1)
-    stopifnot(is.null(title_prefix) || (is.character(title_prefix) &
-        length(title_prefix == 1)))
+        is.integer(annotation_threshold_ontots))
+    annotation_threshold_ontots <- annotation_threshold_ontots[1]
+    stopifnot(is.null(title_prefix) || (is.character(title_prefix)))
     stopifnot(is.null(highlight_genes) || is.character(highlight_genes))
     stopifnot(is.logical(return_df))
     if (is.null(title_prefix)) {
         title_prefix <- ""
+    } else {
+        title_prefix <- paste(title_prefix, collapse = " ")
     }
     ## Load onco and ts
     oncots_to_use <- .load_onco_ts_genes(
@@ -138,7 +127,7 @@ CIS_volcano_plot <- function(x,
     )
     cis_grubbs_df <- if (!all(min_cis_col %in% colnames(x))) {
         if (getOption("ISAnalytics.verbose") == TRUE) {
-            message(paste("Calculating CIS_grubbs for x..."))
+            rlang::inform("Calculating CIS_grubbs for x...")
         }
         CIS_grubbs(x)
     } else {
@@ -252,12 +241,12 @@ CIS_volcano_plot <- function(x,
             subtitle = paste0(
                 "Significance threshold for annotation",
                 " labeling: P-value < ", significance_threshold,
-                "(FDR adjusted; ",
+                " (FDR adjusted; ",
                 "-log = ", (round(-log(significance_threshold, base = 10), 3)),
                 ").\nOnco/TS genes source: UniProt (other genes ",
-                "labeled as 'Other'). Annotated if P-value > ",
-                round(annotation_threshold_ontots_log, 3), "\nexcept ",
-                "selected genes to be highlighted"
+                "labeled as 'Other'). \nAnnotated if P-value > ",
+                round(annotation_threshold_ontots_log, 3), " or in highlighted",
+                " genes"
             )
         )
     if (!is.null(highlight_genes) && !purrr::is_empty(highlight_genes)) {
@@ -337,40 +326,30 @@ clinical_relevant_suspicious_genes <- function() {
 #'
 #' @family Plotting functions
 #'
-#' @import dplyr
 #' @import ggplot2
 #'
 #' @return A plot
 #' @export
 #'
 #' @examples
-#' op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
-#' )
-#' root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' root_correct <- unzip_file_system(root_correct, "fs")
-#' association_file <- import_association_file(path_AF, root_correct,
-#'     dates_format = "dmy"
-#' )
-#' aggregated_meta <- aggregate_metadata(association_file)
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     association_file = association_file, root = NULL,
-#'     quantification_type = c("fragmentEstimate", "seqCount"),
-#'     matrix_type = "annotated", workers = 2, matching_opt = "ANY"
-#' )
-#' agg <- aggregate_values_by_key(
-#'     x = matrices,
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
 #'     association_file = association_file,
-#'     value_cols = "seqCount"
+#'     value_cols = c("seqCount", "fragmentEstimate")
+#' )
+#' aggreg_meta <- aggregate_metadata(
+#'     association_file = association_file
 #' )
 #' estimate <- HSC_population_size_estimate(
-#'     x = agg,
-#'     metadata = aggregated_meta,
-#'     stable_timepoints = NULL
+#'     x = aggreg,
+#'     metadata = aggreg_meta,
+#'     stable_timepoints = c(90, 180, 360),
+#'     cell_type = "Other"
 #' )
-#' p <- HSC_population_plot(estimate, "PROJECT1")
-#' options(op)
+#' p <- HSC_population_plot(estimate, "PJ01")
+#' p
 HSC_population_plot <- function(estimates,
     project_name,
     timepoints = "Consecutive",
@@ -445,10 +424,10 @@ HSC_population_plot <- function(estimates,
 #' function to highlight only relevant information on the plot and reduce
 #' computation time. The default value is 1, that acts on the default column
 #' plotted on the y axis which holds a percentage value. This translates
-#' in natural language roughly as "highlight with colours only those
+#' in natural language roughly as "highlight with colors only those
 #' integrations (alluvia) that at least in 1 point in time have an
-#' abundance value >= 1 %". The remaining integrations will be plotted in
-#' grey in the strata.
+#' abundance value >= 1 %". The remaining integrations will be plotted
+#' as transparent in the strata.
 #'
 #' @param x A data frame. See details.
 #' @param group Character vector containing the column names that identify
@@ -465,8 +444,8 @@ HSC_population_plot <- function(estimates,
 #'
 #' @family Plotting functions
 #' @importFrom rlang abort eval_tidy call2 inform .data fn_fmls_names dots_list
-#' @import dplyr
-#' @import BiocParallel
+#' @importFrom dplyr group_by across group_keys everything pull group_split
+#' @importFrom BiocParallel SnowParam MulticoreParam bplapply bpstop
 #' @importFrom purrr set_names
 #' @importFrom tidyr unite
 #'
@@ -475,31 +454,25 @@ HSC_population_plot <- function(estimates,
 #' @export
 #'
 #' @examples
-#' op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
-#' )
-#' root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' root_correct <- unzip_file_system(root_correct, "fs")
-#' association_file <- import_association_file(path_AF, root_correct,
-#'     dates_format = "dmy"
-#' )
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     association_file = association_file, root = NULL,
-#'     quantification_type = c("fragmentEstimate", "seqCount"),
-#'     matrix_type = "annotated", workers = 2, matching_opt = "ANY"
-#' )
-#' agg <- aggregate_values_by_key(
-#'     x = matrices,
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
 #'     association_file = association_file,
-#'     value_cols = c("fragmentEstimate", "seqCount")
+#'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
-#' abundance <- compute_abundance(agg,
-#'     columns = "fragmentEstimate_sum",
-#'     key = c("SubjectID", "CellMarker", "Tissue", "TimePoint")
+#' abund <- compute_abundance(x = aggreg)
+#' alluvial_plots <- integration_alluvial_plot(abund,
+#'     alluvia_plot_y_threshold = 0.5
 #' )
-#' plots <- integration_alluvial_plot(abundance, top_abundant_tbl = FALSE)
-#' options(op)
+#' ex_plot <- alluvial_plots[[1]]$plot +
+#'     ggplot2::labs(
+#'         title = "IS distribution over time",
+#'         subtitle = "Patient 1, MNC BM",
+#'         y = "Abundance (%)",
+#'         x = "Time point (days after GT)"
+#'     )
+#' print(ex_plot)
 integration_alluvial_plot <- function(x,
     group = c(
         "SubjectID",
@@ -568,6 +541,7 @@ integration_alluvial_plot <- function(x,
         )
         alluv_plot <- .alluvial_plot(cleaned, plot_x, plot_y)
         if (top_abundant_tbl == TRUE) {
+            summary_tbls <- NULL
             withCallingHandlers(
                 {
                     withRestarts(
@@ -588,7 +562,6 @@ integration_alluvial_plot <- function(x,
                                 "Failed to produce top",
                                 "abundance tables, skipping"
                             ))
-                            NULL
                         }
                     )
                 },
@@ -630,7 +603,8 @@ integration_alluvial_plot <- function(x,
 # with data to plot
 #' @importFrom tidyr unite
 #' @importFrom data.table setDT .SD
-#' @import dplyr
+#' @importFrom dplyr group_by across summarise n filter distinct pull rename
+#' @importFrom rlang .data
 .clean_data <- function(df,
     plot_x,
     plot_y,
@@ -657,7 +631,7 @@ integration_alluvial_plot <- function(x,
     # Modify ids - identifiers that are below threshold are converted to
     # NA and the quantities in y are aggregated
     tbl[!alluvia_id %in% alluvia_to_plot, alluvia_id := NA_character_]
-    tbl <- tbl[, setNames(.(sum(.SD)), plot_y),
+    tbl <- tbl[, setNames(list(sum(.SD)), plot_y),
         by = c(plot_x, "alluvia_id"), .SDcols = plot_y
     ]
     # Add counts
@@ -669,8 +643,17 @@ integration_alluvial_plot <- function(x,
 # for a single group. NOTE: tbl must contain the column "alluvia_id" and
 # "counts"
 #' @importFrom ggplot2 ggplot aes_ geom_text scale_fill_viridis_d sym
+#' @importFrom dplyr group_by summarise pull across all_of
+#' @importFrom rlang .data
 .alluvial_plot <- function(tbl, plot_x, plot_y) {
-    max_y <- max(tbl[[plot_y]])
+    sums_y <- tbl %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
+        dplyr::summarise(sums = sum(.data[[plot_y]])) %>%
+        dplyr::pull(.data$sums)
+    max_y <- max(sums_y)
+    labels <- tbl %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
+        dplyr::summarise(count = .data$count[1], .groups = "drop")
     alluv <- ggplot2::ggplot(
         tbl,
         ggplot2::aes_(
@@ -684,18 +667,22 @@ integration_alluvial_plot <- function(x,
             fill = NA
         ) +
         ggalluvial::geom_alluvium(ggplot2::aes_(fill = ~alluvia_id),
-            na.rm = TRUE,
+            na.rm = FALSE,
             decreasing = FALSE,
             alpha = .75,
             aes.bind = "alluvia"
         ) +
-        ggplot2::geom_text(ggplot2::aes_(
-            x = ggplot2::sym(plot_x),
-            y = max_y + 5,
-            label = ~count
-        )) +
         ggplot2::scale_fill_viridis_d() +
         ggplot2::theme(legend.position = "none")
+    alluv <- alluv +
+        ggplot2::geom_text(
+            data = labels,
+            ggplot2::aes_(
+                x = ggplot2::sym(plot_x),
+                y = max_y + 5,
+                label = ~count
+            ), inherit.aes = FALSE
+        )
     return(alluv)
 }
 
@@ -735,33 +722,27 @@ integration_alluvial_plot <- function(x,
 #' @return A tableGrob object
 #' @export
 #'
+#' @importFrom rlang abort .data
+#' @importFrom tibble tibble
+#' @importFrom ggplot2 ggplot_build
+#' @importFrom dplyr rename mutate select all_of across group_modify arrange
+#' @importFrom dplyr desc slice_head ungroup distinct left_join filter
+#' @importFrom dplyr rename_with pull starts_with
+#' @importFrom tidyr unite
+#' @importFrom purrr map set_names map2 reduce
+#' @importFrom stringr str_detect
+#'
 #' @examples
-#' op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
-#' )
-#' root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' root_correct <- unzip_file_system(root_correct, "fs")
-#' association_file <- import_association_file(path_AF, root_correct,
-#'     dates_format = "dmy"
-#' )
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     association_file = association_file, root = NULL,
-#'     quantification_type = c("fragmentEstimate", "seqCount"),
-#'     matrix_type = "annotated", workers = 2, matching_opt = "ANY"
-#' )
-#' agg <- aggregate_values_by_key(
-#'     x = matrices,
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
 #'     association_file = association_file,
-#'     value_cols = c("fragmentEstimate", "seqCount")
+#'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
-#' abundance <- compute_abundance(agg,
-#'     columns = "fragmentEstimate_sum",
-#'     key = c("SubjectID", "CellMarker", "Tissue", "TimePoint")
-#' )
-#' grob <- top_abund_tableGrob(abundance)
+#' abund <- compute_abundance(x = aggreg)
+#' grob <- top_abund_tableGrob(abund)
 #' gridExtra::grid.arrange(grob)
-#' options(op)
 top_abund_tableGrob <- function(df,
     id_cols = mandatory_IS_vars(),
     quant_col = "fragmentEstimate_sum_PercAbundance",
@@ -788,6 +769,10 @@ top_abund_tableGrob <- function(df,
         NULL
     }
     top <- df %>%
+        dplyr::mutate(dplyr::across({{ by }}, ~ ifelse(is.na(.x),
+            yes = "NA",
+            no = .x
+        ))) %>%
         tidyr::unite({{ id_cols }}, col = "alluvia_id") %>%
         dplyr::select(dplyr::all_of(c(
             "alluvia_id", tbl_cols,
@@ -909,18 +894,25 @@ top_abund_tableGrob <- function(df,
 #' @export
 #'
 #' @importFrom rlang abort inform .data
-#' @import ggplot2
+#' @importFrom ggplot2 ggplot aes_ geom_raster scale_fill_gradientn geom_text
+#' @importFrom ggplot2 scale_alpha_continuous aes theme element_text
+#' @importFrom ggplot2 element_blank rel labs
 #' @importFrom dplyr mutate across all_of
 #' @importFrom purrr map set_names
 #'
 #' @examples
-#' path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-#'     package = "ISAnalytics"
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
+#'     association_file = association_file,
+#'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
-#' matrix <- import_single_Vispa2Matrix(path)
-#' sharing <- is_sharing(matrix, group_key = "CompleteAmplificationID")
-#' heatmaps <- sharing_heatmap(sharing$sharing)
-#' heatmaps$absolute
+#' sharing <- is_sharing(aggreg)
+#' sharing_heatmaps <- sharing_heatmap(sharing_df = sharing$sharing)
+#' sharing_heatmaps$absolute
+#' sharing_heatmaps$on_g1
+#' sharing_heatmaps$on_union
 sharing_heatmap <- function(sharing_df,
     show_on_x = "group1",
     show_on_y = "group2",
@@ -1067,4 +1059,200 @@ sharing_heatmap <- function(sharing_df,
         result <- purrr::map(result, plotly::ggplotly)
     }
     return(result)
+}
+
+#' Trace a circos plot of genomic densities.
+#'
+#' @description \lifecycle{experimental}
+#' For this functionality
+#' the suggested package
+#' [circlize](https://cran.r-project.org/web/packages/circlize/index.html)
+#' is required.
+#' Please note that this function is a simple wrapper of basic `circlize`
+#' functions, for an in-depth explanation on how the functions work and
+#' additional arguments please refer to the official documentation
+#' [Circular Visualization in R](https://jokergoo.github.io/circlize_book/book/)
+#'
+#' @details
+#' ## Providing genomic labels
+#' If genomic labels should be plotted alongside genomic density tracks,
+#' the user should provide them as a simple data frame in standard bed format,
+#' namely `chr`, `start`, `end` plus a column containing the labels.
+#' NOTE: if the user decides to plot on the default device (viewer in RStudio),
+#' he must ensure there is enough space for all elements to be plotted,
+#' otherwise an error message is thrown.
+#'
+#' @param data Either a single integration matrix or a list of integration
+#' matrices. If a list is provided, a separate density track for each
+#' data frame is plotted.
+#' @param gene_labels Either `NULL` or a data frame in bed format. See details.
+#' @param label_col Numeric index of the column of `gene_labels` that contains
+#' the actual labels. Relevant only if `gene_labels` is not set to `NULL`.
+#' @param cytoband_specie Specie for initializing the cytoband
+#' @param track_colors Colors to give to density tracks. If more than one
+#' integration matrix is provided as `data` should be of the same length.
+#' Values are recycled if length of `track_colors` is smaller than the length
+#' of the input data.
+#' @param grDevice The graphical device where the plot should be traced.
+#' `default`, if executing from RStudio is the viewer.
+#' @param file_path If a device other than `default` is chosen, the path on
+#' disk where the file should be saved. Defaults to
+#' `{current directory}/circos_plot.{device}`.
+#' @param ... Additional named arguments to pass on to chosen device,
+#' `circlize::circos.par()`,
+#' `circlize::circos.genomicDensity()` and `circlize::circos.genomicLabels()`
+#'
+#' @importFrom rlang abort dots_list .data arg_match fn_fmls_names as_function
+#' @importFrom rlang exec
+#' @importFrom dplyr select all_of distinct mutate rename
+#' @importFrom purrr map walk2
+#' @importFrom fs is_dir dir_exists dir_create path path_ext_set path_ext
+#' @importFrom lubridate today
+#'
+#' @return `NULL`
+#' @export
+#'
+#' @examples
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
+#'     association_file = association_file,
+#'     value_cols = c("seqCount", "fragmentEstimate")
+#' )
+#' by_subj <- aggreg %>%
+#'     dplyr::group_by(.data$SubjectID) %>%
+#'     dplyr::group_split()
+#' circos_genomic_density(by_subj,
+#'     track_colors = c("navyblue", "gold"),
+#'     grDevice = "default", track.height = 0.1
+#' )
+circos_genomic_density <- function(data,
+    gene_labels = NULL,
+    label_col = NULL,
+    cytoband_specie = "hg19",
+    track_colors = "navyblue",
+    grDevice = c(
+        "png", "pdf", "svg",
+        "jpeg", "bmp", "tiff",
+        "default"
+    ),
+    file_path = getwd(),
+    ...) {
+    if (!requireNamespace("circlize", quietly = TRUE)) {
+        rlang::abort(.missing_pkg_error("circlize"))
+    }
+    stopifnot(is.list(data))
+    mode <- if (is.data.frame(data)) {
+        "DF"
+    } else {
+        "LIST"
+    }
+    stopifnot(is.null(gene_labels) || is.data.frame(gene_labels))
+    if (!is.null(gene_labels)) {
+        stopifnot(is.numeric(label_col) || is.integer(label_col))
+        label_col <- label_col[1]
+    }
+    stopifnot(is.character(cytoband_specie))
+    stopifnot(is.character(track_colors))
+    dots <- rlang::dots_list(..., .named = TRUE, .homonyms = "first")
+    ## -- Prep data
+    .prep_dens_data <- function(df) {
+        if (!.check_mandatory_vars(df)) {
+            rlang::abort(.missing_mand_vars())
+        }
+        df %>%
+            dplyr::select(dplyr::all_of(mandatory_IS_vars())) %>%
+            dplyr::distinct() %>%
+            dplyr::mutate(
+                chr = paste0("chr", .data$chr),
+                end = .data$integration_locus
+            ) %>%
+            dplyr::rename(start = "integration_locus") %>%
+            dplyr::select(.data$chr, .data$start, .data$end, .data$strand)
+    }
+    data_mod <- if (mode == "DF") {
+        .prep_dens_data(data)
+    } else {
+        purrr::map(data, .prep_dens_data)
+    }
+    device <- rlang::arg_match(grDevice)
+    if (device != "default") {
+        ## Open device
+        stopifnot(is.character(file_path))
+        if (fs::is_dir(file_path)) {
+            if (!fs::dir_exists(file_path)) {
+                fs::dir_create(file_path)
+            }
+            def <- paste0("circos_plot.", device)
+            date <- lubridate::today()
+            gen_filename <- paste0(date, "_", def)
+            file_path <- fs::path(file_path, gen_filename)
+        } else {
+            if (fs::path_ext(file_path) == "") {
+                file_path <- fs::path_ext_set(file_path, device)
+            }
+        }
+        device_args <- dots[names(dots) %in%
+            rlang::fn_fmls_names(
+                rlang::as_function(device)
+            )]
+        device_args <- device_args[!names(device_args) %in% c("filename")]
+        rlang::exec(.fn = device, filename = file_path, !!!device_args)
+    }
+    ## Draw plot
+    par_args <- dots[names(dots) %in%
+        rlang::fn_fmls_names(
+            circlize::circos.par
+        )]
+    par_args <- par_args[!names(par_args) %in% c("start.degree")]
+    density_args <- dots[names(dots) %in%
+        rlang::fn_fmls_names(
+            circlize::circos.genomicDensity
+        )]
+    density_args <- density_args[!names(density_args) %in% c("data", "col")]
+    rlang::exec(.fn = circlize::circos.par, "start.degree" = 90, !!!par_args)
+    circlize::circos.initializeWithIdeogram(species = cytoband_specie[1])
+    if (mode == "DF") {
+        rlang::exec(
+            .fn = circlize::circos.genomicDensity,
+            data = data_mod,
+            col = track_colors[1],
+            !!!density_args
+        )
+    } else {
+        if (length(track_colors) < length(data_mod)) {
+            track_colors <- rep_len(track_colors, length(data_mod))
+        } else if (length(track_colors) > length(data_mod)) {
+            track_colors <- track_colors[seq_along(data_mod)]
+        }
+        purrr::walk2(
+            data_mod, track_colors,
+            ~ rlang::exec(
+                .fn = circlize::circos.genomicDensity,
+                data = .x,
+                col = .y,
+                !!!density_args
+            )
+        )
+    }
+
+    if (!is.null(gene_labels)) {
+        labs_args <- dots[names(dots) %in%
+            rlang::fn_fmls_names(
+                circlize::circos.genomicLabels
+            )]
+        labs_args <- labs_args[!names(labs_args) %in% c("bed", "labels.column")]
+        rlang::exec(
+            .fn = circlize::circos.genomicLabels,
+            bed = gene_labels,
+            labels.column = label_col,
+            !!!labs_args
+        )
+    }
+
+    if (device != "default") {
+        grDevices::dev.off()
+    }
+    circlize::circos.clear()
 }

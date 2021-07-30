@@ -78,10 +78,6 @@ test_that(paste0(func_name, "stops if params incorrect"), {
     err <- expect_error({
         top_integrations(test_df[2:7], columns = "Value")
     })
-    expect_equal(
-        err$message,
-        .non_ISM_error()
-    )
     ## Missing non null key
     err <- expect_error({
         top_integrations(test_df, columns = "Value", key = "a")

@@ -8,18 +8,19 @@ func_name <- c(
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
-test_af_path <- system.file("extdata", "ex_association_file.tsv",
+withr::local_options(list(ISAnalytics.reports = FALSE))
+test_af_path <- system.file("testdata", "ex_association_file.tsv.gz",
     package = "ISAnalytics"
 )
 
 # Path to correct file system example
-path_root_correct <- system.file("extdata", "fs.zip",
+path_root_correct <- system.file("testdata", "fs.zip",
     package = "ISAnalytics"
 )
 root_correct <- unzip_file_system(path_root_correct, "fs")
 
 # Path to incorrect file system example
-path_root_err <- system.file("extdata", "fserr.zip",
+path_root_err <- system.file("testdata", "fserr.zip",
     package = "ISAnalytics"
 )
 root_err <- unzip_file_system(path_root_err, "fserr")
@@ -29,7 +30,6 @@ path_cols <- .path_cols_names()
 # Tests .read_af
 #------------------------------------------------------------------------------#
 test_that(paste(func_name[1], "works for tsv file"), {
-    withr::local_options(ISAnalytics.widgets = FALSE)
     read_res <- .read_af(test_af_path,
         padding = 4, date_format = "dmy",
         delimiter = "\t"
@@ -43,7 +43,6 @@ test_that(paste(func_name[1], "works for tsv file"), {
 # Tests .check_file_system_alignment
 #------------------------------------------------------------------------------#
 test_that(paste(func_name[2], "finds all projects for correct fs"), {
-    withr::local_options(ISAnalytics.widgets = FALSE)
     read_res <- .read_af(test_af_path,
         padding = 4, date_format = "dmy",
         delimiter = "\t"
@@ -56,7 +55,6 @@ test_that(paste(func_name[2], "finds all projects for correct fs"), {
 })
 
 test_that(paste(func_name[2], "finds missing projects for incorrect fs"), {
-    withr::local_options(ISAnalytics.widgets = FALSE)
     missing_project <- list(
         ProjectID = "PROJECT1101",
         concatenatePoolIDSeqRun = "ABY-LR-PL4-POOL54-2"
@@ -104,7 +102,6 @@ test_that(paste(func_name[2], "finds missing projects for incorrect fs"), {
 # Tests .update_af_after_alignment
 #------------------------------------------------------------------------------#
 test_that(paste(func_name[3], "updates correct fs - no NAs"), {
-    withr::local_options(ISAnalytics.widgets = FALSE)
     read_res <- .read_af(test_af_path,
         padding = 4, date_format = "dmy",
         delimiter = "\t"
@@ -119,7 +116,6 @@ test_that(paste(func_name[3], "updates correct fs - no NAs"), {
 
 
 test_that(paste(func_name[3], "updates correct fserr - with NAs"), {
-    withr::local_options(ISAnalytics.widgets = FALSE)
     missing_project <- list(
         ProjectID = "PROJECT1101",
         concatenatePoolIDSeqRun = "ABY-LR-PL4-POOL54-2"
@@ -236,7 +232,6 @@ test_that(paste(func_name[4], "fails if separator is wrong"), {
 
 ## Testing results
 test_that(paste(func_name[4], "imports with defaults"), {
-    withr::local_options(ISAnalytics.widgets = FALSE)
     expect_message(
         {
             af1 <- import_association_file(test_af_path)
@@ -261,7 +256,6 @@ test_that(paste(func_name[4], "imports with defaults"), {
 })
 
 test_that(paste(func_name[4], "imports with filtering"), {
-    withr::local_options(ISAnalytics.widgets = FALSE)
     expect_message(
         {
             af1 <- import_association_file(test_af_path,

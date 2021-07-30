@@ -16,7 +16,7 @@ output:
 date: "`r doc_date()`"
 package: "`r pkg_ver('ISAnalytics')`"
 vignette: >
-  %\VignetteIndexEntry{Working with aggregate functions}
+  %\VignetteIndexEntry{aggregate_function_usage}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}  
 ---
@@ -31,31 +31,21 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
-## Track time spent on making the vignette
-startTime <- Sys.time()
-
 ## Bib setup
-library("knitcitations")
-
-## Load knitcitations with a clean bibliography
-cleanbib()
-cite_options(hyperlink = "to.doc", citation_format = "text", style = "html")
+library("RefManageR")
 
 ## Write bibliography information
 bib <- c(
     R = citation(),
     BiocStyle = citation("BiocStyle")[1],
-    knitcitations = citation("knitcitations")[1],
     knitr = citation("knitr")[1],
+    RefManageR = citation("RefManageR")[1],
     rmarkdown = citation("rmarkdown")[1],
     sessioninfo = citation("sessioninfo")[1],
     testthat = citation("testthat")[1],
     ISAnalytics = citation("ISAnalytics")[1]
 )
-
-write.bibtex(bib, file = "aggregate_function_usage.bib")
 ```
 
 # Introduction
@@ -63,8 +53,8 @@ write.bibtex(bib, file = "aggregate_function_usage.bib")
 In this vignette we're going to explain in detail how to use functions of the 
 aggregate family, namely:
 
-1. `aggregate_metadata`
-2. `aggregate_values_by_key`
+1. `aggregate_metadata()`
+2. `aggregate_values_by_key()`
 
 ```{r echo=FALSE}
 inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAnalytics")
@@ -78,15 +68,15 @@ inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAn
 
 We refer to information contained in the association file as "metadata": 
 sometimes it's useful to obtain collective information based on a certain 
-group of variables we're interested in. The function `aggregate_metadata` 
+group of variables we're interested in. The function `aggregate_metadata()` 
 does just that: according to the grouping variables, meaning the names of 
-the columns in the association file to perform a `group_by` operation with, 
+the columns in the association file to perform a `group_by` operation with,it 
 creates a summary. You can fully customize the summary by providing a 
-"function table" which tells the function which operation should be 
+"function table" that tells the function which operation should be 
 applied to which column and what name to give to the output column.
 A default is already supplied:
 
-```{r echo=TRUE}
+```{r echo=FALSE}
 library(ISAnalytics)
 knitr::kable(default_meta_agg()) 
 ```
@@ -95,43 +85,27 @@ You can either provide purrr-style lambdas (as given in the example above),
 or simply specify the name of the function and additional parameters as a 
 list in a separated column. If you choose to provide your own table you
 should maintain the column names for the function to work properly.
+For more details on this take a look at the function documentation 
+`?default_meta_agg`.
 
 ## Typical workflow
 
-Import the association file via `import_assocition_file`. If you need more 
+1. Import the association file via `import_assocition_file()`. If you need more 
 information on import function please view the vignette 
-"How to use import functions".
+"How to use import functions": 
+`vignette("how_to_import_functions", package="ISAnalytics")`.
+2. Perform aggregation
 
 ```{r}
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    path_AF <- system.file("extdata", "ex_association_file.tsv",
-        package = "ISAnalytics"
-    )
-
-    root_correct <- system.file("extdata", "fs.zip",
-        package = "ISAnalytics"
-    )
-    root_correct <- unzip_file_system(root_correct, "fs")
-    association_file <- import_association_file(path_AF, root_correct)
-})
-```
-
-Perform aggregation:
-
-```{r}
-aggregated_meta <- aggregate_metadata(
-  association_file,
-    grouping_keys = c(
-        "SubjectID",
-        "CellMarker",
-        "Tissue", 
-        "TimePoint"
-    )
-)
+data("association_file", package = "ISAnalytics")
+aggregated_meta <- aggregate_metadata(association_file = association_file)
 ```
 
 ```{r echo=FALSE}
-knitr::kable(aggregated_meta)
+DT::datatable(aggregated_meta, 
+              rownames = FALSE,
+              options = list(dom = "t", 
+                             scrollX = 120))
 ```
 
 # Aggregation of values by key
@@ -142,38 +116,29 @@ columns contained in the association file that are related to the samples.
 
 ## Typical workflow
 
-Import your association file (see previous section) and then import your 
-matrices:
+1. Import your association file
+2. Import integration matrices via `import_parallel_Vispa2Matrices()`
+3. Perform aggregation
 
 ```{r}
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    matrices <- import_parallel_Vispa2Matrices_auto(
-        association_file = association_file, root = NULL,
-        quantification_type = c("fragmentEstimate", "seqCount"),
-        matrix_type = "annotated", workers = 2, patterns = NULL,
-        matching_opt = "ANY", multi_quant_matrix = FALSE
-    )
-})
-```
-
-The function `aggregate_values_by_key` can perform the aggregation both on the 
-list of matrices and a single matrix.
-
-```{r}
-# Takes the whole list and produces a list in output
-aggregated_matrices <- aggregate_values_by_key(matrices, association_file)
-
-# Takes a single matrix and produces a single matrix as output
-aggregated_matrices_single <- aggregate_values_by_key(
-    matrices$seqCount,
-    association_file
+data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+aggreg <- aggregate_values_by_key(
+  x = integration_matrices, 
+  association_file = association_file,
+  value_cols = c("seqCount", "fragmentEstimate")
 )
 ```
 
 ```{r echo=FALSE}
-knitr::kable(head(aggregated_matrices_single))
+DT::datatable(head(aggreg),
+              rownames = FALSE,
+              options = list(dom = "t",
+                             scrollX = 120))
 ```
 
+The function `aggregate_values_by_key` can perform the aggregation both on the 
+list of matrices and a single matrix.
 
 ### Changing parameters to obtain different results
 
@@ -191,14 +156,18 @@ function).
 
 ```{r}
 agg1 <- aggregate_values_by_key(
-    x = matrices$seqCount,
+    x = integration_matrices,
     association_file = association_file,
-    key = c("SubjectID", "ProjectID")
+    key = c("SubjectID", "ProjectID"),
+    value_cols = c("seqCount", "fragmentEstimate")
 )
 ```
 
 ```{r echo=FALSE}
-knitr::kable(head(agg1))
+DT::datatable(head(agg1),
+              rownames = FALSE,
+              options = list(dom = "t",
+                             scrollX = 120))
 ```
 
 2. **Changing the `lambda` value**  
@@ -215,15 +184,19 @@ SINGLE value as output. Valid options for this purpose might be: `sum`, `mean`,
 
 ```{r}
 agg2 <- aggregate_values_by_key(
-    x = matrices$seqCount,
+    x = integration_matrices,
     association_file = association_file,
     key = "SubjectID",
-    lambda = list(mean = ~ mean(.x, na.rm = TRUE))
+    lambda = list(mean = ~ mean(.x, na.rm = TRUE)),
+    value_cols = c("seqCount", "fragmentEstimate")
 )
 ```
 
 ```{r echo=FALSE}
-knitr::kable(head(agg2))
+DT::datatable(head(agg2),
+              rownames = FALSE,
+              options = list(dom = "t",
+                             scrollX = 120))
 ```
 
 Note that, when specifying purrr-style lambdas (formulas), the first 
@@ -235,29 +208,31 @@ in the final data frame. For example:
 
 ```{r}
 agg3 <- aggregate_values_by_key(
-    x = matrices$seqCount,
+    x = integration_matrices,
     association_file = association_file,
     key = "SubjectID",
-    lambda = list(describe = psych::describe)
+    lambda = list(describe = ~ list(psych::describe(.x))),
+    value_cols = c("seqCount", "fragmentEstimate")
 )
-
-agg3
 ```
 
+```{r echo=FALSE}
+DT::datatable(head(agg3),
+              rownames = FALSE,
+              options = list(dom = "t",
+                             scrollX = 120))
+```
 
 3. **Changing the `value_cols` value**  
 The `value_cols` parameter tells the function on which numeric columns 
 of x the functions should be applied. 
-NOte that every function contained in `lambda` will be applied to every
+Note that every function contained in `lambda` will be applied to every
 column in `value_cols`: resulting columns will be named as 
 "original name_function applied".
 
 ```{r}
-## Obtaining multi-quantification matrix
-comp <- comparison_matrix(matrices)
-
 agg4 <- aggregate_values_by_key(
-    x = comp,
+    x = integration_matrices,
     association_file = association_file,
     key = "SubjectID",
     lambda = list(sum = sum, mean = mean),
@@ -266,45 +241,39 @@ agg4 <- aggregate_values_by_key(
 ```
 
 ```{r echo=FALSE}
-knitr::kable(head(agg4))
+DT::datatable(head(agg4),
+              rownames = FALSE,
+              options = list(dom = "t",
+                             scrollX = 120))
 ```
 
 4. **Changing the `group` value**  
 The `group` parameter should contain all other variables to include in the 
-grouping besides `key`. By default this contains `c("chr", "integration_locus",
-"strand", "GeneName", "GeneStrand")`. You can change this grouping as you see 
+grouping besides `key`. By default this contains 
+`c("chr", "integration_locus","strand", "GeneName", "GeneStrand")`. 
+You can change this grouping as you see 
 fit, if you don't want to add any other variable to the key, just set it to 
-NULL.
+`NULL`.
 
 ```{r}
 agg5 <- aggregate_values_by_key(
-    x = matrices$seqCount,
+    x = integration_matrices,
     association_file = association_file,
     key = "SubjectID",
     lambda = list(sum = sum, mean = mean),
-    group = c(mandatory_IS_vars())
+    group = c(mandatory_IS_vars()),
+    value_cols = c("seqCount", "fragmentEstimate")
 )
 ```
 
 ```{r echo=FALSE}
-knitr::kable(head(agg5))
+DT::datatable(head(agg5),
+              rownames = FALSE,
+              options = list(dom = "t",
+                             scrollX = 120))
 ```
 
 # Reproducibility
-
-The `r Biocpkg("ISAnalytics")` package `r citep(bib[["ISAnalytics"]])`
-was made possible thanks to:
-
-* R `r citep(bib[["R"]])`
-* `r Biocpkg("BiocStyle")` `r citep(bib[["BiocStyle"]])`
-* `r CRANpkg("knitcitations")` `r citep(bib[["knitcitations"]])`
-* `r CRANpkg("knitr")` `r citep(bib[["knitr"]])`
-* `r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])`
-* `r CRANpkg("sessioninfo")` `r citep(bib[["sessioninfo"]])`
-* `r CRANpkg("testthat")` `r citep(bib[["testthat"]])`
-
-This package was developed using 
-`r BiocStyle::Githubpkg("lcolladotor/biocthis")`.
 
 `R` session information.
 
@@ -315,19 +284,14 @@ options(width = 120)
 session_info()
 ```
 
-
 # Bibliography
 
-This vignette was generated using `r Biocpkg("BiocStyle")` 
-`r citep(bib[["BiocStyle"]])`
-with `r CRANpkg("knitr")` `r citep(bib[["knitr"]])` and 
-`r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])` 
-running behind the scenes.
+This vignette was generated using `r Biocpkg("BiocStyle")` `r Citep(bib[["BiocStyle"]])`
+with `r CRANpkg("knitr")` `r Citep(bib[["knitr"]])` and `r CRANpkg("rmarkdown")` `r Citep(bib[["rmarkdown"]])` running behind the scenes.
 
-Citations made with `r CRANpkg("knitcitations")` 
-`r citep(bib[["knitcitations"]])`.
+Citations made with `r CRANpkg("RefManageR")` `r Citep(bib[["RefManageR"]])`.
 
-```{r results = "asis", echo = FALSE, warning = FALSE, message = FALSE}
+```{r vignetteBiblio, results = "asis", echo = FALSE, warning = FALSE, message = FALSE}
 ## Print bibliography
-bibliography()
+PrintBibliography(bib, .opts = list(hyperlink = "to.doc", style = "html"))
 ```

@@ -6,9 +6,9 @@
 \usage{
 compute_abundance(
   x,
-  columns = "Value",
+  columns = c("fragmentEstimate_sum"),
   percentage = TRUE,
-  key = "CompleteAmplificationID",
+  key = c("SubjectID", "CellMarker", "Tissue", "TimePoint"),
   keep_totals = FALSE
 )
 }
@@ -36,7 +36,7 @@ Either a single data frame with computed abundance values or
 a list of 2 data frames (abundance_df, quant_totals)
 }
 \description{
-\lifecycle{maturing}
+\lifecycle{stable}
 Abundance is obtained for every integration event by calculating the ratio
 between the single value and the total value for the given group.
 }
@@ -47,18 +47,13 @@ relative abundance column (and optionally a percentage abundance
 column) will be produced.
 }
 \examples{
-path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-    package = "ISAnalytics"
+data("integration_matrices", package = "ISAnalytics")
+abund <- compute_abundance(
+    x = integration_matrices,
+    columns = "fragmentEstimate",
+    key = "CompleteAmplificationID"
 )
-matrix <- import_single_Vispa2Matrix(path)
-
-# Simple integration matrix - grouping by CompleteAmplificationID
-abundance1 <- compute_abundance(matrix)
-abundance1
-
-# Keeping totals as a separate data frame
-abundance2 <- compute_abundance(matrix, keep_totals = "df")
-abundance2
+head(abund)
 }
 \seealso{
 Other Analysis functions: 

@@ -12,8 +12,8 @@ import_association_file(
   separator = "\\t",
   filter_for = NULL,
   import_iss = FALSE,
-  export_widget_path = NULL,
   convert_tp = TRUE,
+  report_path = default_report_path(),
   ...
 )
 }
@@ -24,7 +24,7 @@ import_association_file(
 See details.}
 
 \item{tp_padding}{Timepoint padding, indicates the number of digits of the
-"Timepoint" column once imported. Fills the content with 0s up to the length
+"TimePoint" column once imported. Fills the content with 0s up to the length
 specified (ex: 1 becomes 0001 with a tp_padding of 4)}
 
 \item{dates_format}{A single string indicating how dates should be parsed.
@@ -42,74 +42,45 @@ conditions are applied as a logical AND.}
 \item{import_iss}{Import Vispa2 stats and merge them with the
 association file?}
 
-\item{export_widget_path}{A path on disk to save produced widgets or NULL
-if the user doesn't wish to save the html file}
-
 \item{convert_tp}{Should be time points be converted into months and
 years?}
 
-\item{...}{Additional arguments to pass to \code{\link{import_Vispa2_stats}}}
+\item{report_path}{The path where the report file should be saved.
+Can be a folder, a file or NULL if no report should be produced.
+Defaults to \code{{user_home}/ISAnalytics_reports}.}
+
+\item{...}{Additional arguments to pass to
+\code{\link{import_Vispa2_stats}}}
 }
 \value{
-A tibble with the contents of the association file plus columns
-containing the path in the file system for every project and pool if found.
+The data frame holding metadata
 }
 \description{
-\lifecycle{maturing}
+\lifecycle{stable}
 Imports the association file and immediately performs a check on
 the file system starting from the root to assess the alignment between the
 two.
 }
 \details{
-The import series of functions is designed to work in combination
-with the use of Vispa2 pipeline, please refer to this article for more
-details: \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/}{VISPA2:
-A Scalable Pipeline for High-Throughput Identification
-and Annotation of Vector Integration Sites}.\cr
-The pipeline automatically produces an hierarchical structure in the file
-system which follows this schema:
-\itemize{
-\item /root_folder
-\itemize{
-\item Optional intermediate folders
-\itemize{
-\item ProjectID\cr
-|_bam\cr
-|_bcmuxall\cr
-|_bed\cr
-|_iss\cr
-|_quality\cr
-|_report\cr
-|_quantification\cr
-*|___concatenatePoolIDSeqRun\cr
-}
-}
-}
-
-For each ProjectID there may be several nested PoolIDs. The alignment
-function only looks for PoolIDs in the quantification folder, since it's
-the location of the matrices to import.
-For more details on how to properly use these functions, refer to the
-vignette - vignette("how_to_import_functions").\cr
-If 'NULL' the file system alignment step is skipped.
+If the \code{root} argument is set to \code{NULL} no file system alignment is
+performed. This allows to import the basic file but it won't be
+possible to perfom automated matrix and stats import.
+For more details see the "How to use import functions" vignette:
+\code{vignette("import_functions_howto", package = "ISAnalytics")}
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE)
-path <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
-)
-root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- unzip_file_system(root_pth, "fs")
-association_file <- import_association_file(path, root, dates_format = "dmy")
-options(op)
+fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+fs <- unzip_file_system(fs_path, "fs")
+af_path <- system.file("extdata", "asso.file.tsv.gz", package = "ISAnalytics")
+af <- import_association_file(af_path, root = fs, report_path = NULL)
+head(af)
 }
 \seealso{
 \code{\link{date_formats}}
 
 Other Import functions: 
 \code{\link{import_Vispa2_stats}()},
-\code{\link{import_parallel_Vispa2Matrices_auto}()},
-\code{\link{import_parallel_Vispa2Matrices_interactive}()},
+\code{\link{import_parallel_Vispa2Matrices}()},
 \code{\link{import_single_Vispa2Matrix}()}
 }
 \concept{Import functions}

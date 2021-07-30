@@ -8,43 +8,44 @@ func_name <- c(
     ".pattern_matching",
     ".update_as_option",
     ".lookup_matrices_auto", ".manage_anomalies_auto",
-    "import_parallel_Vispa2Matrices_auto"
+    "import_parallel_Vispa2Matrices_auto",
+    "import_parallel_Vispa2Matrices"
 )
 
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
 withr::local_options(
-    ISAnalytics.widgets = FALSE,
+    ISAnalytics.reports = FALSE,
     ISAnalytics.verbose = FALSE
 )
 
 # Path to example association file
-path_af <- system.file("extdata", "ex_association_file.tsv",
+path_af <- system.file("testdata", "ex_association_file.tsv.gz",
     package = "ISAnalytics"
 )
 
 # Path to correct file system example
-path_root_correct <- system.file("extdata", "fs.zip",
+path_root_correct <- system.file("testdata", "fs.zip",
     package = "ISAnalytics"
 )
 root_correct <- unzip_file_system(path_root_correct, "fs")
 
 # Path to incorrect file system example
-path_root_err <- system.file("extdata", "fserr.zip",
+path_root_err <- system.file("testdata", "fserr.zip",
     package = "ISAnalytics"
 )
 root_err <- unzip_file_system(path_root_err, "fserr")
 
 withr::with_options(list(
-    ISAnalytics.widgets = FALSE,
+    ISAnalytics.reports = FALSE,
     ISAnalytics.verbose = FALSE
 ), {
     as_file_correct <- import_association_file(path_af, root_correct)
 })
 
 withr::with_options(list(
-    ISAnalytics.widgets = FALSE,
+    ISAnalytics.reports = FALSE,
     ISAnalytics.verbose = FALSE
 ), {
     as_file_errors <- import_association_file(path_af, root_err)
@@ -809,264 +810,6 @@ test_that(paste(func_name[10], "correctly imports files for each q type"), {
 })
 
 #------------------------------------------------------------------------------#
-# Tests import_parallel_Vispa2Matrices_interactive
-#------------------------------------------------------------------------------#
-## Testing input
-test_that(paste(func_name[11], "stops if af is missing"), {
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            root = "x",
-            quantification_type =
-                quant_types,
-            matrix_type = "annotated",
-            workers = 2
-        )
-    })
-})
-
-test_that(paste(func_name[11], "stops if af is not character or tibble"), {
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            association_file = 1,
-            quantification_type =
-                quant_types
-        )
-    })
-})
-
-test_that(paste(
-    func_name[11], "stops if af is a character",
-    "vector longer than 1"
-), {
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            association_file = c(
-                path_af,
-                path_af
-            ),
-            quantification_type =
-                quant_types
-        )
-    })
-})
-
-test_that(paste(
-    func_name[11], "stops if af is a character",
-    "but root is incorrect"
-), {
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            association_file = path_af,
-            quantification_type =
-                quant_types
-        )
-    })
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            association_file = path_af,
-            root = 1,
-            quantification_type =
-                quant_types
-        )
-    })
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            association_file = path_af,
-            root = c(root_correct, root_err),
-            quantification_type =
-                quant_types
-        )
-    })
-})
-
-test_that(paste(
-    func_name[11], "stops if workers is not",
-    "numeric or have multiple values"
-), {
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            association_file = path_af,
-            root = root_correct,
-            quantification_type =
-                quant_types,
-            matrix_type = "annotated",
-            workers = "x"
-        )
-    })
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            association_file = path_af,
-            root = root_correct,
-            quantification_type =
-                quant_types,
-            matrix_type = "annotated",
-            workers = c(1, 2, 3)
-        )
-    })
-})
-
-
-test_that(paste(
-    func_name[11], "stops if quantification_types",
-    "is incorrect or missing"
-), {
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            association_file = path_af,
-            root = root_correct,
-            matrix_type = "annotated",
-            workers = 2
-        )
-    })
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            association_file = path_af,
-            root = root_correct,
-            quantification_type =
-                c("a"),
-            matrix_type = "annotated",
-            workers = 2
-        )
-    })
-})
-
-test_that(paste(func_name[11], "stops if matrix_type is incorrect"), {
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            association_file = path_af,
-            root = root_correct,
-            quantification_type =
-                quant_types,
-            matrix_type = 1,
-            workers = 2
-        )
-    })
-    expect_error({
-        import_parallel_Vispa2Matrices_interactive(
-            association_file = path_af,
-            root = root_correct,
-            quantification_type =
-                quant_types,
-            matrix_type = "ann",
-            workers = 2
-        )
-    })
-})
-
-## Testing results
-test_that(paste(func_name[11], "succeeds for fs - path"), {
-    # Annotated
-    input1 <- withr::local_tempfile()
-    input3 <- withr::local_tempfile()
-    input4 <- withr::local_tempfile()
-    input6 <- withr::local_tempfile()
-    op1 <- withr::local_options(ISAnalytics.connection = c(
-        input1, NA, input3, input4, NA,
-        input6, NA, NA
-    ), ISAnalytics.widgets = FALSE, ISAnalytics.verbose = FALSE)
-    input_value1 <- "1"
-    input_value3 <- "y"
-    input_value4 <- "1"
-    input_value6 <- "y"
-    write(input_value1, input1)
-    write(input_value3, input3)
-    write(input_value4, input4)
-    write(input_value6, input6)
-    invisible(capture_output(capture_output({
-        matrices <-
-            import_parallel_Vispa2Matrices_interactive(
-                association_file = path_af,
-                root = root_correct,
-                quantification_type =
-                    quant_types,
-                matrix_type = "annotated",
-                workers = 2,
-                dates_format = "dmy",
-                multi_quant_matrix = FALSE
-            )
-    })))
-    expect_equal(nrow(matrices$fragmentEstimate), 4 * 1476)
-    expect_equal(nrow(matrices$seqCount), 4 * 1476)
-    # Not annotated
-    input_value1 <- "1"
-    input_value3 <- "y"
-    input_value4 <- "1"
-    input_value6 <- "y"
-    write(input_value1, input1)
-    write(input_value3, input3)
-    write(input_value4, input4)
-    write(input_value6, input6)
-    invisible(capture_output(capture_output({
-        matrices <-
-            import_parallel_Vispa2Matrices_interactive(path_af,
-                root = root_correct,
-                quantification_type =
-                    quant_types,
-                matrix_type = "not_annotated",
-                workers = 2,
-                dates_format = "dmy",
-                multi_quant_matrix = FALSE
-            )
-    })))
-    expect_equal(nrow(matrices$fragmentEstimate), 4 * 1476)
-    expect_equal(nrow(matrices$seqCount), 4 * 1476)
-})
-
-test_that(paste(func_name[11], "succeeds for fs - tibble"), {
-    # Annotated
-    input1 <- withr::local_tempfile()
-    input3 <- withr::local_tempfile()
-    input4 <- withr::local_tempfile()
-    input6 <- withr::local_tempfile()
-    op1 <- withr::local_options(ISAnalytics.connection = c(
-        input1, NA, input3, input4, NA,
-        input6, NA, NA
-    ), ISAnalytics.widgets = FALSE, ISAnalytics.verbose = FALSE)
-    input_value1 <- "1"
-    input_value3 <- "y"
-    input_value4 <- "1"
-    input_value6 <- "y"
-    write(input_value1, input1)
-    write(input_value3, input3)
-    write(input_value4, input4)
-    write(input_value6, input6)
-    invisible(capture_output(capture_output({
-        matrices <-
-            import_parallel_Vispa2Matrices_interactive(as_file_correct,
-                quantification_type =
-                    quant_types,
-                matrix_type = "annotated",
-                workers = 2,
-                multi_quant_matrix = FALSE
-            )
-    })))
-    expect_equal(nrow(matrices$fragmentEstimate), 4 * 1476)
-    expect_equal(nrow(matrices$seqCount), 4 * 1476)
-    # Not annotated
-    input_value1 <- "1"
-    input_value3 <- "y"
-    input_value4 <- "1"
-    input_value6 <- "y"
-    write(input_value1, input1)
-    write(input_value3, input3)
-    write(input_value4, input4)
-    write(input_value6, input6)
-    invisible(capture_output(capture_output({
-        matrices <-
-            import_parallel_Vispa2Matrices_interactive(as_file_correct,
-                NULL,
-                quantification_type =
-                    quant_types,
-                matrix_type = "not_annotated",
-                workers = 2,
-                multi_quant_matrix = FALSE
-            )
-    })))
-    expect_equal(nrow(matrices$fragmentEstimate), 4 * 1476)
-    expect_equal(nrow(matrices$seqCount), 4 * 1476)
-})
-
-#------------------------------------------------------------------------------#
 # Tests .pattern_matching
 #------------------------------------------------------------------------------#
 test_that(paste(func_name[12], "matches single pattern"), {
@@ -1417,245 +1160,14 @@ test_that(paste(func_name[15], "correctly manages for fserr"), {
 })
 
 #------------------------------------------------------------------------------#
-# Tests import_parallel_Vispa2Matrices_auto
+# Tests import_parallel_Vispa2Matrices
 #------------------------------------------------------------------------------#
-## Testing input
-test_that(paste(func_name[16], "stops if af is missing"), {
-    expect_error({
-        import_parallel_Vispa2Matrices_auto(
-            root = "x",
-            quantification_type =
-                quant_types,
-            matrix_type = "annotated",
-            workers = 2,
-            patterns = NULL,
-            matching_opt = "ANY"
-        )
-    })
-})
-
-test_that(paste(
-    func_name[16], "stops if af is not",
-    "character or tibble"
-), {
-    expect_error({
-        import_parallel_Vispa2Matrices_auto(
-            association_file = 1,
-            root = "x",
-            quantification_type =
-                quant_types,
-            matrix_type = "annotated",
-            workers = 2,
-            patterns = NULL,
-            matching_opt = "ANY"
-        )
-    })
-})
-
-test_that(paste(
-    func_name[16], "stops if af is a character",
-    "vector longer than 1"
-), {
-    expect_error({
-        import_parallel_Vispa2Matrices_auto(
-            association_file = c(
-                path_af,
-                path_af
-            ),
-            root = "x",
-            quantification_type =
-                quant_types,
-            matrix_type = "annotated",
-            workers = 2,
-            patterns = NULL,
-            matching_opt = "ANY"
-        )
-    })
-})
-
-test_that(paste(func_name[16], "stops if patterns is incorrect"), {
-    expect_error({
-        import_parallel_Vispa2Matrices_auto(
-            association_file = path_af,
-            root = root_correct,
-            quantification_type =
-                quant_types,
-            matrix_type = 1,
-            workers = 2,
-            patterns = 1,
-            matching_opt = "ANY"
-        )
-    })
-})
-
-test_that(paste(func_name[16], "stops if matching_option is incorrect"), {
-    expect_error({
-        import_parallel_Vispa2Matrices_auto(
-            association_file = path_af,
-            root = root_correct,
-            quantification_type =
-                quant_types,
-            matrix_type = 1,
-            workers = 2,
-            patterns = NULL,
-            matching_opt = "SOME"
-        )
-    })
-    expect_error({
-        import_parallel_Vispa2Matrices_auto(
-            association_file = path_af,
-            root = root_correct,
-            quantification_type =
-                quant_types,
-            matrix_type = 1,
-            workers = 2,
-            patterns = NULL,
-            matching_opt = c("ANY", "ALL")
-        )
-    })
-    expect_error({
-        import_parallel_Vispa2Matrices_auto(
-            association_file = path_af,
-            root = root_correct,
-            quantification_type =
-                quant_types,
-            matrix_type = 1,
-            workers = 2,
-            patterns = NULL
-        )
-    })
-})
-## Testing results
-test_that(paste(func_name[16], "succeeds for fs - path"), {
-    matrices <- import_parallel_Vispa2Matrices_auto(path_af,
-        root = root_correct,
-        quantification_type = quant_types,
-        matrix_type = "annotated",
-        workers = 2,
-        patterns = NULL,
-        matching_opt = "ANY",
-        dates_format = "dmy",
-        multi_quant_matrix = FALSE
+test_that(paste(func_name[17], "executes correctly"), {
+    matrices <- import_parallel_Vispa2Matrices(
+        association_file = as_file_correct,
+        quantification_type = c("seqCount", "fragmentEstimate"),
+        mode = "AUTO", report_path = NULL
     )
-    expect_true(nrow(matrices$fragmentEstimate) == 4 * 1476)
-    expect_true(nrow(matrices$seqCount) == 4 * 1476)
-})
-
-test_that(paste(func_name[16], "succeeds for fs - tibble"), {
-    af <- as_file_correct %>% dplyr::filter(.data$ProjectID == "CLOEXP")
-    matrices <- import_parallel_Vispa2Matrices_auto(af,
-        root = NULL,
-        quantification_type = quant_types,
-        matrix_type = "annotated",
-        workers = 2,
-        patterns = NULL,
-        matching_opt = "ANY",
-        multi_quant_matrix = FALSE
-    )
-    expect_true(nrow(matrices$fragmentEstimate) == 1476)
-    expect_true(nrow(matrices$seqCount) == 1476)
-})
-
-test_that(paste(func_name[16], "succeeds for fserr - tibble"), {
-    as_file_err <- as_file_errors %>% dplyr::filter(!is.na(.data$Path))
-    af <- as_file_err %>% dplyr::filter(.data$ProjectID == "CLOEXP")
-    matrices <- import_parallel_Vispa2Matrices_auto(af,
-        quantification_type = quant_types,
-        matrix_type = "annotated",
-        workers = 2,
-        patterns = "NoMate",
-        matching_opt = "ANY",
-        multi_quant_matrix = FALSE
-    )
-    expect_true(nrow(matrices$fragmentEstimate) == 1476)
-    expect_true(nrow(matrices$seqCount) == 1476)
-    matrices <- import_parallel_Vispa2Matrices_auto(af,
-        quantification_type = quant_types,
-        matrix_type = "annotated",
-        workers = 2,
-        patterns = "NoMate",
-        matching_opt = "ALL",
-        multi_quant_matrix = FALSE
-    )
-    expect_true(nrow(matrices$fragmentEstimate) == 1476)
-    expect_true(nrow(matrices$seqCount) == 1476)
-    matrices <- import_parallel_Vispa2Matrices_auto(af,
-        quantification_type = quant_types,
-        matrix_type = "annotated",
-        workers = 2,
-        patterns = "NoMate",
-        matching_opt = "OPTIONAL",
-        multi_quant_matrix = FALSE
-    )
-    expect_true(nrow(matrices$fragmentEstimate) == 1476)
-    expect_true(nrow(matrices$seqCount) == 1476)
-    af <- as_file_err %>%
-        dplyr::filter(
-            .data$ProjectID == "PROJECT1100",
-            .data$concatenatePoolIDSeqRun == "ABX-LR-PL5-POOL14-1"
-        )
-    expect_error({
-        matrices <- import_parallel_Vispa2Matrices_auto(af,
-            quantification_type = quant_types,
-            matrix_type = "annotated",
-            workers = 2,
-            patterns = "NoMate",
-            matching_opt = "ANY",
-            multi_quant_matrix = FALSE
-        )
-    })
-    expect_error({
-        matrices <- import_parallel_Vispa2Matrices_auto(af,
-            Nquantification_type = quant_types,
-            matrix_type = "annotated",
-            workers = 2,
-            patterns = "NoMate",
-            matching_opt = "ALL",
-            multi_quant_matrix = FALSE
-        )
-    })
-    matrices <- import_parallel_Vispa2Matrices_auto(af,
-        quantification_type = quant_types,
-        matrix_type = "annotated",
-        workers = 2,
-        patterns = "NoMate",
-        matching_opt = "OPTIONAL",
-        multi_quant_matrix = FALSE
-    )
-    expect_true(nrow(matrices$seqCount) == 1476)
-    af <- as_file_err %>%
-        dplyr::filter(
-            .data$ProjectID == "PROJECT1100",
-            .data$concatenatePoolIDSeqRun == "ABX-LR-PL6-POOL15-1"
-        )
-    expect_error({
-        matrices <- import_parallel_Vispa2Matrices_auto(af,
-            quantification_type = quant_types,
-            matrix_type = "annotated",
-            workers = 2,
-            patterns = "NoMate",
-            matching_opt = "ANY",
-            multi_quant_matrix = FALSE
-        )
-    })
-    expect_error({
-        matrices <- import_parallel_Vispa2Matrices_auto(af,
-            quantification_type = quant_types,
-            matrix_type = "annotated",
-            workers = 2,
-            patterns = "NoMate",
-            matching_opt = "ALL",
-            multi_quant_matrix = FALSE
-        )
-    })
-    matrices <- import_parallel_Vispa2Matrices_auto(af,
-        quantification_type = quant_types,
-        matrix_type = "annotated",
-        workers = 2,
-        patterns = "NoMate",
-        matching_opt = "OPTIONAL",
-        multi_quant_matrix = FALSE
-    )
-    expect_true(nrow(matrices$fragmentEstimate) == 1476)
-    expect_true(nrow(matrices$seqCount) == 1476)
+    expect_true(nrow(matrices) == 5904 & ncol(matrices) == 8)
+    expect_true(all(c("seqCount", "fragmentEstimate") %in% colnames(matrices)))
 })

@@ -44,16 +44,13 @@ is a single multi-quantification matrix or a list of matrices
 }
 }
 \description{
-\lifecycle{maturing}
+\lifecycle{stable}
 This function is particularly useful when a sparce matrix structure
 is needed by a specific function (mainly from other packages).
 }
 \examples{
-path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-    package = "ISAnalytics"
-)
-matrix <- import_single_Vispa2Matrix(path)
-sparse <- as_sparse_matrix(matrix)
+data("integration_matrices", package = "ISAnalytics")
+sparse <- as_sparse_matrix(integration_matrices)
 }
 \seealso{
 Other Utility functions: 

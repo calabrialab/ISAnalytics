@@ -7,7 +7,7 @@ in a given column.}
 \usage{
 top_integrations(
   x,
-  n = 50,
+  n = 20,
   columns = "fragmentEstimate_sum_RelAbundance",
   keep = "everything",
   key = NULL

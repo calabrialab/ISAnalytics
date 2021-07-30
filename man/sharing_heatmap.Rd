@@ -50,13 +50,18 @@ A list of plots or widgets
 Displays the IS sharing calculated via \link{is_sharing} as heatmaps.
 }
 \examples{
-path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-    package = "ISAnalytics"
+data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+aggreg <- aggregate_values_by_key(
+    x = integration_matrices,
+    association_file = association_file,
+    value_cols = c("seqCount", "fragmentEstimate")
 )
-matrix <- import_single_Vispa2Matrix(path)
-sharing <- is_sharing(matrix, group_key = "CompleteAmplificationID")
-heatmaps <- sharing_heatmap(sharing$sharing)
-heatmaps$absolute
+sharing <- is_sharing(aggreg)
+sharing_heatmaps <- sharing_heatmap(sharing_df = sharing$sharing)
+sharing_heatmaps$absolute
+sharing_heatmaps$on_g1
+sharing_heatmaps$on_union
 }
 \seealso{
 \link{is_sharing}

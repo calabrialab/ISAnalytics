@@ -1,6 +1,54 @@
 NEWS
 ================
 
+# ISAnalytics 1.3.3 (TBD)
+
+## MAJOR CHANGES
+
+-   Completely reworked interactive HTML report system, for details take
+    a look at the new vignette
+    `vignette("report_system", package = "ISAnalytics")`
+-   Old `ISAnalytics.widgets` option has been replaced by
+    `ISAnalytics.reports`
+-   In `remove_collisions()`, removed arguments `seq_count_col`,
+    `max_rows_reports` and `save_widget_path`, added arguments
+    `quant_cols` and `report_path` (see documentation for details)
+
+## MINOR CHANGES
+
+-   `import_single_Vispa2Matrix()` now allows keeping additional
+    non-standard columns
+-   `compute_near_integrations()` is now faster on bigger data sets
+-   Changed default values for arguments `columns` and `key` in
+    `compute_abundance()`
+-   `compute_near_integrations()` now produces only re-calibration map
+    in \*.tsv format
+-   `CIS_grubbs()` now supports calculations for each group specified in
+    argument `by`
+-   In `sample_statistics()` now there is the option to include the
+    calculation of distinct integration sites for each group (if
+    mandatory vars are present)
+
+## NEW FUNCTIONALITY
+
+-   Added new plotting function `circos_genomic_density()`
+
+## FIXES
+
+-   Fixed minor issue with NA values in alluvial plots
+
+## DEPRECATIONS
+
+-   `import_parallel_Vispa2Matrices_interactive()` and
+    `import_parallel_Vispa2Matrices_auto()` are officially deprecated in
+    favor of `import_parallel_Vispa2Matrices()`
+
+## OTHER
+
+-   The package has now a more complete and functional example data set
+    for executable examples
+-   Reworked documentation
+
 # ISAnalytics 1.3.2 (2021-06-28)
 
 ## FIXES

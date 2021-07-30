@@ -40,30 +40,17 @@ in input}
 A named list of tibbles, where names are quantification types
 }
 \description{
-\lifecycle{maturing}
+\lifecycle{stable}
 The function separates a single multi-quantification integration
 matrix, obtained via \link{comparison_matrix}, into single
 quantification matrices as a named list of tibbles.
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE)
-path <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
+data("integration_matrices", package = "ISAnalytics")
+separated <- separate_quant_matrices(
+    integration_matrices
 )
-root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- unzip_file_system(root_pth, "fs")
-association_file <- import_association_file(
-    path = path, root = root,
-    dates_format = "dmy"
-)
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = association_file,
-    quantification_type = c("seqCount", "fragmentEstimate"),
-    matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY"
-)
-separated_matrix <- separate_quant_matrices(matrices)
-options(op)
+separated
 }
 \seealso{
 \link{quantification_types}

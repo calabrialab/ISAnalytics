@@ -1,0 +1,128 @@
+---
+title: "ISAnalytics - Metadata import report"
+date: "`r Sys.Date()`"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: scroll
+    theme:
+      bootswatch: cosmo
+      primary: "#23687A"
+    navbar:
+      - { title: "Website", href: "https://calabrialab.github.io/ISAnalytics/", align: right, icon: "fa-globe" }
+      - { title: "GitHub", href: "https://github.com/calabrialab/ISAnalytics", align: right, icon: "fa-github" }
+params:
+  parsing_prob: null
+  dates_prob: null
+  col_prob: null
+  crit_nas: null
+  fs_align: null
+  iss_stats: null
+  iss_stats_miss: null
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+options(DT.warn.size = FALSE)
+library(flexdashboard)
+library(DT)
+
+secondary_col <-  "#ff9470"
+found_color <- "#77d983"
+not_found_color <- "#e36868"
+```
+
+Potential problems {data-orientation=rows}
+===============================================================================
+
+Row1 {.tabset .tabset-fade}
+-------------------------------------------------------------------------------
+
+### Parsing issues summary
+
+```{r echo=FALSE, eval=!is.null(params$parsing_prob)}
+parsing_prob <- params$parsing_prob %>%
+  dplyr::mutate(col = as.factor(.data$col))
+datatable(parsing_prob, 
+          class = "stripe",
+          filter = "top")
+```
+
+```{r echo=FALSE, eval=is.null(params$parsing_prob), results='asis'}
+cat("*Nothing to report*")
+```
+
+### About
+
+The table contains a summary of parsing problems found when reading the 
+association file.  
+**NOTE: if the input file was in xlsx/xls format no parsing problems are reported by default**
+
+Row2 {.tabset .tabset-fade}
+-------------------------------------------------------------------------------
+### Date conversion problems
+```{r echo=FALSE, eval=!is.null(params$dates_prob)}
+dates_probs <- params$dates_prob %>%
+  dplyr::mutate(col = as.factor(.data$col))
+datatable(dates_probs, 
+          class = "stripe",
+          filter = "top")
+```
+
+```{r echo=FALSE, eval=is.null(params$dates_prob), results='asis'}
+cat("*Nothing to report*")
+```
+
+### About
+The table contains a summary of date parsing problems. Check the date format
+was set correctly and the association file contains the correct information.
+
+Row3
+-------------------------------------------------------------------------------
+### Column problems
+
+```{r echo=FALSE, results='asis', attr.output='style="max-height: 150px;"'}
+miss_col_str <- if (is.null(params$col_prob$missing)) {
+  "*no missing columns to report*"
+} else {
+  paste0(params$col_prob$missing, collapse = ", ")
+}
+non_std_str <- if (is.null(params$col_prob$non_standard)) {
+  "*no non-standard columns to report*"
+} else {
+  paste0(params$col_prob$non_standard, collapse = ", ")
+}
+whole <- paste0("#### Missing columns\n", miss_col_str, "\n\n",
+                "#### Non standard columns\n", non_std_str)
+cat(whole)
+```
+
+### Important missing info
+
+```{r echo=FALSE, results='asis', attr.output='style="max-height: 150px;"'}
+expl <- "Missing information that is needed for some operations and may cause issues.\n\n **NOTE:** the following refer to post-filtering data ONLY (if a filter was set in the import phase via the `filter_for` argument)."
+crit_na_msg <- if (is.null(params$crit_nas)) {
+  "*Nothing to report, everything in order*"
+} else {
+  paste0("NAs found in columns that can be used for collision removal\n\n",
+         paste0("* ", params$crit_nas, collapse = "\n"))
+}
+cat(expl, "\n\n", crit_na_msg)
+```
+
+```{r echo=FALSE, child=if (!is.null(params$fs_align)) 'af-fs-alignment.Rmd'}
+```
+
+```{r echo=FALSE, child=if (!is.null(params$iss_stats)) 'iss_stats_fragment.Rmd'}
+```
+
+Reproducibility {data-orientation=rows}
+===============================================================================
+
+Row1 {data-height=600}
+-------------------------------------------------------------------------------
+
+### Session info {style="width: 95% !important"}
+```{r attr.output='style="max-height: 580px;"'}
+sessionInfo()
+```
+

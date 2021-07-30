@@ -39,8 +39,8 @@ navbar:
         href: articles/collision_removal.html
       - text: How to use import functions
         href: articles/how_to_import_functions.html
-      - text: Using ISAnalytics without RStudio support
-        href: articles/no_rstudio_usage.html
+      - text: ISAnalytics report system
+        href: articles/report_system.html
     release-v:
       icon: fas fa-code-branch
       text: RELEASE
@@ -53,8 +53,7 @@ reference:
   - import_association_file
   - import_Vispa2_stats
   - import_single_Vispa2Matrix
-  - import_parallel_Vispa2Matrices_interactive
-  - import_parallel_Vispa2Matrices_auto
+  - import_parallel_Vispa2Matrices
 - title: "Aggregating functions"
 - contents:
   - aggregate_metadata
@@ -91,6 +90,7 @@ reference:
   - integration_alluvial_plot
   - top_abund_tableGrob
   - sharing_heatmap
+  - circos_genomic_density
 - title: "Utility functions"
 - contents:
   - as_sparse_matrix
@@ -114,6 +114,19 @@ reference:
   - blood_lineages_default
   - default_iss_file_prefixes
   - default_meta_agg
-- title: "Package overview"
+  - default_report_path
+  - refGene_table_cols
+- title: "Deprecated"
 - contents:
-  - ISAnalytics
+  - import_parallel_Vispa2Matrices_interactive
+  - import_parallel_Vispa2Matrices_auto
+- title: "Data"
+- contents:
+  - association_file
+  - integration_matrices
+  - proto_oncogenes
+  - refGenes_hg19
+  - refGenes_mm9
+  - refGenes_mm10
+  - tumor_suppressors
+

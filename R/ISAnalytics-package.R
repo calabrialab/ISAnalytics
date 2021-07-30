@@ -2,7 +2,7 @@
 #' identified from genomics next generation sequencing reads for
 #' clonal tracking studies
 #'
-#' @description \lifecycle{maturing}
+#' @description \lifecycle{stable}
 #' In gene therapy, stem cells are modified using viral
 #' vectors to deliver the therapeutic transgene and replace functional
 #' properties since the genetic modification is stable and inherited in
@@ -27,8 +27,7 @@
 #'   * \code{\link{import_single_Vispa2Matrix}}
 #'   * \code{\link{import_association_file}}
 #'   * \code{\link{import_Vispa2_stats}}
-#'   * \code{\link{import_parallel_Vispa2Matrices_interactive}}
-#'   * \code{\link{import_parallel_Vispa2Matrices_auto}}
+#'   * \code{\link{import_parallel_Vispa2Matrices}}
 #' * Aggregation functions:
 #'   * \code{\link{aggregate_metadata}}
 #'   * \code{\link{aggregate_values_by_key}}
@@ -58,6 +57,7 @@
 #'   * \code{\link{sharing_heatmap}}
 #'   * \code{\link{integration_alluvial_plot}}
 #'   * \code{\link{top_abund_tableGrob}}
+#'   * \code{\link{circos_genomic_density}}
 #' * Utility functions:
 #'   * \code{\link{generate_blank_association_file}}
 #'   * \code{\link{generate_Vispa2_launch_AF}}
@@ -65,16 +65,17 @@
 #'   * \code{\link{as_sparse_matrix}}
 #'
 #' @section Vignettes:
-#' * \code{vignette("How to use import functions", package = "ISAnalytics")}
-#' * \code{vignette("Collision removal functionality",
+#' * \code{vignette("how_to_import_functions", package = "ISAnalytics")}
+#' * \code{vignette("collision_removal",
 #' package = "ISAnalytics")}
-#' * \code{vignette("Working with aggregate functions",
+#' * \code{vignette("aggregate_function_usage",
 #' package = "ISAnalytics")}
-#' * \code{vignette("Using ISAnalytics without RStudio support",
+#' * \code{vignette("report_system",
 #' package = "ISAnalytics")}
 #'
 #' @docType package
 #' @name ISAnalytics
+#' @keywords internal
 NULL
 
 ## usethis namespace: start

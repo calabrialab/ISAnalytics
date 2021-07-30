@@ -13,9 +13,7 @@ is_sharing(
 }
 \arguments{
 \item{x}{An integration matrix, aka a data frame containing the columns
-chr
-integration_locus
-strand. See details.}
+\code{mandatory_IS_vars()}. See details.}
 
 \item{group_key}{Character vector of column names which identify a
 single group. An associated group id will be derived by concatenating
@@ -73,11 +71,15 @@ function \code{\link{sharing_heatmap}}.
 }
 }
 \examples{
-path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-    package = "ISAnalytics"
+data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+aggreg <- aggregate_values_by_key(
+    x = integration_matrices,
+    association_file = association_file,
+    value_cols = c("seqCount", "fragmentEstimate")
 )
-matrix <- import_single_Vispa2Matrix(path)
-sharing <- is_sharing(matrix, group_key = "CompleteAmplificationID")
+sharing <- is_sharing(aggreg)
+sharing
 }
 \seealso{
 Other Analysis functions: 

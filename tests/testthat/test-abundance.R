@@ -98,16 +98,27 @@ test_that(paste(func_name, "fails if x is not a data frame"), {
 
 ### - Columns
 test_that(paste(func_name, "fails if columns is not chr"), {
-    expect_error(compute_abundance(x = test_df_simple, columns = c(1, 2)))
-    expect_error(compute_abundance(x = test_df_simple, columns = NULL))
+    expect_error(compute_abundance(
+        x = test_df_simple, columns = c(1, 2),
+        key = "CompleteAmplificationID"
+    ))
+    expect_error(compute_abundance(
+        x = test_df_simple, columns = NULL,
+        key = "CompleteAmplificationID"
+    ))
 })
 test_that(paste(func_name, "fails if columns is empty"), {
-    expect_error(compute_abundance(x = test_df_simple, columns = ""))
+    expect_error(compute_abundance(
+        x = test_df_simple,
+        columns = "",
+        key = "CompleteAmplificationID"
+    ))
 })
 test_that(paste(func_name, "fails if columns not found"), {
     err <- expect_error(compute_abundance(
         x = test_df_simple,
-        columns = c("a", "b")
+        columns = c("a", "b"),
+        key = "CompleteAmplificationID"
     ))
     expect_equal(
         err$message,
@@ -118,19 +129,29 @@ test_that(paste(func_name, "fails if columns not found"), {
     )
 })
 test_that(paste(func_name, "fails if any columns not numeric"), {
-    expect_error(compute_abundance(x = test_df_simple, columns = c("chr")),
-        regexp = .non_num_user_cols_error("chr")
+    expect_error(compute_abundance(
+        x = test_df_simple, columns = c("chr"),
+        key = "CompleteAmplificationID"
+    ),
+    regexp = .non_num_user_cols_error("chr")
     )
 })
 
 ### - Percentage
 test_that(paste(func_name, "fails if percentage is not logical"), {
-    expect_error(compute_abundance(x = test_df_simple, percentage = "true"))
+    expect_error(compute_abundance(
+        x = test_df_simple,
+        columns = "Value",
+        percentage = "true",
+        key = "CompleteAmplificationID"
+    ))
 })
 test_that(paste(func_name, "fails if percentage length > 1"), {
     expect_error(compute_abundance(
         x = test_df_simple,
-        percentage = c(TRUE, FALSE)
+        percentage = c(TRUE, FALSE),
+        columns = "Value",
+        key = "CompleteAmplificationID"
     ))
 })
 
@@ -138,23 +159,27 @@ test_that(paste(func_name, "fails if percentage length > 1"), {
 test_that(paste(func_name, "fails if key is not chr"), {
     expect_error(compute_abundance(
         x = test_df_simple,
-        key = 1
+        key = 1,
+        columns = "Value",
     ))
     expect_error(compute_abundance(
         x = test_df_simple,
-        key = NULL
+        key = NULL,
+        columns = "Value"
     ))
 })
 test_that(paste(func_name, "fails if key is empty"), {
     expect_error(compute_abundance(
         x = test_df_simple,
-        key = ""
+        key = "",
+        columns = "Value"
     ))
 })
 test_that(paste(func_name, "fails if key not found"), {
     err <- expect_error(compute_abundance(
         x = test_df_simple,
-        key = "a"
+        key = "a",
+        columns = "Value"
     ))
     expect_equal(
         err$message,
@@ -169,22 +194,37 @@ test_that(paste(func_name, "fails if key not found"), {
 test_that(paste(func_name, "fails if keep_totals is not one of values"), {
     expect_error(compute_abundance(
         x = test_df_simple,
-        keep_totals = "true"
+        keep_totals = "true",
+        columns = "Value",
+        key = "CompleteAmplificationID"
     ))
     expect_error(compute_abundance(
         x = test_df_simple,
-        keep_totals = NULL
+        keep_totals = NULL,
+        columns = "Value",
+        key = "CompleteAmplificationID"
     ))
 })
 
 # Output correctness
 ### For simple non-agg matrix
 test_that(paste(func_name, "has correct output for simple is matrix"), {
-    abund <- compute_abundance(test_df_simple)
+    abund <- compute_abundance(test_df_simple,
+        columns = "Value",
+        key = "CompleteAmplificationID"
+    )
     expect_equal(abund, expected_ab_simple %>% dplyr::select(-Value_tot))
-    abund <- compute_abundance(test_df_simple, keep_totals = TRUE)
+    abund <- compute_abundance(test_df_simple,
+        keep_totals = TRUE,
+        columns = "Value",
+        key = "CompleteAmplificationID"
+    )
     expect_equal(abund, expected_ab_simple)
-    abund <- compute_abundance(test_df_simple, keep_totals = "df")
+    abund <- compute_abundance(test_df_simple,
+        keep_totals = "df",
+        columns = "Value",
+        key = "CompleteAmplificationID"
+    )
     expect_equal(abund$abundance_df, expected_ab_simple
     %>% dplyr::select(-Value_tot))
     expect_equal(
@@ -193,7 +233,11 @@ test_that(paste(func_name, "has correct output for simple is matrix"), {
         expected_totals_simple %>%
             dplyr::arrange(CompleteAmplificationID)
     )
-    abund <- compute_abundance(test_df_simple, percentage = FALSE)
+    abund <- compute_abundance(test_df_simple,
+        percentage = FALSE,
+        columns = "Value",
+        key = "CompleteAmplificationID"
+    )
     expect_equal(abund, expected_ab_simple
     %>% dplyr::select(-Value_tot, -Value_PercAbundance))
 })

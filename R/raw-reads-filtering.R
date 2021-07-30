@@ -24,17 +24,12 @@
 #'
 #' @export
 #' @examples
-#' op <- options(ISAnalytics.widgets = FALSE)
-#'
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
+#' data("association_file", package = "ISAnalytics")
+#' filtered_af <- outlier_filter(association_file,
+#'     key = "BARCODE_MUX",
+#'     report_path = NULL
 #' )
-#' association_file <- import_association_file(path_AF,
-#'     root = NULL,
-#'     dates_format = "dmy"
-#' )
-#' filtered_af <- outlier_filter(association_file, key = "VCN")
-#' options(op)
+#' head(filtered_af)
 outlier_filter <- function(metadata,
     outlier_test = "outliers_by_pool_fragments",
     negate = FALSE,
@@ -127,28 +122,28 @@ outlier_filter <- function(metadata,
 #' All operators must be chosen between:
 #' `r paste0(flag_logics(), collapse = ", ")`
 #' @param keep_calc_cols Keep the calculation columns in the output data frame?
-#' @param save_widget_path Either null or a string containing the path
-#' on disk where the report should be saved
+#' @param report_path The path where the report file should be saved.
+#' Can be a folder, a file or NULL if no report should be produced.
+#' Defaults to `{user_home}/ISAnalytics_reports`.
 #'
 #' @return A data frame of metadata with the column `to_remove`
+#'
+#' @importFrom rlang abort inform .data `:=`
+#' @importFrom dplyr filter across all_of anti_join select distinct bind_rows
+#' @importFrom dplyr mutate pull contains
+#' @importFrom purrr pmap_lgl
 #'
 #' @family Outlier tests
 #' @export
 #' @examples
-#' op <- options(ISAnalytics.widgets = FALSE)
-#'
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
+#' data("association_file", package = "ISAnalytics")
+#' flagged <- outliers_by_pool_fragments(association_file,
+#'     report_path = NULL
 #' )
-#' association_file <- import_association_file(path_AF,
-#'     root = NULL,
-#'     dates_format = "dmy"
-#' )
-#' filtered_af <- outliers_by_pool_fragments(association_file, key = "VCN")
-#' options(op)
+#' head(flagged)
 outliers_by_pool_fragments <- function(metadata,
     key = "BARCODE_MUX",
-    outlier_p_value_threshold = 0.05,
+    outlier_p_value_threshold = 0.01,
     normality_test = FALSE,
     normality_p_value_threshold = 0.05,
     transform_log2 = TRUE,
@@ -157,7 +152,7 @@ outliers_by_pool_fragments <- function(metadata,
     min_samples_per_pool = 5,
     flag_logic = "AND",
     keep_calc_cols = TRUE,
-    save_widget_path = NULL) {
+    report_path = default_report_path()) {
     ## Check
     stopifnot(is.data.frame(metadata))
     stopifnot(is.character(key))
@@ -308,55 +303,38 @@ outliers_by_pool_fragments <- function(metadata,
     calc_res <- calc_res %>%
         dplyr::mutate(to_remove = to_rem)
     ## Produce report
-    if (getOption("ISAnalytics.widgets") == TRUE) {
-        rlang::inform("Producing report...")
+    if (getOption("ISAnalytics.reports") == TRUE && !is.null(report_path)) {
         withCallingHandlers(
             {
-                withRestarts(
-                    {
-                        flagged <- calc_res %>%
-                            dplyr::select(
-                                .data$processed,
-                                .data$to_remove,
-                                .data$ProjectID,
-                                dplyr::all_of(c(pool_col)),
-                                .data$CompleteAmplificationID,
-                                dplyr::contains(key)
-                            )
-                        widget <- .outliers_report_widg(
-                            by_pool = per_pool_test,
-                            pool_col = pool_col,
-                            norm_test = normality_test,
-                            key = key,
-                            flag_logic = flag_logic,
-                            outlier_thresh = outlier_p_value_threshold,
-                            log2_req = transform_log2,
-                            removed_nas = removed_nas,
-                            removed_zeros = removed_zeros,
-                            flag_df = flagged,
-                            non_proc_pools = non_proc_samples
-                        )
-                        print(widget)
-                        # Export widget if requested
-                        if (!is.null(save_widget_path)) {
-                            if (getOption("ISAnalytics.verbose") == TRUE) {
-                                rlang::inform("Saving report to file...")
-                            }
-                            .export_widget_file(
-                                widget,
-                                save_widget_path,
-                                "raw_reads_report.html"
-                            )
-                        }
-                    },
-                    print_err = function() {
-                        rlang::inform(.widgets_error())
-                    }
+                flagged <- calc_res %>%
+                    dplyr::select(
+                        .data$processed,
+                        .data$to_remove,
+                        .data$ProjectID,
+                        dplyr::all_of(c(pool_col)),
+                        .data$CompleteAmplificationID,
+                        dplyr::contains(key)
+                    )
+                .produce_report(
+                    report_type = "outlier_flag",
+                    params = list(
+                        by_pool = per_pool_test,
+                        pool_col = pool_col,
+                        norm_test = normality_test,
+                        key = key,
+                        flag_logic = flag_logic,
+                        outlier_thresh = outlier_p_value_threshold,
+                        log2_req = transform_log2,
+                        removed_nas = removed_nas,
+                        removed_zeros = removed_zeros,
+                        non_proc_pools = non_proc_samples,
+                        flag_df = flagged
+                    ), path = report_path
                 )
             },
             error = function(cnd) {
-                rlang::inform(conditionMessage(cnd))
-                invokeRestart("print_err")
+                rest <- findRestart("report_fail")
+                invokeRestart(rest, cnd)
             }
         )
     }

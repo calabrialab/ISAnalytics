@@ -8,6 +8,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Installation and options
 
+`ISAnalytics` can be installed quickly in different ways:
+
+* You can install it via [Bioconductor](http://bioconductor.org)
+* You can install it via GitHub using the package `devtools`
+
+There are always 2 versions of the package active:
+
+* `RELEASE` is the latest stable version
+* `DEVEL` is the development version, it is the most up-to-date version where
+all new features are introduced
+
 ## Installation from bioconductor
 
 RELEASE version:
@@ -39,10 +50,6 @@ devtools::install_github("calabrialab/ISAnalytics",
                          ref = "RELEASE_3_13",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
-
-## Safer option for vignette building issue
-devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_13")
 ```
 
 DEVEL:
@@ -54,10 +61,6 @@ devtools::install_github("calabrialab/ISAnalytics",
                          ref = "master",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
-
-## Safer option for vignette building issue
-devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master")
 ```
 
 ## Setting options
@@ -80,9 +83,9 @@ to set this feature:
 
 ```{r OptWidg, eval=FALSE}
 # DISABLE HTML REPORTS
-options("ISAnalytics.widgets" = FALSE)
+options("ISAnalytics.reports" = FALSE)
 
 # ENABLE HTML REPORTS
-options("ISAnalytics.widgets" = TRUE)
+options("ISAnalytics.reports" = TRUE)
 ```
 

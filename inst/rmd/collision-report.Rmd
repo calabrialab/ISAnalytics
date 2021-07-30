@@ -1,0 +1,420 @@
+---
+title: "ISAnalytics - Collision removal report"
+date: "`r Sys.Date()`"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: scroll
+    theme:
+      bootswatch: cosmo
+      primary: "#23687A"
+    navbar:
+      - { title: "Website", href: "https://calabrialab.github.io/ISAnalytics/", align: right, icon: "fa-globe" }
+      - { title: "GitHub", href: "https://github.com/calabrialab/ISAnalytics", align: right, icon: "fa-github" }
+params:
+  input_info: null
+  additional_info: null
+  missing_info: null
+  samples_info: null
+  pre_info: null
+  pre_stats: null
+  sharing_pre: null
+  coll_info: null
+  post_info: null
+  post_stats: null
+  sharing_post: null
+  summary_post: null
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+options(DT.warn.size = FALSE)
+library(flexdashboard)
+library(DT)
+input_info <- params$input_info
+samples_info <- params$samples_info
+pre_matrix_info <- params$pre_info
+pre_stats <- params$pre_stats
+pre_sharing <- params$sharing_pre
+coll_info <- params$coll_info
+post_info <- params$post_info
+post_stats <- params$post_stats
+post_sharing <- params$sharing_post
+post_summary <- params$summary_post
+secondary_col <-  "#ff9470"
+```
+
+<!-- Page 1: info on the matrix given as input  --> 
+Input info {data-orientation=rows}
+===============================================================================
+
+Row1
+-------------------------------------------------------------------------------
+<!-- Number of distinct integration sites found, quantification totals for
+each quantification present --> 
+### Distinct integration sites
+```{r echo=FALSE}
+valueBox(value = input_info$total_iss, color = secondary_col, icon = "fa-dna")
+```
+
+```{r echo=FALSE, eval=TRUE}
+out <- purrr::map2_chr(input_info$quant_totals, names(input_info$quant_totals), function(val, name) {
+  heading <- paste("###", name, "total")
+  a1 <- knitr::knit_expand(text = heading)
+  a2 <- knitr::knit_expand(text = paste0("`r valueBox(value = ", round(val, digits = 2), ")`"))
+  paste(c(a1, a2), collapse = "\n")
+})
+```
+
+`r paste(knitr::knit(text = paste(out, collapse = '\n\n')))`
+
+Row2
+-------------------------------------------------------------------------------
+<!-- Just a brief explanation of what this page is about --> 
+### About this page
+
+This page contains summary information regarding the input matrix as is 
+(no pre-processing steps applied)
+
+<!-- Page 2: info on missing samples and additional samples  -->
+Additional info {data-orientation=rows}
+===============================================================================
+```{r echo=FALSE}
+.venn_diag <- function(info) {
+  all_camps <- union(info$MATRIX, info$AF)
+  info_df <- tibble::tibble(Sample = all_camps)
+  info_df <- info_df %>% 
+    dplyr::mutate(MATRIX = .data$Sample %in% info$MATRIX,
+                  AF = .data$Sample %in% info$AF)
+    venn_plot <- ggvenn::ggvenn(data = info_df, c("MATRIX", "AF"))
+    plotly::ggplotly(p = venn_plot, width = 4, height = 4) %>%
+        plotly::layout(xaxis = list(autorange = TRUE),
+               yaxis = list(autorange = TRUE))
+}
+venn_diag <- .venn_diag(samples_info)
+```
+
+Row1 {data-height=500}
+-------------------------------------------------------------------------------
+### Overview of samples contained in matrix and association file
+<!-- Venn diagram for shared samples between AF and matrix  -->
+```{r}
+venn_diag
+```
+
+### About this page
+<!-- Description of page content  -->
+**Missing samples**  
+Metadata is missing from the association file for these samples, therefore
+they'll be removed prior collision processing.
+
+**Additional samples**  
+The association file contains information about these samples in the project
+of interest but they're not found in the matrix provided as input.
+
+Row2 {.tabset .tabset-fade}
+-------------------------------------------------------------------------------
+### Missing samples 
+<!-- If present, table with missing samples  -->
+```{r echo=FALSE, eval=is.null(params$missing_info), results='asis'}
+cat("*Nothing to report*")
+```
+
+```{r echo=FALSE, eval=!is.null(params$missing_info)}
+mi_df <- params$missing_info 
+num_cols <- colnames(mi_df)[colnames(mi_df) != "CompleteAmplificationID"]
+mi_df <- mi_df %>%
+  dplyr::mutate(dplyr::across(
+    dplyr::all_of(num_cols),
+    ~ round(.x, digits = 2)
+  ))
+datatable(mi_df, 
+              class = "stripe",
+              colnames = stringr::str_replace_all(colnames(params$missing_info),
+                                                  "_", " "),
+              filter = "top")
+```
+
+### Additional samples 
+<!-- If present, table with additional samples  -->
+```{r echo=FALSE, eval=is.null(params$additional_info), results='asis'}
+cat("*Nothing to report*")
+```
+
+```{r echo=FALSE, eval=!is.null(params$additional_info)}
+ai_df <- params$additional_info 
+DT::datatable(ai_df, 
+              class = "stripe",
+              colnames = stringr::str_replace_all(colnames(ai_df),
+                                                  "_", " "),
+              filter = "top")
+```
+
+Pre-processing {data-orientation=rows}
+===============================================================================
+
+Row1
+-------------------------------------------------------------------------------
+<!-- Number of distinct integration sites found, quantification totals for
+each quantification present --> 
+
+### Number of distinct integration sites
+
+```{r}
+valueBox(value = pre_matrix_info$total_iss, color = secondary_col, icon = "fa-dna")
+```
+
+```{r echo=FALSE, eval=TRUE}
+out <- purrr::map2_chr(pre_matrix_info$quant_totals, names(pre_matrix_info$quant_totals), function(val, name) {
+  heading <- paste("###", name, "total")
+  a1 <- knitr::knit_expand(text = heading)
+  a2 <- knitr::knit_expand(text = paste0("`r valueBox(value = ", round(val, digits = 2), ")`"))
+  paste(c(a1, a2), collapse = "\n")
+})
+```
+
+`r paste(knitr::knit(text = paste(out, collapse = '\n\n')))`
+
+Row2
+-------------------------------------------------------------------------------
+<!-- Percentages on the input matrix --> 
+### Number of distinct integration sites with respect to input matrix
+```{r echo=FALSE}
+int_ratio <- round((pre_matrix_info$total_iss / input_info$total_iss) * 100, digits = 1)
+gauge(int_ratio, min = 0, max = 100, symbol = "%", gaugeSectors(
+  success = c(85, 100), warning = c(40, 84), danger = c(0, 39)))
+```
+
+```{r echo=FALSE, eval=TRUE}
+out <- purrr::map2_chr(pre_matrix_info$quant_totals, names(pre_matrix_info$quant_totals), function(val, name) {
+  heading <- paste("###", name, "total with respect to input matrix")
+  ratio <- round((val / input_info$quant_totals[[name]]) * 100, digits = 1)
+  a1 <- knitr::knit_expand(text = heading)
+  a2 <- knitr::knit_expand(text = paste0("`r gauge(", ratio, ", min = 0, max = 100, symbol = '%', gaugeSectors(
+  success = c(85, 100), warning = c(40, 84), danger = c(0, 39)))`"))
+  paste(c(a1, a2), collapse = "\n")
+})
+```
+
+`r paste(knitr::knit(text = paste(out, collapse = '\n\n')))`
+
+Row3
+-------------------------------------------------------------------------------
+<!-- Statistic info per pool --> 
+### Per pool stats {style="width: 95% !important"}
+```{r echo=FALSE}
+datatable(pre_stats, class = "stripe",
+              colnames = stringr::str_replace_all(colnames(pre_stats),
+                                                  "_", " "),
+              filter = "top", rownames = FALSE,
+              options = list(scrollY = 350)) %>%
+formatRound(columns = colnames(pre_stats)[colnames(pre_stats) != "PoolID"], digits = 2)
+```
+
+Row4 {data-height=800 .tabset .tabset-fade}
+-------------------------------------------------------------------------------
+<!-- Sharing heatmaps -->
+```{r echo=FALSE}
+heatmaps <- ISAnalytics::sharing_heatmap(pre_sharing$sharing, interactive = TRUE)
+```
+
+### IS sharing: absolute values
+```{r echo=FALSE}
+heatmaps$absolute
+```
+
+### IS sharing: relative values on x
+```{r echo=FALSE}
+heatmaps$on_g1 %>%
+  plotly::layout(title = list(text = "IS sharing - percentages on x"))
+```
+
+### IS sharing: relative values on union
+```{r echo=FALSE}
+heatmaps$on_union %>%
+  plotly::layout(title = list(text = "IS sharing - percentages on union"))
+```
+
+### How to read the plots
+#### How to read relative heatmaps
+**Relative heatmap on x values**  
+Each value in a row from left to right corresponds to the amount of shared integration sites
+between x and y divided by the IS observed in the group on the x axis.
+
+**Relative heatmap on union**  
+This plot is symmetric with respect to the diagonal. Each cell contains the amount of shared
+integration sites normalized by the cardinality of the union of the 2 groups x and y.
+
+Collision info {data-orientation=columns}
+===============================================================================
+<!-- This page contains info about the collisions process itself -->
+Col1
+-------------------------------------------------------------------------------
+### Collisions identified
+```{r echo=FALSE}
+valueBox(value = coll_info$coll_n, color = secondary_col)
+```
+
+### Collisions identified (% on pre-processing matrix)
+```{r echo=FALSE}
+coll_id_ratio <- round((coll_info$coll_n / pre_matrix_info$total_iss) * 100, digits = 2)
+gauge(coll_id_ratio, min = 0, max = 100, symbol = "%", gaugeSectors(
+  success = c(0, 30), warning = c(31, 40), danger = c(41, 100)))
+```
+
+Col2
+-------------------------------------------------------------------------------
+### Collisions re-assigned
+```{r echo=FALSE}
+valueBox(value = coll_info$reassigned, icon = "fa-recycle")
+```
+
+### Collisions re-assigned (% on pre-processing matrix)
+```{r echo=FALSE}
+ra_ratio_pre <- round((coll_info$reassigned / pre_matrix_info$total_iss) * 100, digits = 2)
+gauge(ra_ratio_pre, min = 0, max = 100, symbol = "%")
+```
+
+### Collisions re-assigned (% on collisions)
+```{r echo=FALSE}
+ra_ratio_coll <- round((coll_info$reassigned / coll_info$coll_n) * 100, digits = 2)
+gauge(ra_ratio_coll, min = 0, max = 100, symbol = "%")
+```
+
+Col3
+-------------------------------------------------------------------------------
+### Collisions removed
+```{r echo=FALSE}
+valueBox(value = coll_info$removed, icon = "fa-trash")
+```
+
+### Collisions removed (% on pre-processing matrix)
+```{r echo=FALSE}
+rem_ratio_pre <- round((coll_info$removed / pre_matrix_info$total_iss) * 100, digits = 2)
+gauge(rem_ratio_pre, min = 0, max = 100, symbol = "%")
+```
+
+### Collisions removed (% on collisions)
+```{r echo=FALSE}
+rem_ratio_coll <- round((coll_info$removed / coll_info$coll_n) * 100, digits = 2)
+gauge(rem_ratio_coll, min = 0, max = 100, symbol = "%")
+```
+
+Post-processing {data-orientation=rows}
+===============================================================================
+<!-- Info about the post processing matrix --> 
+
+Row1
+-------------------------------------------------------------------------------
+<!-- Number of distinct integration sites found, quantification totals for
+each quantification present --> 
+
+### Number of distinct integration sites
+
+```{r}
+valueBox(value = post_info$total_iss, color = secondary_col, icon = "fa-dna")
+```
+
+```{r echo=FALSE, eval=TRUE}
+out <- purrr::map2_chr(post_info$quant_totals, names(post_info$quant_totals), function(val, name) {
+  heading <- paste("###", name, "total")
+  a1 <- knitr::knit_expand(text = heading)
+  a2 <- knitr::knit_expand(text = paste0("`r valueBox(value = ", round(val, digits = 2), ")`"))
+  paste(c(a1, a2), collapse = "\n")
+})
+```
+
+`r paste(knitr::knit(text = paste(out, collapse = '\n\n')))`
+
+Row2
+-------------------------------------------------------------------------------
+<!-- Percentages on the pre-processing matrix --> 
+### Number of distinct integration sites with respect to pre-processing matrix
+```{r echo=FALSE}
+int_ratio_post <- round((post_info$total_iss / pre_matrix_info$total_iss) * 100, digits = 1)
+gauge(int_ratio_post, min = 0, max = 100, symbol = "%", gaugeSectors(
+  success = c(85, 100), warning = c(40, 84), danger = c(0, 39)))
+```
+
+```{r echo=FALSE, eval=TRUE}
+out <- purrr::map2_chr(post_info$quant_totals, names(post_info$quant_totals), function(val, name) {
+  heading <- paste("###", name, "total with respect to pre-processing matrix")
+  ratio <- round((val / pre_matrix_info$quant_totals[[name]]) * 100, digits = 1)
+  a1 <- knitr::knit_expand(text = heading)
+  a2 <- knitr::knit_expand(text = paste0("`r gauge(", ratio, ", min = 0, max = 100, symbol = '%', gaugeSectors(
+  success = c(85, 100), warning = c(40, 84), danger = c(0, 39)))`"))
+  paste(c(a1, a2), collapse = "\n")
+})
+```
+
+`r paste(knitr::knit(text = paste(out, collapse = '\n\n')))`
+
+Row3
+-------------------------------------------------------------------------------
+<!-- Statistic info per pool --> 
+### Per pool stats {style="width: 95% !important"}
+```{r echo=FALSE}
+datatable(post_stats, class = "stripe",
+              colnames = stringr::str_replace_all(colnames(post_stats),
+                                                  "_", " "),
+              filter = "top", rownames = FALSE,
+              options = list(scrollY = 350)) %>%
+formatRound(columns = colnames(post_stats)[colnames(post_stats) != "PoolID"], digits = 2)
+```
+
+Row4
+-------------------------------------------------------------------------------
+<!-- Per patient summary --> 
+### Per patient summary {style="width: 95% !important"}
+```{r echo=FALSE}
+datatable(post_summary, class = "stripe",
+          colnames = stringr::str_replace_all(colnames(post_summary),
+                                                  "_", " "),
+              filter = "top", rownames = FALSE,
+              options = list(scrollY = 350))
+```
+
+Row5 {data-height=800 .tabset .tabset-fade}
+-------------------------------------------------------------------------------
+<!-- Sharing heatmaps -->
+```{r echo=FALSE}
+heatmaps_post <- ISAnalytics::sharing_heatmap(post_sharing$sharing, interactive = TRUE)
+```
+
+### IS sharing: absolute values
+```{r echo=FALSE}
+heatmaps_post$absolute
+```
+
+### IS sharing: relative values on x
+```{r echo=FALSE}
+heatmaps_post$on_g1 %>%
+  plotly::layout(title = list(text = "IS sharing - percentages on x"))
+```
+
+### IS sharing: relative values on union
+```{r echo=FALSE}
+heatmaps_post$on_union %>%
+  plotly::layout(title = list(text = "IS sharing - percentages on union"))
+```
+
+### How to read the plots
+#### How to read relative heatmaps
+**Relative heatmap on x values**  
+Each value in a row from left to right corresponds to the amount of shared integration sites
+between x and y divided by the IS observed in the group on the x axis.
+
+**Relative heatmap on union**  
+This plot is symmetric with respect to the diagonal. Each cell contains the amount of shared
+integration sites normalized by the cardinality of the union of the 2 groups x and y.
+
+Reproducibility {data-orientation=rows}
+===============================================================================
+
+Row1 {data-height=600}
+-------------------------------------------------------------------------------
+
+### Session info {style="width: 95% !important"}
+```{r attr.output='style="max-height: 580px;"'}
+sessionInfo()
+```
+

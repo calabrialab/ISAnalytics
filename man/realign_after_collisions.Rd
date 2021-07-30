@@ -19,39 +19,35 @@ must be quantification types (\code{quantification_types()}) except
 A named list with re-aligned matrices
 }
 \description{
-\lifecycle{experimental}
+\lifecycle{stable}
 This function should be used to keep data consistent among the same analysis:
 if for some reason you removed the collisions by passing only the sequence
-count matrix to the \code{remove_collisions} function, you should call this
+count matrix to \code{remove_collisions()}, you should call this
 function afterwards, providing a list of other quantification matrices.
 NOTE: if you provided a list of several quantification types to
-\code{remove_collisions} before, there is no need to call this function.
+\code{remove_collisions()} before, there is no need to call this function.
 }
 \details{
 For more details on how to use collision removal functionality:
-\code{vignette("Collision removal functionality", package = "ISAnalytics")}
+\code{vignette("collision_removal", package = "ISAnalytics")}
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE)
-path <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
+data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+separated <- separate_quant_matrices(
+    integration_matrices
 )
-root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- unzip_file_system(root_pth, "fs")
-association_file <- import_association_file(path, root,
-    dates_format = "dmy"
+no_coll <- remove_collisions(
+    x = separated$seqCount,
+    association_file = association_file,
+    quant_cols = c(seqCount = "Value"),
+    report_path = NULL
 )
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = association_file, root = NULL,
-    quantification_type = c("fragmentEstimate", "seqCount"),
-    matrix_type = "annotated", workers = 2,
-    patterns = NULL, matching_opt = "ANY",
-    multi_quant_matrix = FALSE
+realigned <- realign_after_collisions(
+    sc_matrix = no_coll,
+    other_matrices = list(fragmentEstimate = separated$fragmentEstimate)
 )
-sc_matrix <- remove_collisions(matrices$seqCount, association_file)
-others <- matrices[!names(matrices) \%in\% "seqCount"]
-aligned_matrices <- realign_after_collisions(sc_matrix, others)
-options(op)
+realigned
 }
 \seealso{
 \code{\link{remove_collisions}}

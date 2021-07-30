@@ -30,33 +30,24 @@ A plot
 Plot of the estimated HSC population size for each patient.
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
-)
-root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root_correct <- unzip_file_system(root_correct, "fs")
-association_file <- import_association_file(path_AF, root_correct,
-    dates_format = "dmy"
-)
-aggregated_meta <- aggregate_metadata(association_file)
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = association_file, root = NULL,
-    quantification_type = c("fragmentEstimate", "seqCount"),
-    matrix_type = "annotated", workers = 2, matching_opt = "ANY"
-)
-agg <- aggregate_values_by_key(
-    x = matrices,
+data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+aggreg <- aggregate_values_by_key(
+    x = integration_matrices,
     association_file = association_file,
-    value_cols = "seqCount"
+    value_cols = c("seqCount", "fragmentEstimate")
+)
+aggreg_meta <- aggregate_metadata(
+    association_file = association_file
 )
 estimate <- HSC_population_size_estimate(
-    x = agg,
-    metadata = aggregated_meta,
-    stable_timepoints = NULL
+    x = aggreg,
+    metadata = aggreg_meta,
+    stable_timepoints = c(90, 180, 360),
+    cell_type = "Other"
 )
-p <- HSC_population_plot(estimate, "PROJECT1")
-options(op)
+p <- HSC_population_plot(estimate, "PJ01")
+p
 }
 \seealso{
 Other Plotting functions: 

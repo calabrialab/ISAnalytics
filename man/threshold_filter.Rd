@@ -110,12 +110,12 @@ print(example_list)
 ## 2    30    50 b         4
 ## 3    40    60 c         5
 }\if{html}{\out{<div class="r">}}\preformatted{filtered <- threshold_filter(example_list,
-                             threshold = list(first = c(20, 60),
-                                              third = c(25)),
-                             cols_to_compare = list(first = c("a", "b"),
-                                                    third = c("a")),
-                             comparators = list(first = c(">", "<"),
-                                                third = c(">=")))
+threshold = list(first = c(20, 60),
+third = c(25)),
+cols_to_compare = list(first = c("a", "b"),
+third = c("a")),
+comparators = list(first = c(">", "<"),
+third = c(">=")))
 print(filtered)
 }\if{html}{\out{</div>}}\preformatted{## $first
 ## # A tibble: 1 x 4
@@ -152,11 +152,11 @@ are equal or bigger than 25.
 
 It is also possible to use some parameters as vectors and some as
 lists: vectors will be recycled for every element filtered.\if{html}{\out{<div class="r">}}\preformatted{filtered <- threshold_filter(example_list,
-                             threshold = list(first = c(20, 60),
-                                              third = c(25, 65)),
-                             cols_to_compare = c("a", "b"),
-                             comparators = list(first = c(">", "<"),
-                                                third = c(">=", "<=")))
+threshold = list(first = c(20, 60),
+third = c(25, 65)),
+cols_to_compare = c("a", "b"),
+comparators = list(first = c(">", "<"),
+third = c(">=", "<=")))
 }\if{html}{\out{</div>}}
 
 In this example, different threshold and comparators will be applied
@@ -201,6 +201,7 @@ filtered <- threshold_filter(example_list,
         third = c(">=")
     )
 )
+filtered
 }
 \seealso{
 Other Analysis functions: 

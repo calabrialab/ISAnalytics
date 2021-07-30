@@ -1,0 +1,72 @@
+---
+title: "fs_alignment_chunk"
+output: html_document
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+options(DT.warn.size = FALSE)
+```
+
+File system alignment {data-orientation=rows}
+===============================================================================
+
+Row1
+-------------------------------------------------------------------------------
+### Project/pool folders found
+```{r}
+found_folders <- length(params$fs_align$Found[params$fs_align$Found == TRUE])
+valueBox(found_folders, icon = "fa-folder-open")
+```
+
+### Quantification folders found
+```{r}
+quant_folders_found <- length(params$fs_align$Path_quant[!is.na(params$fs_align$Path_quant)])
+valueBox(quant_folders_found, icon = "fa-table")
+```
+
+### VISPA2 stats folders found
+```{r}
+stats_folders_found <- length(params$fs_align$Path_iss[!is.na(params$fs_align$Path_iss)])
+valueBox(stats_folders_found, icon = "fa-chart-bar")
+```
+
+Row2
+-------------------------------------------------------------------------------
+### Project/pool folders found on total
+```{r}
+found_folder_perc <- (found_folders / length(params$fs_align$Found)) * 100
+gauge(value = round(found_folder_perc, digits = 1), min = 0, max = 100, symbol = "%", sectors = gaugeSectors(success = c(100, 100), danger = c(0, 99)))
+```
+
+### Quantification folders found on total
+```{r}
+quant_folders_perc <- (quant_folders_found / length(params$fs_align$Path_quant)) * 100
+gauge(value = round(quant_folders_perc, digits = 1), min = 0, max = 100, symbol = "%", abbreviateDecimals = 2, sectors = gaugeSectors(success = c(100, 100), danger = c(0, 99)))
+```
+
+### VISPA2 stats folders found on total
+```{r}
+stats_folders_perc <- (stats_folders_found / length(params$fs_align$Path_iss)) * 100
+gauge(value = round(stats_folders_perc, digits = 1), min = 0, max = 100, symbol = "%", abbreviateDecimals = 2, sectors = gaugeSectors(success = c(100, 100), danger = c(0, 99)))
+```
+
+Row3 {.tabset .tabset-fade}
+-------------------------------------------------------------------------------
+### File system alignment results
+```{r}
+datatable(
+  data = params$fs_align,
+  class = "stripe",
+  filter = "top", 
+  rownames = FALSE,
+  options = list(
+    order = list(list(3, 'asc'))
+  )
+) %>%
+  formatStyle(columns = "Found", 
+              color = styleEqual(
+                levels = c(TRUE, FALSE),
+                values = c(found_color, not_found_color)
+              ), fontWeight = "bold", textTransform = "uppercase")
+```

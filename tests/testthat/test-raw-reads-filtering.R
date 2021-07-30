@@ -12,7 +12,7 @@ func_name <- c(
 # Global vars
 #------------------------------------------------------------------------------#
 withr::local_options(
-    ISAnalytics.widgets = FALSE,
+    ISAnalytics.reports = FALSE,
     ISAnalytics.verbose = FALSE
 )
 
@@ -570,7 +570,8 @@ test_that(paste(func_name[7], "- filters ok"), {
     )
     res <- outlier_filter(example,
         key = "Z",
-        keep_calc_cols = TRUE
+        keep_calc_cols = TRUE,
+        outlier_p_value_threshold = 0.05
     )
     expect_true(all(res %>%
         dplyr::filter(.data$PoolID == "POOL2") %>%

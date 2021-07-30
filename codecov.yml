@@ -13,5 +13,5 @@ coverage:
         threshold: 1%
         informational: true
 ignore:
-  - "R/internal-widgets.R"
+  - "R/report-utilities.R"
   - "R/plotting-functions.R"

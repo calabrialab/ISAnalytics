@@ -2,85 +2,63 @@
 % Please edit documentation in R/collision-removal.R
 \name{remove_collisions}
 \alias{remove_collisions}
-\title{Identifies and removes collisions based on the sequence count matrix.}
+\title{Identifies and removes collisions.}
 \usage{
 remove_collisions(
   x,
   association_file,
   date_col = "SequencingDate",
   reads_ratio = 10,
-  seq_count_col = "seqCount",
-  max_rows_reports = 50,
-  save_widget_path = NULL
+  quant_cols = c(seqCount = "seqCount", fragmentEstimate = "fragmentEstimate"),
+  report_path = default_report_path()
 )
 }
 \arguments{
-\item{x}{A named list of matrices (names must be quantification types),
-a single integration matrix representing the sequence count matrix of
-interest or a multi-quantification matrix obtained via
-\link{comparison_matrix}}
+\item{x}{Either a multi-quantification matrix or a
+named list of matrices (names must be quantification types)}
 
 \item{association_file}{The association file imported via
-\code{import_association_file}}
+\code{import_association_file()}}
 
-\item{date_col}{The date column that should be considered for the analysis.
+\item{date_col}{The date column that should be considered.
 Must be one value in \code{date_columns_coll()}}
 
 \item{reads_ratio}{A single numeric value that represents the ratio that has
-to be considered when deciding between seqCount value.}
+to be considered when deciding between \code{seqCount} value.}
 
-\item{seq_count_col}{For support of multi-quantification matrix -
-the name of the sequence count values column}
+\item{quant_cols}{A named character vector where names are
+quantification types and
+values are the names of the corresponding columns. The quantification
+\code{seqCount} MUST be included in the vector.}
 
-\item{max_rows_reports}{A numeric value, represents the maximum number of
-rows of the reports data frames that can be printed on console
-if the option \code{ISAnalytics.verbose} is active. If the data frames are too
-large they won't be printed on console - we recommend using widgets for
-detailed and more accessible info.}
-
-\item{save_widget_path}{Either NULL or a path where the html report file
-should be saved. If NULL the report is visualized via browser ONLY (not
-saved on disk).}
+\item{report_path}{The path where the report file should be saved.
+Can be a folder, a file or NULL if no report should be produced.
+Defaults to \code{{user_home}/ISAnalytics_reports}.}
 }
 \value{
-A list of tibbles with removed collisions
+Either a multi-quantification matrix or a list of data frames
 }
 \description{
-\lifecycle{experimental}
+\lifecycle{stable}
 A collision is an integration (aka a unique combination of
-chr, integration_locus and strand) which is observed in more than one
-independent sample (a unique pair of ProjectID and SubjectID). The function
-tries to decide to which subject an integration should be assigned and if no
+\code{chr}, \code{integration_locus} and \code{strand}) which is observed in more than one
+independent sample (a unique pair of \code{ProjectID} and \code{SubjectID}).
+The function tries to decide to which subject an integration
+should be assigned to and, if no
 decision can be taken, the integration is completely removed from the data
 frame.
-}
-\details{
-If you don't want the function to show details and messages do:
-\code{options(ISAnalitics.verbose = FALSE)}.
-To restore to the original value:
-\code{options(ISAnalitics.verbose = TRUE)}.
-For more details on how to use collision removal functionality:
-\code{vignette("Collision removal functionality", package = "ISAnalytics")}
+For more details refer to the vignette "Collision removal functionality":
+\code{vignette("collision_removal", package = "ISAnalytics")}
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE)
-path <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
+data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+no_coll <- remove_collisions(
+    x = integration_matrices,
+    association_file = association_file,
+    report_path = NULL
 )
-root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- unzip_file_system(root_pth, "fs")
-association_file <- import_association_file(path, root,
-    dates_format = "dmy"
-)
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = association_file, root = NULL,
-    quantification_type = c("fragmentEstimate", "seqCount"),
-    matrix_type = "annotated", workers = 2,
-    patterns = NULL, matching_opt = "ANY",
-    multi_quant_matrix = FALSE
-)
-matrices <- remove_collisions(matrices, association_file)
-options(op)
+head(no_coll)
 }
 \seealso{
 \code{\link{date_columns_coll}}

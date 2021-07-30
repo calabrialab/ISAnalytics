@@ -61,30 +61,14 @@ is required. To visualize the resulting object:\preformatted{gridExtra::grid.arr
 }
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
-)
-root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root_correct <- unzip_file_system(root_correct, "fs")
-association_file <- import_association_file(path_AF, root_correct,
-    dates_format = "dmy"
-)
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = association_file, root = NULL,
-    quantification_type = c("fragmentEstimate", "seqCount"),
-    matrix_type = "annotated", workers = 2, matching_opt = "ANY"
-)
-agg <- aggregate_values_by_key(
-    x = matrices,
+data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+aggreg <- aggregate_values_by_key(
+    x = integration_matrices,
     association_file = association_file,
-    value_cols = c("fragmentEstimate", "seqCount")
+    value_cols = c("seqCount", "fragmentEstimate")
 )
-abundance <- compute_abundance(agg,
-    columns = "fragmentEstimate_sum",
-    key = c("SubjectID", "CellMarker", "Tissue", "TimePoint")
-)
-grob <- top_abund_tableGrob(abundance)
+abund <- compute_abundance(x = aggreg)
+grob <- top_abund_tableGrob(abund)
 gridExtra::grid.arrange(grob)
-options(op)
 }

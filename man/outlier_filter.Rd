@@ -32,16 +32,11 @@ A data frame of metadata which has less or the same amount of rows
 Filter out outliers in metadata.
 }
 \examples{
-op <- options(ISAnalytics.widgets = FALSE)
-
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
+data("association_file", package = "ISAnalytics")
+filtered_af <- outlier_filter(association_file,
+    key = "BARCODE_MUX",
+    report_path = NULL
 )
-association_file <- import_association_file(path_AF,
-    root = NULL,
-    dates_format = "dmy"
-)
-filtered_af <- outlier_filter(association_file, key = "VCN")
-options(op)
+head(filtered_af)
 }
 \concept{Outliers filter}

@@ -13,9 +13,10 @@ aggregate_metadata(
 }
 \arguments{
 \item{association_file}{The imported association file
-(via link{import_association_file})}
+(via \link{import_association_file})}
 
-\item{grouping_keys}{A character vector of column names to form a group}
+\item{grouping_keys}{A character vector of column names to form a grouping
+operation}
 
 \item{aggregating_functions}{A data frame containing specifications
 of the functions to be applied to columns in the association file during
@@ -31,23 +32,17 @@ see \link{import_Vispa2_stats}.}
 An aggregated data frame
 }
 \description{
-\lifecycle{maturing}
+\lifecycle{stable}
 Groups metadata by the specified grouping keys and returns a
 summary of info for each group. For more details on how to use this function:
-\code{vignette("Working with aggregate functions", package = "ISAnalytics")}
+\code{vignette("aggregate_function_usage", package = "ISAnalytics")}
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
+data("association_file", package = "ISAnalytics")
+aggreg_meta <- aggregate_metadata(
+    association_file = association_file
 )
-root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root_correct <- unzip_file_system(root_correct, "fs")
-association_file <- import_association_file(path_AF, root_correct,
-    dates_format = "dmy"
-)
-aggregated_meta <- aggregate_metadata(association_file)
-options(op)
+head(aggreg_meta)
 }
 \seealso{
 Other Aggregate functions: 

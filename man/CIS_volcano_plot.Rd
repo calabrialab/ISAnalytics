@@ -6,10 +6,8 @@
 \usage{
 CIS_volcano_plot(
   x,
-  onco_db_file = system.file("extdata", "201806_uniprot-Proto-oncogene.tsv.xz", package
-    = "ISAnalytics"),
-  tumor_suppressors_db_file = system.file("extdata",
-    "201806_uniprot-Tumor-suppressor.tsv.xz", package = "ISAnalytics"),
+  onco_db_file = "proto_oncogenes",
+  tumor_suppressors_db_file = "tumor_suppressors",
   species = "human",
   known_onco = known_clinical_oncogenes(),
   suspicious_genes = clinical_relevant_suspicious_genes(),
@@ -24,11 +22,13 @@ CIS_volcano_plot(
 \item{x}{Either a simple integration matrix or a data frame resulting
 from the call to \link{CIS_grubbs} with \code{add_standard_padjust = TRUE}}
 
-\item{onco_db_file}{Uniprot file for proto-oncogenes (see details)}
+\item{onco_db_file}{Uniprot file for proto-oncogenes (see details).
+If different from default, should be supplied as a path to a file.}
 
-\item{tumor_suppressors_db_file}{Uniprot file for tumor-suppressor genes}
+\item{tumor_suppressors_db_file}{Uniprot file for tumor-suppressor genes.
+If different from default, should be supplied as a path to a file.}
 
-\item{species}{One between "human", "mouse" and "all"}
+\item{species}{One between \code{"human"}, \code{"mouse"} and \code{"all"}}
 
 \item{known_onco}{Data frame with known oncogenes. See details.}
 
@@ -37,13 +37,16 @@ genes. See details.}
 
 \item{significance_threshold}{The significance threshold}
 
-\item{annotation_threshold_ontots}{Value above which genes are annotated}
+\item{annotation_threshold_ontots}{Value above which genes are annotated
+with colorful labels}
 
-\item{highlight_genes}{Either NULL or a character vector of genes to be
+\item{highlight_genes}{Either \code{NULL} or a character vector of genes to be
 highlighted in the plot even if they're not above the threshold}
 
-\item{title_prefix}{A string to be displayed in the title - usually the
-project name and other characterizing info}
+\item{title_prefix}{A string or character vector to be displayed
+in the title - usually the
+project name and other characterizing info. If a vector is supplied,
+it is concatenated in a single string via \code{paste()}}
 
 \item{return_df}{Return the data frame used to generate the plot?
 This can be useful if the user wants to manually modify the plot with
@@ -54,29 +57,29 @@ and the data frame.}
 A plot or a list containing a plot and a data frame
 }
 \description{
-\lifecycle{experimental}
+\lifecycle{stable}
 Traces a volcano plot for IS frequency and CIS results.
 }
 \details{
 \subsection{Input data frame}{
 
 Users can supply as \code{x} either a simple integration matrix or a
-data frame resulting from the call to \link{CIS_grubbs}
-with \code{add_standard_padjust = TRUE}. In the first case an internal call to
-the function \code{CIS_grubbs} is performed.
+data frame resulting from the call to \link{CIS_grubbs}.
+In the first case an internal call to
+the function \code{CIS_grubbs()} is performed.
 }
 
 \subsection{Oncogene and tumor suppressor genes files}{
 
 These files are included in the package for user convenience and are
 simply UniProt files with gene annotations for human and mouse.
-For more details on how this files were generated use the help \code{?filename}
-function.
+For more details on how this files were generated use the help
+\code{?tumor_suppressors}, \code{?proto_oncogenes}
 }
 
 \subsection{Known oncogenes}{
 
-The default values are contained in a data frame exported by this package,
+The default values are included in this package and
 it can be accessed by doing:\if{html}{\out{<div class="r">}}\preformatted{head(known_clinical_oncogenes())
 }\if{html}{\out{</div>}}\preformatted{## # A tibble: 5 x 2
 ##   GeneName KnownClonalExpansion
@@ -104,27 +107,11 @@ parameter (DOIReference column is optional):\if{html}{\out{<div class="r">}}\pre
 }
 }
 \examples{
-op <- options(ISAnalytics.widgets = FALSE)
-
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
+data("integration_matrices", package = "ISAnalytics")
+cis_plot <- CIS_volcano_plot(integration_matrices,
+    title_prefix = "PJ01"
 )
-root_correct <- system.file("extdata", "fs.zip",
-    package = "ISAnalytics"
-)
-root_correct <- unzip_file_system(root_correct, "fs")
-
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = path_AF, root = root_correct,
-    quantification_type = c("seqCount", "fragmentEstimate"),
-    matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY",
-    dates_format = "dmy"
-)
-
-cis <- CIS_grubbs(matrices)
-plot <- CIS_volcano_plot(cis)
-options(op)
+cis_plot
 }
 \seealso{
 Other Plotting functions: 

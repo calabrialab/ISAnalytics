@@ -18,8 +18,8 @@
 # 'Path' is missing (needed for matrix import).
 # USED IN:
 # - import_parallel_Vispa2Matrices
-.af_missing_path_error <- function() {
-    c("Column 'Path' not found in the association file",
+.af_missing_path_error <- function(col) {
+    c(paste0("Column '", col, "' not found in the association file"),
         x = paste(
             "File system alignment is necessary for this step. Please",
             "re-import the association file with the alignment feature"
@@ -36,7 +36,7 @@
         "*** Association file import summary ***",
         i = paste(
             "For detailed report please set option",
-            "'ISAnalytics.widgets' to TRUE"
+            "'ISAnalytics.reports' to TRUE"
         ),
         paste0("Parsing problems detected: ", !is.null(pars_prob)),
         paste0("Date parsing problems: ", !is.null(dates_prob)),
@@ -95,18 +95,6 @@
     )
 }
 
-.widgets_error <- function() {
-    paste("Unable to produce widget report, skipping this step")
-}
-
-.widgets_print_error <- function() {
-    paste("Unable to print widget report, skipping this step")
-}
-
-.widgets_save_error <- function() {
-    paste("Unable to save widget to file, skipping this step")
-}
-
 # Produces a mini-report to print after file reading only if verbose is active
 # USED IN:
 # - import_single_Vispa2Matrix
@@ -120,30 +108,6 @@
     )
 }
 
-# Produces a mini-report to print after file reading only if verbose is active
-# USED IN:
-# - import_parallel_Vispa2Matrix
-#' @importFrom dplyr select
-#' @importFrom tidyr unnest
-.summary_ism_par_import_msg <- function(fimported, files_to_import,
-    files_found) {
-    if (getOption("ISAnalytics.verbose") == TRUE) {
-        print("--- REPORT: FILES IMPORTED ---")
-        print(fimported, width = Inf)
-        print("--- SUMMARY OF FILES CHOSEN FOR IMPORT ---")
-        print(files_to_import, width = Inf)
-        print("--- INTEGRATION MATRICES FOUND REPORT ---")
-        unnested <- tidyr::unnest(files_found %>%
-            dplyr::select(
-                -.data$Files_count
-            ),
-        cols = c(.data$Files)
-        )
-        print(unnested,
-            n = nrow(unnested), width = Inf
-        )
-    }
-}
 
 # Warns the user that the file in input is compressed but the compression
 # format is not supported by fread.
@@ -186,20 +150,32 @@
 }
 
 # @keywords internal
-.missing_value_col_error <- function() {
-    paste(
-        "The value column is missing or it contains non-numeric data.",
-        "The column is needed for this operation.",
-        "Aborting."
-    )
-}
-
-# @keywords internal
 .missing_complAmpID_error <- function() {
     paste(
         "The `CompleteAmplificationID` column is missing.",
         "The column is needed for this operation.",
         "Aborting."
+    )
+}
+
+# USED IN:
+# - remove_collisions
+# - compute_near_integrations
+.missing_cAmp_sub_msg <- function() {
+    paste0(
+        "The `CompleteAmplificationID` column is missing",
+        " and it is needed for this functionality"
+    )
+}
+
+# USED IN:
+# - remove_collisions
+# - compute_near_integrations
+# - circos_genomic_density
+.missing_mand_vars <- function() {
+    paste(
+        "Missing mandatory vars: ",
+        paste0(mandatory_IS_vars(), collapse = ", ")
     )
 }
 
@@ -259,12 +235,10 @@
     )
 }
 
-#---- USED IN : remove_collisions ----
 .no_collisions_msg <- function() {
     paste("No collisions found for the given matrix, nothing to do")
 }
 
-#---- USED IN : threshold_filter ----
 
 # @keywords internal
 .threshold_err <- function() {
@@ -303,10 +277,28 @@
 # - compute_abundance
 # - top_integrations
 # - outliers_by_pool_fragments
+# - sample_statistics
+# - compute_near_integrations
 .missing_user_cols_error <- function(missing_cols) {
     c(paste(
         "Some or all of the input column names were not found",
         "in the data frame"
+    ),
+    i = paste(
+        "Columns missing:",
+        paste0(missing_cols, collapse = ", ")
+    )
+    )
+}
+
+# Error message: notifies the user that one or more column names specified
+# as parameters were not found in metadata column names
+# USED IN:
+# - sample_statistics
+.missing_user_cols_meta_error <- function(missing_cols) {
+    c(paste(
+        "Some or all of the input column names were not found",
+        "in metadata"
     ),
     i = paste(
         "Columns missing:",
@@ -328,6 +320,7 @@
 # as parameters are not numeric
 # USED IN:
 # - compute_abundance
+# - sample_statistics
 .non_num_user_cols_error <- function(non_num) {
     paste(
         paste(
@@ -338,6 +331,26 @@
         paste0(non_num, collapse = ", "),
         sep = "\t"
     )
+}
+
+# Error: the function expects all element in the list to be either
+# functions or formulas
+# USED IN:
+# - sample_statistics
+.non_function_elem_error <- function() {
+    c("Wrong element type",
+        x = paste(
+            "The function parameter should contain a list",
+            "of either functions or formulas."
+        ),
+        i = "See ?sample_statistics for details"
+    )
+}
+
+# USED IN:
+# - sample_statistics
+.inform_skip_count_is <- function() {
+    c("Mandatory IS vars are missing, skipping count IS")
 }
 
 # @keywords internal
@@ -432,9 +445,127 @@
 
 # Error message displayed for suggestion packages that are not installed
 # but required by the called function
-.missing_pkg_error <- function(pkg) {
+.missing_pkg_error <- function(pkg, lib = "CRAN") {
+    inst_sugg <- if (lib == "CRAN") {
+        paste0('To install: `install.packages("', pkg, '")`')
+    } else if (lib == "BIOC") {
+        paste0('To install: `BiocManager::install("', pkg, '")`')
+    }
     c("Missing package",
-        x = paste("Package", pkg, "is required for this functionality."),
-        i = paste0('To install: `install.packages("', pkg, '")`')
+        x = paste0("Package '", pkg, "' is required for this functionality."),
+        i = inst_sugg
+    )
+}
+
+# Error message displayed for functions that require names of a list to be
+# quantification types.
+# USED IN:
+# - remove_collisions
+.quantifications_names_err <- function(non_quant) {
+    c("Unknown quantifications",
+        x = paste0(
+            "Names of the input list must be quantification ",
+            "types in `quantification_types()`"
+        ),
+        i = paste0("Unknown quantifications: ", paste0(non_quant, collapse = ", "))
+    )
+}
+
+# Error message displayed when sequence count matrix is needed but not detected
+# IN A LIST.
+# USED IN:
+# - remove_collisions
+.seqCount_df_err <- function() {
+    c(x = paste(
+        "Sequence count data frame is required for collision removal",
+        "but none was detected in x"
+    ))
+}
+
+# Error message displayed when sequence count column is not detected in the
+# input matrix
+# USED IN:
+# - remove_collisions
+.seqCount_col_err <- function() {
+    c("Sequence count column not found in the input data frame",
+        i = "Check the `quant_cols` parameter. Did you set it correctly?"
+    )
+}
+
+# Error message for missing needed AF columns
+# USED IN:
+# - remove_collisions
+.missing_af_needed_cols <- function(missing) {
+    c(
+        "Missing needed columns in the association file: ",
+        x = paste(
+            "Columns missing:",
+            paste0(missing, collapse = ", ")
+        )
+    )
+}
+
+# USED IN:
+# - remove_collisions
+.na_in_date_col <- function() {
+    c(paste(
+        "Selected date column contains NA values"
+    ))
+}
+
+# Warns the user that some samples contained in the matrices are not found
+# in metadata and are going to be excluded from computation.
+# USED IN:
+# - remove_collisions
+.missing_af_samples_msg <- function(n_missing) {
+    c("Missing samples from association file",
+        i = paste(
+            "Could not find some samples contained in",
+            "matrices in the association file. For more detail",
+            "please consult the report. Missing samples",
+            "will be removed from the matrix."
+        ),
+        paste0("-- Number of samples missing: ", n_missing)
+    )
+}
+
+# Warns the user that some samples are present in the association file but
+# not in matrix.
+# USED IN:
+# - remove_collisions
+.additional_ad_samples_msg <- function() {
+    c("Additional samples found in the association file",
+        i = paste(
+            "Some samples were found in the association file but not",
+            "in the input matrix. For more detail consult the report."
+        )
+    )
+}
+
+# Error displayed if no root argument was set but import of ISS was requested
+# USED IN:
+# - import_associaton_file
+.no_stats_import_err <- function() {
+    c(paste(
+        "Can't import Vispa2 stats files without",
+        "file system alignment. Provide the appropriate",
+        "root."
+    ))
+}
+
+.no_stat_files_imported <- function() {
+    c("Warning: no VISPA2 stats files imported")
+}
+
+# Message that warns the user no matrices can be imported because all paths
+# are NA
+# USED IN:
+# - import_parallel_Vispa2Matrices_interactive/auto
+.af_empty_msg <- function() {
+    c("Nothing to import",
+        i = paste(
+            "All paths are NA, no matrices to import.",
+            "Check your association file."
+        )
     )
 }

@@ -74,37 +74,15 @@ the chosen column to avoid undesired results.
 }
 }
 \examples{
-op <- options(ISAnalytics.widgets = FALSE)
-
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
+data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+aggreg <- aggregate_values_by_key(
+    x = integration_matrices,
+    association_file = association_file,
+    value_cols = c("seqCount", "fragmentEstimate")
 )
-root_correct <- system.file("extdata", "fs.zip",
-    package = "ISAnalytics"
-)
-root_correct <- unzip_file_system(root_correct, "fs")
-
-association_file <- import_association_file(path_AF, root_correct,
-    dates_format = "dmy"
-)
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = association_file, root = NULL,
-    quantification_type = c("seqCount", "fragmentEstimate"),
-    matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY", multi_quant_matrix = FALSE
-)
-
-#### EXTERNAL AGGREGATION
-aggregated <- aggregate_values_by_key(matrices$seqCount, association_file)
-cumulative_count <- cumulative_count_union(aggregated)
-
-#### INTERNAL AGGREGATION
-cumulative_count_2 <- cumulative_count_union(matrices$seqCount,
-    association_file,
-    aggregate = TRUE
-)
-
-options(op)
+cumulative_count <- cumulative_count_union(aggreg)
+cumulative_count
 }
 \seealso{
 Other Analysis functions: 

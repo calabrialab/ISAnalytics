@@ -1,0 +1,39 @@
+---
+title: "ISAnalytics - VISPA2 stats import report"
+date: "`r Sys.Date()`"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: scroll
+    theme:
+      bootswatch: cosmo
+      primary: "#23687A"
+    navbar:
+      - { title: "Website", href: "https://calabrialab.github.io/ISAnalytics/", align: right, icon: "fa-globe" }
+      - { title: "GitHub", href: "https://github.com/calabrialab/ISAnalytics", align: right, icon: "fa-github" }
+params:
+  iss_stats: null
+  iss_stats_miss: null
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+options(DT.warn.size = FALSE)
+library(flexdashboard)
+library(DT)
+found_color <- "#77d983"
+not_found_color <- "#e36868"
+```
+
+```{r echo=FALSE, child='iss_stats_fragment.Rmd'}
+```
+
+Reproducibility {data-orientation=rows}
+===============================================================================
+
+Row1 {data-height=600}
+-------------------------------------------------------------------------------
+
+### Session info {style="width: 95% !important"}
+```{r attr.output='style="max-height: 580px;"'}
+sessionInfo()
+```

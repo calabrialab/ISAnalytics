@@ -62,38 +62,32 @@ The plotting threshold on the quantification on the y axis has the
 function to highlight only relevant information on the plot and reduce
 computation time. The default value is 1, that acts on the default column
 plotted on the y axis which holds a percentage value. This translates
-in natural language roughly as "highlight with colours only those
+in natural language roughly as "highlight with colors only those
 integrations (alluvia) that at least in 1 point in time have an
-abundance value >= 1 \%". The remaining integrations will be plotted in
-grey in the strata.
+abundance value >= 1 \%". The remaining integrations will be plotted
+as transparent in the strata.
 }
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
-)
-root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root_correct <- unzip_file_system(root_correct, "fs")
-association_file <- import_association_file(path_AF, root_correct,
-    dates_format = "dmy"
-)
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = association_file, root = NULL,
-    quantification_type = c("fragmentEstimate", "seqCount"),
-    matrix_type = "annotated", workers = 2, matching_opt = "ANY"
-)
-agg <- aggregate_values_by_key(
-    x = matrices,
+data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+aggreg <- aggregate_values_by_key(
+    x = integration_matrices,
     association_file = association_file,
-    value_cols = c("fragmentEstimate", "seqCount")
+    value_cols = c("seqCount", "fragmentEstimate")
 )
-abundance <- compute_abundance(agg,
-    columns = "fragmentEstimate_sum",
-    key = c("SubjectID", "CellMarker", "Tissue", "TimePoint")
+abund <- compute_abundance(x = aggreg)
+alluvial_plots <- integration_alluvial_plot(abund,
+    alluvia_plot_y_threshold = 0.5
 )
-plots <- integration_alluvial_plot(abundance, top_abundant_tbl = FALSE)
-options(op)
+ex_plot <- alluvial_plots[[1]]$plot +
+    ggplot2::labs(
+        title = "IS distribution over time",
+        subtitle = "Patient 1, MNC BM",
+        y = "Abundance (\%)",
+        x = "Time point (days after GT)"
+    )
+print(ex_plot)
 }
 \seealso{
 Other Plotting functions: 

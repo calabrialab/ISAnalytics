@@ -23,6 +23,9 @@ sample_df_old <- tidyr::unite(sample_df,
     .data$strand, sep = "_", remove = FALSE
 )
 
+sample_df_add_columns <- sample_df %>%
+    dplyr::mutate(add1 = "a", add2 = 56)
+
 #------------------------------------------------------------------------------#
 # Tests
 #------------------------------------------------------------------------------#
@@ -270,7 +273,8 @@ test_that(paste(func_name, "reads comma delimited"), {
                         file = tf,
                         code = {
                             df <- import_single_Vispa2Matrix(tf,
-                                                             separator = ",")
+                                separator = ","
+                            )
                         }
                     )
                 ),
@@ -317,7 +321,8 @@ test_that(paste(func_name, "reads semicolon delimited"), {
                         file = tf,
                         code = {
                             df <- import_single_Vispa2Matrix(tf,
-                                                             separator = ";")
+                                separator = ";"
+                            )
                         }
                     )
                 ),
@@ -522,4 +527,31 @@ test_that(paste(func_name, "reads correctly compressed .zip"), {
     expect_type(df$GeneStrand, "character")
     expect_type(df$integration_locus, "integer")
     expect_true(typeof(df$Value) %in% c("double", "integer"))
+})
+
+test_that(paste(func_name, "keeps additional cols"), {
+    tf <- withr::local_tempfile(fileext = ".tsv.gz")
+    readr::write_tsv(sample_df_add_columns, tf)
+    capture_output(
+        suppressMessages(
+            expect_message(
+                expect_message(
+                    withr::with_file(
+                        file = tf,
+                        code = {
+                            df <- import_single_Vispa2Matrix(tf,
+                                to_exclude = c("add1", "add2"),
+                                keep_excluded = TRUE
+                            )
+                        }
+                    )
+                )
+            )
+        )
+    )
+    expect_true(all(c(
+        "chr", "integration_locus", "strand",
+        "GeneName", "GeneStrand", "add1", "add2",
+        "CompleteAmplificationID", "Value"
+    ) %in% colnames(df)))
 })

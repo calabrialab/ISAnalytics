@@ -4,7 +4,12 @@
 \alias{import_single_Vispa2Matrix}
 \title{Import a single integration matrix from file}
 \usage{
-import_single_Vispa2Matrix(path, to_exclude = NULL, separator = "\\t")
+import_single_Vispa2Matrix(
+  path,
+  to_exclude = NULL,
+  keep_excluded = FALSE,
+  separator = "\\t"
+)
 }
 \arguments{
 \item{path}{The path to the file on disk}
@@ -12,7 +17,10 @@ import_single_Vispa2Matrix(path, to_exclude = NULL, separator = "\\t")
 \item{to_exclude}{Either NULL or a character vector of column names that
 should be ignored when importing}
 
-\item{separator}{The column delimiter used}
+\item{keep_excluded}{Keep the columns in \code{to_exclude} as additional
+id columns?}
+
+\item{separator}{The column delimiter used, defaults to \verb{\\t}}
 }
 \value{
 A data.table object in tidy format
@@ -24,25 +32,26 @@ produced as the output of Vispa2 pipeline and converts it to a tidy
 format.
 }
 \details{
-The import series of functions is designed to work in combination
-with the use of Vispa2 pipeline, please refer to this article for more
-details: \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/}{VISPA2:
-A Scalable Pipeline for High-Throughput Identification and Annotation of
-Vector Integration Sites}.
-For more details on how to properly use these functions, refer to
-\code{vignette("How to use import functions", package = "ISAnalytics")}
+For more details see the "How to use import functions" vignette:
+\code{vignette("import_functions_howto", package = "ISAnalytics")}
 }
 \examples{
-path_to_file <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-    package = "ISAnalytics"
+fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+fs <- unzip_file_system(fs_path, "fs")
+matrix_path <- fs::path(
+    fs,
+    "PJ01",
+    "quantification",
+    "POOL01-1",
+    "PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz"
 )
-isa_dataframe <- import_single_Vispa2Matrix(path_to_file)
+matrix <- import_single_Vispa2Matrix(matrix_path)
+head(matrix)
 }
 \seealso{
 Other Import functions: 
 \code{\link{import_Vispa2_stats}()},
 \code{\link{import_association_file}()},
-\code{\link{import_parallel_Vispa2Matrices_auto}()},
-\code{\link{import_parallel_Vispa2Matrices_interactive}()}
+\code{\link{import_parallel_Vispa2Matrices}()}
 }
 \concept{Import functions}

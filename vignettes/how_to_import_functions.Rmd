@@ -16,51 +16,44 @@ output:
 date: "`r doc_date()`"
 package: "`r pkg_ver('ISAnalytics')`"
 vignette: >
-  %\VignetteIndexEntry{How to use import functions}
+  %\VignetteIndexEntry{import_functions_howto}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}  
 ---
-```{r style, echo = FALSE, results = 'asis'}
-BiocStyle::markdown()
-```
 
-```{r setup, include = FALSE}
+```{r GenSetup, include = FALSE}
 knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
-    crop = NULL
-    ## Related to
-    ## https://stat.ethz.ch/pipermail/bioc-devel/2020-April/016656.html
+    crop = NULL ## Related to https://stat.ethz.ch/pipermail/bioc-devel/2020-April/016656.html
 )
 ```
 
 
 ```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
-## Track time spent on making the vignette
-startTime <- Sys.time()
-
 ## Bib setup
-library("knitcitations")
-
-## Load knitcitations with a clean bibliography
-cleanbib()
-cite_options(hyperlink = "to.doc", citation_format = "text", style = "html")
+library("RefManageR")
 
 ## Write bibliography information
 bib <- c(
     R = citation(),
     BiocStyle = citation("BiocStyle")[1],
-    knitcitations = citation("knitcitations")[1],
     knitr = citation("knitr")[1],
+    RefManageR = citation("RefManageR")[1],
     rmarkdown = citation("rmarkdown")[1],
     sessioninfo = citation("sessioninfo")[1],
     testthat = citation("testthat")[1],
-    ISAnalytics = citation("ISAnalytics")[1]
+    ISAnalytics = citation("ISAnalytics")[1],
+    VISPA2 = BibEntry(bibtype = "Article", 
+         title = paste("VISPA2: a scalable pipeline for", 
+                       "high-throughput identification and",
+                       "annotation of vector integration sites"),
+         author = "Giulio Spinozzi, Andrea Calabria, Stefano Brasca", 
+         journaltitle = "BMC Bioinformatics", 
+         date = "2017-11-25",
+         doi = "10.1186/s12859-017-1937-9")
 )
-
-write.bibtex(bib, file = "how_to_import_functions.bib")
 ```
-
 
 # Introduction to `ISAnalytics` import functions family
 
@@ -68,7 +61,8 @@ In this vignette we're going to explain more in detail how functions of the
 import family should be used, the most common workflows to follow and more.
 
 ```{r echo=FALSE}
-inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAnalytics")
+inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", 
+                               package = "ISAnalytics")
 ```
 
 ```{r child=inst_chunk_path}
@@ -79,10 +73,11 @@ inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAn
 library(ISAnalytics)
 ```
 
-## Designed to work with Vispa2 pipeline
+## Designed to work with VISPA2 pipeline
 
 The vast majority of the functions included in this package is designed to work 
-in combination with Vispa2 pipeline. If you don't know what it is, we strongly 
+in combination with VISPA2 pipeline `r Citep(bib[["VISPA2"]])`. 
+If you don't know what it is, we strongly 
 recommend you to take a look at these links:  
 
 * Article: [VISPA2: Article](
@@ -92,7 +87,7 @@ https://bitbucket.org/andreacalabria/vispa2/wiki/Home)
 
 ## File system structure generated
 
-Vispa2 produces a standard file system structure starting from a folder you 
+VISPA2 produces a standard file system structure starting from a folder you 
 specify as your workbench or root. The structure always follows this schema:  
 
 * root/
@@ -108,360 +103,329 @@ specify as your workbench or root. The structure always follows this schema:
         * Pools (concatenatePoolIDSeqRun)
       * report
 
-We've included 2 examples of this structure in our package, one correct and the 
-other one including errors or potential problems. They are both in .zip format, 
-so you might want to unzip them if you plan to experiment with them.  
-An example on how to access them:  
+Most of the functions implemented expect a standard file system structure
+as the one described above.
+
+# Notation {#notation}
+
+We call an *"integration matrix"* a tabular structure characterized by:
+
+* 3 mandatory columns of genomic features that characterize a viral insertion
+site in the genome: `chr`, `integration_locus` and `strand`
+* 2 (optional) annotation columns: `GeneName` and `GeneStrand`
+* A variable number n of sample columns containing the quantification
+of the corresponding integration site
+
+```{r echo=FALSE}
+sample_sparse_matrix <- tibble::tribble(
+  ~ chr, ~ integration_locus, ~ strand, ~ GeneName, ~GeneStrand, 
+  ~ exp1, ~ exp2, ~ exp3,
+  "1", 12324, "+", "NFATC3", "+", 4553,5345,NA_integer_,
+  "6", 657532, "+", "LOC100507487", "+", 76,545,5,
+  "7", 657532, "+", "EDIL3", "-", NA_integer_,56,NA_integer_,
+)
+DT::datatable(sample_sparse_matrix, 
+              rownames = FALSE,
+              options = list(dom = "t", scrollX = 120))
+```
+
+The package uses a more compact form of these matrices, limiting the amount
+of NA values and optimizing time and memory consumption. 
+For more info on this take a look at: 
+[Tidy data](https://r4ds.had.co.nz/tidy-data.html)
+
+While integration matrices contain the actual data, we also need associated
+sample metadata to perform the vast majority of the analyses. 
+`ISAnalytics` expects the metadata to be contained in a so called 
+*"association file"*, which is a simple tabular file with a set of 
+standard column headers. 
+
+To generate a blank association file you can use the function 
+`generate_blank_association_file`. You can also view the standard 
+column names with `association_file_columns()`.
+
+# Importing metadata {#metadata}
+
+To import metadata we use `import_association_file()`. This function is not
+only responsible for reading the file into the R environment as a data frame,
+but it is capable to perform a file system alignment operation,
+that is, for each project and pool contained in the file, it scans
+the file system starting from the provided root to check if the corresponding
+folders (contained in the appropriate column) can be found. Remember that
+to work properly, this operation expects a standard folder structure, such
+as the one provided by VISPA2. This function also produces an interactive
+HTML report, to know more about this feature see `vignette(report_system)`.
 
 ```{r}
-root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root_correct <- unzip_file_system(root_correct, "fs")
-fs::dir_tree(root_correct)
+fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+root <- unzip_file_system(fs_path, "fs")
+withr::with_options(list(ISAnalytics.reports = FALSE), code = {
+  af_path <- system.file("extdata", "asso.file.tsv.gz", 
+                         package = "ISAnalytics")
+  af <- import_association_file(af_path, root = root)
+})
 ```
 
-# Importing a single integration matrix
-
-If you want to import a single integration matrix you can do so by using the 
-`import_single_Vispa2Matrix` function.  
-This function reads the file and converts it into a tidy structure: several
-different formats can be read, since you can specify the column separator.
-If you're not familiar with the "tidy" concept, we recommend to take a look at 
-this link to get the basics:  
-
-* [The importance of tidy data](
-https://bookdown.org/rdpeng/RProgDA/the-importance-of-tidy-data.html)
-
-This package is in fact based on the `tidyverse` and tries to follow its 
-philosophy and guidelines as close as possible.  
-Vispa2 pipeline and the associated Create Matrix tool produce matrices with a 
-standard structure which we'll refer to as "messy", because different 
-experimental data is divided in different columns and there are a lot of 
-NA values.
-
-```{r, echo = FALSE}
-example_matrix_path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-    package = "ISAnalytics"
-)
-example_matrix <- read.csv(example_matrix_path,
-    sep = "\t", header = TRUE,
-    stringsAsFactors = FALSE, check.names = FALSE
-)
-knitr::kable(head(example_matrix),
-    caption = "A simple example of messy matrix.", align = "l"
-)
+```{r echo=FALSE}
+DT::datatable(head(af), 
+              rownames = FALSE,
+              options = list(dom = "t", scrollX = 120))
 ```
 
-```{r}
-example_matrix_path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-    package = "ISAnalytics"
-)
-imported_im <- import_single_Vispa2Matrix(
-    path = example_matrix_path,
-    to_exclude = NULL,
-    separator = "\t"
-)
-```
+## Function arguments
 
-```{r, echo = FALSE}
-knitr::kable(head(imported_im), caption = "Example of tidy integration matrix")
-```
+You can change several arguments in the function call to modify the 
+behavior of the function.
 
-We will refer to the structure generated by `import_single_Vispa2Matrix` as 
-"integration matrix" for convenience.  
-To be considered an integration matrix the data frame must contain the mandatory
-variables, which are "chr" (chromosome), "integration_locus" and "strand". 
-It might also contain annotation variables if the matrix was annotated during 
-the Vispa2 pipeline run.  
-You can access these names by using two functions:
+* `root`
+  * Set it to `NULL` if you only want to import the association file without
+  file system alignment. Beware that some of the automated import 
+  functionalities won't work!
+  * Set it to a non-empty string (path on disk): in this case, 
+  the column `PathToFolderProjectID` in the file should contain 
+  **relative** file paths, so if for example your root is set to "/home" and
+  your project folder in the association file is set to "/PJ01", the function
+  will check that the directory exists under "/home/PJ01"
+  * Set it to an empty string: ideal if you want to store paths in the 
+  association file as **absolute** file paths. In this case if your project
+  folder is in "/home/PJ01" you should have this path in the
+  `PathToFolderProjectID` column and set `root` = ""
+* `tp_padding`: this argument is used to pad the `TimePoint` column in the
+association file so that time points have all the same length
+* `dates_format`: a string that is useful for properly parsing dates from 
+tabular formats
+* `separator`: the column separator used in the file. Defaults to "\\t",
+other valid separators are "," (comma), ";" (semi-colon)
+* `filter_for`: you can set this argument to a **named** list of filters, 
+where names are column names. For example `list(ProjectID = "PJ01")` will
+return only those rows whose attribute "ProjectID" equals "PJ01"
+* `import_iss`: either `TRUE` or `FALSE`. If set to `TRUE`, performs
+an internal call to `import_Vispa2_stats()` (see next section), and appends
+the imported files to metadata
+* `convert_tp`: either `TRUE` or `FALSE`. Converts the "TimePoint" column
+in months and years (with custom logic).
+* `report_path`
+  * Set it to `NULL` to avoid the production of a report
+  * Set it to a folder (if it doesn't exist, it gets automatically created)
+  * Set it to a file
+* `...`: additional named arguments to pass to `import_Vispa2_stats()` if
+you chose to import VISPA2 stats
 
-```{r}
-# Displays the mandatory vars, can be called also for manipulation purposes
-# on tibble instead of calling individual variables
-mandatory_IS_vars()
+*NOTE*: the function supports files in various formats as long as the correct
+separator is provided. It also accepts files in `*.xlsx` and `*.xls` formats 
+but we do not recommend using these since the report won't include a 
+detailed summary of potential parsing problems.
 
-# Displays the annotation variables
-annotation_IS_vars()
-```
+The interactive report includes useful information such as
 
-You can of course operate on the integration matrices as you would on any other 
-data frame, but some functions will check the presence of specific
-columns because they're needed in that context.
+* General issues: parsing problems, missing columns, NA values in important 
+columns etc. This allows you to immediately spot problems and correct them 
+before proceeding with the analyses
+* File system alignment issues: very useful to know if all data can be imported
+or folders are missing
+* Info on VISPA2 stats (if `import_iss` was `TRUE`)
 
-# Importing the association file
+# Importing VISPA2 stats files
 
-While you can import single matrices for brief analysis, what you would like to 
-do most of the times is import multiple matrices at once, based on certain 
-parameters. To do that you must first import the association file, which is the 
-file that holds all associated metadata and information about every project, 
-pool and single experiment.  
-The function that imports this file does not simply read it into your R 
-environment, but performs an alignment check with your file system, so you 
-have to specify the path to the root folder where your Vispa2 runs produce 
-output (see the previous section).
-To import the association file do:  
+VISPA2 automatically produces summary files for each pool holding
+information that can be useful for other analyses downstream,
+so it is recommended to import them in the first steps of the workflow.
+To do that, you can use `import_VISPA2_stats`:
 
-```{r}
-path_as_file <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
-)
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    association_file <- import_association_file(
-        path = path_as_file,
-        root = root_correct,
-        tp_padding = 4,
-        dates_format = "dmy",
-        separator = "\t"
+```{r results='hide'}
+withr::with_options(list(ISAnalytics.reports = FALSE), {
+    vispa_stats <- import_Vispa2_stats(
+        association_file = af,
+        join_with_af = FALSE
     )
 })
-association_file
 ```
 
-If you have the "widgets" option active, this will produce a visual HTML report 
-of the results of the alignment check, either in Rstudio or in your browser.  
-If projects or pools are missing you will be notified so you can check and
-fix them.
-
-If you're not interested in scanning the file system you can set the 'root' 
-parameter to NULL and this step will be skipped.
-
-The function can read multiple file formats including excel files, however
-since metadata are crucial for a correct workflow, we recommend using *.tsv or
-*.csv format to avoid potential parsing problems. Additionally you can also
-specify a filter to obtain a pre-filtered association file for your needs:
-
-```{r}
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    association_file_filtered <- import_association_file(
-        path = path_as_file,
-        root = root_correct,
-        tp_padding = 4,
-        dates_format = "dmy",
-        separator = "\t",
-        filter_for = list(ProjectID = "CLOEXP")
-    )
-})
-association_file_filtered
+```{r echo=FALSE}
+DT::datatable(head(vispa_stats), 
+              rownames = FALSE,
+              options = list(dom = "t", scrollX = 120))
 ```
 
-Finally there is also the option of importing directly Vispa2 stats,
-that are located in the "iss" folder of the project, and merge them
-directly in the association file for later usage. See the next section
-for more detail on this.
-
-# Importing Vispa2 stats files
-
-Vispa2 runs automatically produce summary files for each pool holding 
-information that can be useful for other analyses downstream, 
-so it is reccomended to import them in the first steps of the workflow.
-To do that, you can use `import_Vispa2_stats`:
-
-```{r}
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-  vispa_stats <- import_Vispa2_stats(
-  association_file = association_file_filtered, 
-  join_with_af = FALSE
-)
-})
-```
-
-The function requires as input the already imported and file system aligned
-association file and it will scan the iss folder for files that match some
+The function requires as input the imported and file system aligned
+association file and it will scan the `iss` folder for files that match some
 known prefixes (defaults are already provided but you can change them as you
-see fit). You can either choose to join the imported data frames with the 
+see fit). You can either choose to join the imported data frames with the
 association file in input and obtain a single data frame or keep it as it is,
 just set the parameter `join_with_af` accordingly.
 At the end of the process an HTML report is produced, signaling potential
 problems.
 
 You can directly call this function when you import the association file
-by setting the `import_iss` argument of `import_association_file` to TRUE.
+by setting the `import_iss` argument of `import_association_file` to `TRUE`.
 
-# Importing multiple matrices in parallel
+# Importing a single integration matrix
 
-There are 2 different functions for importing multiple matrices in parallel:  
+If you want to import a single integration matrix you can do so by using the
+`import_single_Vispa2Matrix()` function.
+This function reads the file and converts it into a tidy structure: several
+different formats can be read, since you can specify the column separator.
 
-* `import_parallel_Vispa2Matrices_interactive`
-* `import_parallel_Vispa2Matrices_auto`  
+```{r message=FALSE, results='hide'}
+matrix_path <- fs::path(root,
+                        "PJ01",
+                        "quantification",
+                        "POOL01-1",
+                        "PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz")
+matrix <- import_single_Vispa2Matrix(matrix_path)
+```
 
-The interactive version will ask you to input your choices directly into the 
-console, the automatic version will not, but has some limitations.  
-Both functions rely on the association file and some basic parameters, most 
-notably:  
+```{r echo=FALSE}
+DT::datatable(head(matrix), 
+              rownames = FALSE,
+              options = list(dom = "t", scrollX = 120))
+```
 
-* `quantification_type`: this is a string or a vector of characters indicating 
-which quantification types you want the function to look for. The possible 
-values are `r quantification_types()`
-* `matrix_type`: tells the function if it should consider annotated or not 
-annotated matrices. The only possible options are "annotated" and 
-"not_annotated"
-* `workers`: indicates the number of parallel workers to instantiate when 
-importing. Keep in mind that the higher is the number, the faster the process 
-is, but also higher is the RAM peak, so you should be aware of this especially 
-if you're dealing with really big matrices. Set this parameter according to 
-your needs and according to your hardware specifications.  
+Other arguments you can pass to the function are
 
-Both the versions will produce an HTML report as a summary of the importing 
-process. The report includes:
+* `to_exclude`: a character vector that contains column names that need to
+be excluded when imported. This is more targeted towards files that do have
+all the columns of an integration matrix as presented in section
+\@ref(notation) and other additional columns. By default this argument is set
+to `NULL`
+* `keep_excluded`: if set to `TRUE` all columns contained in `to_exclude` are
+preserved as additional annotation columns
 
-* Which files were found, reporting eventual anomalies 
-(missing files or duplicates)
-* Which files were chosen for import after interactive selection or 
-after automatic filtering
-* Which files were actually imported, signaling potential errors 
-during the import phase  
+# Automated integration matrices import
 
-Both the functions, by default, return a multi-quantification matrix (see
-\link{comparison_matrix}).
+Integration matrices import can be automated when when the association file
+is imported with the file system alignment option.
+`ISAnalytics` provides a function, `import_parallel_Vispa2Matrices()`,
+that allows to do just that in a fast and efficient way.
 
-## Interactive version
-
-As stated before, with the interactive version you have more control and you 
-can directly choose:  
-
-* Which projects to import
-* Which pools to import
-* If duplicates files are found which ones are to be kept
-
-If you haven't imported the association file yet, you can directly pass the 
-path to the association file and the path to the root folder into the function:
-in this way the association file will automatically be imported.
-
-Example:  
-
-```{r, eval = FALSE}
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    matrices <- import_parallel_Vispa2Matrices_interactive(
-        association_file = path_as_file,
-        root = root_correct,
-        quantification_type = c("fragmentEstimate", "seqCount"),
-        matrix_type = "annotated",
-        workers = 2
+```{r}
+withr::with_options(list(ISAnalytics.reports = FALSE), {
+    matrices <- import_parallel_Vispa2Matrices(af,
+        c("seqCount", "fragmentEstimate"),
+        mode = "AUTO"
     )
 })
 ```
 
-If you've already imported the association file you can instead call the 
-function like this:
+## Function arguments
 
-```{r, eval = FALSE}
-matrices <- import_parallel_Vispa2Matrices_interactive(
-    association_file = association_file,
-    root = NULL,
-    quantification_type = c("fragmentEstimate", "seqCount"),
-    matrix_type = "annotated",
-    workers = 2
-)
+Let's see how the behavior of the function changes when we change arguments.
+
+### `association_file` argument
+
+You can supply a data frame object, imported via `import_association_file()` 
+(see Section \@ref(metadata)) or a string (the path to the association file
+on disk). In the first scenario it is necessary to perform file system 
+alignment, since the function scans the folders contained in the column 
+`Path_quant`, while in the second case you should also provide as additional
+**named** argument (to `...`) an appropriate `root`: the function will 
+internally call `import_association_file()`, if you don't have specific
+needs we recommend doing the 2 steps separately and provide the association
+file as a data frame.
+
+### `quantification_type` argument
+
+For each pool there may be multiple available quantification types, that is,
+different matrices containing the same samples
+and same genomic features but a different quantification.
+A typical workflow contemplates `seqCount` and `fragmentEstimate`,
+all the supported quantification types can be viewed with
+`quantification_types()`.
+
+### `matrix_type` argument
+
+As we mentioned in Section \@ref(notation), annotation columns are optional 
+and may not be included in some matrices. This argument allows you to 
+specify the function to look for only a specific type of matrix, either
+`annotated` or `not_annotated`. Please note that in order to do that,
+for now,
+the function needs to assume some standard file name notation, that is, 
+for `annotated` matrices, the function will look for the `.no0.annotated` 
+suffix in the file name.
+
+### `workers` argument
+
+Sets the number of parallel workers to set up. This highly depends on the
+hardware configuration of your machine.
+
+### `multi_quant_matrix` argument
+
+When importing more than one quantification at once, it can be very handy
+to have all data in a single data frame rather than two. If set to `TRUE`
+the function will internally call `comparison_matrix()` and produce a 
+single data frames that has a dedicated column for each quantification.
+For example, for the matrices we've imported before:
+
+```{r echo=FALSE}
+DT::datatable(head(matrices), 
+              rownames = FALSE,
+              options = list(dom = "t", scrollX = 120))
 ```
 
-You can simply access the data frames by doing:  
+### `report_path` argument
 
-```{r, eval=FALSE}
-matrices$fragmentEstimate
-matrices$seqCount
-```
+As other import functions, also `import_parallel_Vispa2Matrices()` produces
+an interactive report, use this argument to set the appropriate path were
+the report should be saved.
 
+### `mode` argument
 
-## Automatic version
+This argument can take one of two values, `AUTO` or `INTERACTIVE`.
+The `INTERACTIVE` workflow, as the name suggests, needs user console 
+input but allows a fine tuning of the import process. On the other hand,
+`AUTO` allows a fully automated workflow but has of course some limitations.
 
-If you choose to opt for the automatic version you should keep in mind that 
-the function automatically considers everything included in the association 
-file, so if you want to import only a subset of projects and/or pools you 
-should filter the association file according to your criteria before calling 
-the function:
+**What do you want to import?**  
+In a fully automated mode, the function will try to import everything that
+is contained in the input association file. This means that if you need to
+import only a specific set of projects/pools, you will need to filter the
+association file accordingly prior calling the function (you can easily
+do that via the `filter_for` argument as explained in Section \@ref(metadata)).
+In interactive mode the function will ask you to type what you want to import.
 
-```{r}
-library(magrittr)
-refined_af <- association_file %>% dplyr::filter(.data$ProjectID == "CLOEXP")
-```
+**How to deal with duplicates?**  
+When scanning folders for files that match a given pattern (in our case the 
+function looks for matrices that match the quantification type and the 
+matrix type), it is very possible that the same folder contains multiple files
+for the same quantification. Of course this is not recommended, we suggest to
+move the duplicated files in a sub directory or remove them if they're not 
+necessary, but in case this happens, in interactive mode, the function asks
+directly which files should be considered. Of course this is not possible in
+automated mode, therefore you need to set two other arguments (described
+in the next sub sections) to "help" the function discriminate 
+between duplicates. Please note that if such discrimination is not possible
+no files are imported.
 
-In automatic version there is no way of discriminating duplicates, so there is 
-the possibility to specify additional patterns to look for in file names to 
-mitigate this problem. However, if after matching of the additional patterns 
-duplicates are still found they're simply discarded.  
+### `patterns` argument
 
-There are 2 additional parameters to set:  
+This argument is relevant only if `mode` is set to `AUTO`. Providing a 
+set of patterns (interpreted as regular expressions) helps the function to 
+choose between duplicated files if any are found. If you're confident your
+folders don't contain any duplicates feel free to ignore this argument.
 
-* `patterns`: a string or a character vector containing regular expressions to 
-be matched on file names. If you're not familiar with regular expressions, 
-I suggest you to start 
-from here [stringr cheatsheet](
-https://github.com/rstudio/cheatsheets/blob/master/strings.pdf)
-* `matching_opt`: a single string that tells the function how to match the 
-patterns. The possible values for this parameter are `r matching_options()`:  
-  * ANY : looks for files that match at least one of the patterns specified 
-  in `patterns`
-  * ALL: looks for files that match all the patterns specified in `patterns`
-  * OPTIONAL: looks for files that preferentially match all the patterns, if 
-  none are found looks for files that match any of the patterns and finally 
-  if none are found simply looks for files present that match the 
-  quantification type.  
-  
-You can call the function with `patterns` set to NULL if you don't wish to 
-match anything:
+### `matching_opt` argument
 
-```{r}
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    matrices_auto <- import_parallel_Vispa2Matrices_auto(
-        association_file = refined_af,
-        root = NULL,
-        quantification_type = c("fragmentEstimate", "seqCount"),
-        matrix_type = "annotated",
-        workers = 2,
-        patterns = NULL,
-        matching_opt = "ANY" # Same if you choose "ALL" or "OPTIONAL"
-    )
-})
-matrices_auto
-```
+This argument is relevant only if `mode` is set to `AUTO` and `patterns` 
+isn't `NULL`. Tells the function how to match the given patterns if multiple
+are supplied: `ALL` means keep only those files whose name matches all the
+given patterns, `ANY` means keep only those files whose name matches any of the
+given patterns and `OPTIONAL` expresses a preference, try to find files that
+contain the patterns and if you don't find any return whatever you find.
 
-Let's do an example with a file system where there are issues, such as 
-duplicates:  
+### `...` argument
 
-```{r}
-root_err <- system.file("extdata", "fserr.zip", package = "ISAnalytics")
-root_err <- unzip_file_system(root_err, "fserr")
-fs::dir_tree(root_err)
-withr::with_options(list(ISAnalytics.widgets = FALSE), {
-    association_file_fserr <- import_association_file(path_as_file, root_err)
-    refined_af_err <- association_file_fserr %>%
-        dplyr::filter(.data$ProjectID == "CLOEXP")
-    matrices_auto2 <- import_parallel_Vispa2Matrices_auto(
-        association_file = refined_af_err,
-        root = NULL,
-        quantification_type = c("fragmentEstimate", "seqCount"),
-        matrix_type = "annotated",
-        workers = 2,
-        patterns = "NoMate",
-        matching_opt = "ANY" # Same if you choose "ALL" or "OPTIONAL"
-    )
-})
-matrices_auto
-```
+Additional named arguments to supply to both `import_association_file()` and
+`comparison_matrix()`.
 
-As you can see, in the file system with issues we have more than one file for 
-quantification type, duplicates have "NoMate" suffix in their file name. 
-By specifying this pattern in the function, we're only going to import 
-those files.  
+## Notes
 
-As for the interactive version, you can call the function with path to the 
-association file and root if you want to simply import everything without 
-filtering.
+Earlier versions of the package featured two separated functions, 
+`import_parallel_Vispa2Matrices_auto()` and 
+`import_parallel_Vispa2Matrices_interactive()`. Those functions are now
+officially deprecated (since `ISAnalytics 1.3.3`) and will be defunct on
+the next release cycle.
 
 # Reproducibility
-
-The `r Biocpkg("ISAnalytics")` package `r citep(bib[["ISAnalytics"]])` was 
-made possible thanks to:
-
-* R `r citep(bib[["R"]])`
-* `r Biocpkg("BiocStyle")` `r citep(bib[["BiocStyle"]])`
-* `r CRANpkg("knitcitations")` `r citep(bib[["knitcitations"]])`
-* `r CRANpkg("knitr")` `r citep(bib[["knitr"]])`
-* `r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])`
-* `r CRANpkg("sessioninfo")` `r citep(bib[["sessioninfo"]])`
-* `r CRANpkg("testthat")` `r citep(bib[["testthat"]])`
-
-This package was developed using 
-`r BiocStyle::Githubpkg("lcolladotor/biocthis")`.
 
 `R` session information.
 
@@ -472,19 +436,14 @@ options(width = 120)
 session_info()
 ```
 
-
 # Bibliography
 
-This vignette was generated using `r Biocpkg("BiocStyle")` 
-`r citep(bib[["BiocStyle"]])`
-with `r CRANpkg("knitr")` `r citep(bib[["knitr"]])` and 
-`r CRANpkg("rmarkdown")` `r citep(bib[["rmarkdown"]])` 
-running behind the scenes.
+This vignette was generated using `r Biocpkg("BiocStyle")` `r Citep(bib[["BiocStyle"]])`
+with `r CRANpkg("knitr")` `r Citep(bib[["knitr"]])` and `r CRANpkg("rmarkdown")` `r Citep(bib[["rmarkdown"]])` running behind the scenes.
 
-Citations made with `r CRANpkg("knitcitations")` 
-`r citep(bib[["knitcitations"]])`.
+Citations made with `r CRANpkg("RefManageR")` `r Citep(bib[["RefManageR"]])`.
 
-```{r results = "asis", echo = FALSE, warning = FALSE, message = FALSE}
+```{r vignetteBiblio, results = "asis", echo = FALSE, warning = FALSE, message = FALSE}
 ## Print bibliography
-bibliography()
+PrintBibliography(bib, .opts = list(hyperlink = "to.doc", style = "html"))
 ```

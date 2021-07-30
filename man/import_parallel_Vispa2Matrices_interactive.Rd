@@ -2,7 +2,7 @@
 % Please edit documentation in R/import-functions.R
 \name{import_parallel_Vispa2Matrices_interactive}
 \alias{import_parallel_Vispa2Matrices_interactive}
-\title{Import integration matrices based on the association file.}
+\title{Import integration matrices from association file.}
 \usage{
 import_parallel_Vispa2Matrices_interactive(
   association_file,
@@ -14,79 +14,12 @@ import_parallel_Vispa2Matrices_interactive(
   ...
 )
 }
-\arguments{
-\item{association_file}{A single string containing the path to the
-association file on disk, or a data frame resulting from a previous call to
-\code{import_association_file}}
-
-\item{quantification_type}{A vector of requested quantification_types. Must
-be one in \code{quantification_types()}}
-
-\item{matrix_type}{A single string representing the type of matrices to
-be imported. Can only be one in \code{"annotated"} or \code{"not_annotated"}}
-
-\item{workers}{A single integer representing the number
-of parallel workers to use for the import}
-
-\item{multi_quant_matrix}{If set to TRUE will produce a
-multi-quantification matrix (data frame) through \code{comparison_matrix}
-instead of a list.}
-
-\item{export_report_path}{A path on disk to save produced import report
-or NULL if the user doesn't wish to save the html file}
-
-\item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Additional named arguments
-to pass to \code{ìmport_association_file} and \code{comparison_matrix}}
-}
 \value{
-A named list of data frames containing data from
-all imported integration
-matrices, divided by quantification type or a multi-quantification matrix
+A data frame or a list
 }
 \description{
-\lifecycle{maturing}
-These functions are designed to import the appropriate
-integration matrix files given the association file and the root folder of
-the file system where Vispa2 matrices are generated.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This function was deprecated to avoid redundancy.
+Please refer to \code{\link{import_parallel_Vispa2Matrices}}.
 }
-\details{
-Import family functions are designed to work in combination with
-Vispa2, for more details on this take a look here:
-\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/}{VISPA2:
-A Scalable Pipeline for High-Throughput Identification
-and Annotation of Vector Integration Sites}.\cr
-For more details on how to properly use these functions, refer to the
-vignette - vignette("how_to_import_functions")
-}
-\section{Interactive version}{
-
-The interactive version of import_parallel_Vispa2Matrices asks user for input
-and allows a more detailed choice of projects to import, pools to import and,
-if necessary, duplicate files. During the execution, a series of reports is
-shown in html format.
-}
-
-\examples{
-\dontrun{
-# Can't run because it's interactive and requires user input
-matrices <- import_parallel_Vispa2Matrices_interactive(
-    association_file,
-    quantification_type,
-    matrix_type = "annotated",
-    workers = 2,
-    multi_quant_matrix = FALSE,
-    export_report_path = NULL,
-)
-}
-}
-\seealso{
-\code{\link{comparison_matrix}},
-\code{\link{import_association_file}}
-
-Other Import functions: 
-\code{\link{import_Vispa2_stats}()},
-\code{\link{import_association_file}()},
-\code{\link{import_parallel_Vispa2Matrices_auto}()},
-\code{\link{import_single_Vispa2Matrix}()}
-}
-\concept{Import functions}
+\keyword{internal}

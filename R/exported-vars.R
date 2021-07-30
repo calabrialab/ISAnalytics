@@ -242,3 +242,38 @@ reduced_AF_columns <- function() {
 flag_logics <- function() {
     c("AND", "OR", "XOR", "NAND", "NOR", "XNOR")
 }
+
+### Articles links
+.lentiviral_CIS_paper <- function() {
+    paste0(
+        "https://ashpublications.org/blood/article/117/20/5332/21206/",
+        "Lentiviral-vector-common-integration-sites-in"
+    )
+}
+
+.vispa2_paper_link <- function() {
+    paste0("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/")
+}
+
+.vispa2_paper_title <- function() {
+    paste0(
+        "VISPA2:A Scalable Pipeline for High-Throughput ",
+        "Identification and Annotation of Vector Integration Sites"
+    )
+}
+
+
+#' Required columns for refGene file.
+#'
+#' @return Character vector of column names
+#' @export
+#'
+#' @examples
+#' refGene_table_cols()
+refGene_table_cols <- function() {
+    c(
+        "name2", "chrom", "strand", "min_txStart", "max_txEnd",
+        "minmax_TxLen", "average_TxLen", "name", "min_cdsStart",
+        "max_cdsEnd", "minmax_CdsLen", "average_CdsLen"
+    )
+}

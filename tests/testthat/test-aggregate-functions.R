@@ -8,19 +8,19 @@ func_name <- c(
 # Global vars
 #------------------------------------------------------------------------------#
 # Path to example association file
-path_af <- system.file("extdata", "ex_association_file.tsv",
+path_af <- system.file("testdata", "ex_association_file.tsv.gz",
     package = "ISAnalytics"
 )
 
 # Path to correct file system example
-path_root_correct <- system.file("extdata", "fs.zip",
+path_root_correct <- system.file("testdata", "fs.zip",
     package = "ISAnalytics"
 )
 root_correct <- unzip_file_system(path_root_correct, "fs")
 
 # Association file
 association_file <- withr::with_options(
-    list(ISAnalytics.widgets = FALSE, ISAnalytics.verbose = FALSE),
+    list(ISAnalytics.reports = FALSE, ISAnalytics.verbose = FALSE),
     {
         import_association_file(path_af, root_correct,
             dates_format = "dmy", filter_for = list(ProjectID = "CLOEXP"),
@@ -31,14 +31,15 @@ association_file <- withr::with_options(
 
 # Matrices
 matrices <- withr::with_options(
-    list(ISAnalytics.widgets = FALSE, ISAnalytics.verbose = FALSE),
+    list(ISAnalytics.reports = FALSE, ISAnalytics.verbose = FALSE),
     {
-        import_parallel_Vispa2Matrices_auto(
+        import_parallel_Vispa2Matrices(
             association_file = association_file,
             quantification_type = c("seqCount", "fragmentEstimate"),
             matrix_type = "annotated", workers = 2, patterns = NULL,
             matching_opt = "ANY",
-            dates_format = "dmy", multi_quant_matrix = FALSE
+            dates_format = "dmy", multi_quant_matrix = FALSE,
+            mode = "AUTO"
         )
     }
 )
@@ -166,15 +167,12 @@ test_that(paste(func_name[3], "stops if x incorrect"), {
             association_file = association_file
         )
     })
-    expect_error(
-        {
-            agg <- aggregate_values_by_key(
-                x = tibble::tibble(a = c(1, 2, 3)),
-                association_file = association_file
-            )
-        },
-        regexp = .non_ISM_error()
-    )
+    expect_error({
+        agg <- aggregate_values_by_key(
+            x = tibble::tibble(a = c(1, 2, 3)),
+            association_file = association_file
+        )
+    })
     expect_error({
         agg <- aggregate_values_by_key(matrices$seqCount, association_file,
             value_cols = "x"

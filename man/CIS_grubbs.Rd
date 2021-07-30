@@ -6,11 +6,10 @@
 \usage{
 CIS_grubbs(
   x,
-  genomic_annotation_file = system.file("extdata", "hg19.refGene.oracle.tsv.xz",
-    package = "ISAnalytics"),
+  genomic_annotation_file = "hg19",
   grubbs_flanking_gene_bp = 1e+05,
   threshold_alpha = 0.05,
-  add_standard_padjust = TRUE
+  by = NULL
 )
 }
 \arguments{
@@ -18,19 +17,23 @@ CIS_grubbs(
 columns and the \code{annotation_IS_vars()} columns}
 
 \item{genomic_annotation_file}{Database file for gene annotation,
-see details}
+see details.}
 
 \item{grubbs_flanking_gene_bp}{Number of base pairs flanking a gene}
 
 \item{threshold_alpha}{Significance threshold}
 
-\item{add_standard_padjust}{Compute the standard padjust?}
+\item{by}{Either \code{NULL} or a character vector of column names. If not
+NULL, the function will perform calculations for each group and return
+a list of data frames with the results. E.g. for \code{by = "SubjectID"},
+CIS will be computed for each distinct SubjectID found in the table
+(of course, "SubjectID" column must be included in the input data frame).}
 }
 \value{
 A data frame
 }
 \description{
-\lifecycle{experimental}
+\lifecycle{stable}
 Statistical approach for the validation of common insertion sites
 significance based on the comparison of the integration frequency
 at the CIS gene with respect to other genes contained in the
@@ -43,38 +46,32 @@ this paper:
 
 This file is a data base, or more simply a .tsv file to import, with
 genes annotation for the specific genome. The annotations for the
-human genome (hg19) is already included in this package.
+human genome (hg19) and murine genome (mm9 and mm10) are already
+included in this package: to use one of them just
+set the argument \code{genomic_annotation_file} to either \code{"hg19"},
+\code{"mm9"} or \code{"mm10"}.
 If for any reason the user is performing an analysis on another genome,
 this file needs to be changed respecting the USCS Genome Browser
-format, meaning the input file headers should be:\preformatted{## name2, chrom, strand 
-##  min_txStart, max_txEnd, minmax_TxLen 
-##  average_TxLen, name, min_cdsStart 
-##  max_cdsEnd, minmax_CdsLen, average_CdsLen
-}
+format, meaning the input file headers should include:
+
+name2
+chrom
+strand
+min_txStart
+max_txEnd
+minmax_TxLen
+average_TxLen
+name
+min_cdsStart
+max_cdsEnd
+minmax_CdsLen
+average_CdsLen
 }
 }
 \examples{
-op <- options(ISAnalytics.widgets = FALSE)
-
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
-)
-root_correct <- system.file("extdata", "fs.zip",
-    package = "ISAnalytics"
-)
-root_correct <- unzip_file_system(root_correct, "fs")
-
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = path_AF, root = root_correct,
-    quantification_type = c("seqCount", "fragmentEstimate"),
-    matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY",
-    dates_format = "dmy"
-)
-
-cis <- CIS_grubbs(matrices)
-
-options(op)
+data("integration_matrices", package = "ISAnalytics")
+cis <- CIS_grubbs(integration_matrices)
+head(cis)
 }
 \seealso{
 Other Analysis functions: 

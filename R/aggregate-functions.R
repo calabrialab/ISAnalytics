@@ -1,17 +1,17 @@
 #------------------------------------------------------------------------------#
 # Aggregate functions
 #------------------------------------------------------------------------------#
-
 #' Performs aggregation on metadata contained in the association file.
 #'
-#' \lifecycle{maturing}
+#' \lifecycle{stable}
 #' Groups metadata by the specified grouping keys and returns a
 #' summary of info for each group. For more details on how to use this function:
-#' \code{vignette("Working with aggregate functions", package = "ISAnalytics")}
+#' \code{vignette("aggregate_function_usage", package = "ISAnalytics")}
 #'
 #' @param association_file The imported association file
-#' (via link{import_association_file})
-#' @param grouping_keys A character vector of column names to form a group
+#' (via \link{import_association_file})
+#' @param grouping_keys A character vector of column names to form a grouping
+#' operation
 #' @param aggregating_functions A data frame containing specifications
 #' of the functions to be applied to columns in the association file during
 #' aggregation. It defaults to \link{default_meta_agg}. The structure of
@@ -29,17 +29,11 @@
 #' @export
 #'
 #' @examples
-#' op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
+#' data("association_file", package = "ISAnalytics")
+#' aggreg_meta <- aggregate_metadata(
+#'     association_file = association_file
 #' )
-#' root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' root_correct <- unzip_file_system(root_correct, "fs")
-#' association_file <- import_association_file(path_AF, root_correct,
-#'     dates_format = "dmy"
-#' )
-#' aggregated_meta <- aggregate_metadata(association_file)
-#' options(op)
+#' head(aggreg_meta)
 aggregate_metadata <- function(association_file,
     grouping_keys = c(
         "SubjectID",
@@ -78,11 +72,12 @@ aggregate_metadata <- function(association_file,
         function_tbl = aggregating_functions
     )
     if (is.null(aggregated)) {
-        rlang::inform(paste(
+        msg <- paste(
             "No columns in `aggregating_functions$Column`",
             "was found in column names of the association",
             "file. Nothing to return."
-        ))
+        )
+        rlang::inform(msg)
     }
     aggregated
 }
@@ -145,11 +140,11 @@ default_meta_agg <- function() {
 
 #' Aggregates matrices values based on specified key.
 #'
-#' \lifecycle{maturing}
+#' \lifecycle{stable}
 #' Performs aggregation on values contained in the integration matrices based
 #' on the key and the specified lambda. For more details on how to use this
 #' function:
-#' \code{vignette("Working with aggregate functions", package = "ISAnalytics")}
+#' \code{vignette("aggregate_function_usage", package = "ISAnalytics")}
 #'
 #' @details
 #' ## Setting the lambda parameter
@@ -190,8 +185,8 @@ default_meta_agg <- function() {
 #' * Function should return a single value or a list/data frame:
 #' if a list or a data frame is returned as a result, all the columns
 #' will be added to the final data frame.
-#' @param x A single integration matrix (tibble) or a list of imported
-#' integration matrices (tibble)
+#' @param x A single integration matrix or a list of imported
+#' integration matrices
 #' @param association_file The imported association file
 #' @param value_cols A character vector containing the names of the
 #' columns to apply the given lambdas. Must be numeric or integer
@@ -215,26 +210,14 @@ default_meta_agg <- function() {
 #' @export
 #'
 #' @examples
-#' op <- options("ISAnalytics.widgets" = FALSE, "ISAnalytics.verbose" = FALSE)
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
-#' )
-#' root_correct <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' root_correct <- unzip_file_system(root_correct, "fs")
-#' association_file <- import_association_file(path_AF, root_correct,
-#'     dates_format = "dmy"
-#' )
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     association_file = association_file, root = NULL,
-#'     quantification_type = c("fragmentEstimate", "seqCount"),
-#'     matrix_type = "annotated", workers = 2, matching_opt = "ANY"
-#' )
-#' agg <- aggregate_values_by_key(
-#'     x = matrices,
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
 #'     association_file = association_file,
-#'     value_cols = c("fragmentEstimate", "seqCount")
+#'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
-#' options(op)
+#' head(aggreg)
 aggregate_values_by_key <- function(x,
     association_file,
     value_cols = "Value",
@@ -255,7 +238,7 @@ aggregate_values_by_key <- function(x,
         purrr::walk(x, function(df) {
             stopifnot(is.data.frame(df))
             if (.check_mandatory_vars(df) == FALSE) {
-                rlang::abort(.non_ISM_error())
+                rlang::abort(.missing_mand_vars())
             }
             if (!all(join_af_by %in% colnames(df))) {
                 rlang::abort(c(
@@ -293,7 +276,7 @@ aggregate_values_by_key <- function(x,
         })
     } else {
         if (.check_mandatory_vars(x) == FALSE) {
-            rlang::abort(.non_ISM_error())
+            rlang::abort(.missing_mand_vars())
         }
         if (!all(join_af_by %in% colnames(x))) {
             rlang::abort(c(

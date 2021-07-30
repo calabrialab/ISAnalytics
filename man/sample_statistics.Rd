@@ -10,7 +10,8 @@ sample_statistics(
   metadata,
   sample_key = "CompleteAmplificationID",
   value_columns = "Value",
-  functions = default_stats()
+  functions = default_stats(),
+  add_integrations_count = TRUE
 )
 }
 \arguments{
@@ -21,10 +22,14 @@ sample_statistics(
 \item{sample_key}{Character vector representing the key for identifying
 a sample}
 
-\item{value_columns}{THe name of the columns to be computed,
+\item{value_columns}{The name of the columns to be computed,
 must be numeric or integer}
 
 \item{functions}{A named list of function or purrr-style lambdas}
+
+\item{add_integrations_count}{Add the count of distinct integration sites
+for each group? Can be computed only if \code{x} contains the mandatory columns
+\code{chr}, \code{integration_locus}, \code{strand}}
 }
 \value{
 A list with modified x and metadata data frames
@@ -39,55 +44,31 @@ for the corresponding key.
 For this reason it's required that both \code{x} and \code{metadata} have the
 same sample key, and it's particularly important if the user is
 working with previously aggregated data.
-For example:\if{html}{\out{<div class="r">}}\preformatted{### Importing association file and matrices
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-package = "ISAnalytics")
-root_correct <- system.file("extdata", "fs.zip",
-package = "ISAnalytics")
-root_correct <- unzip_file_system(root_correct, "fs")
+For example:\if{html}{\out{<div class="r">}}\preformatted{data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+aggreg <- aggregate_values_by_key(
+ x = integration_matrices,
+ association_file = association_file,
+ value_cols = c("seqCount", "fragmentEstimate")
+)
+aggreg_meta <- aggregate_metadata(association_file = association_file)
 
-association_file <- import_association_file(path_AF, root_correct)
-matrices <- import_parallel_Vispa2Matrices_auto(
-association_file = association_file , root = NULL,
-quantification_type = c("seqCount","fragmentEstimate"),
-matrix_type = "annotated", workers = 2, patterns = NULL,
-matching_opt = "ANY", dates_format = "dmy")
-
-### Aggregating data (both by same key)
-aggreggated_x <- aggregate_values_by_key(matrices$seqCount,
-association_file)
-aggregated_meta <- aggregate_metadata(association_file)
-
-### Sample statistics
-sample_stats <- sample_statistics(x = aggregated_x,
-metadata = aggregated_meta,
+sample_stats <- sample_statistics(x = aggreg,
+metadata = aggreg_meta,
+value_columns = c("seqCount", "fragmentEstimate"),
 sample_key = c("SubjectID", "CellMarker","Tissue", "TimePoint"))
 
 }\if{html}{\out{</div>}}
 }
 \examples{
-op <- options(ISAnalytics.widgets = FALSE)
-
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
+data("integration_matrices", package = "ISAnalytics")
+data("association_file", package = "ISAnalytics")
+stats <- sample_statistics(
+    x = integration_matrices,
+    metadata = association_file,
+    value_columns = c("seqCount", "fragmentEstimate")
 )
-root_correct <- system.file("extdata", "fs.zip",
-    package = "ISAnalytics"
-)
-root_correct <- unzip_file_system(root_correct, "fs")
-
-association_file <- import_association_file(path_AF, root_correct,
-    dates_format = "dmy"
-)
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = association_file, root = NULL,
-    quantification_type = c("seqCount", "fragmentEstimate"),
-    matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY", multi_quant_matrix = FALSE
-)
-
-stats <- sample_statistics(matrices$seqCount, association_file)
-options(op)
+stats
 }
 \seealso{
 Other Analysis functions: 

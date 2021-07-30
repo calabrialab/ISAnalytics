@@ -37,28 +37,29 @@ values}
 A tibble
 }
 \description{
-\lifecycle{maturing}
-Takes a list of integration matrices referring to different qunatification
+\lifecycle{stable}
+Takes a list of integration matrices referring to different quantification
 types and merges them in a single data frame that has multiple
 value columns, each renamed according to their quantification type
 of reference.
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE)
-path <- system.file("extdata", "ex_association_file.tsv",
+fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+fs <- unzip_file_system(fs_path, "fs")
+af_path <- system.file("extdata", "asso.file.tsv.gz",
     package = "ISAnalytics"
 )
-root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- unzip_file_system(root_pth, "fs")
-matrices <- import_parallel_Vispa2Matrices_auto(
-    association_file = path, root = root,
-    quantification_type = c("fragmentEstimate", "seqCount"),
-    matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY",
-    dates_format = "dmy", multi_quant_matrix = FALSE
+af <- import_association_file(af_path,
+    root = fs,
+    import_iss = FALSE,
+    report_path = NULL
 )
-total_matrix <- comparison_matrix(matrices)
-options(op)
+matrices <- import_parallel_Vispa2Matrices(af,
+    c("seqCount", "fragmentEstimate"),
+    mode = "AUTO", report_path = NULL, multi_quant_matrix = FALSE
+)
+multi_quant <- comparison_matrix(matrices)
+head(multi_quant)
 }
 \seealso{
 \link{quantification_types}

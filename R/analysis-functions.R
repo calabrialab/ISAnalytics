@@ -4,7 +4,7 @@
 
 #' Computes the abundance for every integration event in the input data frame.
 #'
-#' \lifecycle{maturing}
+#' \lifecycle{stable}
 #' Abundance is obtained for every integration event by calculating the ratio
 #' between the single value and the total value for the given group.
 #'
@@ -30,8 +30,9 @@
 #' @family Analysis functions
 #'
 #' @importFrom magrittr `%>%`
-#' @import dplyr
-#' @importFrom rlang .data eval_tidy parse_expr
+#' @importFrom dplyr group_by across all_of summarise left_join mutate
+#' @importFrom dplyr cur_column distinct select contains rename_with
+#' @importFrom rlang .data eval_tidy parse_expr abort
 #' @importFrom purrr map_lgl
 #' @importFrom stringr str_replace
 #' @return Either a single data frame with computed abundance values or
@@ -39,29 +40,24 @@
 #' @export
 #'
 #' @examples
-#' path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-#'     package = "ISAnalytics"
+#' data("integration_matrices", package = "ISAnalytics")
+#' abund <- compute_abundance(
+#'     x = integration_matrices,
+#'     columns = "fragmentEstimate",
+#'     key = "CompleteAmplificationID"
 #' )
-#' matrix <- import_single_Vispa2Matrix(path)
-#'
-#' # Simple integration matrix - grouping by CompleteAmplificationID
-#' abundance1 <- compute_abundance(matrix)
-#' abundance1
-#'
-#' # Keeping totals as a separate data frame
-#' abundance2 <- compute_abundance(matrix, keep_totals = "df")
-#' abundance2
+#' head(abund)
 compute_abundance <- function(x,
-    columns = "Value",
+    columns = c("fragmentEstimate_sum"),
     percentage = TRUE,
-    key = "CompleteAmplificationID",
+    key = c("SubjectID", "CellMarker", "Tissue", "TimePoint"),
     keep_totals = FALSE) {
     ## Check parameters
     stopifnot(is.data.frame(x))
     stopifnot(is.character(columns))
     stopifnot(is.character(key))
     if (.check_mandatory_vars(x) == FALSE) {
-        stop(.non_ISM_error())
+        rlang::abort(.missing_mand_vars())
     }
     stopifnot(is.logical(percentage) & length(percentage) == 1)
     if (!all(columns %in% colnames(x)) | !all(key %in% colnames(x))) {
@@ -81,7 +77,7 @@ compute_abundance <- function(x,
         }
     })
     if (any(non_num_cols)) {
-        stop(.non_num_user_cols_error(columns[non_num_cols]))
+        rlang::abort(.non_num_user_cols_error(columns[non_num_cols]))
     }
     stopifnot(is.logical(keep_totals) || keep_totals == "df")
     ## Computation
@@ -139,8 +135,8 @@ compute_abundance <- function(x,
 #' obtain a single integration matrix from individual quantification
 #' matrices.
 #'
-#' \lifecycle{maturing}
-#' Takes a list of integration matrices referring to different qunatification
+#' \lifecycle{stable}
+#' Takes a list of integration matrices referring to different quantification
 #' types and merges them in a single data frame that has multiple
 #' value columns, each renamed according to their quantification type
 #' of reference.
@@ -171,21 +167,22 @@ compute_abundance <- function(x,
 #' @export
 #'
 #' @examples
-#' op <- options("ISAnalytics.widgets" = FALSE)
-#' path <- system.file("extdata", "ex_association_file.tsv",
+#' fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+#' fs <- unzip_file_system(fs_path, "fs")
+#' af_path <- system.file("extdata", "asso.file.tsv.gz",
 #'     package = "ISAnalytics"
 #' )
-#' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' root <- unzip_file_system(root_pth, "fs")
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     association_file = path, root = root,
-#'     quantification_type = c("fragmentEstimate", "seqCount"),
-#'     matrix_type = "annotated", workers = 2, patterns = NULL,
-#'     matching_opt = "ANY",
-#'     dates_format = "dmy", multi_quant_matrix = FALSE
+#' af <- import_association_file(af_path,
+#'     root = fs,
+#'     import_iss = FALSE,
+#'     report_path = NULL
 #' )
-#' total_matrix <- comparison_matrix(matrices)
-#' options(op)
+#' matrices <- import_parallel_Vispa2Matrices(af,
+#'     c("seqCount", "fragmentEstimate"),
+#'     mode = "AUTO", report_path = NULL, multi_quant_matrix = FALSE
+#' )
+#' multi_quant <- comparison_matrix(matrices)
+#' head(multi_quant)
 comparison_matrix <- function(x,
     fragmentEstimate = "fragmentEstimate",
     seqCount = "seqCount",
@@ -226,7 +223,7 @@ comparison_matrix <- function(x,
 #' Separate a multiple-quantification matrix into single quantification
 #' matrices.
 #'
-#' \lifecycle{maturing}
+#' \lifecycle{stable}
 #' The function separates a single multi-quantification integration
 #' matrix, obtained via \link{comparison_matrix}, into single
 #' quantification matrices as a named list of tibbles.
@@ -256,24 +253,11 @@ comparison_matrix <- function(x,
 #' @export
 #'
 #' @examples
-#' op <- options("ISAnalytics.widgets" = FALSE)
-#' path <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
+#' data("integration_matrices", package = "ISAnalytics")
+#' separated <- separate_quant_matrices(
+#'     integration_matrices
 #' )
-#' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' root <- unzip_file_system(root_pth, "fs")
-#' association_file <- import_association_file(
-#'     path = path, root = root,
-#'     dates_format = "dmy"
-#' )
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     association_file = association_file,
-#'     quantification_type = c("seqCount", "fragmentEstimate"),
-#'     matrix_type = "annotated", workers = 2, patterns = NULL,
-#'     matching_opt = "ANY"
-#' )
-#' separated_matrix <- separate_quant_matrices(matrices)
-#' options(op)
+#' separated
 separate_quant_matrices <- function(x,
     fragmentEstimate = "fragmentEstimate",
     seqCount = "seqCount",
@@ -315,7 +299,9 @@ separate_quant_matrices <- function(x,
         rlang::inform(.non_quant_cols_msg(to_copy))
     }
     separated <- purrr::map(num_cols, function(quant) {
-        x[c(key, to_copy, quant)] %>% dplyr::rename(Value = quant)
+        x %>%
+            dplyr::select(dplyr::all_of(c(key, to_copy, quant))) %>%
+            dplyr::rename(Value = quant)
     }) %>% purrr::set_names(names(num_cols))
     separated
 }
@@ -388,12 +374,12 @@ separate_quant_matrices <- function(x,
 #' print(example_list)
 #'
 #' filtered <- threshold_filter(example_list,
-#'                              threshold = list(first = c(20, 60),
-#'                                               third = c(25)),
-#'                              cols_to_compare = list(first = c("a", "b"),
-#'                                                     third = c("a")),
-#'                              comparators = list(first = c(">", "<"),
-#'                                                 third = c(">=")))
+#' threshold = list(first = c(20, 60),
+#' third = c(25)),
+#' cols_to_compare = list(first = c("a", "b"),
+#' third = c("a")),
+#' comparators = list(first = c(">", "<"),
+#' third = c(">=")))
 #' print(filtered)
 #'
 #' ```
@@ -411,11 +397,11 @@ separate_quant_matrices <- function(x,
 #'
 #' ```r
 #' filtered <- threshold_filter(example_list,
-#'                              threshold = list(first = c(20, 60),
-#'                                               third = c(25, 65)),
-#'                              cols_to_compare = c("a", "b"),
-#'                              comparators = list(first = c(">", "<"),
-#'                                                 third = c(">=", "<=")))
+#' threshold = list(first = c(20, 60),
+#' third = c(25, 65)),
+#' cols_to_compare = c("a", "b"),
+#' comparators = list(first = c(">", "<"),
+#' third = c(">=", "<=")))
 #' ```
 #' In this example, different threshold and comparators will be applied
 #' to the same columns in all data frames.
@@ -468,6 +454,7 @@ separate_quant_matrices <- function(x,
 #'         third = c(">=")
 #'     )
 #' )
+#' filtered
 threshold_filter <- function(x,
     threshold,
     cols_to_compare = "Value",
@@ -510,7 +497,6 @@ threshold_filter <- function(x,
 #'
 #' @family Analysis functions
 #'
-#' @import dplyr
 #' @importFrom magrittr `%>%`
 #' @importFrom rlang abort
 #'
@@ -539,16 +525,18 @@ threshold_filter <- function(x,
 #'     keep = "Value2",
 #'     key = "CompleteAmplificationID"
 #' )
-top_integrations <- function(x, n = 50,
+top_integrations <- function(x,
+    n = 20,
     columns = "fragmentEstimate_sum_RelAbundance",
-    keep = "everything", key = NULL) {
+    keep = "everything",
+    key = NULL) {
     stopifnot(is.data.frame(x))
     stopifnot(is.numeric(n) & length(n) == 1 & n > 0)
     stopifnot(is.character(keep))
     stopifnot(is.character(columns))
     stopifnot(is.null(key) || is.character(key))
     if (!.check_mandatory_vars(x)) {
-        rlang::abort(.non_ISM_error())
+        rlang::abort(.missing_mand_vars())
     }
     if (!all(columns %in% colnames(x))) {
         rlang::abort(.missing_user_cols_error(
@@ -616,28 +604,18 @@ top_integrations <- function(x, n = 50,
 #' For example:
 #'
 #' ```r
-#' ### Importing association file and matrices
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#' package = "ISAnalytics")
-#' root_correct <- system.file("extdata", "fs.zip",
-#' package = "ISAnalytics")
-#' root_correct <- unzip_file_system(root_correct, "fs")
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'  x = integration_matrices,
+#'  association_file = association_file,
+#'  value_cols = c("seqCount", "fragmentEstimate")
+#' )
+#' aggreg_meta <- aggregate_metadata(association_file = association_file)
 #'
-#' association_file <- import_association_file(path_AF, root_correct)
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#' association_file = association_file , root = NULL,
-#' quantification_type = c("seqCount","fragmentEstimate"),
-#' matrix_type = "annotated", workers = 2, patterns = NULL,
-#' matching_opt = "ANY", dates_format = "dmy")
-#'
-#' ### Aggregating data (both by same key)
-#' aggreggated_x <- aggregate_values_by_key(matrices$seqCount,
-#' association_file)
-#' aggregated_meta <- aggregate_metadata(association_file)
-#'
-#' ### Sample statistics
-#' sample_stats <- sample_statistics(x = aggregated_x,
-#' metadata = aggregated_meta,
+#' sample_stats <- sample_statistics(x = aggreg,
+#' metadata = aggreg_meta,
+#' value_columns = c("seqCount", "fragmentEstimate"),
 #' sample_key = c("SubjectID", "CellMarker","Tissue", "TimePoint"))
 #'
 #' ```
@@ -645,74 +623,64 @@ top_integrations <- function(x, n = 50,
 #' @param metadata The metadata data frame
 #' @param sample_key Character vector representing the key for identifying
 #' a sample
-#' @param value_columns THe name of the columns to be computed,
+#' @param value_columns The name of the columns to be computed,
 #' must be numeric or integer
 #' @param functions A named list of function or purrr-style lambdas
+#' @param add_integrations_count Add the count of distinct integration sites
+#' for each group? Can be computed only if `x` contains the mandatory columns
+#' `chr`, `integration_locus`, `strand`
 #'
 #' @family Analysis functions
-#' @importFrom rlang eval_tidy expr
-#' @importFrom purrr is_function is_formula
-#' @import dplyr
+#' @importFrom rlang eval_tidy expr abort .data sym inform
+#' @importFrom purrr is_function is_formula map_lgl walk map set_names
+#' @importFrom dplyr group_by across all_of summarise rename_with bind_cols
+#' @importFrom dplyr n_distinct left_join
 #' @importFrom magrittr `%>%`
 #'
 #' @return A list with modified x and metadata data frames
 #' @export
 #'
 #' @examples
-#' op <- options(ISAnalytics.widgets = FALSE)
-#'
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' stats <- sample_statistics(
+#'     x = integration_matrices,
+#'     metadata = association_file,
+#'     value_columns = c("seqCount", "fragmentEstimate")
 #' )
-#' root_correct <- system.file("extdata", "fs.zip",
-#'     package = "ISAnalytics"
-#' )
-#' root_correct <- unzip_file_system(root_correct, "fs")
-#'
-#' association_file <- import_association_file(path_AF, root_correct,
-#'     dates_format = "dmy"
-#' )
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     association_file = association_file, root = NULL,
-#'     quantification_type = c("seqCount", "fragmentEstimate"),
-#'     matrix_type = "annotated", workers = 2, patterns = NULL,
-#'     matching_opt = "ANY", multi_quant_matrix = FALSE
-#' )
-#'
-#' stats <- sample_statistics(matrices$seqCount, association_file)
-#' options(op)
+#' stats
 sample_statistics <- function(x, metadata,
     sample_key = "CompleteAmplificationID",
     value_columns = "Value",
-    functions = default_stats()) {
+    functions = default_stats(),
+    add_integrations_count = TRUE) {
     stopifnot(is.data.frame(x))
     stopifnot(is.data.frame(metadata))
     stopifnot(is.character(sample_key))
     stopifnot(is.character(value_columns))
     stopifnot(is.list(functions))
-    if (!all(sample_key %in% colnames(x))) {
-        stop(paste("Key columns not found in the data frame"))
+    stopifnot(is.logical(add_integrations_count))
+    if (!all(c(sample_key, value_columns) %in% colnames(x))) {
+        rlang::abort(.missing_user_cols_error(c(sample_key, value_columns)[
+            !c(sample_key, value_columns) %in% colnames(x)
+        ]))
     }
     if (!all(sample_key %in% colnames(metadata))) {
-        stop(paste("Key columns not found in metadata"))
+        rlang::abort(.missing_user_cols_meta_error(sample_key[
+            !sample_key %in% colnames(x)
+        ]))
     }
-    if (!all(value_columns %in% colnames(x))) {
-        stop(paste("Value columns not found in the data frame"))
-    }
-    purrr::walk(value_columns, function(col) {
+    vcols_are_numeric <- purrr::map_lgl(value_columns, function(col) {
         expr <- rlang::expr(`$`(x, !!col))
-        if (!is.numeric(rlang::eval_tidy(expr)) &&
-            !is.integer(rlang::eval_tidy(expr))) {
-            stop(paste("Some or all of value columns are not numeric"))
-        }
+        is.numeric(rlang::eval_tidy(expr)) ||
+            is.integer(rlang::eval_tidy(expr))
     })
+    if (any(vcols_are_numeric == FALSE)) {
+        rlang::abort(.non_num_user_cols_error(value_columns[!vcols_are_numeric]))
+    }
     purrr::walk(functions, function(f) {
         if (!(purrr::is_function(f) | purrr::is_formula(f))) {
-            stop(paste(
-                "The function parameter should contain a list",
-                "of either functions or formulas.",
-                "See ?sample_statistics for details"
-            ))
+            rlang::abort(.non_function_elem_error())
         }
     })
 
@@ -743,6 +711,24 @@ sample_statistics <- function(x, metadata,
         }
     }
 
+    if (add_integrations_count) {
+        if (all(mandatory_IS_vars() %in% colnames(x))) {
+            mand_sym <- purrr::map(mandatory_IS_vars(), rlang::sym)
+            nIS <- x %>%
+                dplyr::group_by(dplyr::across(dplyr::all_of(sample_key))) %>%
+                dplyr::summarise(
+                    nIS = dplyr::n_distinct(!!!mand_sym),
+                    .groups = "drop"
+                )
+            result <- result %>%
+                dplyr::left_join(nIS, by = sample_key)
+        } else {
+            if (getOption("ISAnalytics.verbose")) {
+                rlang::inform(.inform_skip_count_is())
+            }
+        }
+    }
+
     updated_meta <- metadata %>% dplyr::left_join(result, by = sample_key)
     return(list(x = result, metadata = updated_meta))
 }
@@ -750,7 +736,7 @@ sample_statistics <- function(x, metadata,
 
 #' Grubbs test for Common Insertion Sites (CIS).
 #'
-#' \lifecycle{experimental}
+#' \lifecycle{stable}
 #' Statistical approach for the validation of common insertion sites
 #' significance based on the comparison of the integration frequency
 #' at the CIS gene with respect to other genes contained in the
@@ -762,279 +748,145 @@ sample_statistics <- function(x, metadata,
 #' ## Genomic annotation file
 #' This file is a data base, or more simply a .tsv file to import, with
 #' genes annotation for the specific genome. The annotations for the
-#' human genome (hg19) is already included in this package.
+#' human genome (hg19) and murine genome (mm9 and mm10) are already
+#' included in this package: to use one of them just
+#' set the argument `genomic_annotation_file` to either `"hg19"`,
+#' `"mm9"` or `"mm10"`.
 #' If for any reason the user is performing an analysis on another genome,
 #' this file needs to be changed respecting the USCS Genome Browser
-#' format, meaning the input file headers should be:
+#' format, meaning the input file headers should include:
 #'
-#' ```{r echo=FALSE, tidy=TRUE}
-#' cat(c(
-#'   paste(c("name2", "chrom", "strand"), collapse = ", "), "\n",
-#'   paste(c("min_txStart","max_txEnd", "minmax_TxLen"), collapse = ", "),
-#'   "\n",
-#'   paste(c("average_TxLen", "name", "min_cdsStart"), collapse = ", "),
-#'   "\n",
-#'   paste(c("max_cdsEnd","minmax_CdsLen", "average_CdsLen"), collapse = ", ")
-#' ))
-#'
-#' ```
+#' `r refGene_table_cols()`
 #'
 #' @param x An integration matrix, must include the `mandatory_IS_vars()`
 #' columns and the `annotation_IS_vars()` columns
 #' @param genomic_annotation_file Database file for gene annotation,
-#' see details
+#' see details.
 #' @param grubbs_flanking_gene_bp Number of base pairs flanking a gene
 #' @param threshold_alpha Significance threshold
-#' @param add_standard_padjust Compute the standard padjust?
+#' @param by Either `NULL` or a character vector of column names. If not
+#' NULL, the function will perform calculations for each group and return
+#' a list of data frames with the results. E.g. for `by = "SubjectID"`,
+#' CIS will be computed for each distinct SubjectID found in the table
+#' (of course, "SubjectID" column must be included in the input data frame).
 #'
 #' @family Analysis functions
 #'
-#' @import dplyr
 #' @importFrom tibble as_tibble
-#' @importFrom rlang .data
+#' @importFrom rlang .data abort current_env eval_tidy sym
 #' @importFrom magrittr `%>%`
-#' @importFrom stats median pt p.adjust
 #' @importFrom utils read.csv
+#' @importFrom stringr str_replace_all
+#' @importFrom tidyr unite
+#' @importFrom purrr set_names map
 #'
 #' @return A data frame
 #' @export
 #'
 #' @examples
-#' op <- options(ISAnalytics.widgets = FALSE)
-#'
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
-#' )
-#' root_correct <- system.file("extdata", "fs.zip",
-#'     package = "ISAnalytics"
-#' )
-#' root_correct <- unzip_file_system(root_correct, "fs")
-#'
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     association_file = path_AF, root = root_correct,
-#'     quantification_type = c("seqCount", "fragmentEstimate"),
-#'     matrix_type = "annotated", workers = 2, patterns = NULL,
-#'     matching_opt = "ANY",
-#'     dates_format = "dmy"
-#' )
-#'
-#' cis <- CIS_grubbs(matrices)
-#'
-#' options(op)
+#' data("integration_matrices", package = "ISAnalytics")
+#' cis <- CIS_grubbs(integration_matrices)
+#' head(cis)
 CIS_grubbs <- function(x,
-    genomic_annotation_file =
-        system.file("extdata", "hg19.refGene.oracle.tsv.xz",
-            package = "ISAnalytics"
-        ),
+    genomic_annotation_file = "hg19",
     grubbs_flanking_gene_bp = 100000,
     threshold_alpha = 0.05,
-    add_standard_padjust = TRUE) {
+    by = NULL) {
     # Check x has the correct structure
     stopifnot(is.data.frame(x))
     if (!all(mandatory_IS_vars() %in% colnames(x))) {
-        stop(.non_ISM_error())
+        rlang::abort(.missing_mand_vars())
     }
     if (!.is_annotated(x)) {
-        stop(.missing_annot())
+        rlang::abort(.missing_annot())
     }
     # Check other parameters
-    stopifnot(is.character(genomic_annotation_file) &
-        length(genomic_annotation_file) == 1)
+    stopifnot(is.character(genomic_annotation_file))
+    genomic_annotation_file <- genomic_annotation_file[1]
+    if (genomic_annotation_file %in% c("hg19", "mm9", "mm10")) {
+        gen_file <- paste0("refGenes_", genomic_annotation_file)
+        utils::data(list = gen_file, envir = rlang::current_env())
+        refgenes <- rlang::eval_tidy(rlang::sym(gen_file))
+    } else {
+        stopifnot(file.exists(genomic_annotation_file))
+        # Determine file extension
+        ext <- .check_file_extension(genomic_annotation_file)
+        # Try to import annotation file
+        if (ext == "tsv") {
+            refgenes <- utils::read.csv(
+                file = genomic_annotation_file,
+                header = TRUE, fill = TRUE, sep = "\t",
+                check.names = FALSE,
+                na.strings = c("NONE", "NA", "NULL", "NaN", "")
+            )
+            # Check annotation file format
+            if (!all(refGene_table_cols() %in% colnames(refgenes))) {
+                rlang::abort(.non_standard_annotation_structure())
+            }
+            refgenes <- tibble::as_tibble(refgenes) %>%
+                dplyr::mutate(chrom = stringr::str_replace_all(
+                    .data$chrom,
+                    "chr", ""
+                ))
+        } else if (ext == "csv") {
+            refgenes <- utils::read.csv(
+                file = genomic_annotation_file,
+                header = TRUE, fill = TRUE,
+                check.names = FALSE,
+                na.strings = c("NONE", "NA", "NULL", "NaN", "")
+            )
+            # Check annotation file format
+            if (!all(refGene_table_cols() %in% colnames(refgenes))) {
+                rlang::abort(.non_standard_annotation_structure())
+            }
+            refgenes <- tibble::as_tibble(refgenes) %>%
+                dplyr::mutate(chrom = stringr::str_replace_all(
+                    .data$chrom,
+                    "chr", ""
+                ))
+        } else {
+            gen_file_err <- paste(
+                "The genomic annotation file must be either in",
+                ".tsv or .csv format (compressed or not)"
+            )
+            rlang::abort(gen_file_err)
+        }
+    }
     stopifnot(is.numeric(grubbs_flanking_gene_bp) |
         is.integer(grubbs_flanking_gene_bp))
-    stopifnot(length(grubbs_flanking_gene_bp) == 1)
-    stopifnot(is.numeric(threshold_alpha) & length(threshold_alpha) == 1)
-    stopifnot(is.logical(add_standard_padjust) &
-        length(add_standard_padjust) == 1)
-    stopifnot(file.exists(genomic_annotation_file))
-    # Determine file extension
-    ext <- .check_file_extension(genomic_annotation_file)
-
-    # Try to import annotation file
-    if (ext == "tsv") {
-        refgenes <- utils::read.csv(
-            file = genomic_annotation_file,
-            header = TRUE, fill = TRUE, sep = "\t",
-            check.names = FALSE,
-            na.strings = c("NONE", "NA", "NULL", "NaN", "")
+    grubbs_flanking_gene_bp <- grubbs_flanking_gene_bp[1]
+    stopifnot(is.numeric(threshold_alpha))
+    threshold_alpha <- threshold_alpha[1]
+    stopifnot(is.null(by) || is.character(by))
+    if (!all(by %in% colnames(x))) {
+        rlang::abort(.missing_user_cols_error(by[!by %in% colnames(x)]))
+    }
+    result <- if (is.null(by)) {
+        .cis_grubb_calc(
+            x = x,
+            refgenes = refgenes,
+            grubbs_flanking_gene_bp = grubbs_flanking_gene_bp,
+            threshold_alpha = threshold_alpha
         )
-        refgenes <- tibble::as_tibble(refgenes) %>%
-            dplyr::mutate(chrom = stringr::str_replace_all(
-                .data$chrom,
-                "chr", ""
-            ))
-    } else if (ext == "csv") {
-        refgenes <- utils::read.csv(
-            file = genomic_annotation_file,
-            header = TRUE, fill = TRUE,
-            check.names = FALSE,
-            na.strings = c("NONE", "NA", "NULL", "NaN", "")
-        )
-        refgenes <- tibble::as_tibble(refgenes) %>%
-            dplyr::mutate(chrom = stringr::str_replace_all(
-                .data$chrom,
-                "chr", ""
-            ))
     } else {
-        stop(paste(
-            "The genomic annotation file must be either in",
-            ".tsv or .csv format (compressed or not)"
+        grouped <- x %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(by)))
+        group_keys <- grouped %>%
+            dplyr::group_keys() %>%
+            tidyr::unite(col = "id", dplyr::everything()) %>%
+            dplyr::pull(.data$id)
+        split <- x %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(by))) %>%
+            dplyr::group_split() %>%
+            purrr::set_names(group_keys)
+        purrr::map(split, ~ .cis_grubb_calc(
+            x = .x,
+            refgenes = refgenes,
+            grubbs_flanking_gene_bp = grubbs_flanking_gene_bp,
+            threshold_alpha = threshold_alpha
         ))
     }
-
-    # Check annotation file format
-    if (!all(c(
-        "name2", "chrom", "strand", "min_txStart", "max_txEnd",
-        "minmax_TxLen", "average_TxLen", "name", "min_cdsStart",
-        "max_cdsEnd", "minmax_CdsLen", "average_CdsLen"
-    ) %in%
-        colnames(refgenes))) {
-        stop(.non_standard_annotation_structure())
-    }
-    ### Begin - init phase
-    df_by_gene <- x %>%
-        dplyr::group_by(
-            .data$GeneName,
-            .data$GeneStrand,
-            .data$chr
-        ) %>%
-        dplyr::summarise(
-            n_IS_perGene = dplyr::n_distinct(
-                .data$integration_locus
-            ),
-            min_bp_integration_locus =
-                min(.data$integration_locus),
-            max_bp_integration_locus =
-                max(.data$integration_locus),
-            IS_span_bp = (max(.data$integration_locus) -
-                min(.data$integration_locus)),
-            avg_bp_integration_locus =
-                mean(.data$integration_locus),
-            median_bp_integration_locus =
-                stats::median(.data$integration_locus),
-            distinct_orientations = dplyr::n_distinct(.data$strand),
-            describe = list(tibble::as_tibble(
-                psych::describe(.data$integration_locus)
-            )),
-            .groups = "drop"
-        ) %>%
-        tidyr::unnest(.data$describe, keep_empty = TRUE, names_sep = "_")
-
-    df_bygene_withannotation <- df_by_gene %>%
-        dplyr::inner_join(refgenes, by = c(
-            "chr" = "chrom",
-            "GeneStrand" = "strand",
-            "GeneName" = "name2"
-        )) %>%
-        dplyr::select(c(
-            dplyr::all_of(colnames(df_by_gene)),
-            .data$average_TxLen
-        ))
-    n_elements <- nrow(df_bygene_withannotation)
-
-    df_bygene_withannotation <- df_bygene_withannotation %>%
-        dplyr::mutate(
-            geneIS_frequency_byHitIS = .data$n_IS_perGene / n_elements
-        )
-
-    ### Grubbs test
-    ### --- Gene Frequency
-    df_bygene_withannotation <- df_bygene_withannotation %>%
-        dplyr::mutate(
-            raw_gene_integration_frequency =
-                .data$n_IS_perGene / .data$average_TxLen,
-            integration_frequency_withtolerance = .data$n_IS_perGene /
-                (.data$average_TxLen + grubbs_flanking_gene_bp) * 1000,
-            minus_log2_integration_freq_withtolerance =
-                -log(x = .data$integration_frequency_withtolerance, base = 2)
-        )
-    ### --- z score
-    z_mlif <- function(x) {
-        sqrt((n_elements * (n_elements - 2) * x^2) /
-            (((n_elements - 1)^2) - (n_elements * x^2)))
-    }
-    df_bygene_withannotation <- df_bygene_withannotation %>%
-        dplyr::mutate(
-            zscore_minus_log2_int_freq_tolerance =
-                scale(-log(
-                    x = .data$integration_frequency_withtolerance,
-                    base = 2
-                )),
-            neg_zscore_minus_log2_int_freq_tolerance =
-                -.data$zscore_minus_log2_int_freq_tolerance,
-            t_z_mlif = z_mlif(
-                .data$neg_zscore_minus_log2_int_freq_tolerance
-            )
-        )
-    ### --- tdist
-    t_dist_2t <- function(x, deg) {
-        return((1 - stats::pt(x, deg)) * 2)
-    }
-    df_bygene_withannotation <- df_bygene_withannotation %>%
-        dplyr::mutate(
-            tdist2t = t_dist_2t(.data$t_z_mlif, n_elements - 2),
-            tdist_pt = pt(
-                q = .data$t_z_mlif,
-                df = n_elements - 2
-            ),
-            tdist_bonferroni_default = ifelse(
-                .data$tdist2t * n_elements > 1, 1,
-                .data$tdist2t * n_elements
-            )
-        )
-    if (add_standard_padjust == TRUE) {
-        df_bygene_withannotation <- df_bygene_withannotation %>%
-            dplyr::mutate(
-                tdist_bonferroni = stats::p.adjust(
-                    .data$tdist2t,
-                    method = "bonferroni",
-                    n = length(.data$tdist2t)
-                ),
-                tdist_fdr = stats::p.adjust(
-                    .data$tdist2t,
-                    method = "fdr",
-                    n = length(.data$tdist2t)
-                ),
-                tdist_benjamini = stats::p.adjust(
-                    .data$tdist2t,
-                    method = "BY",
-                    n = length(.data$tdist2t)
-                )
-            )
-    }
-    df_bygene_withannotation <- df_bygene_withannotation %>%
-        dplyr::mutate(
-            tdist_positive_and_corrected =
-                ifelse(
-                    (.data$tdist_bonferroni_default < threshold_alpha &
-                        .data$neg_zscore_minus_log2_int_freq_tolerance > 0),
-                    .data$tdist_bonferroni_default,
-                    NA
-                ),
-            tdist_positive = ifelse(
-                (.data$tdist2t < threshold_alpha &
-                    .data$neg_zscore_minus_log2_int_freq_tolerance > 0),
-                .data$tdist2t,
-                NA
-            )
-        )
-    EM_correction_N <- length(
-        df_bygene_withannotation$tdist_positive[
-            !is.na(df_bygene_withannotation$tdist_positive)
-        ]
-    )
-    df_bygene_withannotation <- df_bygene_withannotation %>%
-        dplyr::mutate(
-            tdist_positive_and_correctedEM =
-                ifelse(
-                    (.data$tdist2t * EM_correction_N <
-                        threshold_alpha &
-                        .data$neg_zscore_minus_log2_int_freq_tolerance > 0),
-                    .data$tdist2t * EM_correction_N,
-                    NA
-                )
-        )
-    return(df_bygene_withannotation)
+    return(result)
 }
 
 #' Integrations cumulative count in time by sample
@@ -1082,9 +934,11 @@ CIS_grubbs <- function(x,
 #'
 #' @family Analysis functions
 #'
-#' @import dplyr
+#' @importFrom dplyr mutate filter across all_of select summarise group_by
+#' @importFrom dplyr arrange group_split first full_join starts_with distinct
+#' @importFrom dplyr semi_join n rename
 #' @importFrom magrittr `%>%`
-#' @importFrom rlang .data
+#' @importFrom rlang .data abort inform `:=`
 #' @importFrom stringr str_pad
 #' @importFrom purrr reduce is_empty
 #' @importFrom tidyr pivot_longer
@@ -1094,37 +948,15 @@ CIS_grubbs <- function(x,
 #' @export
 #'
 #' @examples
-#' op <- options(ISAnalytics.widgets = FALSE)
-#'
-#' path_AF <- system.file("extdata", "ex_association_file.tsv",
-#'     package = "ISAnalytics"
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
+#'     association_file = association_file,
+#'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
-#' root_correct <- system.file("extdata", "fs.zip",
-#'     package = "ISAnalytics"
-#' )
-#' root_correct <- unzip_file_system(root_correct, "fs")
-#'
-#' association_file <- import_association_file(path_AF, root_correct,
-#'     dates_format = "dmy"
-#' )
-#' matrices <- import_parallel_Vispa2Matrices_auto(
-#'     association_file = association_file, root = NULL,
-#'     quantification_type = c("seqCount", "fragmentEstimate"),
-#'     matrix_type = "annotated", workers = 2, patterns = NULL,
-#'     matching_opt = "ANY", multi_quant_matrix = FALSE
-#' )
-#'
-#' #### EXTERNAL AGGREGATION
-#' aggregated <- aggregate_values_by_key(matrices$seqCount, association_file)
-#' cumulative_count <- cumulative_count_union(aggregated)
-#'
-#' #### INTERNAL AGGREGATION
-#' cumulative_count_2 <- cumulative_count_union(matrices$seqCount,
-#'     association_file,
-#'     aggregate = TRUE
-#' )
-#'
-#' options(op)
+#' cumulative_count <- cumulative_count_union(aggreg)
+#' cumulative_count
 cumulative_count_union <- function(x,
     association_file = NULL,
     timepoint_column = "TimePoint",
@@ -1146,14 +978,14 @@ cumulative_count_union <- function(x,
     stopifnot(is.character(zero) & length(zero) == 1)
     stopifnot(is.logical(aggregate))
     if (aggregate == TRUE & is.null(association_file)) {
-        stop(.agg_with_null_meta_err())
+        rlang::abort(.agg_with_null_meta_err())
     }
     if (!all(timepoint_column %in% key)) {
-        stop(.key_without_tp_err())
+        rlang::abort(.key_without_tp_err())
     }
     if (aggregate == FALSE) {
         if (!all(key %in% colnames(x))) {
-            stop(.key_not_found())
+            rlang::abort(.key_not_found())
         }
     } else {
         x <- aggregate_values_by_key(
@@ -1166,12 +998,14 @@ cumulative_count_union <- function(x,
             max <- max(association_file[[timepoint_column]])
             digits <- floor(log10(x)) + 1
             association_file <- association_file %>%
-                dplyr::mutate({{ timepoint_column }} := stringr::str_pad(
-                    as.character(.data$TimePoint),
-                    digits,
-                    side = "left",
-                    pad = "0"
-                ))
+                dplyr::mutate(
+                    {{ timepoint_column }} := stringr::str_pad(
+                        as.character(.data$TimePoint),
+                        digits,
+                        side = "left",
+                        pad = "0"
+                    )
+                )
             zero <- paste0(rep_len("0", digits), collapse = "")
         }
     }
@@ -1182,10 +1016,11 @@ cumulative_count_union <- function(x,
                 ~ .x != zero
             ))
         if (nrow(x) == 0) {
-            message(paste(
+            all_tp0_msg <- paste(
                 "All time points zeros were excluded, the data",
                 "frame is empty."
-            ))
+            )
+            rlang::inform(all_tp0_msg)
             return(x)
         }
     }
@@ -1282,7 +1117,7 @@ cumulative_count_union <- function(x,
 #' function \code{\link{sharing_heatmap}}.
 #'
 #' @param x An integration matrix, aka a data frame containing the columns
-#' `r mandatory_IS_vars()`. See details.
+#' `mandatory_IS_vars()`. See details.
 #' @param group_key Character vector of column names which identify a
 #' single group. An associated group id will be derived by concatenating
 #' the values of these fields, separated by "_"
@@ -1291,16 +1126,27 @@ cumulative_count_union <- function(x,
 #' @param relative_is_sharing Logical, if TRUE also returns the relative
 #' sharing. See details.
 #'
+#' @importFrom rlang abort .data
+#' @importFrom dplyr select all_of distinct transmute inner_join filter
+#' @importFrom dplyr pull mutate
+#' @importFrom tidyr nest unite
+#' @importFrom purrr map_int pmap_dbl
+#' @importFrom tibble tibble add_case
+#'
 #' @family Analysis functions
 #' @return A named list of data frames or a single data frame
 #' @export
 #'
 #' @examples
-#' path <- system.file("extdata", "ex_annotated_ISMatrix.tsv.xz",
-#'     package = "ISAnalytics"
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
+#'     association_file = association_file,
+#'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
-#' matrix <- import_single_Vispa2Matrix(path)
-#' sharing <- is_sharing(matrix, group_key = "CompleteAmplificationID")
+#' sharing <- is_sharing(aggreg)
+#' sharing
 is_sharing <- function(x,
     group_key = c(
         "SubjectID",

@@ -4,122 +4,67 @@ library(ISAnalytics)
 # Global vars
 #------------------------------------------------------------------------------#
 op <- withr::local_options(
-    ISAnalytics.widgets = FALSE,
+    ISAnalytics.reports = FALSE,
     ISAnalytics.verbose = FALSE
 )
 
-# Path to example association file
-path_af <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
+minimal_test_coll <- tibble::tribble(
+    ~chr, ~integration_locus, ~strand, ~CompleteAmplificationID, ~seqCount,
+    ~fragmentEstimate,
+    "1", 62432, "+", "SAMPLE1", 654, 543.12,
+    "6", 54632, "-", "SAMPLE1", 64, 56.65,
+    "4", 23435, "+", "SAMPLE1", 865, 422.56,
+    "4", 23435, "+", "SAMPLE2", 65, 15.98,
+    "3", 57678, "-", "SAMPLE2", 14, 11.43,
+    "4", 23435, "+", "SAMPLE3", 874, 123.4,
 )
 
-# Path to correct file system example
-path_root_correct <- system.file("extdata", "fs.zip",
-    package = "ISAnalytics"
+minimal_test_coll_meta <- tibble::tribble(
+    ~ProjectID, ~PoolID, ~SubjectID, ~SequencingDate, ~ReplicateNumber,
+    ~CompleteAmplificationID,
+    "PJ1", "POOL1", "SJ001", lubridate::as_date(x = "2020-03-11"), 1, "SAMPLE1",
+    "PJ1", "POOL1", "SJ001", lubridate::as_date(x = "2020-03-11"), 1, "SAMPLE2",
+    "PJ1", "POOL1", "SJ002", lubridate::as_date(x = "2020-03-11"), 1, "SAMPLE3"
 )
-root_correct <- unzip_file_system(path_root_correct, "fs")
 
-# Association file
-af_missing_info <- function(af) {
-    af %>%
-        dplyr::filter(
-            .data$CompleteAmplificationID != paste0(
-                "CLOEXP_POOL6_LTR10LC10_VA2020-",
-                "mix10_VA2020-mix10_lenti_737.",
-                "pCCLsin.PPT.SFFV.eGFP.Wpre_",
-                "PLATE1_NONE_1_NONE_SLiM_0000_",
-                "NONE_NONE_OSR_NONE_NONE_NONE"
-            )
-        )
-}
-
-af_no_prob <- function(af) {
-    af %>%
-        dplyr::filter(
-            .data$CompleteAmplificationID != paste0(
-                "PROJECT1101_ABY-LR",
-                "-PL4-POOL54_LTR51LC51_VA2020-",
-                "mix14_VA2020-mix14_lenti_737.",
-                "pCCLsin.PPT.SFFV.eGFP.Wpre_PL4_",
-                "NONE_2_NONE_SLiM_0_NONE_NONE_",
-                "OSR_NONE_NONE_NONE"
-            )
-        )
-}
-
-association_file_more <- import_association_file(path_af, root_correct,
-    dates_format = "dmy"
-)
-association_file_np <- af_no_prob(association_file_more)
-association_file_miss <- af_missing_info(association_file_more)
-
-# Matrices
-import_matr_silent <- function() {
-    op <- options(ISAnalytics.verbose = FALSE, ISAnalytics.widgets = FALSE)
-    on.exit(options(op))
-    matrices <- import_parallel_Vispa2Matrices_auto(
-        association_file = path_af, root = root_correct,
-        quantification_type = c("fragmentEstimate", "seqCount"),
-        matrix_type = "annotated", workers = 2, patterns = NULL,
-        matching_opt = "ANY", dates_format = "dmy", multi_quant_matrix = FALSE
+minimal_test_coll_meta_probs <- minimal_test_coll_meta %>%
+    tibble::add_case(
+        ProjectID = "PJ1",
+        PoolID = "POOL1",
+        SubjectID = "SJ002",
+        SequencingDate = lubridate::as_date(x = "2020-03-11"),
+        ReplicateNumber = 1,
+        CompleteAmplificationID = "SAMPLE4"
     )
-    matrices
-}
-
-matrices <- import_matr_silent()
-
-seq_count_m <- matrices$seqCount
-fe_m <- matrices$fragmentEstimate
-
-### Multi quant matrix
-multi <- comparison_matrix(matrices)
 
 #------------------------------------------------------------------------------#
 # Tests .check_same_info
 #------------------------------------------------------------------------------#
 test_that(".check_same_info returns empty if no problems", {
-    check <- .check_same_info(association_file_np, seq_count_m)
-    expect_true(nrow(check) == 0)
+    check <- .check_same_info(minimal_test_coll_meta, minimal_test_coll)
+    expect_true(nrow(check$miss) == 0)
 })
 
 test_that(".check_same_info returns non empty if more info", {
-    check <- .check_same_info(association_file_more, seq_count_m)
-    expect_true(nrow(check) == 1)
-    expect_true(check$ProjectID == "PROJECT1101")
-    expect_true(check$PoolID == "ABY-LR-PL4-POOL54")
-})
-
-#------------------------------------------------------------------------------#
-# Tests .join_matrix_af
-#------------------------------------------------------------------------------#
-joined_df <- .join_matrix_af(
-    seq_count_m, association_file_np,
-    "SequencingDate"
-)
-joined_df_multi <- .join_matrix_af(
-    multi, association_file_np,
-    "SequencingDate"
-)
-
-test_that(".join_matrix_af produces the right table", {
-    expect_true(!is.null(joined_df))
-    expect_true(nrow(joined_df) == nrow(seq_count_m))
-    expect_true(ncol(joined_df) == 12)
-
-    expect_true(!is.null(joined_df_multi))
-    expect_true(nrow(joined_df_multi) == nrow(seq_count_m))
-    expect_true(ncol(joined_df_multi) == 13)
+    check <- .check_same_info(minimal_test_coll_meta_probs, minimal_test_coll)
+    expect_true(nrow(check$miss) == 1)
+    expect_true(check$miss$ProjectID == "PJ1" &
+        check$miss$PoolID == "POOL1" &
+        check$miss$CompleteAmplificationID == "SAMPLE4" &
+        check$miss$SubjectID == "SJ002")
 })
 
 #------------------------------------------------------------------------------#
 # Tests .identify_independent_samples
 #------------------------------------------------------------------------------#
-splitted <- .identify_independent_samples(joined_df)
-splitted_multi <- .identify_independent_samples(joined_df_multi)
-
 test_that(".identify_independent_samples splits joined_df", {
+    joined <- .join_matrix_af(minimal_test_coll,
+        association_file = minimal_test_coll_meta,
+        date_col = "SequencingDate"
+    )
+    splitted <- .identify_independent_samples(joined)
     expect_true(nrow(splitted$collisions) +
-        nrow(splitted$non_collisions) == nrow(joined_df))
+        nrow(splitted$non_collisions) == nrow(joined))
     expect_true(nrow(dplyr::inner_join(splitted[[1]], splitted[[2]],
         by = c(
             "chr",
@@ -127,34 +72,9 @@ test_that(".identify_independent_samples splits joined_df", {
             "strand"
         )
     )) == 0)
-    expect_true(nrow(splitted_multi$collisions) +
-        nrow(splitted_multi$non_collisions) ==
-        nrow(joined_df_multi))
-    expect_true(nrow(dplyr::inner_join(splitted_multi[[1]], splitted_multi[[2]],
-        by = c(
-            "chr",
-            "integration_locus",
-            "strand"
-        )
-    )) == 0)
-})
-
-#------------------------------------------------------------------------------#
-# Tests .obtain_nested
-#------------------------------------------------------------------------------#
-nested <- .obtain_nested(splitted$collisions)
-nested_multi <- .obtain_nested(splitted_multi$collisions)
-test_that(".obtain_nested correctly returns nested table", {
-    expect_true(ncol(nested) == 4)
-    expect_equal(colnames(nested), c(
-        "chr", "integration_locus", "strand",
-        "data"
-    ))
-    expect_true(ncol(nested_multi) == 4)
-    expect_equal(colnames(nested_multi), c(
-        "chr", "integration_locus", "strand",
-        "data"
-    ))
+    expect_true(unique(splitted$collisions$chr) == "4" &
+        unique(splitted$collisions$integration_locus) == 23435 &
+        unique(splitted$collisions$strand) == "+")
 })
 
 #------------------------------------------------------------------------------#
@@ -1158,307 +1078,49 @@ test_that(".process_collisions returns updated collisions", {
 #------------------------------------------------------------------------------#
 # Tests remove_collisions
 #------------------------------------------------------------------------------#
-## TEST INPUT
-test_that("remove_collisions stops if x is not a named list", {
-    expect_error({
-        rc <- remove_collisions(1, association_file_np)
-    })
-    expect_error({
-        rc <- remove_collisions(list(1, 2, 3), association_file_np)
-    })
-})
-
-test_that("remove_collisions stops if names of x, if list,
-          are not in quant types", {
-    # All
-    expect_error({
-        rc <- remove_collisions(list(a = "ab", b = "cd"), association_file_np)
-    })
-    # Only some
-    expect_error({
-        rc <- remove_collisions(
-            list(seqCount = "ab", b = "cd"),
-            association_file_np
-        )
-    })
-})
-
-test_that("remove_collisions stops if elements are not IS matrices", {
-    non_ism <- tibble::tibble(a = c(1, 2, 3))
-    miss_value <- seq_count_m %>% dplyr::select(-c(.data$Value))
-    miss_camp <- seq_count_m %>%
-        dplyr::select(-c(.data$CompleteAmplificationID))
-    expect_error(
-        {
-            rc <- remove_collisions(x = non_ism, association_file_np)
-        },
-        regexp = .non_ISM_error()
-    )
-    expect_error(
-        {
-            rc <- remove_collisions(x = miss_value, association_file_np)
-        },
-        regexp = .missing_num_cols_error()
-    )
-    expect_error(
-        {
-            rc <- remove_collisions(x = miss_camp, association_file_np)
-        },
-        regexp = .missing_complAmpID_error()
-    )
-    expect_error(
-        {
-            rc <- remove_collisions(
-                x = list(
-                    seqCount = non_ism,
-                    fragmentEstimate = seq_count_m
-                ),
-                association_file_np
-            )
-        },
-        regexp = .non_ISM_error()
-    )
-    expect_error(
-        {
-            rc <- remove_collisions(
-                x = list(
-                    seqCount = miss_value,
-                    fragmentEstimate = seq_count_m
-                ),
-                association_file_np
-            )
-        },
-        regexp = .missing_value_col_error()
-    )
-    expect_error(
-        {
-            rc <- remove_collisions(
-                x = list(
-                    seqCount = miss_camp,
-                    fragmentEstimate = seq_count_m
-                ),
-                association_file_np
-            )
-        },
-        regexp = .missing_complAmpID_error()
-    )
-})
-
-test_that("remove_collisions stops if association file is not a tibble", {
-    expect_error({
-        rc <- remove_collisions(
-            list(seqCount = seq_count_m),
-            path_af
-        )
-    })
-})
-
-test_that("remove_collisions stops if date_col is incorrect", {
-    expect_error({
-        rc <- remove_collisions(list(seqCount = seq_count_m),
-            association_file_np,
-            date_col = 2
-        )
-    })
-    expect_error({
-        rc <- remove_collisions(list(seqCount = seq_count_m),
-            association_file_np,
-            date_col = c(
-                "SequencingDate", "FusionPrimerPCRDate"
-            )
-        )
-    })
-    expect_error({
-        rc <- remove_collisions(list(seqCount = seq_count_m),
-            association_file_np,
-            date_col = "Date"
-        )
-    })
-})
-
-test_that("remove_collisions stops if reads_ratio is not a number", {
-    expect_error({
-        rc <- remove_collisions(list(seqCount = seq_count_m),
-            association_file_np,
+test_that("remove_collisions succeeds", {
+    invisible(capture_output({
+        coll_rem <- remove_collisions(minimal_test_coll,
+            minimal_test_coll_meta_probs,
             date_col = "SequencingDate",
-            reads_ratio = "20"
+            reads_ratio = 10
         )
-    })
-})
-
-test_that("remove_collisions stops if reads_ratio is not a single number", {
-    expect_error({
-        rc <- remove_collisions(list(seqCount = seq_count_m),
-            association_file_np,
-            date_col = "SequencingDate",
-            reads_ratio = c(10, 20)
+        expected <- coll_rem %>%
+            dplyr::filter(
+                .data$chr == "4",
+                .data$integration_locus == 23435,
+                .data$strand == "+"
+            ) %>%
+            dplyr::distinct(.data$CompleteAmplificationID)
+        expect_true(
+            all(expected$CompleteAmplificationID %in% c("SAMPLE1", "SAMPLE2"))
         )
-    })
-})
-
-
-test_that("remove_collisions stops if date_col contains NA", {
-    expect_error(
-        {
-            rc <- remove_collisions(list(seqCount = seq_count_m),
-                association_file_np,
-                date_col = "FusionPrimerPCRDate"
-            )
-        },
-        regexp = paste(
-            "Selected date column contains NA values, please check",
-            "and fix the association file"
-        )
-    )
-})
-
-test_that("remove_collisions stops if there's no seqCount matrix", {
-    expect_error(
-        {
-            rc <- remove_collisions(
-                list(fragmentEstimate = seq_count_m),
-                association_file_np
-            )
-        },
-        regexp = paste(
-            "Sequence count data frame is required for collision",
-            "removal but none was detected in x"
-        )
-    )
-    expect_error(
-        {
-            sq <- seq_count_m %>% dplyr::filter(.data$chr == "zzz")
-            rc <- remove_collisions(
-                list(seqCount = sq),
-                association_file_np
-            )
-        },
-        regexp = paste(
-            "Sequence count data frame is required for collision",
-            "removal but none was detected in x"
-        )
-    )
-})
-
-# test_that("remove_collisions throws warning info from af", {
-#     expect_message(
-#         {
-#             invisible(capture.output({
-#                 rc <- remove_collisions(
-#                     list(seqCount = seq_count_m),
-#                     association_file_miss
-#                 )
-#             }))
-#         },
-#         regexp = paste(
-#             "The association file is missing needed info",
-#             "on some experiments. Missing samples will be removed",
-#             "from the matrices."
-#         )
-#     )
-# })
-
-test_that("remove_collisions notifies additional data and succeeds", {
-    op <- options(ISAnalytics.verbose = TRUE)
-    on.exit(options(op))
-    expect_message(
-        {
-            invisible(capture_output({
-                coll_rem <- remove_collisions(seq_count_m, association_file_more,
-                    date_col = "SequencingDate",
-                    reads_ratio = 10
-                )
-            }))
-        },
-        regexp = paste("Found additional data relative to some projects",
-            "that are not included in the imported matrices.",
-            "Here is a summary",
-            collapse = "\n"
-        ),
-        fixed = TRUE
-    )
+    }))
 })
 
 #------------------------------------------------------------------------------#
 # Tests realign_after_collisions
 #------------------------------------------------------------------------------#
-
-### OTHER VARS ###
-silent_coll <- function() {
-    op <- options(ISAnalytics.verbose = FALSE)
-    on.exit(options(op))
-    invisible(capture_output({
-        coll_rem <- remove_collisions(seq_count_m, association_file_more,
-            date_col = "SequencingDate",
-            reads_ratio = 10
-        )
-    }))
-    coll_rem
-}
-
-coll_rem <- silent_coll()
-
-test_that("realign_after_collisions fails if others is not a named list", {
-    expect_error({
-        realigned <- realign_after_collisions(coll_rem, 2)
-    })
-    expect_error({
-        realigned <- realign_after_collisions(coll_rem, NULL)
-    })
-    expect_error({
-        realigned <- realign_after_collisions(
-            coll_rem,
-            fe_m
-        )
-    })
-})
-
-test_that("realign_after_collisions fails if names not quant types", {
-    expect_error({
-        realigned <- realign_after_collisions(coll_rem, fe_m)
-    })
-    expect_error({
-        realigned <- realign_after_collisions(coll_rem, list(a = fe_m))
-    })
-})
-
-test_that("realign_after_collisions fails if list contains non-IS matrices", {
-    fe1 <- fe_m %>% dplyr::select(-c(.data$CompleteAmplificationID))
-    expect_error(
-        {
-            realigned <- realign_after_collisions(
-                coll_rem$seqCount,
-                list(
-                    fragmentEstimate =
-                        tibble::tibble(a = c(1, 2, 3))
-                )
-            )
-        },
-        regexp = .non_ISM_error()
-    )
-    expect_error(
-        {
-            realigned <- realign_after_collisions(
-                coll_rem,
-                list(
-                    fragmentEstimate = fe_m,
-                    barcodeCount = fe1
-                )
-            )
-        },
-        regexp = .missing_complAmpID_error()
-    )
-})
-
 test_that("realign_after_collisions correctly re-aligns", {
-    realigned <- realign_after_collisions(
-        coll_rem,
-        list(fragmentEstimate = fe_m)
+    separated <- separate_quant_matrices(minimal_test_coll,
+        key = c(
+            mandatory_IS_vars(),
+            "CompleteAmplificationID"
+        )
     )
-    expect_true(nrow(coll_rem) == nrow(realigned$fragmentEstimate))
-    expect_true(all(realigned$fragmentEstimate$chr %in% coll_rem$chr))
+    coll_single <- remove_collisions(
+        x = separated$seqCount,
+        association_file = minimal_test_coll_meta,
+        quant_cols = c(seqCount = "Value")
+    )
+    realigned <- realign_after_collisions(
+        coll_single,
+        list(fragmentEstimate = separated$fragmentEstimate)
+    )
+    expect_true(nrow(coll_single) == nrow(realigned$fragmentEstimate))
+    expect_true(all(realigned$fragmentEstimate$chr %in% coll_single$chr))
     expect_true(all(realigned$fragmentEstimate$integration_locus
-        %in% coll_rem$integration_locus))
+        %in% coll_single$integration_locus))
     expect_true(all(realigned$fragmentEstimate$CompleteAmplificationID
-        %in% coll_rem$CompleteAmplificationID))
+        %in% coll_single$CompleteAmplificationID))
 })

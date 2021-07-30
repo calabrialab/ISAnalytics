@@ -9,7 +9,7 @@ import_Vispa2_stats(
   file_prefixes = default_iss_file_prefixes(),
   join_with_af = TRUE,
   pool_col = "concatenatePoolIDSeqRun",
-  export_widget_path = NULL
+  report_path = default_report_path()
 )
 }
 \arguments{
@@ -28,34 +28,40 @@ only the stats will be returned.}
 used in the Vispa2 run? This will be used as a key to perform a join
 operation with the stats files \code{POOL} column.}
 
-\item{export_widget_path}{Either NULL or the path on disk where the
-widget report should be saved.}
+\item{report_path}{The path where the report file should be saved.
+Can be a folder, a file or NULL if no report should be produced.
+Defaults to \code{{user_home}/ISAnalytics_reports}.}
 }
 \value{
 A data frame
 }
 \description{
-\lifecycle{experimental}
+\lifecycle{stable}
 Imports all the Vispa2 stats files for each pool provided the association
 file has been aligned with the file system
 (see \code{\link{import_association_file}}).
 }
 \examples{
-op <- options("ISAnalytics.widgets" = FALSE)
-path <- system.file("extdata", "ex_association_file.tsv",
+fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+fs <- unzip_file_system(fs_path, "fs")
+af_path <- system.file("extdata", "asso.file.tsv.gz",
     package = "ISAnalytics"
 )
-root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- unzip_file_system(root_pth, "fs")
-association_file <- import_association_file(path, root, dates_format = "dmy")
-af_with_stats <- import_Vispa2_stats(association_file)
-options(op)
+af <- import_association_file(af_path,
+    root = fs,
+    import_iss = FALSE,
+    report_path = NULL
+)
+stats_files <- import_Vispa2_stats(af,
+    join_with_af = FALSE,
+    report_path = NULL
+)
+head(stats_files)
 }
 \seealso{
 Other Import functions: 
 \code{\link{import_association_file}()},
-\code{\link{import_parallel_Vispa2Matrices_auto}()},
-\code{\link{import_parallel_Vispa2Matrices_interactive}()},
+\code{\link{import_parallel_Vispa2Matrices}()},
 \code{\link{import_single_Vispa2Matrix}()}
 }
 \concept{Import functions}

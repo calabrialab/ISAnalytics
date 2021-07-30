@@ -4,15 +4,15 @@ library(ISAnalytics)
 # Global vars
 #------------------------------------------------------------------------------#
 op <- withr::local_options(
-    ISAnalytics.widgets = FALSE,
+    ISAnalytics.reports = FALSE,
     ISAnalytics.verbose = FALSE
 )
 # Path to example association file
-path_af <- system.file("extdata", "ex_association_file.tsv",
+path_af <- system.file("testdata", "ex_association_file.tsv.gz",
     package = "ISAnalytics"
 )
 # Path to correct file system example
-path_root_correct <- system.file("extdata", "fs.zip",
+path_root_correct <- system.file("testdata", "fs.zip",
     package = "ISAnalytics"
 )
 root_correct <- unzip_file_system(path_root_correct, "fs")

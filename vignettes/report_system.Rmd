@@ -1,0 +1,126 @@
+---
+title: "ISAnalytics report system"
+author: 
+  - name: Giulia Pais
+    affiliation: | 
+     San Raffaele Telethon Institute for Gene Therapy - SR-Tiget, 
+     Via Olgettina 60, 20132 Milano - Italia
+    email: giuliapais1@gmail.com, calabria.andrea@hsr.it
+output: 
+  BiocStyle::html_document:
+    self_contained: yes
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    code_folding: show
+date: "`r doc_date()`"
+package: "`r pkg_ver('ISAnalytics')`"
+vignette: >
+  %\VignetteIndexEntry{report_system}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r GenSetup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    crop = NULL ## Related to https://stat.ethz.ch/pipermail/bioc-devel/2020-April/016656.html
+)
+```
+
+```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
+## Bib setup
+library("RefManageR")
+
+## Write bibliography information
+bib <- c(
+    R = citation(),
+    BiocStyle = citation("BiocStyle")[1],
+    knitr = citation("knitr")[1],
+    RefManageR = citation("RefManageR")[1],
+    rmarkdown = citation("rmarkdown")[1],
+    sessioninfo = citation("sessioninfo")[1],
+    testthat = citation("testthat")[1],
+    ISAnalytics = citation("ISAnalytics")[1],
+    flexdashboard = citation("flexdashboard")[1],
+    DT = citation("DT")[1],
+    plotly = citation("plotly")[1],
+    ggvenn = citation("ggvenn")[1]
+)
+```
+
+# Introduction
+
+In `ISAnalytics`, several implemented functions produce interactive reports in 
+HTML format that not only provide a summary of the process but also provide 
+guarantee of reproducibility of results. In this article we're going to
+explain more in depth how the report system works.
+
+```{r echo=FALSE}
+inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAnalytics")
+```
+
+```{r child=inst_chunk_path}
+
+```
+
+# Enabling reports and required tools
+
+Report production is in no way mandatory, in fact it must be enabled through 
+the option `ISAnalytics.reports`. By default the option is enabled when the 
+package is loaded. 
+
+Reports require a few additional packages that are listed under the package
+"Suggests" list, among these we find:
+
+* `r CRANpkg("rmarkdown")` `r Citep(bib[["rmarkdown"]])`
+* `r CRANpkg("flexdashboard")` `r Citep(bib[["flexdashboard"]])`
+* `r CRANpkg("DT")` `r Citep(bib[["DT"]])`
+* `r CRANpkg("plotly")` `r Citep(bib[["plotly"]])`
+* `r CRANpkg("ggvenn")` `r Citep(bib[["ggvenn"]])`
+
+# Functions
+
+Functions that produce interactive reports always have a function argument
+`report_path`, which must contain a valid path on disk where the compiled
+report should be saved. By default this is set to the 
+`{user home}/ISAnalytics_reports`, but it can be changed according to user
+preference. Accepted formats include:
+
+* `NULL`: it is a convenient and fast way to disable report production only
+for that particular execution. If you want to disable reports for all 
+functions set `ISAnalytics.reports` to `FALSE` instead.
+* A folder: if the folder doesn't exist the function creates it (provided
+the user has permission to write in the given path)
+* A file
+
+If report production fails for any reason, functions return their result
+correctly regardless and a warning message is displayed.
+
+# Examples
+
+TODO
+
+# Reproducibility
+
+`R` session information.
+
+```{r reproduce3, echo=FALSE}
+## Session info
+library("sessioninfo")
+options(width = 120)
+session_info()
+```
+
+# Bibliography
+
+This vignette was generated using `r Biocpkg("BiocStyle")` `r Citep(bib[["BiocStyle"]])`
+with `r CRANpkg("knitr")` `r Citep(bib[["knitr"]])` and `r CRANpkg("rmarkdown")` `r Citep(bib[["rmarkdown"]])` running behind the scenes.
+
+Citations made with `r CRANpkg("RefManageR")` `r Citep(bib[["RefManageR"]])`.
+
+```{r vignetteBiblio, results = "asis", echo = FALSE, warning = FALSE, message = FALSE}
+## Print bibliography
+PrintBibliography(bib, .opts = list(hyperlink = "to.doc", style = "html"))
+```

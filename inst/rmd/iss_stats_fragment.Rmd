@@ -1,0 +1,67 @@
+---
+title: "stats_files_fragment"
+output: html_document
+---
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+options(DT.warn.size = FALSE)
+```
+
+VISPA2 stats info {data-orientation=rows}
+===============================================================================
+```{r include=FALSE}
+iss_stats <- params$iss_stats
+iss_stats_miss <- params$iss_stats_miss
+```
+
+Row1 {.tabset .tabset-fade}
+-------------------------------------------------------------------------------
+### Imported files summary
+```{r}
+datatable(iss_stats,
+          class = "stripe",
+          filter = "top", 
+          rownames = FALSE,
+          options = list(
+            order = list(list(3, 'asc'))
+          ), 
+          colnames = c("ProjectID", 
+                       "concatenatePoolIDSeqRun", 
+                       "Path to stats folder",
+                       "File found",
+                       "Imported",
+                       "Reason (if not imported)"))  %>%
+  formatStyle(columns = "Imported", 
+              color = styleEqual(
+                levels = c(TRUE, FALSE),
+                values = c(found_color, not_found_color)
+              ), fontWeight = "bold", textTransform = "uppercase")
+```
+
+### About
+
+Reasons why file import may fail:  
+
+* **NO FOLDER FOUND**: no associated VISPA2 stats folder was found during file system alignment in the association file import phase
+* **MALFORMED**: the file was found in the file system but it doesn't contain the
+minimal required columns
+* **NOT FOUND**: no file was found that matches the given name pattern in the corresponding folder
+* **DUPLICATED**: there are one or more duplicated files and it wasn't possible to decide which one to import. Please note that the order of patterns given as input to the function expresses a preference in terms of matching, meaning that the function will try to find a single stats files following preference order. If every pattern has a duplicate no choice can be made and no file is going to be imported.
+
+Row2 {.tabset .tabset-fade}
+-------------------------------------------------------------------------------
+### Missing stats for samples
+```{r eval=is.null(iss_stats_miss), results='asis'}
+cat("*Nothing to report*")
+```
+
+```{r eval=!is.null(iss_stats_miss)}
+datatable(iss_stats_miss %>% 
+            dplyr::mutate(dplyr::across(
+              c(.data$ProjectID, .data$concatenatePoolIDSeqRun), as.factor)),
+          class = "stripe",
+          filter = "top", 
+          rownames = FALSE)
+```
+

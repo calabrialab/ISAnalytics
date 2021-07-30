@@ -5,35 +5,37 @@ library(ISAnalytics)
 #------------------------------------------------------------------------------#
 op <- withr::local_options(
     ISAnalytics.verbose = FALSE,
-    ISAnalytics.widgets = FALSE
+    ISAnalytics.reports = FALSE
 )
 
-path_AF <- system.file("extdata", "ex_association_file.tsv",
+path_AF <- system.file("testdata", "ex_association_file.tsv.gz",
     package = "ISAnalytics"
 )
-root_correct <- system.file("extdata", "fs.zip",
+root_correct <- system.file("testdata", "fs.zip",
     package = "ISAnalytics"
 )
 root_correct <- unzip_file_system(root_correct, "fs")
-root_error <- system.file("extdata", "fserr.zip",
+root_error <- system.file("testdata", "fserr.zip",
     package = "ISAnalytics"
 )
 
 root_error <- unzip_file_system(root_error, "fserr")
 
-matrices_correct <- import_parallel_Vispa2Matrices_auto(
+matrices_correct <- import_parallel_Vispa2Matrices(
     association_file = path_AF, root = root_correct,
     quantification_type = c("seqCount", "fragmentEstimate"),
     matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY", dates_format = "dmy", multi_quant_matrix = FALSE
+    matching_opt = "ANY", dates_format = "dmy", multi_quant_matrix = FALSE,
+    mode = "AUTO"
 )
 
 matrices_incorr <- suppressWarnings({
-    import_parallel_Vispa2Matrices_auto(
+    import_parallel_Vispa2Matrices(
         association_file = path_AF, root = root_error,
         quantification_type = c("fragmentEstimate", "seqCount"),
         matrix_type = "annotated", workers = 2, patterns = NULL,
-        matching_opt = "ANY", dates_format = "dmy", multi_quant_matrix = FALSE
+        matching_opt = "ANY", dates_format = "dmy", multi_quant_matrix = FALSE,
+        mode = "AUTO"
     )
 })
 
@@ -749,34 +751,25 @@ test_that("sample_statistics stops if param incorrect", {
             sample_key = 1
         )
     })
-    expect_error(
-        {
-            stats <- sample_statistics(matrices_correct$seqCount,
-                metadata = association_file,
-                sample_key = c("sdgfs", "fwre")
-            )
-        },
-        regexp = "Key columns not found in the data frame"
-    )
+    expect_error({
+        stats <- sample_statistics(matrices_correct$seqCount,
+            metadata = association_file,
+            sample_key = c("sdgfs", "fwre")
+        )
+    })
     # Value cols
-    expect_error(
-        {
-            stats <- sample_statistics(matrices_correct$seqCount,
-                metadata = association_file,
-                value_columns = c("x", "y")
-            )
-        },
-        regexp = "Value columns not found in the data frame"
-    )
-    expect_error(
-        {
-            stats <- sample_statistics(matrices_correct$seqCount,
-                metadata = association_file,
-                value_columns = "chr"
-            )
-        },
-        regexp = "Some or all of value columns are not numeric"
-    )
+    expect_error({
+        stats <- sample_statistics(matrices_correct$seqCount,
+            metadata = association_file,
+            value_columns = c("x", "y")
+        )
+    })
+    expect_error({
+        stats <- sample_statistics(matrices_correct$seqCount,
+            metadata = association_file,
+            value_columns = "chr"
+        )
+    })
     # Functions
     expect_error({
         stats <- sample_statistics(matrices_correct$seqCount,
@@ -784,20 +777,12 @@ test_that("sample_statistics stops if param incorrect", {
             functions = c("sum")
         )
     })
-    expect_error(
-        {
-            stats <- sample_statistics(matrices_correct$seqCount,
-                metadata = association_file,
-                functions = list(sum = "sum")
-            )
-        },
-        regexp = paste(
-            "The function parameter should contain a list",
-            "of either functions or formulas.",
-            "See ?sample_statistics for details"
-        ),
-        fixed = TRUE
-    )
+    expect_error({
+        stats <- sample_statistics(matrices_correct$seqCount,
+            metadata = association_file,
+            functions = list(sum = "sum")
+        )
+    })
 })
 
 ## Test values
@@ -817,18 +802,12 @@ test_that("sample_statistics returns correctly", {
 #------------------------------------------------------------------------------#
 test_that("CIS_grubbs fails if x is not standard matrix", {
     wrong <- tibble::tibble(a = c(1, 2, 3), b = c(4, 5, 6))
-    expect_error(
-        {
-            CIS_grubbs(wrong)
-        },
-        regexp = .non_ISM_error()
-    )
-    expect_error(
-        {
-            CIS_grubbs(smpl)
-        },
-        regexp = .missing_annot()
-    )
+    expect_error({
+        CIS_grubbs(wrong)
+    })
+    expect_error({
+        CIS_grubbs(smpl)
+    })
 })
 
 test_that("CIS_grubbs fails if file doesn't exist", {
@@ -845,10 +824,10 @@ test_that("CIS_grubbs produces correct df", {
         "min_bp_integration_locus", "max_bp_integration_locus",
         "IS_span_bp", "avg_bp_integration_locus",
         "median_bp_integration_locus", "distinct_orientations",
-        "describe_vars", "describe_n", "describe_mean", "describe_sd",
-        "describe_median", "describe_trimmed", "describe_mad",
-        "describe_min", "describe_max", "describe_range",
-        "describe_skew", "describe_kurtosis", "describe_se",
+        "vars", "n", "mean", "sd",
+        "median", "trimmed", "mad",
+        "min", "max", "range",
+        "skew", "kurtosis", "se",
         "average_TxLen", "geneIS_frequency_byHitIS",
         "raw_gene_integration_frequency",
         "integration_frequency_withtolerance",
@@ -863,16 +842,6 @@ test_that("CIS_grubbs produces correct df", {
     result <- CIS_grubbs(matrices_correct$seqCount)
     expect_true(ncol(result) == 40)
     expect_true(all(output_cols %in% colnames(result)))
-    result <- CIS_grubbs(matrices_correct$seqCount,
-        add_standard_padjust = FALSE
-    )
-    expect_true(ncol(result) == 37)
-    expect_true(all(output_cols[!output_cols %in% c(
-        "tdist_bonferroni",
-        "tdist_fdr",
-        "tdist_benjamini"
-    )] %in%
-        colnames(result)))
 })
 
 #------------------------------------------------------------------------------#

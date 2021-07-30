@@ -7,7 +7,7 @@
 outliers_by_pool_fragments(
   metadata,
   key = "BARCODE_MUX",
-  outlier_p_value_threshold = 0.05,
+  outlier_p_value_threshold = 0.01,
   normality_test = FALSE,
   normality_p_value_threshold = 0.05,
   transform_log2 = TRUE,
@@ -16,7 +16,7 @@ outliers_by_pool_fragments(
   min_samples_per_pool = 5,
   flag_logic = "AND",
   keep_calc_cols = TRUE,
-  save_widget_path = NULL
+  report_path = default_report_path()
 )
 }
 \arguments{
@@ -52,8 +52,9 @@ AND, OR, XOR, NAND, NOR, XNOR}
 
 \item{keep_calc_cols}{Keep the calculation columns in the output data frame?}
 
-\item{save_widget_path}{Either null or a string containing the path
-on disk where the report should be saved}
+\item{report_path}{The path where the report file should be saved.
+Can be a folder, a file or NULL if no report should be produced.
+Defaults to \code{{user_home}/ISAnalytics_reports}.}
 }
 \value{
 A data frame of metadata with the column \code{to_remove}
@@ -91,17 +92,11 @@ The user can specify one or more logical operators that will be applied
 in sequence.
 }
 \examples{
-op <- options(ISAnalytics.widgets = FALSE)
-
-path_AF <- system.file("extdata", "ex_association_file.tsv",
-    package = "ISAnalytics"
+data("association_file", package = "ISAnalytics")
+flagged <- outliers_by_pool_fragments(association_file,
+    report_path = NULL
 )
-association_file <- import_association_file(path_AF,
-    root = NULL,
-    dates_format = "dmy"
-)
-filtered_af <- outliers_by_pool_fragments(association_file, key = "VCN")
-options(op)
+head(flagged)
 }
 \seealso{
 Other Outlier tests: 

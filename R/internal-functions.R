@@ -238,17 +238,19 @@
 # reporting parsing problems.
 #' @importFrom rlang inform
 #' @importFrom readr read_delim cols problems
-#' @importFrom readxl read_excel
 #' @importFrom purrr map2_lgl is_empty map_chr map_dfr
 #' @importFrom lubridate parse_date_time
 #' @importFrom tibble tibble
-#' @importFrom dplyr mutate across
+#' @importFrom dplyr mutate across select all_of
 .read_af <- function(path, padding, date_format, delimiter) {
     mode <- "readr"
     ## - Check file extension
     file_ext <- .check_file_extension(path)
     if (file_ext %in% c("xls", "xlsx")) {
         mode <- "readxl"
+        if (!requireNamespace("readxl", quietly = TRUE)) {
+            rlang::abort(.missing_pkg_error("readxl"))
+        }
         if (getOption("ISAnalytics.verbose") == TRUE) {
             rlang::inform(.xls_file_warning(),
                 class = "xls_file"
@@ -358,6 +360,7 @@
 #' @importFrom purrr pmap_dfr is_empty
 #' @importFrom stringr str_replace_all
 #' @importFrom tibble tibble
+#' @importFrom rlang .data `:=`
 #
 # @return A data frame containing, for each ProjectID and
 # concatenatePoolIDSeqRun the
@@ -470,8 +473,6 @@
 #---- USED IN : import_Vispa2_stats ----
 
 # Finds automatically the path on disk to each stats file.
-#
-#' @import dplyr
 #' @importFrom purrr pmap_dfr detect_index
 #' @importFrom tibble tibble
 #' @importFrom fs dir_ls
@@ -487,12 +488,18 @@
             .data$concatenatePoolIDSeqRun,
             .data[[path_col_names$iss]]
         ) %>%
-        dplyr::distinct()
+        dplyr::distinct() %>%
+        dplyr::mutate(
+            ProjectID = as.factor(.data$ProjectID),
+            concatenatePoolIDSeqRun = as.factor(
+                .data$concatenatePoolIDSeqRun
+            )
+        )
     # If paths are all NA return
     if (all(is.na(temp[[path_col_names$iss]]))) {
         return(temp %>% dplyr::mutate(
             stats_files = NA_character_,
-            info = NULL
+            info = list("NO FOLDER FOUND")
         ))
     }
     match_pattern <- function(pattern, temp_row) {
@@ -530,7 +537,7 @@
                     stats_files = (matches %>%
                         dplyr::filter(!is.na(.data$file)) %>%
                         dplyr::pull(.data$file)),
-                    info = NA
+                    info = list("NULL")
                 ))
         }
         # Get the count of files found for each pattern and order them
@@ -552,7 +559,8 @@
                 dplyr::mutate(
                     stats_files = NA_character_,
                     info = list(matches %>%
-                        dplyr::filter(!is.na(.data$file)))
+                        dplyr::filter(!is.na(.data$file)) %>%
+                        dplyr::mutate(info = "DUPLICATE"))
                 ))
         } else {
             ## Pick the file with the pattern that has a count of 1 (no
@@ -563,7 +571,7 @@
                     stats_files = matches %>%
                         dplyr::filter(.data$pattern == chosen_pattern) %>%
                         dplyr::pull(.data$file),
-                    info = NA
+                    info = list("NULL")
                 ))
         }
     })
@@ -572,9 +580,7 @@
 
 # Imports all found Vispa2 stats files.
 #
-#' @import BiocParallel
 #' @importFrom purrr map_chr pmap_dfr reduce is_empty
-#' @import dplyr
 #' @importFrom tibble tibble
 #' @importFrom data.table fread
 # @keywords internal
@@ -584,25 +590,15 @@
 .import_stats_iss <- function(association_file, prefixes) {
     # Obtain paths
     stats_paths <- .stats_report(association_file, prefixes)
+    stats_paths <- stats_paths %>%
+        tidyr::unnest(.data$info)
     if (all(is.na(stats_paths$stats_files))) {
-        stats_paths <- stats_paths %>% dplyr::mutate(Imported = FALSE)
-        evaluate <- function(x) {
-            if (is.list(x)) {
-                if (is.data.frame(x)[[1]]) {
-                    return("DUPLICATES")
-                }
-                if (is.na(x[[1]]) | is.null(x[[1]])) {
-                    return(NA_character_)
-                }
-                return(x[[1]])
-            }
-            if (is.na(x)) {
-                return(NA_character_)
-            }
-            return(x)
-        }
-        condition <- purrr::map_chr(stats_paths$info, evaluate)
-        stats_paths <- stats_paths %>% dplyr::mutate(reason = condition)
+        stats_paths <- stats_paths %>%
+            dplyr::mutate(
+                Imported = FALSE,
+                reason = as.factor(.data$info)
+            ) %>%
+            dplyr::mutate(-.data$info)
         return(list(stats = NULL, report = stats_paths))
     }
     # Setup parallel workers and import
@@ -667,26 +663,18 @@
         } else if (row$Imported == "TRUE") {
             NA_character_
         } else {
-            if (!is.na(row$info) & is.list(row$info)) {
-                if (is.data.frame(row$info[[1]])) {
-                    "DUPLICATES"
-                } else if (is.null(row$info[[1]])) {
-                    NA_character_
-                } else {
-                    row$info[[1]]
-                }
-            } else {
-                row$info
-            }
+            row$info
         }
         row %>%
-            dplyr::mutate(reason = condition) %>%
+            dplyr::mutate(reason = as.factor(condition)) %>%
             dplyr::mutate(Imported = dplyr::if_else(
                 condition = (.data$Imported == "MALFORMED"),
                 true = FALSE,
                 false = as.logical(.data$Imported)
             ))
     })
+    stats_paths <- stats_paths %>%
+        dplyr::select(-.data$info)
     stats_dfs <- stats_dfs[stats_paths$Imported]
     # Bind rows in single tibble for all files
     if (purrr::is_empty(stats_dfs)) {
@@ -701,6 +689,46 @@
 }
 
 #---- USED IN : import_parallel_Vispa2Matrices_interactive ----
+# Base arg check (valid for both versions)
+.base_param_check <- function(association_file,
+    quantification_type,
+    matrix_type,
+    workers,
+    multi_quant_matrix) {
+    # Check parameters
+    stopifnot((is.character(association_file) &
+        length(association_file) == 1) ||
+        is.data.frame(association_file))
+    stopifnot(is.numeric(workers) & length(workers) == 1)
+    stopifnot(!missing(quantification_type))
+    stopifnot(all(quantification_type %in% quantification_types()))
+    stopifnot(is.character(matrix_type) & matrix_type %in% c(
+        "annotated",
+        "not_annotated"
+    ))
+    stopifnot(is.logical(multi_quant_matrix) & length(multi_quant_matrix) == 1)
+}
+
+.pre_manage_af <- function(association_file, import_af_args) {
+    ## Import association file if provided a path
+    if (is.character(association_file)) {
+        association_file <- rlang::eval_tidy(
+            rlang::call2("import_association_file",
+                path = association_file,
+                !!!import_af_args
+            )
+        )
+    }
+    ## Check there are the appropriate columns
+    if (!.path_cols_names()$quant %in% colnames(association_file)) {
+        rlang::abort(.af_missing_path_error(.path_cols_names()$quant),
+            class = "missing_path_col"
+        )
+    }
+    association_file <- association_file %>%
+        dplyr::filter(!is.na(.data[[.path_cols_names()$quant]]))
+    return(association_file)
+}
 
 # Helper function to be used internally to treat association file.
 #' @importFrom rlang inform enexpr eval_tidy parse_expr
@@ -1172,7 +1200,6 @@
 #' @importFrom fs dir_ls as_fs_path
 #' @importFrom purrr pmap_dfr cross_df
 #' @importFrom stringr str_replace_all
-#' @import dplyr
 #' @importFrom tidyr nest
 #
 # @return A tibble containing all found files, including duplicates and missing
@@ -1678,7 +1705,6 @@
 # `pattern_matching`
 # @param matching_opt The matching option
 # @keywords internal
-#' @import dplyr
 #' @importFrom purrr map reduce
 #' @importFrom rlang .data
 #' @importFrom fs as_fs_path
@@ -1919,34 +1945,27 @@
 # the examined matrix there are additional CompleteAmplificationIDs contained
 # in the association file that weren't included in the integration matrix (for
 # example failed runs).
-#
-# @param association_file The imported association file
-# @param df The sequence count matrix to examine
-# @keywords internal
-#' @import dplyr
-#' @importFrom purrr map reduce
 #' @importFrom rlang .data
-#
-# @return A tibble containing ProjectID, PoolID and CompleteAmplificationID
-# only for additional info and only for projects already present in df
 .check_same_info <- function(association_file, df) {
     joined <- association_file %>%
         dplyr::left_join(df, by = "CompleteAmplificationID")
-    projects <- (joined %>% dplyr::select(.data$ProjectID) %>%
-        dplyr::distinct())$ProjectID
-    joined1 <- purrr::map(projects, function(x) {
-        temp <- joined %>% dplyr::filter(.data$ProjectID == x)
-        if (!all(is.na(temp$chr))) {
-            temp %>%
-                dplyr::filter(is.na(.data$chr)) %>%
-                dplyr::select(
-                    .data$ProjectID,
-                    .data$PoolID,
-                    .data$CompleteAmplificationID
-                )
-        }
-    })
-    purrr::reduce(joined1, dplyr::bind_rows)
+    projects <- joined %>%
+        dplyr::filter(!is.na(.data$chr)) %>%
+        dplyr::distinct(.data$ProjectID) %>%
+        dplyr::pull(.data$ProjectID)
+    af_cols <- colnames(association_file)
+    wanted <- c(
+        "ProjectID", "PoolID", "CompleteAmplificationID",
+        "SubjectID", "Tissue", "CellMarker"
+    )
+    cols <- wanted[wanted %in% af_cols]
+    missing_in_df <- joined %>%
+        dplyr::filter(is.na(.data$chr), .data$ProjectID %in% projects) %>%
+        dplyr::select(dplyr::all_of(cols)) %>%
+        dplyr::distinct()
+    reduced_af <- association_file %>%
+        dplyr::filter(.data$ProjectID %in% projects)
+    list(miss = missing_in_df, reduced_af = reduced_af)
 }
 
 # Produces a joined tibble between the sequence count matrix and the
@@ -1956,15 +1975,14 @@
 # @param association_file The association file tibble
 # @param date_col The date column chosen
 # @keywords internal
-#' @import dplyr
 #' @importFrom rlang .data
 #
 # @return A tibble
-.join_matrix_af <- function(seq_count_df, association_file, date_col) {
-    joined <- seq_count_df %>%
+.join_matrix_af <- function(df, association_file, date_col) {
+    joined <- df %>%
         dplyr::left_join(association_file, by = "CompleteAmplificationID") %>%
         dplyr::select(
-            dplyr::all_of(colnames(seq_count_df)), all_of(date_col),
+            dplyr::all_of(colnames(df)), all_of(date_col),
             .data$ProjectID, .data$PoolID, .data$SubjectID,
             .data$ReplicateNumber
         )
@@ -1975,7 +1993,6 @@
 # collisions and non-collisions
 #
 # @param joined_df The joined tibble obtained via `.join_matrix_af`
-#' @import dplyr
 #' @importFrom rlang .data
 # @keywords internal
 #
@@ -1989,8 +2006,7 @@
         ) %>%
         dplyr::group_by(dplyr::across(mandatory_IS_vars())) %>%
         dplyr::distinct(.data$ProjectID, .data$SubjectID, .keep_all = TRUE) %>%
-        dplyr::summarise(n = dplyr::n(), .groups = "drop_last") %>%
-        dplyr::ungroup() %>%
+        dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
         dplyr::filter(.data$n > 1) %>%
         dplyr::select(-c(.data$n))
 
@@ -2080,7 +2096,6 @@
 # integration (triplet chr, integration_locus, strand).
 #
 # @param nest The nested table associated with a single integration
-#' @import dplyr
 #' @importFrom rlang .data
 # @keywords internal
 #
@@ -2122,7 +2137,6 @@
 # check
 # @param seqCount_col The name of the sequence count column (support
 # for multi quantification matrix)
-#' @import dplyr
 #' @importFrom rlang .data eval_tidy expr
 # @keywords internal
 #
@@ -2277,8 +2291,6 @@
 # @param seqCount_col The name of the sequence count column (support
 # for multi quantification matrix)
 # @keywords internal
-#
-#' @import BiocParallel
 #' @importFrom purrr map reduce
 #' @importFrom tibble as_tibble_col add_column
 #' @importFrom dplyr group_by group_split
@@ -2364,18 +2376,14 @@
 # (obtained via `.join_matrix_af`)
 # @param after The final matrix obtained after collision processing
 # @param association_file The association file
-#' @import dplyr
 #' @importFrom rlang .data
 # @keywords internal
 #
 # @return A tibble with a summary containing for each SubjectID the number of
 # integrations found before and after, the sum of the value of the sequence
 # count for each subject before and after and the corresponding deltas.
-.summary_table <- function(before, after, association_file, seqCount_col) {
+.summary_table <- function(before, after, seqCount_col) {
     after_matr <- after %>%
-        dplyr::left_join(association_file,
-            by = c("CompleteAmplificationID")
-        ) %>%
         dplyr::select(dplyr::all_of(colnames(after)), .data$SubjectID)
 
     n_int_after <- after_matr %>%
@@ -2416,6 +2424,63 @@
     summary
 }
 
+# Internal for obtaining summary info about the input sequence count matrix
+# as is (no pre-processing).
+# Info contain
+# - Number of distinct integration sites
+# - Total for each quantification present (if multi-quant) or seqCount
+.summary_input <- function(input_df, quant_cols) {
+    names(quant_cols) <- NULL
+    # Distinct integration sites
+    n_IS <- input_df %>%
+        dplyr::distinct(dplyr::across(mandatory_IS_vars())) %>%
+        nrow()
+    quant_totals <- input_df %>%
+        dplyr::select(dplyr::all_of(quant_cols)) %>%
+        dplyr::summarise(dplyr::across(
+            .cols = dplyr::all_of(quant_cols),
+            .fns = list(
+                sum = ~ sum(.x, na.rm = TRUE)
+            ),
+            .names = "{.col}"
+        ),
+        .groups = "drop"
+        ) %>%
+        as.list()
+    list(total_iss = n_IS, quant_totals = quant_totals)
+}
+
+.per_pool_stats <- function(joined, quant_cols) {
+    ## Joined is the matrix already joined with metadata
+    df_by_pool <- joined %>%
+        dplyr::group_by(.data$PoolID) %>%
+        dplyr::summarise(dplyr::across(
+            .cols = dplyr::all_of(quant_cols),
+            .fns = list(
+                sum = ~ sum(.x, na.rm = TRUE),
+                count = length,
+                describe = ~ psych::describe(.x)
+            )
+        ))
+    df_cols <- purrr::map_lgl(df_by_pool, ~ is.data.frame(.x))
+    if (any(df_cols == TRUE)) {
+        df_cols <- df_cols[df_cols]
+        df_cols <- names(df_cols)
+        dfss <- purrr::map(df_cols, function(col) {
+            exp <- rlang::expr(`$`(df_by_pool, !!col))
+            df <- rlang::eval_tidy(exp)
+            df <- df %>% dplyr::rename_with(.fn = ~ paste0(col, "_", .x))
+            df
+        }) %>% purrr::set_names(df_cols)
+        for (dfc in df_cols) {
+            df_by_pool <- df_by_pool %>%
+                dplyr::select(-dplyr::all_of(dfc)) %>%
+                dplyr::bind_cols(dfss[[dfc]])
+        }
+    }
+    df_by_pool
+}
+
 #### ---- Internals for aggregate functions ----####
 
 #---- USED IN : aggregate_metadata ----
@@ -2448,7 +2513,6 @@
 }
 
 # Aggregates the association file based on the function table.
-#' @import dplyr
 #' @importFrom rlang .data is_function is_formula
 #' @importFrom tibble tibble
 #' @importFrom purrr pmap_df
@@ -2526,7 +2590,6 @@
 # @param args Additional arguments passed on to lambda (named list)
 # @param namespace The namespace from which the lambda is exported
 # @param envir The environment in which symbols must be evaluated
-#' @import dplyr
 #' @importFrom rlang .data
 # @keywords internal
 #
@@ -2603,10 +2666,10 @@
 # @param num_cols A character vector with the names of the numeric columns
 # @param max_val_col The column to consider if criteria is max_value
 # @param produce_map Produce recalibration map?
-#' @importFrom tibble tibble tibble_row add_row
-#' @importFrom dplyr arrange bind_rows distinct
+#' @importFrom dplyr arrange
 #' @importFrom purrr is_empty map_dfr
-#' @importFrom rlang expr eval_tidy
+#' @importFrom rlang expr eval_tidy .data
+#' @importFrom data.table setDT setnames `%chin%`
 # @keywords internal
 #
 # @return A named list with recalibrated matrix and recalibration map.
@@ -2619,15 +2682,17 @@
     produce_map) {
     ## Order by integration_locus
     x <- x %>% dplyr::arrange(.data$integration_locus)
+    x <- data.table::setDT(x)
     map_recalibr <- if (produce_map == TRUE) {
-        tibble::tibble(
-            chr_before = character(0),
-            integration_locus_before = integer(0),
-            strand_before = character(0),
-            chr_after = character(0),
-            integration_locus_after = integer(0),
-            strand_after = character(0)
+        mand_vars <- mandatory_IS_vars()
+        rec_map <- unique(x[, ..mand_vars])
+        data.table::setnames(
+            x = rec_map,
+            old = mandatory_IS_vars(),
+            new = paste0(mandatory_IS_vars(), "_before")
         )
+        rec_map[, c("chr_after", "integration_locus_after", "strand_after") :=
+            list(NA_character_, NA_real_, NA_character_)]
     } else {
         NULL
     }
@@ -2636,21 +2701,22 @@
         # If index is the last row in the data frame return
         if (index == nrow(x)) {
             if (produce_map == TRUE) {
-                map_recalibr <- tibble::add_row(map_recalibr,
-                    chr_before = x$chr[index],
-                    integration_locus_before =
-                        x$integration_locus[index],
-                    strand_before = x$strand[index],
-                    chr_after = x$chr[index],
-                    integration_locus_after =
-                        x$integration_locus[index],
-                    strand_after = x$strand[index]
-                )
-            }
-            if (!is.null(map_recalibr)) {
-                map_recalibr <- dplyr::distinct(
-                    map_recalibr
-                )
+                map_recalibr[
+                    chr_before == x[index, ]$chr &
+                        integration_locus_before ==
+                            x[index, ]$integration_locus &
+                        strand_before == x[index, ]$strand,
+                    c(
+                        "chr_after",
+                        "integration_locus_after",
+                        "strand_after"
+                    ) :=
+                        list(
+                            chr_before,
+                            integration_locus_before,
+                            strand_before
+                        )
+                ]
             }
             return(list(recalibrated_matrix = x, map = map_recalibr))
         }
@@ -2687,27 +2753,40 @@
             }
             # Fill map if needed
             if (produce_map == TRUE) {
-                recalib_rows <- purrr::map_dfr(window, function(cur_row) {
-                    tibble::tibble_row(
-                        chr_before = x$chr[cur_row],
-                        integration_locus_before =
-                            x$integration_locus[cur_row],
-                        strand_before = x$strand[cur_row],
-                        chr_after = x$chr[row_to_keep],
-                        integration_locus_after =
-                            x$integration_locus[row_to_keep],
-                        strand_after = x$strand[row_to_keep]
-                    )
-                })
-                map_recalibr <- dplyr::bind_rows(map_recalibr, recalib_rows)
+                map_recalibr[
+                    chr_before %chin% x[window, ]$chr &
+                        integration_locus_before %in%
+                            x[window, ]$integration_locus &
+                        strand_before %chin% x[window, ]$strand,
+                    c(
+                        "chr_after",
+                        "integration_locus_after",
+                        "strand_after"
+                    ) :=
+                        list(
+                            x[row_to_keep, ]$chr,
+                            x[row_to_keep, ]$integration_locus,
+                            x[row_to_keep, ]$strand
+                        )
+                ]
             }
             # Change loci and strand of near integrations
-            x[near, ]$integration_locus <- x[row_to_keep, ]$integration_locus
-            x[near, ]$strand <- x[row_to_keep, ]$strand
-
-            if (annotated == TRUE) {
-                x[near, ]$GeneName <- x[row_to_keep, ]$GeneName
-                x[near, ]$GeneStrand <- x[row_to_keep, ]$GeneStrand
+            if (annotated) {
+                x[near, c(
+                    "integration_locus",
+                    "strand",
+                    annotation_IS_vars()
+                ) := list(
+                    x[row_to_keep, ]$integration_locus,
+                    x[row_to_keep, ]$strand,
+                    x[row_to_keep, ]$GeneName,
+                    x[row_to_keep, ]$GeneStrand
+                )]
+            } else {
+                x[near, c("integration_locus", "strand") := list(
+                    x[row_to_keep, ]$integration_locus,
+                    x[row_to_keep, ]$strand
+                )]
             }
             ## Aggregate same IDs
             starting_rows <- nrow(x)
@@ -2718,10 +2797,10 @@
                     break
                 }
                 dupl_indexes <- which(t == d[1])
-                values_sum <- colSums(x[window[dupl_indexes], num_cols],
+                values_sum <- colSums(x[window[dupl_indexes], ..num_cols],
                     na.rm = TRUE
                 )
-                x[window[dupl_indexes[1]], num_cols] <- as.list(values_sum)
+                x[window[dupl_indexes[1]], c(num_cols) := as.list(values_sum)]
                 x <- x[-window[dupl_indexes[-1]], ]
                 to_drop <- seq(
                     from = length(window),
@@ -2738,24 +2817,25 @@
             }
         } else {
             if (produce_map == TRUE) {
-                map_recalibr <- tibble::add_row(map_recalibr,
-                    chr_before = x$chr[index],
-                    integration_locus_before =
-                        x$integration_locus[index],
-                    strand_before = x$strand[index],
-                    chr_after = x$chr[index],
-                    integration_locus_after =
-                        x$integration_locus[index],
-                    strand_after = x$strand[index]
-                )
+                map_recalibr[
+                    chr_before == x[index, ]$chr &
+                        integration_locus_before ==
+                            x[index, ]$integration_locus &
+                        strand_before == x[index, ]$strand,
+                    c(
+                        "chr_after",
+                        "integration_locus_after",
+                        "strand_after"
+                    ) :=
+                        list(
+                            chr_before,
+                            integration_locus_before,
+                            strand_before
+                        )
+                ]
             }
             index <- index + 1
         }
-    }
-    if (!is.null(map_recalibr)) {
-        map_recalibr <- dplyr::distinct(
-            map_recalibr
-        )
     }
     list(recalibrated_matrix = x, map = map_recalibr)
 }
@@ -2768,25 +2848,10 @@
 #' @importFrom stringr str_replace_all
 #
 # @return A string
-.generate_filename <- function() {
-    time <- as.character(Sys.time())
-    time <- stringr::str_replace_all(
-        string = time,
-        pattern = "-",
-        replacement = "_"
-    )
-    time <- stringr::str_replace_all(
-        string = time,
-        pattern = " ",
-        replacement = "_"
-    )
-    time <- stringr::str_replace_all(
-        string = time,
-        pattern = ":",
-        replacement = ""
-    )
-    filename <- paste0("recalibr_map_", time, ".tsv")
-    filename
+.generate_rec_map_filename <- function() {
+    def <- "recalibration_map.tsv.gz"
+    date <- lubridate::today()
+    return(paste0(date, "_", def))
 }
 
 # Tries to write the recalibration map to a tsv file.
@@ -2799,60 +2864,40 @@
 #
 # @return Nothing
 .write_recalibr_map <- function(map, file_path) {
+    if (fs::is_dir(file_path)) {
+        if (!fs::dir_exists(file_path)) {
+            fs::dir_create(file_path)
+        }
+        gen_filename <- .generate_rec_map_filename()
+        file_path <- fs::path(file_path, gen_filename)
+    } else {
+        if (fs::path_ext(file_path) == "") {
+            file_path <- fs::path_ext_set(file_path, "tsv.gz")
+        }
+    }
     withRestarts(
         {
-            if (file_path == ".") {
-                filename <- .generate_filename()
-                fs::dir_create(fs::path_wd("recalibration_maps"))
-                file_path <- fs::path_wd("recalibration_maps", filename)
-                readr::write_tsv(map, file_path)
-                if (getOption("ISAnalytics.verbose") == TRUE) {
-                    message(paste(
-                        "Recalibration map saved to: ",
-                        file_path
-                    ))
-                }
-            } else {
-                file_path <- fs::path(file_path)
-                if (fs::is_file(file_path)) {
-                    readr::write_tsv(map, file_path)
-                    if (getOption("ISAnalytics.verbose") == TRUE) {
-                        message(paste(
-                            "Recalibration map saved to: ",
-                            file_path
-                        ))
-                    }
-                    return(NULL)
-                }
-                filename <- .generate_filename()
-                file_path <- fs::path(file_path, filename)
-                readr::write_tsv(map, file_path)
-                if (getOption("ISAnalytics.verbose") == TRUE) {
-                    message(paste(
-                        "Recalibration map saved to: ",
-                        file_path
-                    ))
-                }
+            data.table::fwrite(map, file = file_path, sep = "\t", na = "")
+            saved_msg <- paste(
+                "Recalibration map saved to: ",
+                file_path
+            )
+            if (getOption("ISAnalytics.verbose") == TRUE) {
+                rlang::inform(saved_msg)
             }
         },
         skip_write = function() {
-            message(paste(
+            skip_msg <- paste(
                 "Could not write recalibration map file.",
                 "Skipping."
-            ))
+            )
+            rlang::inform(skip_msg)
         }
     )
 }
 
 #### ---- Internals for analysis functions ----####
-#---- USED IN : CIS_grubbs ----
-### link to article in documentation
-.lentiviral_CIS_paper <- function() {
-    paste0(
-        "https://ashpublications.org/blood/article/117/20/5332/21206/",
-        "Lentiviral-vector-common-integration-sites-in"
-    )
-}
+
 
 #---- USED IN : threshold_filter ----
 
@@ -3098,7 +3143,6 @@
 # compare
 # @param comparators Vector or named list for comparators
 #
-#' @import dplyr
 #' @importFrom purrr map_lgl is_empty map pmap_chr reduce map2
 #' @importFrom magrittr `%>%`
 #' @importFrom rlang .data parse_expr eval_tidy
@@ -3221,24 +3265,217 @@
     return(filtered)
 }
 
+#---- USED IN : CIS_grubbs ----
+# Internal computation of CIS_grubbs test
+.cis_grubb_calc <- function(x,
+    refgenes,
+    grubbs_flanking_gene_bp,
+    threshold_alpha) {
+    df_by_gene <- if (requireNamespace("psych", quietly = TRUE)) {
+        x %>%
+            dplyr::group_by(
+                .data$GeneName,
+                .data$GeneStrand,
+                .data$chr
+            ) %>%
+            dplyr::summarise(
+                n_IS_perGene = dplyr::n_distinct(
+                    .data$integration_locus
+                ),
+                min_bp_integration_locus =
+                    min(.data$integration_locus),
+                max_bp_integration_locus =
+                    max(.data$integration_locus),
+                IS_span_bp = (max(.data$integration_locus) -
+                    min(.data$integration_locus)),
+                avg_bp_integration_locus =
+                    mean(.data$integration_locus),
+                median_bp_integration_locus =
+                    stats::median(.data$integration_locus),
+                distinct_orientations = dplyr::n_distinct(.data$strand),
+                describe = list(tibble::as_tibble(
+                    psych::describe(.data$integration_locus)
+                )),
+                .groups = "drop"
+            ) %>%
+            tidyr::unnest(cols = .data$describe)
+    } else {
+        x %>%
+            dplyr::group_by(
+                .data$GeneName,
+                .data$GeneStrand,
+                .data$chr
+            ) %>%
+            dplyr::summarise(
+                n_IS_perGene = dplyr::n_distinct(
+                    .data$integration_locus
+                ),
+                min_bp_integration_locus =
+                    min(.data$integration_locus),
+                max_bp_integration_locus =
+                    max(.data$integration_locus),
+                IS_span_bp = (max(.data$integration_locus) -
+                    min(.data$integration_locus)),
+                avg_bp_integration_locus =
+                    mean(.data$integration_locus),
+                median_bp_integration_locus =
+                    stats::median(.data$integration_locus),
+                distinct_orientations = dplyr::n_distinct(.data$strand),
+                .groups = "drop"
+            )
+    }
+    df_bygene_withannotation <- df_by_gene %>%
+        dplyr::inner_join(refgenes, by = c(
+            "chr" = "chrom",
+            "GeneStrand" = "strand",
+            "GeneName" = "name2"
+        )) %>%
+        dplyr::select(c(
+            dplyr::all_of(colnames(df_by_gene)),
+            .data$average_TxLen
+        ))
+    n_elements <- nrow(df_bygene_withannotation)
+
+    df_bygene_withannotation <- df_bygene_withannotation %>%
+        dplyr::mutate(
+            geneIS_frequency_byHitIS = .data$n_IS_perGene / n_elements
+        )
+
+    ### Grubbs test
+    ### --- Gene Frequency
+    df_bygene_withannotation <- df_bygene_withannotation %>%
+        dplyr::mutate(
+            raw_gene_integration_frequency =
+                .data$n_IS_perGene / .data$average_TxLen,
+            integration_frequency_withtolerance = .data$n_IS_perGene /
+                (.data$average_TxLen + grubbs_flanking_gene_bp) * 1000,
+            minus_log2_integration_freq_withtolerance =
+                -log(x = .data$integration_frequency_withtolerance, base = 2)
+        )
+    ### --- z score
+    z_mlif <- function(x) {
+        sqrt((n_elements * (n_elements - 2) * x^2) /
+            (((n_elements - 1)^2) - (n_elements * x^2)))
+    }
+    df_bygene_withannotation <- df_bygene_withannotation %>%
+        dplyr::mutate(
+            zscore_minus_log2_int_freq_tolerance =
+                scale(-log(
+                    x = .data$integration_frequency_withtolerance,
+                    base = 2
+                ))[, 1],
+            neg_zscore_minus_log2_int_freq_tolerance =
+                -.data$zscore_minus_log2_int_freq_tolerance,
+            t_z_mlif = z_mlif(
+                .data$neg_zscore_minus_log2_int_freq_tolerance
+            )
+        )
+    ### --- tdist
+    t_dist_2t <- function(x, deg) {
+        return((1 - stats::pt(x, deg)) * 2)
+    }
+    df_bygene_withannotation <- df_bygene_withannotation %>%
+        dplyr::mutate(
+            tdist2t = t_dist_2t(.data$t_z_mlif, n_elements - 2),
+            tdist_pt = stats::pt(
+                q = .data$t_z_mlif,
+                df = n_elements - 2
+            ),
+            tdist_bonferroni_default = ifelse(
+                .data$tdist2t * n_elements > 1, 1,
+                .data$tdist2t * n_elements
+            ),
+            tdist_bonferroni = stats::p.adjust(
+                .data$tdist2t,
+                method = "bonferroni",
+                n = length(.data$tdist2t)
+            ),
+            tdist_fdr = stats::p.adjust(
+                .data$tdist2t,
+                method = "fdr",
+                n = length(.data$tdist2t)
+            ),
+            tdist_benjamini = stats::p.adjust(
+                .data$tdist2t,
+                method = "BY",
+                n = length(.data$tdist2t)
+            )
+        )
+    df_bygene_withannotation <- df_bygene_withannotation %>%
+        dplyr::mutate(
+            tdist_positive_and_corrected =
+                ifelse(
+                    (.data$tdist_bonferroni_default < threshold_alpha &
+                        .data$neg_zscore_minus_log2_int_freq_tolerance > 0),
+                    .data$tdist_bonferroni_default,
+                    NA
+                ),
+            tdist_positive = ifelse(
+                (.data$tdist2t < threshold_alpha &
+                    .data$neg_zscore_minus_log2_int_freq_tolerance > 0),
+                .data$tdist2t,
+                NA
+            )
+        )
+    EM_correction_N <- length(
+        df_bygene_withannotation$tdist_positive[
+            !is.na(df_bygene_withannotation$tdist_positive)
+        ]
+    )
+    df_bygene_withannotation <- df_bygene_withannotation %>%
+        dplyr::mutate(
+            tdist_positive_and_correctedEM =
+                ifelse(
+                    (.data$tdist2t * EM_correction_N <
+                        threshold_alpha &
+                        .data$neg_zscore_minus_log2_int_freq_tolerance > 0),
+                    .data$tdist2t * EM_correction_N,
+                    NA
+                )
+        )
+    return(df_bygene_withannotation)
+}
+
 #---- USED IN : CIS_volcano_plot ----
-#' @importFrom rlang arg_match
+#' @importFrom rlang arg_match abort inform current_env
 #' @importFrom utils read.delim
 .load_onco_ts_genes <- function(onco_db_file,
     tumor_suppressors_db_file,
     species) {
-    if (!file.exists(onco_db_file)) {
-        stop(paste(
-            "`onco_db_file` was not found, check if you provided the",
-            "correct path for the file"
-        ))
+    onco_db <- if (onco_db_file == "proto_oncogenes") {
+        utils::data("proto_oncogenes", envir = rlang::current_env())
+        rlang::current_env()$proto_oncogenes
+    } else {
+        if (!file.exists(onco_db_file)) {
+            onco_db_not_found <- c(paste("`onco_db_file` was not found"),
+                x = "Did you provide the correct path?"
+            )
+            rlang::abort(onco_db_not_found)
+        }
+        utils::read.delim(
+            file = onco_db_file, header = TRUE,
+            fill = TRUE, sep = "\t",
+            check.names = FALSE,
+            na.strings = c("NONE", "NA", "NULL", "NaN", "")
+        )
     }
-    if (!file.exists(tumor_suppressors_db_file)) {
-        stop(paste(
-            "`tumor_suppressors_db_file` was not found,",
-            "check if you provided the",
-            "correct path for the file"
-        ))
+    tumsup_db <- if (tumor_suppressors_db_file == "tumor_suppressors") {
+        utils::data("tumor_suppressors", envir = rlang::current_env())
+        rlang::current_env()$tumor_suppressors
+    } else {
+        if (!file.exists(tumor_suppressors_db_file)) {
+            tum_db_not_found <- c("`tumor_suppressors_db_file` was not found",
+                x = "Did you provide the correct path?"
+            )
+            rlang::abort(tum_db_not_found)
+        }
+        utils::read.delim(
+            file = tumor_suppressors_db_file,
+            header = TRUE,
+            fill = TRUE, sep = "\t",
+            check.names = FALSE,
+            na.strings = c("NONE", "NA", "NULL", "NaN", "")
+        )
     }
     specie <- rlang::arg_match(species, values = c("human", "mouse", "all"))
     specie_name <- switch(specie,
@@ -3249,36 +3486,25 @@
             "Mus musculus (Mouse)"
         )
     )
-    # Acquire DB
-    onco_db <- utils::read.delim(
-        file = onco_db_file, header = TRUE,
-        fill = TRUE, sep = "\t", check.names = FALSE
-    )
-    tumsup_db <- utils::read.delim(
-        file = tumor_suppressors_db_file,
-        header = TRUE,
-        fill = TRUE, sep = "\t",
-        check.names = FALSE
-    )
     if (getOption("ISAnalytics.verbose") == TRUE) {
-        message(paste(c(
+        load_onco_msg <- c(
             "Loading annotated genes -  species selected: ",
             paste(c(specie_name), collapse = ", ")
-        )))
+        )
+        rlang::inform(load_onco_msg)
     }
     # Filter and merge
     onco_df <- .filter_db(onco_db, specie_name, "OncoGene")
     tumsup_df <- .filter_db(tumsup_db, specie_name, "TumorSuppressor")
     oncots_df_to_use <- .merge_onco_tumsup(onco_df, tumsup_df)
     if (getOption("ISAnalytics.verbose") == TRUE) {
-        message(paste(c(
+        rlang::inform(c(
             "Loading annotated genes -  done"
-        )))
+        ))
     }
     return(oncots_df_to_use)
 }
 
-#' @import dplyr
 #' @importFrom rlang .data
 #' @importFrom magrittr `%>%`
 .filter_db <- function(onco_db, species, output_col_name) {
@@ -3300,7 +3526,6 @@
     return(filtered_db)
 }
 
-#' @import dplyr
 #' @importFrom rlang .data
 #' @importFrom magrittr `%>%`
 .merge_onco_tumsup <- function(onco_df, tum_df) {
@@ -3326,7 +3551,6 @@
 #---- USED IN : outliers_by_pool_fragments ----
 # Actual computation of statistical test on pre-filtered metadata (no NA values)
 #' @importFrom rlang inform
-#' @import dplyr
 #' @importFrom BiocParallel MulticoreParam SnowParam bplapply bpstop
 #' @importFrom tibble add_column
 #' @importFrom purrr reduce
@@ -3489,7 +3713,8 @@
                     },
                     test_err = function() {
                         rlang::inform(
-                            c("Unable to perform normality test, skipping"))
+                            c("Unable to perform normality test, skipping")
+                        )
                     }
                 )
             },
@@ -3617,7 +3842,6 @@
 #---- USED IN : HSC_population_size_estimate ----
 # Calculates population estimates (all)
 #' @importFrom purrr map_lgl detect_index
-#' @import dplyr
 #' @importFrom tidyr pivot_wider
 .estimate_pop <- function(df,
     seqCount_column,
@@ -3695,7 +3919,7 @@
     )
     #### For the slice (first stable - last tp)
     models0_stable <- if (!is.null(patient_slice_stable) &&
-                          ncol(patient_slice_stable) > 1) {
+        ncol(patient_slice_stable) > 1) {
         .closed_m0_est(
             matrix_desc = patient_slice_stable,
             timecaptures = length(colnames(patient_slice_stable)),
@@ -3714,7 +3938,7 @@
         subject = subject, stable = FALSE
     )
     models_bc_stable <- if (!is.null(patient_slice_stable) &&
-                            ncol(patient_slice_stable) > 1) {
+        ncol(patient_slice_stable) > 1) {
         .closed_mthchaobc_est(
             matrix_desc = patient_slice_stable,
             timecaptures = length(colnames(patient_slice_stable)),
