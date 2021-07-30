@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.2</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.3</span>
       </span>
     </div>
 
@@ -71,7 +71,7 @@
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+      <a href="../articles/report_system.html">ISAnalytics report system</a>
     </li>
   </ul>
 </li>
@@ -103,7 +103,11 @@
 
       
 
-      </header><script src="aggregate_function_usage_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="aggregate_function_usage_files/accessible-code-block-0.0.1/empty-anchor.js"></script><script src="aggregate_function_usage_files/htmlwidgets-1.5.3/htmlwidgets.js"></script><script src="aggregate_function_usage_files/jquery-3.5.1/jquery.min.js"></script><link href="aggregate_function_usage_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="aggregate_function_usage_files/datatables-binding-0.18/datatables.js"></script><link href="aggregate_function_usage_files/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="aggregate_function_usage_files/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="aggregate_function_usage_files/dt-core-1.10.20/js/jquery.dataTables.min.js"></script><link href="aggregate_function_usage_files/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet">
+<script src="aggregate_function_usage_files/crosstalk-1.1.1/js/crosstalk.min.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Working with aggregate functions</h1>
@@ -113,7 +117,7 @@
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 class="date">28 June 2021</h4>
+            <h4 class="date">30 July 2021</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/master/vignettes/aggregate_function_usage.Rmd"><code>vignettes/aggregate_function_usage.Rmd</code></a></small>
       <div class="hidden name"><code>aggregate_function_usage.Rmd</code></div>
@@ -127,13 +131,27 @@
 <a href="#introduction" class="anchor"></a>Introduction</h1>
 <p>In this vignette we’re going to explain in detail how to use functions of the aggregate family, namely:</p>
 <ol style="list-style-type: decimal">
-<li><code>aggregate_metadata</code></li>
-<li><code>aggregate_values_by_key</code></li>
+<li><code><a href="../reference/aggregate_metadata.html">aggregate_metadata()</a></code></li>
+<li><code><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key()</a></code></li>
 </ol>
 </div>
 <div id="installation-and-options" class="section level1">
 <h1 class="hasAnchor">
 <a href="#installation-and-options" class="anchor"></a>Installation and options</h1>
+<p><code>ISAnalytics</code> can be installed quickly in different ways:</p>
+<ul>
+<li>You can install it via <a href="http://bioconductor.org">Bioconductor</a>
+</li>
+<li>You can install it via GitHub using the package <code>devtools</code>
+</li>
+</ul>
+<p>There are always 2 versions of the package active:</p>
+<ul>
+<li>
+<code>RELEASE</code> is the latest stable version</li>
+<li>
+<code>DEVEL</code> is the development version, it is the most up-to-date version where all new features are introduced</li>
+</ul>
 <div id="installation-from-bioconductor" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation-from-bioconductor" class="anchor"></a>Installation from bioconductor</h2>
@@ -163,11 +181,7 @@
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
                          ref <span class="op">=</span> <span class="st">"RELEASE_3_13"</span>,
                          dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
-                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="co">## Safer option for vignette building issue</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"RELEASE_3_13"</span><span class="op">)</span></code></pre></div>
+                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>DEVEL:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
@@ -176,11 +190,7 @@
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
                          ref <span class="op">=</span> <span class="st">"master"</span>,
                          dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
-                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="co">## Safer option for vignette building issue</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"master"</span><span class="op">)</span></code></pre></div>
+                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="setting-options" class="section level2">
 <h2 class="hasAnchor">
@@ -195,20 +205,17 @@
 <p>Some functions also produce report in a user-friendly HTML format, to set this feature:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># DISABLE HTML REPORTS</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.widgets"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="co"># ENABLE HTML REPORTS</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.widgets"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="aggregating-metadata" class="section level1">
 <h1 class="hasAnchor">
 <a href="#aggregating-metadata" class="anchor"></a>Aggregating metadata</h1>
-<p>We refer to information contained in the association file as “metadata”: sometimes it’s useful to obtain collective information based on a certain group of variables we’re interested in. The function <code>aggregate_metadata</code> does just that: according to the grouping variables, meaning the names of the columns in the association file to perform a <code>group_by</code> operation with, creates a summary. You can fully customize the summary by providing a “function table” which tells the function which operation should be applied to which column and what name to give to the output column. A default is already supplied:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://calabrialab.github.io/ISAnalytics">ISAnalytics</a></span><span class="op">)</span>
-<span class="co">#&gt; Loading required package: magrittr</span>
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/default_meta_agg.html">default_meta_agg</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
+<p>We refer to information contained in the association file as “metadata”: sometimes it’s useful to obtain collective information based on a certain group of variables we’re interested in. The function <code><a href="../reference/aggregate_metadata.html">aggregate_metadata()</a></code> does just that: according to the grouping variables, meaning the names of the columns in the association file to perform a <code>group_by</code> operation with,it creates a summary. You can fully customize the summary by providing a “function table” that tells the function which operation should be applied to which column and what name to give to the output column. A default is already supplied:</p>
+<pre><code>#&gt; Loading required package: magrittr</code></pre>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Column</th>
@@ -291,129 +298,19 @@
 </tr>
 </tbody>
 </table>
-<p>You can either provide purrr-style lambdas (as given in the example above), or simply specify the name of the function and additional parameters as a list in a separated column. If you choose to provide your own table you should maintain the column names for the function to work properly.</p>
+<p>You can either provide purrr-style lambdas (as given in the example above), or simply specify the name of the function and additional parameters as a list in a separated column. If you choose to provide your own table you should maintain the column names for the function to work properly. For more details on this take a look at the function documentation <code><a href="../reference/default_meta_agg.html">?default_meta_agg</a></code>.</p>
 <div id="typical-workflow" class="section level2">
 <h2 class="hasAnchor">
 <a href="#typical-workflow" class="anchor"></a>Typical workflow</h2>
-<p>Import the association file via <code>import_assocition_file</code>. If you need more information on import function please view the vignette “How to use import functions”.</p>
+<ol style="list-style-type: decimal">
+<li>Import the association file via <code>import_assocition_file()</code>. If you need more information on import function please view the vignette “How to use import functions”: <code><a href="../articles/how_to_import_functions.html">vignette("how_to_import_functions", package="ISAnalytics")</a></code>.</li>
+<li>Perform aggregation</li>
+</ol>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>ISAnalytics.widgets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="op">{</span>
-    <span class="va">path_AF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ex_association_file.tsv"</span>,
-        package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
-    <span class="op">)</span>
-
-    <span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"fs.zip"</span>,
-        package <span class="op">=</span> <span class="st">"ISAnalytics"</span>
-    <span class="op">)</span>
-    <span class="va">root_correct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_file_system.html">unzip_file_system</a></span><span class="op">(</span><span class="va">root_correct</span>, <span class="st">"fs"</span><span class="op">)</span>
-    <span class="va">association_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">path_AF</span>, <span class="va">root_correct</span><span class="op">)</span>
-<span class="op">}</span><span class="op">)</span>
-<span class="co">#&gt; *** Association file import summary ***</span>
-<span class="co">#&gt; ℹ For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
-<span class="co">#&gt; * Parsing problems detected: TRUE</span>
-<span class="co">#&gt; * Date parsing problems: TRUE</span>
-<span class="co">#&gt; * Column problems detected: TRUE</span>
-<span class="co">#&gt; * NAs found in important columns: TRUE</span>
-<span class="co">#&gt; * File system alignment: no problems detected</span>
-<span class="co">#&gt; *** Association file import summary ***</span>
-<span class="co">#&gt; ℹ For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
-<span class="co">#&gt; * Parsing problems detected: TRUE</span>
-<span class="co">#&gt; * Date parsing problems: TRUE</span>
-<span class="co">#&gt; * Column problems detected: TRUE</span>
-<span class="co">#&gt; * NAs found in important columns: TRUE</span>
-<span class="co">#&gt; * File system alignment: no problems detected</span></code></pre></div>
-<p>Perform aggregation:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">aggregated_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_metadata.html">aggregate_metadata</a></span><span class="op">(</span>
-  <span class="va">association_file</span>,
-    grouping_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
-        <span class="st">"SubjectID"</span>,
-        <span class="st">"CellMarker"</span>,
-        <span class="st">"Tissue"</span>, 
-        <span class="st">"TimePoint"</span>
-    <span class="op">)</span>
-<span class="op">)</span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="11%">
-<col width="9%">
-<col width="6%">
-<col width="8%">
-<col width="21%">
-<col width="15%">
-<col width="7%">
-<col width="7%">
-<col width="12%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">SubjectID</th>
-<th align="left">CellMarker</th>
-<th align="left">Tissue</th>
-<th align="left">TimePoint</th>
-<th align="left">FusionPrimerPCRDate_min</th>
-<th align="left">LinearPCRDate_min</th>
-<th align="right">VCN_avg</th>
-<th align="right">Kapa_avg</th>
-<th align="right">ulForPool_sum</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">VA2020-mix10</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">0000</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">0.70</td>
-<td align="right">26.54667</td>
-<td align="right">25.70</td>
-</tr>
-<tr class="even">
-<td align="left">VA2020-mix11</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">0000</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">2.80</td>
-<td align="right">59.81000</td>
-<td align="right">12.29</td>
-</tr>
-<tr class="odd">
-<td align="left">VA2020-mix12</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">0000</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">4.30</td>
-<td align="right">79.80333</td>
-<td align="right">7.98</td>
-</tr>
-<tr class="even">
-<td align="left">VA2020-mix13</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">0000</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">9.89</td>
-<td align="right">85.87000</td>
-<td align="right">7.46</td>
-</tr>
-<tr class="odd">
-<td align="left">VA2020-mix14</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">0000</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="right">NaN</td>
-<td align="right">NaN</td>
-<td align="right">0.00</td>
-</tr>
-</tbody>
-</table>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>
+<span class="va">aggregated_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_metadata.html">aggregate_metadata</a></span><span class="op">(</span>association_file <span class="op">=</span> <span class="va">association_file</span><span class="op">)</span></code></pre></div>
+<div id="htmlwidget-4fc1b038de65a15e0441" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4fc1b038de65a15e0441">{"x":{"filter":"none","data":[["PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT002","PT002","PT002","PT002","PT002","PT002","PT002","PT002","PT002","PT002"],["MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC"],["BM","BM","BM","BM","BM","PB","PB","PB","PB","PB","BM","BM","BM","BM","BM","PB","PB","PB","PB","PB"],["0030","0060","0090","0180","0360","0030","0060","0090","0180","0360","0030","0060","0090","0180","0360","0030","0060","0090","0180","0360"],["2016-11-03","2016-11-03","2016-11-03","2016-11-03","2017-04-21","2016-11-03","2016-11-03","2016-11-03","2016-11-03","2017-04-21","2017-04-21","2017-05-05","2017-05-05","2017-05-16","2018-03-12","2017-04-21","2017-05-05","2017-05-05","2017-05-05","2018-03-12"],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[0.26,0.42,0.35,0.27,0.18,0.23,0.3,0.26,0.24,0.19,1.01,1.24,2.05,2.3,2.52,0.77,1.07,1.09,1.43,2.07],[300.03,171.36,89.21,181.44,42,23.85,23.18,26.57,23.06,45.15,181.5,172.5,135.15,196.5,299.32,106.35,77.4,123,122.55,300.48],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,38.4125030033333,null,null,null,null,21.98818316],[900.09,514.08,267.63,544.32,42,71.55,69.54,79.71,69.18,45.15,544.5,517.5,405.45,589.5,897.96,212.7,77.4,369,367.65,901.44],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,6.455087406],[1521677,2449570,1780849,1530227,800640,883669,704913,752574,126245,1178016,1601300,1159494,1277904,1921867,11484675,1024274,342636,1039011,1689060,6866421],[1516751,2441652,1778239,1524379,800594,883614,690837,752491,126230,1170116,1587602,1148631,1263657,1907112,11463636,1013320,338616,1029322,1666545,6835764],[664754,1069341,813402,693862,396738,416301,236265,348771,76685,567207,689074,505237,556502,864521,5475842,474243,156154,452501,751447,3270406],[792834,1257733,909342,773276,370781,446810,434885,351804,45758,533620,736240,538538,578306,921301,5591711,443596,162504,479765,690886,3244363],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>SubjectID<\/th>\n      <th>CellMarker<\/th>\n      <th>Tissue<\/th>\n      <th>TimePoint<\/th>\n      <th>FusionPrimerPCRDate_min<\/th>\n      <th>LinearPCRDate_min<\/th>\n      <th>VCN_avg<\/th>\n      <th>ng DNA corrected_avg<\/th>\n      <th>Kapa_avg<\/th>\n      <th>ng DNA corrected_sum<\/th>\n      <th>ulForPool_sum<\/th>\n      <th>BARCODE_MUX_sum<\/th>\n      <th>TRIMMING_FINAL_LTRLC_sum<\/th>\n      <th>LV_MAPPED_sum<\/th>\n      <th>BWA_MAPPED_OVERALL_sum<\/th>\n      <th>ISS_MAPPED_PP_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[6,7,8,9,10,11,12,13,14,15]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div id="aggregation-of-values-by-key" class="section level1">
@@ -423,202 +320,22 @@
 <div id="typical-workflow-1" class="section level2">
 <h2 class="hasAnchor">
 <a href="#typical-workflow-1" class="anchor"></a>Typical workflow</h2>
-<p>Import your association file (see previous section) and then import your matrices:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>ISAnalytics.widgets <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="op">{</span>
-    <span class="va">matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto</a></span><span class="op">(</span>
-        association_file <span class="op">=</span> <span class="va">association_file</span>, root <span class="op">=</span> <span class="cn">NULL</span>,
-        quantification_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"fragmentEstimate"</span>, <span class="st">"seqCount"</span><span class="op">)</span>,
-        matrix_type <span class="op">=</span> <span class="st">"annotated"</span>, workers <span class="op">=</span> <span class="fl">2</span>, patterns <span class="op">=</span> <span class="cn">NULL</span>,
-        matching_opt <span class="op">=</span> <span class="st">"ANY"</span>, multi_quant_matrix <span class="op">=</span> <span class="cn">FALSE</span>
-    <span class="op">)</span>
-<span class="op">}</span><span class="op">)</span>
-<span class="co">#&gt; [1] "--- REPORT: FILES IMPORTED ---"</span>
-<span class="co">#&gt; # A tibble: 8 x 5</span>
-<span class="co">#&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type</span>
-<span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;                   &lt;chr&gt;              </span>
-<span class="co">#&gt; 1 CLOEXP      POOL6-1                 fragmentEstimate   </span>
-<span class="co">#&gt; 2 PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   </span>
-<span class="co">#&gt; 3 PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   </span>
-<span class="co">#&gt; 4 PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   </span>
-<span class="co">#&gt; 5 CLOEXP      POOL6-1                 seqCount           </span>
-<span class="co">#&gt; 6 PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           </span>
-<span class="co">#&gt; 7 PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           </span>
-<span class="co">#&gt; 8 PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           </span>
-<span class="co">#&gt;   Files_chosen                                                                  </span>
-<span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1101/qu…</span>
-<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1101/qu…</span>
-<span class="co">#&gt;   Imported</span>
-<span class="co">#&gt;   &lt;lgl&gt;   </span>
-<span class="co">#&gt; 1 TRUE    </span>
-<span class="co">#&gt; 2 TRUE    </span>
-<span class="co">#&gt; 3 TRUE    </span>
-<span class="co">#&gt; 4 TRUE    </span>
-<span class="co">#&gt; 5 TRUE    </span>
-<span class="co">#&gt; 6 TRUE    </span>
-<span class="co">#&gt; 7 TRUE    </span>
-<span class="co">#&gt; 8 TRUE    </span>
-<span class="co">#&gt; [1] "--- SUMMARY OF FILES CHOSEN FOR IMPORT ---"</span>
-<span class="co">#&gt; # A tibble: 8 x 4</span>
-<span class="co">#&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type</span>
-<span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;                   &lt;chr&gt;              </span>
-<span class="co">#&gt; 1 CLOEXP      POOL6-1                 fragmentEstimate   </span>
-<span class="co">#&gt; 2 CLOEXP      POOL6-1                 seqCount           </span>
-<span class="co">#&gt; 3 PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   </span>
-<span class="co">#&gt; 4 PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           </span>
-<span class="co">#&gt; 5 PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   </span>
-<span class="co">#&gt; 6 PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           </span>
-<span class="co">#&gt; 7 PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   </span>
-<span class="co">#&gt; 8 PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           </span>
-<span class="co">#&gt;   Files_chosen                                                                  </span>
-<span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1101/qu…</span>
-<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1101/qu…</span>
-<span class="co">#&gt; [1] "--- INTEGRATION MATRICES FOUND REPORT ---"</span>
-<span class="co">#&gt; # A tibble: 8 x 5</span>
-<span class="co">#&gt;   ProjectID   concatenatePoolIDSeqRun Anomalies Quantification_type</span>
-<span class="co">#&gt;   &lt;chr&gt;       &lt;chr&gt;                   &lt;lgl&gt;     &lt;chr&gt;              </span>
-<span class="co">#&gt; 1 CLOEXP      POOL6-1                 FALSE     fragmentEstimate   </span>
-<span class="co">#&gt; 2 CLOEXP      POOL6-1                 FALSE     seqCount           </span>
-<span class="co">#&gt; 3 PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     fragmentEstimate   </span>
-<span class="co">#&gt; 4 PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     seqCount           </span>
-<span class="co">#&gt; 5 PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     fragmentEstimate   </span>
-<span class="co">#&gt; 6 PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     seqCount           </span>
-<span class="co">#&gt; 7 PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     fragmentEstimate   </span>
-<span class="co">#&gt; 8 PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     seqCount           </span>
-<span class="co">#&gt;   Files_found                                                                   </span>
-<span class="co">#&gt;   &lt;fs::path&gt;                                                                    </span>
-<span class="co">#&gt; 1 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 2 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/VA/CLOEXP/quan…</span>
-<span class="co">#&gt; 3 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 4 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 5 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 6 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1100/qu…</span>
-<span class="co">#&gt; 7 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1101/qu…</span>
-<span class="co">#&gt; 8 /var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/RtmpemATzM/fs/PROJECT1101/qu…</span></code></pre></div>
-<p>The function <code>aggregate_values_by_key</code> can perform the aggregation both on the list of matrices and a single matrix.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Takes the whole list and produces a list in output</span>
-<span class="va">aggregated_matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span><span class="va">matrices</span>, <span class="va">association_file</span><span class="op">)</span>
-
-<span class="co"># Takes a single matrix and produces a single matrix as output</span>
-<span class="va">aggregated_matrices_single</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span>
-    <span class="va">matrices</span><span class="op">$</span><span class="va">seqCount</span>,
-    <span class="va">association_file</span>
+<ol style="list-style-type: decimal">
+<li>Import your association file</li>
+<li>Import integration matrices via <code><a href="../reference/import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices()</a></code>
+</li>
+<li>Perform aggregation</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>
+<span class="va">aggreg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span>
+  x <span class="op">=</span> <span class="va">integration_matrices</span>, 
+  association_file <span class="op">=</span> <span class="va">association_file</span>,
+  value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="3%">
-<col width="17%">
-<col width="6%">
-<col width="9%">
-<col width="10%">
-<col width="12%">
-<col width="10%">
-<col width="6%">
-<col width="9%">
-<col width="9%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">chr</th>
-<th align="right">integration_locus</th>
-<th align="left">strand</th>
-<th align="left">GeneName</th>
-<th align="left">GeneStrand</th>
-<th align="left">SubjectID</th>
-<th align="left">CellMarker</th>
-<th align="left">Tissue</th>
-<th align="left">TimePoint</th>
-<th align="right">Value_sum</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">4519734</td>
-<td align="left">+</td>
-<td align="left">LINC01777</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix10</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">0000</td>
-<td align="right">8</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">8426336</td>
-<td align="left">-</td>
-<td align="left">RERE</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">0000</td>
-<td align="right">4</td>
-</tr>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">8884086</td>
-<td align="left">-</td>
-<td align="left">RERE</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix11</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">0000</td>
-<td align="right">4</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">11322005</td>
-<td align="left">-</td>
-<td align="left">MTOR</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">0000</td>
-<td align="right">4</td>
-</tr>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">11772847</td>
-<td align="left">+</td>
-<td align="left">DRAXIN</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix11</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">0000</td>
-<td align="right">52</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">22453532</td>
-<td align="left">+</td>
-<td align="left">WNT4</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">0000</td>
-<td align="right">8</td>
-</tr>
-</tbody>
-</table>
+<div id="htmlwidget-de8422ff9f55f4b6cac8" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-de8422ff9f55f4b6cac8">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8464757,8607357,8607357,8607362,8850362],["-","-","+","+","-","+"],["RERE","RERE","RERE","RERE","RERE","RERE"],["-","-","-","-","-","-"],["PT001","PT001","PT001","PT001","PT001","PT002"],["MNC","MNC","MNC","MNC","MNC","MNC"],["BM","BM","BM","BM","BM","BM"],["0030","0060","0060","0180","0180","0360"],[542,1,1,1096,1702,562],[3.01147735081,1.00125374215,1.00133972344,5.01068940778,4.01318899904,3.00966651434]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>CellMarker<\/th>\n      <th>Tissue<\/th>\n      <th>TimePoint<\/th>\n      <th>seqCount_sum<\/th>\n      <th>fragmentEstimate_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,9,10]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>The function <code>aggregate_values_by_key</code> can perform the aggregation both on the list of matrices and a single matrix.</p>
 <div id="changing-parameters-to-obtain-different-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#changing-parameters-to-obtain-different-results" class="anchor"></a>Changing parameters to obtain different results</h3>
@@ -628,402 +345,75 @@
 <strong>Changing the <code>key</code> value</strong><br>
 You can change the value of the parameter key as you see fit. This parameter should contain one or multiple columns of the association file that you want to include in the grouping when performing the aggregation. The default value is set to <code><a href="https://rdrr.io/r/base/c.html">c("SubjectID", "CellMarker", "Tissue", "TimePoint")</a></code> (same default key as the <code>aggregate_metadata</code> function).</li>
 </ol>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">agg1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span>
-    x <span class="op">=</span> <span class="va">matrices</span><span class="op">$</span><span class="va">seqCount</span>,
+    x <span class="op">=</span> <span class="va">integration_matrices</span>,
     association_file <span class="op">=</span> <span class="va">association_file</span>,
-    key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"ProjectID"</span><span class="op">)</span>
+    key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"ProjectID"</span><span class="op">)</span>,
+    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left">chr</th>
-<th align="right">integration_locus</th>
-<th align="left">strand</th>
-<th align="left">GeneName</th>
-<th align="left">GeneStrand</th>
-<th align="left">SubjectID</th>
-<th align="left">ProjectID</th>
-<th align="right">Value_sum</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">4519734</td>
-<td align="left">+</td>
-<td align="left">LINC01777</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix10</td>
-<td align="left">CLOEXP</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">4519734</td>
-<td align="left">+</td>
-<td align="left">LINC01777</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix10</td>
-<td align="left">PROJECT1100</td>
-<td align="right">4</td>
-</tr>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">4519734</td>
-<td align="left">+</td>
-<td align="left">LINC01777</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix10</td>
-<td align="left">PROJECT1101</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">8426336</td>
-<td align="left">-</td>
-<td align="left">RERE</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="left">CLOEXP</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">8426336</td>
-<td align="left">-</td>
-<td align="left">RERE</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="left">PROJECT1100</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">8426336</td>
-<td align="left">-</td>
-<td align="left">RERE</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="left">PROJECT1101</td>
-<td align="right">1</td>
-</tr>
-</tbody>
-</table>
-<ol start="2" style="list-style-type: decimal">
+<div id="htmlwidget-96511e962905eda7ea58" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-96511e962905eda7ea58">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],["PJ01","PJ01","PJ01","PJ01","PJ01","PJ01"],[543,1097,1702,562,1607,1843],[4.01273109296,6.01202913122,4.01318899904,3.00966651434,10.02806615653,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>ProjectID<\/th>\n      <th>seqCount_sum<\/th>\n      <th>fragmentEstimate_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,7,8]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><ol start="2" style="list-style-type: decimal">
 <li>
 <strong>Changing the <code>lambda</code> value</strong><br>
 The <code>lambda</code> parameter indicates the function(s) to be applied to the values for aggregation. <code>lambda</code> must be a named list of either functions or purrr-style lambdas: if you would like to specify additional parameters to the function the second option is recommended. The only important note on functions is that they should perform some kind of aggregation on numeric values: this means in practical terms they need to accept a vector of numeric/integer values as input and produce a SINGLE value as output. Valid options for this purpose might be: <code>sum</code>, <code>mean</code>, <code>median</code>, <code>min</code>, <code>max</code> and so on.</li>
 </ol>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">agg2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span>
-    x <span class="op">=</span> <span class="va">matrices</span><span class="op">$</span><span class="va">seqCount</span>,
+    x <span class="op">=</span> <span class="va">integration_matrices</span>,
     association_file <span class="op">=</span> <span class="va">association_file</span>,
     key <span class="op">=</span> <span class="st">"SubjectID"</span>,
-    lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">.x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">.x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,
+    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left">chr</th>
-<th align="right">integration_locus</th>
-<th align="left">strand</th>
-<th align="left">GeneName</th>
-<th align="left">GeneStrand</th>
-<th align="left">SubjectID</th>
-<th align="right">Value_mean</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">4519734</td>
-<td align="left">+</td>
-<td align="left">LINC01777</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">8426336</td>
-<td align="left">-</td>
-<td align="left">RERE</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">8884086</td>
-<td align="left">-</td>
-<td align="left">RERE</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix11</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">11322005</td>
-<td align="left">-</td>
-<td align="left">MTOR</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">11772847</td>
-<td align="left">+</td>
-<td align="left">DRAXIN</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix11</td>
-<td align="right">13</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">22453532</td>
-<td align="left">+</td>
-<td align="left">WNT4</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">2</td>
-</tr>
-</tbody>
-</table>
-<p>Note that, when specifying purrr-style lambdas (formulas), the first parameter needs to be set to <code>.x</code>, other parameters can be set as usual.</p>
+<div id="htmlwidget-0993e4c1c1a715800ad6" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0993e4c1c1a715800ad6">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],[271.5,274.25,851,562,321.4,1843],[2.00636554648,1.503007282805,2.00659449952,3.00966651434,2.005613231306,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_mean<\/th>\n      <th>fragmentEstimate_mean<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,6,7]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Note that, when specifying purrr-style lambdas (formulas), the first parameter needs to be set to <code>.x</code>, other parameters can be set as usual.</p>
 <p>You can also use in <code>lambda</code> functions that produce data frames or lists. In this case all variables from the produced data frame will be included in the final data frame. For example:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">agg3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span>
-    x <span class="op">=</span> <span class="va">matrices</span><span class="op">$</span><span class="va">seqCount</span>,
+    x <span class="op">=</span> <span class="va">integration_matrices</span>,
     association_file <span class="op">=</span> <span class="va">association_file</span>,
     key <span class="op">=</span> <span class="st">"SubjectID"</span>,
-    lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>describe <span class="op">=</span> <span class="fu">psych</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/psych/man/describe.html">describe</a></span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">agg3</span>
-<span class="co">#&gt; # A tibble: 1,272 x 7</span>
-<span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand SubjectID Value_describe$…</span>
-<span class="co">#&gt;    &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;                &lt;dbl&gt;</span>
-<span class="co">#&gt;  1 1               4519734 +      LINC017… +          VA2020-m…                1</span>
-<span class="co">#&gt;  2 1               8426336 -      RERE     -          VA2020-m…                1</span>
-<span class="co">#&gt;  3 1               8884086 -      RERE     -          VA2020-m…                1</span>
-<span class="co">#&gt;  4 1              11322005 -      MTOR     -          VA2020-m…                1</span>
-<span class="co">#&gt;  5 1              11772847 +      DRAXIN   +          VA2020-m…                1</span>
-<span class="co">#&gt;  6 1              22453532 +      WNT4     -          VA2020-m…                1</span>
-<span class="co">#&gt;  7 1              25929388 -      MAN1C1   +          VA2020-m…                1</span>
-<span class="co">#&gt;  8 1              26950561 -      RPS6KA1  +          VA2020-m…                1</span>
-<span class="co">#&gt;  9 1              29116798 -      YTHDF2   +          VA2020-m…                1</span>
-<span class="co">#&gt; 10 1              30825358 -      LINC016… -          VA2020-m…                1</span>
-<span class="co">#&gt; # … with 1,262 more rows</span></code></pre></div>
-<ol start="3" style="list-style-type: decimal">
+    lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>describe <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu">psych</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/describe.html">describe</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
+    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
+<span class="op">)</span></code></pre></div>
+<div id="htmlwidget-67ae30f06e0b4e73bff8" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-67ae30f06e0b4e73bff8">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],[{"vars":[1],"n":[2],"mean":[271.5],"sd":[382.544768621922],"median":[271.5],"trimmed":[271.5],"mad":[401.0433],"min":[1],"max":[542],"range":[541],"skew":[0],"kurtosis":[-2.75],"se":[270.5]},{"vars":[1],"n":[4],"mean":[274.25],"sd":[514.790167608771],"median":[25],"trimmed":[274.25],"mad":[29.652],"min":[1],"max":[1046],"range":[1045],"skew":[0.747482196743673],"kurtosis":[-1.68922260010645],"se":[257.395083804386]},{"vars":[1],"n":[2],"mean":[851],"sd":[940.452018978108],"median":[851],"trimmed":[851],"mad":[985.929],"min":[186],"max":[1516],"range":[1330],"skew":[0],"kurtosis":[-2.75],"se":[665]},{"vars":[1],"n":[1],"mean":[562],"sd":[null],"median":[562],"trimmed":[562],"mad":[0],"min":[562],"max":[562],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]},{"vars":[1],"n":[5],"mean":[321.4],"sd":[349.678137720962],"median":[299],"trimmed":[321.4],"mad":[441.8148],"min":[1],"max":[831],"range":[830],"skew":[0.328226886350142],"kurtosis":[-1.80847144754097],"se":[156.380817237921]},{"vars":[1],"n":[1],"mean":[1843],"sd":[null],"median":[1843],"trimmed":[1843],"mad":[0],"min":[1843],"max":[1843],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]}],[{"vars":[1],"n":[2],"mean":[2.00636554648],"sd":[1.42144274538478],"median":[2.00636554648],"trimmed":[2.00636554648],"mad":[1.49017876109966],"min":[1.00125374215],"max":[3.01147735081],"range":[2.01022360866],"skew":[-1.1596938940058e-16],"kurtosis":[-2.75],"se":[1.00511180433]},{"vars":[1],"n":[4],"mean":[1.503007282805],"sd":[1.0046822009284],"median":[1.000848376325],"trimmed":[1.503007282805],"mad":[0.000769291035807126],"min":[1.00030196405],"max":[3.01003041452],"range":[2.00972845047],"skew":[0.749999493395658],"kurtosis":[-1.6875003378858],"se":[0.5023411004642]},{"vars":[1],"n":[2],"mean":[2.00659449952],"sd":[1.42259266486177],"median":[2.00659449952],"trimmed":[2.00659449952],"mad":[1.49138428667369],"min":[1.00066957933],"max":[3.01251941971],"range":[2.01184984038],"skew":[1.15688393236649e-16],"kurtosis":[-2.75],"se":[1.00592492019]},{"vars":[1],"n":[1],"mean":[3.00966651434],"sd":[null],"median":[3.00966651434],"trimmed":[3.00966651434],"mad":[0],"min":[3.00966651434],"max":[3.00966651434],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]},{"vars":[1],"n":[5],"mean":[2.005613231306],"sd":[1.23171758063696],"median":[2.00451029935],"trimmed":[2.005613231306],"mad":[1.48863814939312],"min":[1.00036332451],"max":[4.01747955025],"range":[3.01711622574],"skew":[0.654132738099798],"kurtosis":[-1.39898156544987],"se":[0.550840847877162]},{"vars":[1],"n":[1],"mean":[8.05080491757],"sd":[null],"median":[8.05080491757],"trimmed":[8.05080491757],"mad":[0],"min":[8.05080491757],"max":[8.05080491757],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]}]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_describe<\/th>\n      <th>fragmentEstimate_describe<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><ol start="3" style="list-style-type: decimal">
 <li>
 <strong>Changing the <code>value_cols</code> value</strong><br>
-The <code>value_cols</code> parameter tells the function on which numeric columns of x the functions should be applied. NOte that every function contained in <code>lambda</code> will be applied to every column in <code>value_cols</code>: resulting columns will be named as “original name_function applied”.</li>
+The <code>value_cols</code> parameter tells the function on which numeric columns of x the functions should be applied. Note that every function contained in <code>lambda</code> will be applied to every column in <code>value_cols</code>: resulting columns will be named as “original name_function applied”.</li>
 </ol>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Obtaining multi-quantification matrix</span>
-<span class="va">comp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/comparison_matrix.html">comparison_matrix</a></span><span class="op">(</span><span class="va">matrices</span><span class="op">)</span>
-
-<span class="va">agg4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span>
-    x <span class="op">=</span> <span class="va">comp</span>,
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">agg4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span>
+    x <span class="op">=</span> <span class="va">integration_matrices</span>,
     association_file <span class="op">=</span> <span class="va">association_file</span>,
     key <span class="op">=</span> <span class="st">"SubjectID"</span>,
     lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>sum <span class="op">=</span> <span class="va">sum</span>, mean <span class="op">=</span> <span class="va">mean</span><span class="op">)</span>,
     value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="3%">
-<col width="13%">
-<col width="5%">
-<col width="7%">
-<col width="8%">
-<col width="9%">
-<col width="9%">
-<col width="10%">
-<col width="15%">
-<col width="16%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">chr</th>
-<th align="right">integration_locus</th>
-<th align="left">strand</th>
-<th align="left">GeneName</th>
-<th align="left">GeneStrand</th>
-<th align="left">SubjectID</th>
-<th align="right">seqCount_sum</th>
-<th align="right">seqCount_mean</th>
-<th align="right">fragmentEstimate_sum</th>
-<th align="right">fragmentEstimate_mean</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">4519734</td>
-<td align="left">+</td>
-<td align="left">LINC01777</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">8</td>
-<td align="right">2</td>
-<td align="right">8.010711</td>
-<td align="right">2.002678</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">8426336</td>
-<td align="left">-</td>
-<td align="left">RERE</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">4</td>
-<td align="right">1</td>
-<td align="right">4.002137</td>
-<td align="right">1.000534</td>
-</tr>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">8884086</td>
-<td align="left">-</td>
-<td align="left">RERE</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix11</td>
-<td align="right">4</td>
-<td align="right">1</td>
-<td align="right">4.004477</td>
-<td align="right">1.001119</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">11322005</td>
-<td align="left">-</td>
-<td align="left">MTOR</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">4</td>
-<td align="right">1</td>
-<td align="right">4.002002</td>
-<td align="right">1.000501</td>
-</tr>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">11772847</td>
-<td align="left">+</td>
-<td align="left">DRAXIN</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix11</td>
-<td align="right">52</td>
-<td align="right">13</td>
-<td align="right">4.000695</td>
-<td align="right">1.000174</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">22453532</td>
-<td align="left">+</td>
-<td align="left">WNT4</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">8</td>
-<td align="right">2</td>
-<td align="right">4.005724</td>
-<td align="right">1.001431</td>
-</tr>
-</tbody>
-</table>
-<ol start="4" style="list-style-type: decimal">
+<div id="htmlwidget-b1ca33308d8eb77c7c95" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b1ca33308d8eb77c7c95">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],[543,1097,1702,562,1607,1843],[271.5,274.25,851,562,321.4,1843],[4.01273109296,6.01202913122,4.01318899904,3.00966651434,10.02806615653,8.05080491757],[2.00636554648,1.503007282805,2.00659449952,3.00966651434,2.005613231306,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_sum<\/th>\n      <th>seqCount_mean<\/th>\n      <th>fragmentEstimate_sum<\/th>\n      <th>fragmentEstimate_mean<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,6,7,8,9]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><ol start="4" style="list-style-type: decimal">
 <li>
 <strong>Changing the <code>group</code> value</strong><br>
-The <code>group</code> parameter should contain all other variables to include in the grouping besides <code>key</code>. By default this contains <code><a href="https://rdrr.io/r/base/c.html">c("chr", "integration_locus", "strand", "GeneName", "GeneStrand")</a></code>. You can change this grouping as you see fit, if you don’t want to add any other variable to the key, just set it to NULL.</li>
+The <code>group</code> parameter should contain all other variables to include in the grouping besides <code>key</code>. By default this contains <code><a href="https://rdrr.io/r/base/c.html">c("chr", "integration_locus","strand", "GeneName", "GeneStrand")</a></code>. You can change this grouping as you see fit, if you don’t want to add any other variable to the key, just set it to <code>NULL</code>.</li>
 </ol>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">agg5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span>
-    x <span class="op">=</span> <span class="va">matrices</span><span class="op">$</span><span class="va">seqCount</span>,
+    x <span class="op">=</span> <span class="va">integration_matrices</span>,
     association_file <span class="op">=</span> <span class="va">association_file</span>,
     key <span class="op">=</span> <span class="st">"SubjectID"</span>,
     lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>sum <span class="op">=</span> <span class="va">sum</span>, mean <span class="op">=</span> <span class="va">mean</span><span class="op">)</span>,
-    group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/mandatory_IS_vars.html">mandatory_IS_vars</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+    group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/mandatory_IS_vars.html">mandatory_IS_vars</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,
+    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<table class="table">
-<thead><tr class="header">
-<th align="left">chr</th>
-<th align="right">integration_locus</th>
-<th align="left">strand</th>
-<th align="left">SubjectID</th>
-<th align="right">Value_sum</th>
-<th align="right">Value_mean</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">4519734</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">8</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">8426336</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">4</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">8884086</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix11</td>
-<td align="right">4</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">11322005</td>
-<td align="left">-</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">4</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">11772847</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix11</td>
-<td align="right">52</td>
-<td align="right">13</td>
-</tr>
-<tr class="even">
-<td align="left">1</td>
-<td align="right">22453532</td>
-<td align="left">+</td>
-<td align="left">VA2020-mix10</td>
-<td align="right">8</td>
-<td align="right">2</td>
-</tr>
-</tbody>
-</table>
+<div id="htmlwidget-1ec32d793521278a7d78" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1ec32d793521278a7d78">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["PT001","PT001","PT001","PT002","PT001","PT002"],[543,1097,1702,562,1607,1843],[271.5,274.25,851,562,321.4,1843],[4.01273109296,6.01202913122,4.01318899904,3.00966651434,10.02806615653,8.05080491757],[2.00636554648,1.503007282805,2.00659449952,3.00966651434,2.005613231306,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_sum<\/th>\n      <th>seqCount_mean<\/th>\n      <th>fragmentEstimate_sum<\/th>\n      <th>fragmentEstimate_mean<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,4,5,6,7]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </div>
 <div id="reproducibility" class="section level1">
 <h1 class="hasAnchor">
 <a href="#reproducibility" class="anchor"></a>Reproducibility</h1>
-<p>The <em><a href="https://bioconductor.org/packages/3.13/ISAnalytics">ISAnalytics</a></em> package <a id="cite-calabrialab_2021"></a>(<a href="http://www.bioconductor.org/packages/ISAnalytics">calabrialab, 2021</a>) was made possible thanks to:</p>
-<ul>
-<li>R <a id="cite-R_Core_Team_2021"></a>(<a href="https://www.R-project.org/">R Core Team, 2021</a>)</li>
-<li>
-<em><a href="https://bioconductor.org/packages/3.13/BiocStyle">BiocStyle</a></em> <a id="cite-Oles_2021"></a>(<a href="https://github.com/Bioconductor/BiocStyle">Oleś, 2021</a>)</li>
-<li>
-<em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> <a id="cite-Boettiger_2021"></a>(<a href="https://CRAN.R-project.org/package=knitcitations">Boettiger, 2021</a>)</li>
-<li>
-<em><a href="https://CRAN.R-project.org/package=knitr">knitr</a></em> <a id="cite-Xie_2021"></a>(<a href="https://yihui.org/knitr/">Xie, 2021</a>)</li>
-<li>
-<em><a href="https://CRAN.R-project.org/package=rmarkdown">rmarkdown</a></em> <a id="cite-Allaire_2021"></a>(<a href="https://github.com/rstudio/rmarkdown">Allaire, Xie, McPherson, Luraschi, et al., 2021</a>)</li>
-<li>
-<em><a href="https://CRAN.R-project.org/package=sessioninfo">sessioninfo</a></em> <a id="cite-Csardi_2018"></a>(<a href="https://CRAN.R-project.org/package=sessioninfo">Csárdi, core, Wickham, Chang, et al., 2018</a>)</li>
-<li>
-<em><a href="https://CRAN.R-project.org/package=testthat">testthat</a></em> <a id="cite-Wickham_2011"></a>(<a href="https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf">Wickham, 2011</a>)</li>
-</ul>
-<p>This package was developed using <em><a href="https://github.com/lcolladotor/biocthis">biocthis</a></em>.</p>
 <p><code>R</code> session information.</p>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
@@ -1035,90 +425,86 @@ The <code>group</code> parameter should contain all other variables to include i
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       UTC                         
-#&gt;  date     2021-06-28                  
+#&gt;  date     2021-07-30                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt;  package       * version date       lib source        
-#&gt;  BiocManager     1.30.16 2021-06-15 [1] CRAN (R 4.1.0)
-#&gt;  BiocParallel    1.26.0  2021-05-19 [1] Bioconductor  
-#&gt;  BiocStyle     * 2.20.2  2021-06-17 [1] Bioconductor  
-#&gt;  bookdown        0.22    2021-04-22 [1] CRAN (R 4.1.0)
-#&gt;  cachem          1.0.5   2021-05-15 [1] CRAN (R 4.1.0)
-#&gt;  cellranger      1.1.0   2016-07-27 [1] CRAN (R 4.1.0)
-#&gt;  cli             2.5.0   2021-04-26 [1] CRAN (R 4.1.0)
-#&gt;  colorspace      2.0-2   2021-06-24 [1] CRAN (R 4.1.0)
-#&gt;  crayon          1.4.1   2021-02-08 [1] CRAN (R 4.1.0)
-#&gt;  data.table      1.14.0  2021-02-21 [1] CRAN (R 4.1.0)
-#&gt;  desc            1.3.0   2021-03-05 [1] CRAN (R 4.1.0)
-#&gt;  digest          0.6.27  2020-10-24 [1] CRAN (R 4.1.0)
-#&gt;  dplyr           1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
-#&gt;  ellipsis        0.3.2   2021-04-29 [1] CRAN (R 4.1.0)
-#&gt;  evaluate        0.14    2019-05-28 [1] CRAN (R 4.1.0)
-#&gt;  fansi           0.5.0   2021-05-25 [1] CRAN (R 4.1.0)
-#&gt;  fastmap         1.1.0   2021-01-25 [1] CRAN (R 4.1.0)
-#&gt;  fs              1.5.0   2020-07-31 [1] CRAN (R 4.1.0)
-#&gt;  generics        0.1.0   2020-10-31 [1] CRAN (R 4.1.0)
-#&gt;  ggplot2         3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
-#&gt;  ggrepel         0.9.1   2021-01-15 [1] CRAN (R 4.1.0)
-#&gt;  glue            1.4.2   2020-08-27 [1] CRAN (R 4.1.0)
-#&gt;  gtable          0.3.0   2019-03-25 [1] CRAN (R 4.1.0)
-#&gt;  highr           0.9     2021-04-16 [1] CRAN (R 4.1.0)
-#&gt;  hms             1.1.0   2021-05-17 [1] CRAN (R 4.1.0)
-#&gt;  htmltools       0.5.1.1 2021-01-22 [1] CRAN (R 4.1.0)
-#&gt;  htmlwidgets     1.5.3   2020-12-10 [1] CRAN (R 4.1.0)
-#&gt;  httr            1.4.2   2020-07-20 [1] CRAN (R 4.1.0)
-#&gt;  ISAnalytics   * 1.3.2   2021-06-28 [1] Bioconductor  
-#&gt;  jsonlite        1.7.2   2020-12-09 [1] CRAN (R 4.1.0)
-#&gt;  knitcitations * 1.0.12  2021-01-10 [1] CRAN (R 4.1.0)
-#&gt;  knitr           1.33    2021-04-24 [1] CRAN (R 4.1.0)
-#&gt;  lattice         0.20-44 2021-05-02 [2] CRAN (R 4.1.0)
-#&gt;  lazyeval        0.2.2   2019-03-15 [1] CRAN (R 4.1.0)
-#&gt;  lifecycle       1.0.0   2021-02-15 [1] CRAN (R 4.1.0)
-#&gt;  lubridate       1.7.10  2021-02-26 [1] CRAN (R 4.1.0)
-#&gt;  magrittr      * 2.0.1   2020-11-17 [1] CRAN (R 4.1.0)
-#&gt;  memoise         2.0.0   2021-01-26 [1] CRAN (R 4.1.0)
-#&gt;  mnormt          2.0.2   2020-09-01 [1] CRAN (R 4.1.0)
-#&gt;  munsell         0.5.0   2018-06-12 [1] CRAN (R 4.1.0)
-#&gt;  nlme            3.1-152 2021-02-04 [2] CRAN (R 4.1.0)
-#&gt;  pillar          1.6.1   2021-05-16 [1] CRAN (R 4.1.0)
-#&gt;  pkgconfig       2.0.3   2019-09-22 [1] CRAN (R 4.1.0)
-#&gt;  pkgdown         1.6.1   2020-09-12 [1] CRAN (R 4.1.0)
-#&gt;  plotly          4.9.4.1 2021-06-18 [1] CRAN (R 4.1.0)
-#&gt;  plyr            1.8.6   2020-03-03 [1] CRAN (R 4.1.0)
-#&gt;  ps              1.6.0   2021-02-28 [1] CRAN (R 4.1.0)
-#&gt;  psych           2.1.6   2021-06-18 [1] CRAN (R 4.1.0)
-#&gt;  purrr           0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#&gt;  R6              2.5.0   2020-10-28 [1] CRAN (R 4.1.0)
-#&gt;  ragg            1.1.3   2021-06-09 [1] CRAN (R 4.1.0)
-#&gt;  Rcapture        1.4-3   2019-12-16 [1] CRAN (R 4.1.0)
-#&gt;  Rcpp            1.0.6   2021-01-15 [1] CRAN (R 4.1.0)
-#&gt;  reactable       0.2.3   2020-10-04 [1] CRAN (R 4.1.0)
-#&gt;  readr           1.4.0   2020-10-05 [1] CRAN (R 4.1.0)
-#&gt;  readxl          1.3.1   2019-03-13 [1] CRAN (R 4.1.0)
-#&gt;  RefManageR      1.3.0   2020-11-13 [1] CRAN (R 4.1.0)
-#&gt;  rlang           0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
-#&gt;  rmarkdown       2.9     2021-06-15 [1] CRAN (R 4.1.0)
-#&gt;  rprojroot       2.0.2   2020-11-15 [1] CRAN (R 4.1.0)
-#&gt;  rstudioapi      0.13    2020-11-12 [1] CRAN (R 4.1.0)
-#&gt;  scales          1.1.1   2020-05-11 [1] CRAN (R 4.1.0)
-#&gt;  sessioninfo   * 1.1.1   2018-11-05 [1] CRAN (R 4.1.0)
-#&gt;  stringi         1.6.2   2021-05-17 [1] CRAN (R 4.1.0)
-#&gt;  stringr         1.4.0   2019-02-10 [1] CRAN (R 4.1.0)
-#&gt;  systemfonts     1.0.2   2021-05-11 [1] CRAN (R 4.1.0)
-#&gt;  textshaping     0.3.5   2021-06-09 [1] CRAN (R 4.1.0)
-#&gt;  tibble          3.1.2   2021-05-16 [1] CRAN (R 4.1.0)
-#&gt;  tidyr           1.1.3   2021-03-03 [1] CRAN (R 4.1.0)
-#&gt;  tidyselect      1.1.1   2021-04-30 [1] CRAN (R 4.1.0)
-#&gt;  tmvnsim         1.0-2   2016-12-15 [1] CRAN (R 4.1.0)
-#&gt;  upsetjs         1.9.0   2021-02-15 [1] CRAN (R 4.1.0)
-#&gt;  utf8            1.2.1   2021-03-12 [1] CRAN (R 4.1.0)
-#&gt;  vctrs           0.3.8   2021-04-29 [1] CRAN (R 4.1.0)
-#&gt;  viridisLite     0.4.0   2021-04-13 [1] CRAN (R 4.1.0)
-#&gt;  withr           2.4.2   2021-04-18 [1] CRAN (R 4.1.0)
-#&gt;  xfun            0.24    2021-06-15 [1] CRAN (R 4.1.0)
-#&gt;  xml2            1.3.2   2020-04-23 [1] CRAN (R 4.1.0)
-#&gt;  yaml            2.2.1   2020-02-01 [1] CRAN (R 4.1.0)
-#&gt;  zip             2.2.0   2021-05-31 [1] CRAN (R 4.1.0)
+#&gt;  package      * version date       lib source        
+#&gt;  BiocManager    1.30.16 2021-06-15 [1] CRAN (R 4.1.0)
+#&gt;  BiocParallel   1.26.1  2021-07-04 [1] Bioconductor  
+#&gt;  BiocStyle    * 2.20.2  2021-06-17 [1] Bioconductor  
+#&gt;  bookdown       0.22    2021-04-22 [1] CRAN (R 4.1.0)
+#&gt;  bslib          0.2.5.1 2021-05-18 [1] CRAN (R 4.1.0)
+#&gt;  cachem         1.0.5   2021-05-15 [1] CRAN (R 4.1.0)
+#&gt;  cli            3.0.1   2021-07-17 [1] CRAN (R 4.1.0)
+#&gt;  colorspace     2.0-2   2021-06-24 [1] CRAN (R 4.1.0)
+#&gt;  crayon         1.4.1   2021-02-08 [1] CRAN (R 4.1.0)
+#&gt;  crosstalk      1.1.1   2021-01-12 [1] CRAN (R 4.1.0)
+#&gt;  data.table     1.14.0  2021-02-21 [1] CRAN (R 4.1.0)
+#&gt;  desc           1.3.0   2021-03-05 [1] CRAN (R 4.1.0)
+#&gt;  digest         0.6.27  2020-10-24 [1] CRAN (R 4.1.0)
+#&gt;  dplyr          1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
+#&gt;  DT             0.18    2021-04-14 [1] CRAN (R 4.1.0)
+#&gt;  ellipsis       0.3.2   2021-04-29 [1] CRAN (R 4.1.0)
+#&gt;  evaluate       0.14    2019-05-28 [1] CRAN (R 4.1.0)
+#&gt;  fansi          0.5.0   2021-05-25 [1] CRAN (R 4.1.0)
+#&gt;  fastmap        1.1.0   2021-01-25 [1] CRAN (R 4.1.0)
+#&gt;  fs             1.5.0   2020-07-31 [1] CRAN (R 4.1.0)
+#&gt;  generics       0.1.0   2020-10-31 [1] CRAN (R 4.1.0)
+#&gt;  ggplot2        3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
+#&gt;  ggrepel        0.9.1   2021-01-15 [1] CRAN (R 4.1.0)
+#&gt;  glue           1.4.2   2020-08-27 [1] CRAN (R 4.1.0)
+#&gt;  gtable         0.3.0   2019-03-25 [1] CRAN (R 4.1.0)
+#&gt;  highr          0.9     2021-04-16 [1] CRAN (R 4.1.0)
+#&gt;  hms            1.1.0   2021-05-17 [1] CRAN (R 4.1.0)
+#&gt;  htmltools      0.5.1.1 2021-01-22 [1] CRAN (R 4.1.0)
+#&gt;  htmlwidgets    1.5.3   2020-12-10 [1] CRAN (R 4.1.0)
+#&gt;  httr           1.4.2   2020-07-20 [1] CRAN (R 4.1.0)
+#&gt;  ISAnalytics  * 1.3.3   2021-07-30 [1] Bioconductor  
+#&gt;  jquerylib      0.1.4   2021-04-26 [1] CRAN (R 4.1.0)
+#&gt;  jsonlite       1.7.2   2020-12-09 [1] CRAN (R 4.1.0)
+#&gt;  knitr          1.33    2021-04-24 [1] CRAN (R 4.1.0)
+#&gt;  lattice        0.20-44 2021-05-02 [2] CRAN (R 4.1.0)
+#&gt;  lifecycle      1.0.0   2021-02-15 [1] CRAN (R 4.1.0)
+#&gt;  lubridate      1.7.10  2021-02-26 [1] CRAN (R 4.1.0)
+#&gt;  magrittr     * 2.0.1   2020-11-17 [1] CRAN (R 4.1.0)
+#&gt;  memoise        2.0.0   2021-01-26 [1] CRAN (R 4.1.0)
+#&gt;  mnormt         2.0.2   2020-09-01 [1] CRAN (R 4.1.0)
+#&gt;  munsell        0.5.0   2018-06-12 [1] CRAN (R 4.1.0)
+#&gt;  nlme           3.1-152 2021-02-04 [2] CRAN (R 4.1.0)
+#&gt;  pillar         1.6.2   2021-07-29 [1] CRAN (R 4.1.0)
+#&gt;  pkgconfig      2.0.3   2019-09-22 [1] CRAN (R 4.1.0)
+#&gt;  pkgdown        1.6.1   2020-09-12 [1] CRAN (R 4.1.0)
+#&gt;  plyr           1.8.6   2020-03-03 [1] CRAN (R 4.1.0)
+#&gt;  psych          2.1.6   2021-06-18 [1] CRAN (R 4.1.0)
+#&gt;  purrr          0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
+#&gt;  R6             2.5.0   2020-10-28 [1] CRAN (R 4.1.0)
+#&gt;  ragg           1.1.3   2021-06-09 [1] CRAN (R 4.1.0)
+#&gt;  Rcapture       1.4-3   2019-12-16 [1] CRAN (R 4.1.0)
+#&gt;  Rcpp           1.0.7   2021-07-07 [1] CRAN (R 4.1.0)
+#&gt;  readr          2.0.0   2021-07-20 [1] CRAN (R 4.1.0)
+#&gt;  RefManageR   * 1.3.0   2020-11-13 [1] CRAN (R 4.1.0)
+#&gt;  rlang          0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
+#&gt;  rmarkdown      2.9     2021-06-15 [1] CRAN (R 4.1.0)
+#&gt;  rprojroot      2.0.2   2020-11-15 [1] CRAN (R 4.1.0)
+#&gt;  sass           0.4.0   2021-05-12 [1] CRAN (R 4.1.0)
+#&gt;  scales         1.1.1   2020-05-11 [1] CRAN (R 4.1.0)
+#&gt;  sessioninfo  * 1.1.1   2018-11-05 [1] CRAN (R 4.1.0)
+#&gt;  stringi        1.7.3   2021-07-16 [1] CRAN (R 4.1.0)
+#&gt;  stringr        1.4.0   2019-02-10 [1] CRAN (R 4.1.0)
+#&gt;  systemfonts    1.0.2   2021-05-11 [1] CRAN (R 4.1.0)
+#&gt;  textshaping    0.3.5   2021-06-09 [1] CRAN (R 4.1.0)
+#&gt;  tibble         3.1.3   2021-07-23 [1] CRAN (R 4.1.0)
+#&gt;  tidyr          1.1.3   2021-03-03 [1] CRAN (R 4.1.0)
+#&gt;  tidyselect     1.1.1   2021-04-30 [1] CRAN (R 4.1.0)
+#&gt;  tmvnsim        1.0-2   2016-12-15 [1] CRAN (R 4.1.0)
+#&gt;  tzdb           0.1.2   2021-07-20 [1] CRAN (R 4.1.0)
+#&gt;  utf8           1.2.2   2021-07-24 [1] CRAN (R 4.1.0)
+#&gt;  vctrs          0.3.8   2021-04-29 [1] CRAN (R 4.1.0)
+#&gt;  withr          2.4.2   2021-04-18 [1] CRAN (R 4.1.0)
+#&gt;  xfun           0.24    2021-06-15 [1] CRAN (R 4.1.0)
+#&gt;  xml2           1.3.2   2020-04-23 [1] CRAN (R 4.1.0)
+#&gt;  yaml           2.2.1   2020-02-01 [1] CRAN (R 4.1.0)
+#&gt;  zip            2.2.0   2021-05-31 [1] CRAN (R 4.1.0)
 #&gt; 
 #&gt; [1] /Users/runner/work/_temp/Library
 #&gt; [2] /Library/Frameworks/R.framework/Versions/4.1/Resources/library</code></pre>
@@ -1126,16 +512,20 @@ The <code>group</code> parameter should contain all other variables to include i
 <div id="bibliography" class="section level1">
 <h1 class="hasAnchor">
 <a href="#bibliography" class="anchor"></a>Bibliography</h1>
-<p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.13/BiocStyle">BiocStyle</a></em> (<a href="https://github.com/Bioconductor/BiocStyle">Oleś, 2021</a>) with <em><a href="https://CRAN.R-project.org/package=knitr">knitr</a></em> (<a href="https://yihui.org/knitr/">Xie, 2021</a>) and <em><a href="https://CRAN.R-project.org/package=rmarkdown">rmarkdown</a></em> (<a href="https://github.com/rstudio/rmarkdown">Allaire, Xie, McPherson, Luraschi, et al., 2021</a>) running behind the scenes.</p>
-<p>Citations made with <em><a href="https://CRAN.R-project.org/package=knitcitations">knitcitations</a></em> (<a href="https://CRAN.R-project.org/package=knitcitations">Boettiger, 2021</a>).</p>
-<p>[1] J. Allaire, Y. Xie, J. McPherson, J. Luraschi, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.9. 2021. &lt;URL: <a href="https://github.com/rstudio/rmarkdown" class="uri">https://github.com/rstudio/rmarkdown</a>&gt;.</p>
-<p>[2] C. Boettiger. <em>knitcitations: Citations for ‘Knitr’ Markdown Files</em>. R package version 1.0.12. 2021. &lt;URL: <a href="https://CRAN.R-project.org/package=knitcitations" class="uri">https://CRAN.R-project.org/package=knitcitations</a>&gt;.</p>
-<p>[3] calabrialab. <em>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies</em>. <a href="https://github.com/calabrialab/ISAnalytics" class="uri">https://github.com/calabrialab/ISAnalytics</a> - R package version 1.3.2. 2021. DOI: 10.18129/B9.bioc.ISAnalytics. &lt;URL: <a href="http://www.bioconductor.org/packages/ISAnalytics" class="uri">http://www.bioconductor.org/packages/ISAnalytics</a>&gt;.</p>
-<p>[4] G. Csárdi, R. core, H. Wickham, W. Chang, et al. <em>sessioninfo: R Session Information</em>. R package version 1.1.1. 2018. &lt;URL: <a href="https://CRAN.R-project.org/package=sessioninfo" class="uri">https://CRAN.R-project.org/package=sessioninfo</a>&gt;.</p>
-<p>[5] A. Oleś. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.20.2. 2021. &lt;URL: <a href="https://github.com/Bioconductor/BiocStyle" class="uri">https://github.com/Bioconductor/BiocStyle</a>&gt;.</p>
-<p>[6] R Core Team. <em>R: A Language and Environment for Statistical Computing</em>. R Foundation for Statistical Computing. Vienna, Austria, 2021. &lt;URL: <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>&gt;.</p>
-<p>[7] H. Wickham. “testthat: Get Started with Testing”. In: <em>The R Journal</em> 3 (2011), pp. 5-10. &lt;URL: <a href="https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf" class="uri">https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf</a>&gt;.</p>
-<p>[8] Y. Xie. <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.33. 2021. &lt;URL: <a href="https://yihui.org/knitr/" class="uri">https://yihui.org/knitr/</a>&gt;.</p>
+<p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.13/BiocStyle">BiocStyle</a></em> (Oleś, 2021) with <em><a href="https://CRAN.R-project.org/package=knitr">knitr</a></em> (Xie, 2021) and <em><a href="https://CRAN.R-project.org/package=rmarkdown">rmarkdown</a></em> (Allaire, Xie, McPherson, Luraschi, Ushey, Atkins, Wickham, Cheng, Chang, and Iannone, 2021) running behind the scenes.</p>
+<p>Citations made with <em><a href="https://CRAN.R-project.org/package=RefManageR">RefManageR</a></em> (McLean, 2017).</p>
+<p>
+<a id="bib-allaire2021rmarkdown"></a><a href="#cite-allaire2021rmarkdown">[1]</a><cite> J. Allaire, Y. Xie, J. McPherson, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.9. 2021. URL: <a href="https://github.com/rstudio/rmarkdown">https://github.com/rstudio/rmarkdown</a>.</cite>
+</p>
+<p>
+<a id="bib-mclean2017refmanager"></a><a href="#cite-mclean2017refmanager">[2]</a><cite> M. W. McLean. “RefManageR: Import and Manage BibTeX and BibLaTeX References in R”. In: <em>The Journal of Open Source Software</em> (2017). DOI: <a href="https://doi.org/10.21105/joss.00338">10.21105/joss.00338</a>.</cite>
+</p>
+<p>
+<a id="bib-ole2021biocstyle"></a><a href="#cite-ole2021biocstyle">[3]</a><cite> A. Oleś. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.20.2. 2021. URL: <a href="https://github.com/Bioconductor/BiocStyle">https://github.com/Bioconductor/BiocStyle</a>.</cite>
+</p>
+<p>
+<a id="bib-xie2021knitr"></a><a href="#cite-xie2021knitr">[4]</a><cite> Y. Xie. <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.33. 2021. URL: <a href="https://yihui.org/knitr/">https://yihui.org/knitr/</a>.</cite>
+</p>
 </div>
   </div>
 

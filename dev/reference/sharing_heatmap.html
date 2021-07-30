@@ -82,7 +82,7 @@ Displays the IS sharing calculated via is_sharing as heatmaps." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.2</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.3</span>
       </span>
     </div>
 
@@ -114,7 +114,7 @@ Displays the IS sharing calculated via is_sharing as heatmaps." />
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+      <a href="../articles/report_system.html">ISAnalytics report system</a>
     </li>
   </ul>
 </li>
@@ -228,21 +228,19 @@ functionality. Returns the heatmaps as interactive HTML widgets.</p></td>
     <div class='dont-index'><p><a href='is_sharing.html'>is_sharing</a></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_annotated_ISMatrix.tsv.xz"</span>,
-    package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"association_file"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
+<span class='va'>aggreg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
+    x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
+    association_file <span class='op'>=</span> <span class='va'>association_file</span>,
+    value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
 <span class='op'>)</span>
-<span class='va'>matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a></span><span class='op'>(</span><span class='va'>path</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Warning: compression format not supported by fread</span>
-#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> File will be read using readr</span></div><div class='output co'>#&gt; <span class='message'>Reading file...</span>
-#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> Mode: classic</span></div><div class='output co'>#&gt; <span class='message'>*** File info *** </span>
-#&gt; <span class='message'>* --- Matrix type: NEW</span>
-#&gt; <span class='message'>* --- Annotated: TRUE</span>
-#&gt; <span class='message'>* --- Dimensions: 50 x 10</span>
-#&gt; <span class='message'>* --- Read mode:  classic</span></div><div class='output co'>#&gt; <span class='message'>Reshaping...</span></div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   5%  |                                                                              |======                                                                |   9%  |                                                                              |==========                                                            |  14%  |                                                                              |=============                                                         |  18%  |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  32%  |                                                                              |=========================                                             |  36%  |                                                                              |=============================                                         |  41%  |                                                                              |================================                                      |  45%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================                                |  55%  |                                                                              |=========================================                             |  59%  |                                                                              |=============================================                         |  64%  |                                                                              |================================================                      |  68%  |                                                                              |===================================================                   |  73%  |                                                                              |======================================================                |  77%  |                                                                              |=========================================================             |  82%  |                                                                              |============================================================          |  86%  |                                                                              |================================================================      |  91%  |                                                                              |===================================================================   |  95%  |                                                                              |======================================================================| 100%
-#&gt; </div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='input'><span class='va'>sharing</span> <span class='op'>&lt;-</span> <span class='fu'><a href='is_sharing.html'>is_sharing</a></span><span class='op'>(</span><span class='va'>matrix</span>, group_key <span class='op'>=</span> <span class='st'>"CompleteAmplificationID"</span><span class='op'>)</span>
-<span class='va'>heatmaps</span> <span class='op'>&lt;-</span> <span class='fu'>sharing_heatmap</span><span class='op'>(</span><span class='va'>sharing</span><span class='op'>$</span><span class='va'>sharing</span><span class='op'>)</span>
-<span class='va'>heatmaps</span><span class='op'>$</span><span class='va'>absolute</span>
-</div><div class='img'><img src='sharing_heatmap-1.png' alt='' width='700' height='433' /></div></pre>
+<span class='va'>sharing</span> <span class='op'>&lt;-</span> <span class='fu'><a href='is_sharing.html'>is_sharing</a></span><span class='op'>(</span><span class='va'>aggreg</span><span class='op'>)</span>
+<span class='va'>sharing_heatmaps</span> <span class='op'>&lt;-</span> <span class='fu'>sharing_heatmap</span><span class='op'>(</span>sharing_df <span class='op'>=</span> <span class='va'>sharing</span><span class='op'>$</span><span class='va'>sharing</span><span class='op'>)</span>
+<span class='va'>sharing_heatmaps</span><span class='op'>$</span><span class='va'>absolute</span>
+</div><div class='img'><img src='sharing_heatmap-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='va'>sharing_heatmaps</span><span class='op'>$</span><span class='va'>on_g1</span>
+</div><div class='img'><img src='sharing_heatmap-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='va'>sharing_heatmaps</span><span class='op'>$</span><span class='va'>on_union</span>
+</div><div class='img'><img src='sharing_heatmap-3.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

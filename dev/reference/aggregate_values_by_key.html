@@ -52,7 +52,7 @@
 Performs aggregation on values contained in the integration matrices based
 on the key and the specified lambda. For more details on how to use this
 function:
-vignette(&quot;Working with aggregate functions&quot;, package = &quot;ISAnalytics&quot;)" />
+vignette(&quot;aggregate_function_usage&quot;, package = &quot;ISAnalytics&quot;)" />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -85,7 +85,7 @@ vignette(&quot;Working with aggregate functions&quot;, package = &quot;ISAnalyti
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.2</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.3</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@ vignette(&quot;Working with aggregate functions&quot;, package = &quot;ISAnalyti
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+      <a href="../articles/report_system.html">ISAnalytics report system</a>
     </li>
   </ul>
 </li>
@@ -158,12 +158,12 @@ vignette(&quot;Working with aggregate functions&quot;, package = &quot;ISAnalyti
     </div>
 
     <div class="ref-description">
-    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#stable'><img src='figures/lifecycle-stable.svg' alt='[Stable]' /></a>
 
 Performs aggregation on values contained in the integration matrices based
 on the key and the specified lambda. For more details on how to use this
 function:
-<code>vignette("Working with aggregate functions", package = "ISAnalytics")</code></p>
+<code><a href='../articles/aggregate_function_usage.html'>vignette("aggregate_function_usage", package = "ISAnalytics")</a></code></p>
     </div>
 
     <pre class="usage"><span class='fu'>aggregate_values_by_key</span><span class='op'>(</span>
@@ -181,8 +181,8 @@ function:
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A single integration matrix (tibble) or a list of imported
-integration matrices (tibble)</p></td>
+      <td><p>A single integration matrix or a list of imported
+integration matrices</p></td>
     </tr>
     <tr>
       <th>association_file</th>
@@ -268,27 +268,25 @@ will be added to the final data frame.</p></li>
 <code><a href='default_meta_agg.html'>default_meta_agg</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='st'>"ISAnalytics.widgets"</span> <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='st'>"ISAnalytics.verbose"</span> <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>path_AF</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
-    package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
-<span class='op'>)</span>
-<span class='va'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
-<span class='va'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_correct</span>, <span class='st'>"fs"</span><span class='op'>)</span>
-<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>path_AF</span>, <span class='va'>root_correct</span>,
-    dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>
-<span class='op'>)</span>
-<span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></span><span class='op'>(</span>
-    association_file <span class='op'>=</span> <span class='va'>association_file</span>, root <span class='op'>=</span> <span class='cn'>NULL</span>,
-    quantification_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>,
-    matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>, workers <span class='op'>=</span> <span class='fl'>2</span>, matching_opt <span class='op'>=</span> <span class='st'>"ANY"</span>
-<span class='op'>)</span>
-<span class='va'>agg</span> <span class='op'>&lt;-</span> <span class='fu'>aggregate_values_by_key</span><span class='op'>(</span>
-    x <span class='op'>=</span> <span class='va'>matrices</span>,
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"association_file"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
+<span class='va'>aggreg</span> <span class='op'>&lt;-</span> <span class='fu'>aggregate_values_by_key</span><span class='op'>(</span>
+    x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
     association_file <span class='op'>=</span> <span class='va'>association_file</span>,
-    value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>
+    value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
 <span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
-</div></pre>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>aggreg</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 6 × 11</span>
+#&gt;   chr   integration_locus strand GeneName GeneStrand SubjectID CellMarker Tissue
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>             <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> 
+#&gt; <span style='color: #BCBCBC;'>1</span> 1               8<span style='text-decoration: underline;'>464</span>757 -      RERE     -          PT001     MNC        BM    
+#&gt; <span style='color: #BCBCBC;'>2</span> 1               8<span style='text-decoration: underline;'>464</span>757 -      RERE     -          PT001     MNC        BM    
+#&gt; <span style='color: #BCBCBC;'>3</span> 1               8<span style='text-decoration: underline;'>607</span>357 +      RERE     -          PT001     MNC        BM    
+#&gt; <span style='color: #BCBCBC;'>4</span> 1               8<span style='text-decoration: underline;'>607</span>357 +      RERE     -          PT001     MNC        BM    
+#&gt; <span style='color: #BCBCBC;'>5</span> 1               8<span style='text-decoration: underline;'>607</span>362 -      RERE     -          PT001     MNC        BM    
+#&gt; <span style='color: #BCBCBC;'>6</span> 1               8<span style='text-decoration: underline;'>850</span>362 +      RERE     -          PT002     MNC        BM    
+#&gt; <span style='color: #949494;'># … with 3 more variables: TimePoint &lt;chr&gt;, seqCount_sum &lt;dbl&gt;,</span>
+#&gt; <span style='color: #949494;'>#   fragmentEstimate_sum &lt;dbl&gt;</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

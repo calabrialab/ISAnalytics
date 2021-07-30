@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.2</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.3</span>
       </span>
     </div>
 
@@ -111,7 +111,7 @@
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+      <a href="../articles/report_system.html">ISAnalytics report system</a>
     </li>
   </ul>
 </li>
@@ -190,15 +190,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_interactive()</a></code> </p>
+          <p><code><a href="import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices()</a></code> </p>
         </td>
-        <td><p>Import integration matrices based on the association file.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto()</a></code> </p>
-        </td>
-        <td><p>Import integration matrices based on the association file.</p></td>
+        <td><p>Import integration matrices from paths in the association file.</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -242,7 +236,7 @@
         <td>
           <p><code><a href="remove_collisions.html">remove_collisions()</a></code> </p>
         </td>
-        <td><p>Identifies and removes collisions based on the sequence count matrix.</p></td>
+        <td><p>Identifies and removes collisions.</p></td>
       </tr><tr>
         
         <td>
@@ -427,6 +421,12 @@ the metadata data frame accordingly.</p></td>
           <p><code><a href="sharing_heatmap.html">sharing_heatmap()</a></code> </p>
         </td>
         <td><p>Plot IS sharing heatmaps.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="circos_genomic_density.html">circos_genomic_density()</a></code> </p>
+        </td>
+        <td><p>Trace a circos plot of genomic densities.</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -575,11 +575,24 @@ outliers tests that can be called in the function outlier_filter.</p></td>
           <p><code><a href="default_meta_agg.html">default_meta_agg()</a></code> </p>
         </td>
         <td><p>Default metadata aggregation function table</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="default_report_path.html">default_report_path()</a></code> </p>
+        </td>
+        <td><p>Default folder for saving ISAnalytics reports. Supplied as default
+argument for several functions.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="refGene_table_cols.html">refGene_table_cols()</a></code> </p>
+        </td>
+        <td><p>Required columns for refGene file.</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-package-overview" class="hasAnchor"><a href="#section-package-overview" class="anchor"></a>Package overview</h2>
+          <h2 id="section-deprecated" class="hasAnchor"><a href="#section-deprecated" class="anchor"></a>Deprecated</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -591,11 +604,53 @@ outliers tests that can be called in the function outlier_filter.</p></td>
       <tr>
         
         <td>
-          <p><code><a href="ISAnalytics.html">ISAnalytics</a></code> </p>
+          <p><code><a href="import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_interactive()</a></code> </p>
         </td>
-        <td><p>ISAnalytics: Analyze gene therapy vector insertion sites data
-identified from genomics next generation sequencing reads for
-clonal tracking studies</p></td>
+        <td><p>Import integration matrices from association file.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto()</a></code> </p>
+        </td>
+        <td><p>Import integration matrices from association file.</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-data" class="hasAnchor"><a href="#section-data" class="anchor"></a>Data</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="association_file.html">association_file</a></code> </p>
+        </td>
+        <td><p>Example of association file.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="integration_matrices.html">integration_matrices</a></code> </p>
+        </td>
+        <td><p>Example of imported multi-quantification integration matrices.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="proto_oncogenes.html">proto_oncogenes</a></code> <code><a href="proto_oncogenes.html">tumor_suppressors</a></code> </p>
+        </td>
+        <td><p>Data frames for proto-oncogenes (human and mouse)
+amd tumor-suppressor genes from UniProt.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="refGenes_hg19.html">refGenes_hg19</a></code> <code><a href="refGenes_hg19.html">refGenes_mm9</a></code> <code><a href="refGenes_hg19.html">refGenes_mm10</a></code> </p>
+        </td>
+        <td><p>Gene annotation files for hg19, mm9 and mm10.</p></td>
       </tr>
     </tbody>
     </table>

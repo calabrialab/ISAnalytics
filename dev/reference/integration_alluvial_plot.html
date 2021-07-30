@@ -85,7 +85,7 @@ ggalluvial." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.2</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.3</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@ ggalluvial." />
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+      <a href="../articles/report_system.html">ISAnalytics report system</a>
     </li>
   </ul>
 </li>
@@ -240,10 +240,10 @@ input for this function is the data frame obtained via the
 function to highlight only relevant information on the plot and reduce
 computation time. The default value is 1, that acts on the default column
 plotted on the y axis which holds a percentage value. This translates
-in natural language roughly as "highlight with colours only those
+in natural language roughly as "highlight with colors only those
 integrations (alluvia) that at least in 1 point in time have an
-abundance value &gt;= 1 %". The remaining integrations will be plotted in
-grey in the strata.</p>
+abundance value &gt;= 1 %". The remaining integrations will be plotted
+as transparent in the strata.</p>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -252,33 +252,27 @@ grey in the strata.</p>
 <code><a href='HSC_population_plot.html'>HSC_population_plot</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='st'>"ISAnalytics.widgets"</span> <span class='op'>=</span> <span class='cn'>FALSE</span>, <span class='st'>"ISAnalytics.verbose"</span> <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>path_AF</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
-    package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
-<span class='op'>)</span>
-<span class='va'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
-<span class='va'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_correct</span>, <span class='st'>"fs"</span><span class='op'>)</span>
-<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>path_AF</span>, <span class='va'>root_correct</span>,
-    dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>
-<span class='op'>)</span>
-<span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></span><span class='op'>(</span>
-    association_file <span class='op'>=</span> <span class='va'>association_file</span>, root <span class='op'>=</span> <span class='cn'>NULL</span>,
-    quantification_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>,
-    matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>, workers <span class='op'>=</span> <span class='fl'>2</span>, matching_opt <span class='op'>=</span> <span class='st'>"ANY"</span>
-<span class='op'>)</span>
-<span class='va'>agg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
-    x <span class='op'>=</span> <span class='va'>matrices</span>,
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"association_file"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
+<span class='va'>aggreg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
+    x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
     association_file <span class='op'>=</span> <span class='va'>association_file</span>,
-    value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>
+    value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
 <span class='op'>)</span>
-<span class='va'>abundance</span> <span class='op'>&lt;-</span> <span class='fu'><a href='compute_abundance.html'>compute_abundance</a></span><span class='op'>(</span><span class='va'>agg</span>,
-    columns <span class='op'>=</span> <span class='st'>"fragmentEstimate_sum"</span>,
-    key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span>
+<span class='va'>abund</span> <span class='op'>&lt;-</span> <span class='fu'><a href='compute_abundance.html'>compute_abundance</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>aggreg</span><span class='op'>)</span>
+<span class='va'>alluvial_plots</span> <span class='op'>&lt;-</span> <span class='fu'>integration_alluvial_plot</span><span class='op'>(</span><span class='va'>abund</span>,
+    alluvia_plot_y_threshold <span class='op'>=</span> <span class='fl'>0.5</span>
 <span class='op'>)</span>
-<span class='va'>plots</span> <span class='op'>&lt;-</span> <span class='fu'>integration_alluvial_plot</span><span class='op'>(</span><span class='va'>abundance</span>, top_abundant_tbl <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |==================                                                    |  25%  |                                                                              |===================================                                   |  50%  |                                                                              |====================================================                  |  75%  |                                                                              |======================================================================| 100%
-#&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
-</div></pre>
+#&gt; </div><div class='input'><span class='va'>ex_plot</span> <span class='op'>&lt;-</span> <span class='va'>alluvial_plots</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>$</span><span class='va'>plot</span> <span class='op'>+</span>
+    <span class='fu'>ggplot2</span><span class='fu'>::</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>
+        title <span class='op'>=</span> <span class='st'>"IS distribution over time"</span>,
+        subtitle <span class='op'>=</span> <span class='st'>"Patient 1, MNC BM"</span>,
+        y <span class='op'>=</span> <span class='st'>"Abundance (%)"</span>,
+        x <span class='op'>=</span> <span class='st'>"Time point (days after GT)"</span>
+    <span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>ex_plot</span><span class='op'>)</span>
+</div><div class='img'><img src='integration_alluvial_plot-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
