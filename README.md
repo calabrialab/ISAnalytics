@@ -137,6 +137,13 @@ options("ISAnalytics.reports" = TRUE)
 Show more
 </summary>
 
+# ISAnalytics 1.3.4 (2021-08 -03)
+
+## FIXES/MINOR UPDATES
+
+-   Fixed issue in tests that lead to broken build
+-   Slightly modified included data set for better examples
+
 # ISAnalytics 1.3.3 (2021-07-30)
 
 ## MAJOR CHANGES

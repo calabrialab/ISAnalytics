@@ -1113,6 +1113,7 @@ sharing_heatmap <- function(sharing_df,
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' data("integration_matrices", package = "ISAnalytics")
 #' data("association_file", package = "ISAnalytics")
 #' aggreg <- aggregate_values_by_key(
@@ -1127,6 +1128,7 @@ sharing_heatmap <- function(sharing_df,
 #'     track_colors = c("navyblue", "gold"),
 #'     grDevice = "default", track.height = 0.1
 #' )
+#' }
 circos_genomic_density <- function(data,
     gene_labels = NULL,
     label_col = NULL,

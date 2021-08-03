@@ -69,6 +69,7 @@ otherwise an error message is thrown.
 }
 }
 \examples{
+\donttest{
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
@@ -83,4 +84,5 @@ circos_genomic_density(by_subj,
     track_colors = c("navyblue", "gold"),
     grDevice = "default", track.height = 0.1
 )
+}
 }

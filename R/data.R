@@ -1,11 +1,11 @@
 #' Example of imported multi-quantification integration matrices.
 #'
-#' The data was obtain by random sampling and anonimization of real research
+#' The data was obtained manually by simulating real research
 #' data.
 #'
 #' @usage data("integration_matrices")
 #'
-#' @format Data frame with 1547 rows and 8 columns
+#' @format Data frame with 1689 rows and 8 columns
 #' \describe{
 #'  \item{chr}{The chromosome number (as character)}
 #'  \item{integration_locus}{Number of the base at
@@ -21,7 +21,7 @@
 
 #' Example of association file.
 #'
-#' The data was obtain by random sampling and anonimization of real research
+#' The data was obtained manually by simulating real research
 #' data.
 #'
 #' @usage data("association_file")

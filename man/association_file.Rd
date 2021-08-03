@@ -17,7 +17,7 @@ To generate an empty association file to fill see the
 \code{generate_blank_association_file()} function.
 }
 \details{
-The data was obtain by random sampling and anonimization of real research
+The data was obtained manually by simulating real research
 data.
 }
 \seealso{

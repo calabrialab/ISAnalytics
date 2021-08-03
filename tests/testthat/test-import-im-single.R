@@ -155,7 +155,8 @@ test_that(paste(func_name, "reads type NEW different params"), {
     expect_true(typeof(df$Value) %in% c("double", "integer"))
     expect_true(all(df$CompleteAmplificationID %in% c("id3", "id4")))
 
-    readr::write_tsv(sample_df %>% dplyr::select(-GeneName, -GeneStrand), tf)
+    tf2 <- withr::local_tempfile(fileext = ".tsv")
+    readr::write_tsv(sample_df %>% dplyr::select(-GeneName, -GeneStrand), tf2)
     expected_summary_msg <- .summary_ism_import_msg(
         "NEW",
         FALSE,
@@ -180,7 +181,7 @@ test_that(paste(func_name, "reads type NEW different params"), {
                     withr::with_file(
                         file = tf,
                         code = {
-                            df <- import_single_Vispa2Matrix(tf)
+                            df <- import_single_Vispa2Matrix(tf2)
                         }
                     )
                 ),
