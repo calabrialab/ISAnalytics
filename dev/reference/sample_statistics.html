@@ -106,7 +106,7 @@ sample_key = c(&quot;SubjectID&quot;, &quot;CellMarker&quot;,&quot;Tissue&quot;,
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.4</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.5</span>
       </span>
     </div>
 
@@ -139,6 +139,9 @@ sample_key = c(&quot;SubjectID&quot;, &quot;CellMarker&quot;,&quot;Tissue&quot;,
     </li>
     <li>
       <a href="../articles/report_system.html">ISAnalytics report system</a>
+    </li>
+    <li>
+      <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
 </li>
@@ -259,6 +262,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <code><a href='comparison_matrix.html'>comparison_matrix</a>()</code>,
 <code><a href='compute_abundance.html'>compute_abundance</a>()</code>,
 <code><a href='cumulative_count_union.html'>cumulative_count_union</a>()</code>,
+<code><a href='cumulative_is.html'>cumulative_is</a>()</code>,
 <code><a href='is_sharing.html'>is_sharing</a>()</code>,
 <code><a href='separate_quant_matrices.html'>separate_quant_matrices</a>()</code>,
 <code><a href='threshold_filter.html'>threshold_filter</a>()</code>,
@@ -268,9 +272,9 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"association_file"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>stats</span> <span class='op'>&lt;-</span> <span class='fu'>sample_statistics</span><span class='op'>(</span>
-    x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
-    metadata <span class='op'>=</span> <span class='va'>association_file</span>,
-    value_columns <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
+  x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
+  metadata <span class='op'>=</span> <span class='va'>association_file</span>,
+  value_columns <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
 <span class='op'>)</span>
 <span class='va'>stats</span>
 </div><div class='output co'>#&gt; $x

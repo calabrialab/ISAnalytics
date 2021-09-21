@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.4</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.5</span>
       </span>
     </div>
 
@@ -73,6 +73,9 @@
     <li>
       <a href="../articles/report_system.html">ISAnalytics report system</a>
     </li>
+    <li>
+      <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
+    </li>
   </ul>
 </li>
 <li>
@@ -103,8 +106,8 @@
 
       
 
-      </header><script src="aggregate_function_usage_files/accessible-code-block-0.0.1/empty-anchor.js"></script><script src="aggregate_function_usage_files/htmlwidgets-1.5.3/htmlwidgets.js"></script><script src="aggregate_function_usage_files/jquery-3.5.1/jquery.min.js"></script><link href="aggregate_function_usage_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="aggregate_function_usage_files/datatables-binding-0.18/datatables.js"></script><link href="aggregate_function_usage_files/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet">
+      </header><script src="aggregate_function_usage_files/accessible-code-block-0.0.1/empty-anchor.js"></script><script src="aggregate_function_usage_files/htmlwidgets-1.5.4/htmlwidgets.js"></script><link href="aggregate_function_usage_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="aggregate_function_usage_files/datatables-binding-0.19/datatables.js"></script><script src="aggregate_function_usage_files/jquery-3.6.0/jquery-3.6.0.min.js"></script><link href="aggregate_function_usage_files/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="aggregate_function_usage_files/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet">
 <script src="aggregate_function_usage_files/dt-core-1.10.20/js/jquery.dataTables.min.js"></script><link href="aggregate_function_usage_files/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet">
 <script src="aggregate_function_usage_files/crosstalk-1.1.1/js/crosstalk.min.js"></script><div class="row">
@@ -117,7 +120,7 @@
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 class="date">3 August 2021</h4>
+            <h4 class="date">21 September 2021</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/master/vignettes/aggregate_function_usage.Rmd"><code>vignettes/aggregate_function_usage.Rmd</code></a></small>
       <div class="hidden name"><code>aggregate_function_usage.Rmd</code></div>
@@ -309,8 +312,8 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>
 <span class="va">aggregated_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_metadata.html">aggregate_metadata</a></span><span class="op">(</span>association_file <span class="op">=</span> <span class="va">association_file</span><span class="op">)</span></code></pre></div>
-<div id="htmlwidget-da96a51c31360b840619" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-da96a51c31360b840619">{"x":{"filter":"none","data":[["PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT002","PT002","PT002","PT002","PT002","PT002","PT002","PT002","PT002","PT002"],["MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC"],["BM","BM","BM","BM","BM","PB","PB","PB","PB","PB","BM","BM","BM","BM","BM","PB","PB","PB","PB","PB"],["0030","0060","0090","0180","0360","0030","0060","0090","0180","0360","0030","0060","0090","0180","0360","0030","0060","0090","0180","0360"],["2016-11-03","2016-11-03","2016-11-03","2016-11-03","2017-04-21","2016-11-03","2016-11-03","2016-11-03","2016-11-03","2017-04-21","2017-04-21","2017-05-05","2017-05-05","2017-05-16","2018-03-12","2017-04-21","2017-05-05","2017-05-05","2017-05-05","2018-03-12"],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[0.26,0.42,0.35,0.27,0.18,0.23,0.3,0.26,0.24,0.19,1.01,1.24,2.05,2.3,2.52,0.77,1.07,1.09,1.43,2.07],[300.03,171.36,89.21,181.44,42,23.85,23.18,26.57,23.06,45.15,181.5,172.5,135.15,196.5,299.32,106.35,77.4,123,122.55,300.48],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,38.4125030033333,null,null,null,null,21.98818316],[900.09,514.08,267.63,544.32,42,71.55,69.54,79.71,69.18,45.15,544.5,517.5,405.45,589.5,897.96,212.7,77.4,369,367.65,901.44],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,6.455087406],[1521677,2449570,1780849,1530227,800640,883669,704913,752574,126245,1178016,1601300,1159494,1277904,1921867,11484675,1024274,342636,1039011,1689060,6866421],[1516751,2441652,1778239,1524379,800594,883614,690837,752491,126230,1170116,1587602,1148631,1263657,1907112,11463636,1013320,338616,1029322,1666545,6835764],[664754,1069341,813402,693862,396738,416301,236265,348771,76685,567207,689074,505237,556502,864521,5475842,474243,156154,452501,751447,3270406],[792834,1257733,909342,773276,370781,446810,434885,351804,45758,533620,736240,538538,578306,921301,5591711,443596,162504,479765,690886,3244363],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>SubjectID<\/th>\n      <th>CellMarker<\/th>\n      <th>Tissue<\/th>\n      <th>TimePoint<\/th>\n      <th>FusionPrimerPCRDate_min<\/th>\n      <th>LinearPCRDate_min<\/th>\n      <th>VCN_avg<\/th>\n      <th>ng DNA corrected_avg<\/th>\n      <th>Kapa_avg<\/th>\n      <th>ng DNA corrected_sum<\/th>\n      <th>ulForPool_sum<\/th>\n      <th>BARCODE_MUX_sum<\/th>\n      <th>TRIMMING_FINAL_LTRLC_sum<\/th>\n      <th>LV_MAPPED_sum<\/th>\n      <th>BWA_MAPPED_OVERALL_sum<\/th>\n      <th>ISS_MAPPED_PP_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[6,7,8,9,10,11,12,13,14,15]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-505ff3967f64e6c26335" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-505ff3967f64e6c26335">{"x":{"filter":"none","vertical":false,"data":[["PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT001","PT002","PT002","PT002","PT002","PT002","PT002","PT002","PT002","PT002","PT002"],["MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC","MNC"],["BM","BM","BM","BM","BM","PB","PB","PB","PB","PB","BM","BM","BM","BM","BM","PB","PB","PB","PB","PB"],["0030","0060","0090","0180","0360","0030","0060","0090","0180","0360","0030","0060","0090","0180","0360","0030","0060","0090","0180","0360"],["2016-11-03","2016-11-03","2016-11-03","2016-11-03","2017-04-21","2016-11-03","2016-11-03","2016-11-03","2016-11-03","2017-04-21","2017-04-21","2017-05-05","2017-05-05","2017-05-16","2018-03-12","2017-04-21","2017-05-05","2017-05-05","2017-05-05","2018-03-12"],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[0.26,0.42,0.35,0.27,0.18,0.23,0.3,0.26,0.24,0.19,1.01,1.24,2.05,2.3,2.52,0.77,1.07,1.09,1.43,2.07],[300.03,171.36,89.21,181.44,42,23.85,23.18,26.57,23.06,45.15,181.5,172.5,135.15,196.5,299.32,106.35,77.4,123,122.55,300.48],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,38.4125030033333,null,null,null,null,21.98818316],[900.09,514.08,267.63,544.32,42,71.55,69.54,79.71,69.18,45.15,544.5,517.5,405.45,589.5,897.96,212.7,77.4,369,367.65,901.44],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,6.455087406],[1521677,2449570,1780849,1530227,800640,883669,704913,752574,126245,1178016,1601300,1159494,1277904,1921867,11484675,1024274,342636,1039011,1689060,6866421],[1516751,2441652,1778239,1524379,800594,883614,690837,752491,126230,1170116,1587602,1148631,1263657,1907112,11463636,1013320,338616,1029322,1666545,6835764],[664754,1069341,813402,693862,396738,416301,236265,348771,76685,567207,689074,505237,556502,864521,5475842,474243,156154,452501,751447,3270406],[792834,1257733,909342,773276,370781,446810,434885,351804,45758,533620,736240,538538,578306,921301,5591711,443596,162504,479765,690886,3244363],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>SubjectID<\/th>\n      <th>CellMarker<\/th>\n      <th>Tissue<\/th>\n      <th>TimePoint<\/th>\n      <th>FusionPrimerPCRDate_min<\/th>\n      <th>LinearPCRDate_min<\/th>\n      <th>VCN_avg<\/th>\n      <th>ng DNA corrected_avg<\/th>\n      <th>Kapa_avg<\/th>\n      <th>ng DNA corrected_sum<\/th>\n      <th>ulForPool_sum<\/th>\n      <th>BARCODE_MUX_sum<\/th>\n      <th>TRIMMING_FINAL_LTRLC_sum<\/th>\n      <th>LV_MAPPED_sum<\/th>\n      <th>BWA_MAPPED_OVERALL_sum<\/th>\n      <th>ISS_MAPPED_PP_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[6,7,8,9,10,11,12,13,14,15]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div id="aggregation-of-values-by-key" class="section level1">
@@ -334,8 +337,8 @@
   association_file <span class="op">=</span> <span class="va">association_file</span>,
   value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<div id="htmlwidget-c950911a33545e3b8e94" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-c950911a33545e3b8e94">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8464757,8607357,8607357,8607357,8607362],["-","-","+","+","+","-"],["RERE","RERE","RERE","RERE","RERE","RERE"],["-","-","-","-","-","-"],["PT001","PT001","PT001","PT001","PT001","PT001"],["MNC","MNC","MNC","MNC","MNC","MNC"],["BM","BM","BM","BM","BM","BM"],["0030","0060","0060","0180","0360","0180"],[542,1,1,1096,330,1702],[3.01147735081,1.00125374215,1.00133972344,5.01068940778,34.1015997274032,4.01318899904]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>CellMarker<\/th>\n      <th>Tissue<\/th>\n      <th>TimePoint<\/th>\n      <th>seqCount_sum<\/th>\n      <th>fragmentEstimate_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,9,10]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>The function <code>aggregate_values_by_key</code> can perform the aggregation both on the list of matrices and a single matrix.</p>
+<div id="htmlwidget-c30652fe8374c1bc5a5d" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c30652fe8374c1bc5a5d">{"x":{"filter":"none","vertical":false,"data":[["1","1","1","1","1","1"],[8464757,8464757,8607357,8607357,8607357,8607362],["-","-","+","+","+","-"],["RERE","RERE","RERE","RERE","RERE","RERE"],["-","-","-","-","-","-"],["PT001","PT001","PT001","PT001","PT001","PT001"],["MNC","MNC","MNC","MNC","MNC","MNC"],["BM","BM","BM","BM","BM","BM"],["0030","0060","0060","0180","0360","0180"],[542,1,1,1096,330,1702],[3.01147735081,1.00125374215,1.00133972344,5.01068940778,34.1015997274032,4.01318899904]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>CellMarker<\/th>\n      <th>Tissue<\/th>\n      <th>TimePoint<\/th>\n      <th>seqCount_sum<\/th>\n      <th>fragmentEstimate_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,9,10]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>The function <code>aggregate_values_by_key</code> can perform the aggregation both on the list of matrices and a single matrix.</p>
 <div id="changing-parameters-to-obtain-different-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#changing-parameters-to-obtain-different-results" class="anchor"></a>Changing parameters to obtain different results</h3>
@@ -352,8 +355,8 @@ You can change the value of the parameter key as you see fit. This parameter sho
     key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"ProjectID"</span><span class="op">)</span>,
     value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<div id="htmlwidget-81ed77c18c142cc5d7b4" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-81ed77c18c142cc5d7b4">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],["PJ01","PJ01","PJ01","PJ01","PJ01","PJ01"],[543,1427,1702,562,1607,1843],[4.01273109296,40.1136288586232,4.01318899904,3.00966651434,10.02806615653,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>ProjectID<\/th>\n      <th>seqCount_sum<\/th>\n      <th>fragmentEstimate_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,7,8]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><ol start="2" style="list-style-type: decimal">
+<div id="htmlwidget-ad2bad1a6d0704287ddc" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ad2bad1a6d0704287ddc">{"x":{"filter":"none","vertical":false,"data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],["PJ01","PJ01","PJ01","PJ01","PJ01","PJ01"],[543,1427,1702,562,1607,1843],[4.01273109296,40.1136288586232,4.01318899904,3.00966651434,10.02806615653,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>ProjectID<\/th>\n      <th>seqCount_sum<\/th>\n      <th>fragmentEstimate_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,7,8]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><ol start="2" style="list-style-type: decimal">
 <li>
 <strong>Changing the <code>lambda</code> value</strong><br>
 The <code>lambda</code> parameter indicates the function(s) to be applied to the values for aggregation. <code>lambda</code> must be a named list of either functions or purrr-style lambdas: if you would like to specify additional parameters to the function the second option is recommended. The only important note on functions is that they should perform some kind of aggregation on numeric values: this means in practical terms they need to accept a vector of numeric/integer values as input and produce a SINGLE value as output. Valid options for this purpose might be: <code>sum</code>, <code>mean</code>, <code>median</code>, <code>min</code>, <code>max</code> and so on.</li>
@@ -366,8 +369,8 @@ The <code>lambda</code> parameter indicates the function(s) to be applied to the
     lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">.x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,
     value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<div id="htmlwidget-1dc73ba1c7038b7167e3" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1dc73ba1c7038b7167e3">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],[271.5,285.4,851,562,321.4,1843],[2.00636554648,8.02272577172465,2.00659449952,3.00966651434,2.005613231306,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_mean<\/th>\n      <th>fragmentEstimate_mean<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,6,7]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Note that, when specifying purrr-style lambdas (formulas), the first parameter needs to be set to <code>.x</code>, other parameters can be set as usual.</p>
+<div id="htmlwidget-b56756beaff352b2b24d" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b56756beaff352b2b24d">{"x":{"filter":"none","vertical":false,"data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],[271.5,285.4,851,562,321.4,1843],[2.00636554648,8.02272577172465,2.00659449952,3.00966651434,2.005613231306,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_mean<\/th>\n      <th>fragmentEstimate_mean<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,6,7]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Note that, when specifying purrr-style lambdas (formulas), the first parameter needs to be set to <code>.x</code>, other parameters can be set as usual.</p>
 <p>You can also use in <code>lambda</code> functions that produce data frames or lists. In this case all variables from the produced data frame will be included in the final data frame. For example:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">agg3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span>
@@ -377,8 +380,8 @@ The <code>lambda</code> parameter indicates the function(s) to be applied to the
     lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>describe <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu">psych</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/describe.html">describe</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,
     value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<div id="htmlwidget-90821d8fad23606b20b1" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-90821d8fad23606b20b1">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],[{"vars":[1],"n":[2],"mean":[271.5],"sd":[382.544768621922],"median":[271.5],"trimmed":[271.5],"mad":[401.0433],"min":[1],"max":[542],"range":[541],"skew":[0],"kurtosis":[-2.75],"se":[270.5]},{"vars":[1],"n":[5],"mean":[285.4],"sd":[446.517972762575],"median":[41],"trimmed":[285.4],"mad":[59.304],"min":[1],"max":[1046],"range":[1045],"skew":[0.856800373228547],"kurtosis":[-1.23591494808505],"se":[199.688908054504]},{"vars":[1],"n":[2],"mean":[851],"sd":[940.452018978108],"median":[851],"trimmed":[851],"mad":[985.929],"min":[186],"max":[1516],"range":[1330],"skew":[0],"kurtosis":[-2.75],"se":[665]},{"vars":[1],"n":[1],"mean":[562],"sd":[null],"median":[562],"trimmed":[562],"mad":[0],"min":[562],"max":[562],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]},{"vars":[1],"n":[5],"mean":[321.4],"sd":[349.678137720962],"median":[299],"trimmed":[321.4],"mad":[441.8148],"min":[1],"max":[831],"range":[830],"skew":[0.328226886350142],"kurtosis":[-1.80847144754097],"se":[156.380817237921]},{"vars":[1],"n":[1],"mean":[1843],"sd":[null],"median":[1843],"trimmed":[1843],"mad":[0],"min":[1843],"max":[1843],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]}],[{"vars":[1],"n":[2],"mean":[2.00636554648],"sd":[1.42144274538478],"median":[2.00636554648],"trimmed":[2.00636554648],"mad":[1.49017876109966],"min":[1.00125374215],"max":[3.01147735081],"range":[2.01022360866],"skew":[-1.1596938940058e-16],"kurtosis":[-2.75],"se":[1.00511180433]},{"vars":[1],"n":[5],"mean":[8.02272577172465],"sd":[14.6044748490814],"median":[1.00133972344],"trimmed":[8.02272577172465],"mad":[0.00153858207161425],"min":[1.00030196405],"max":[34.1015997274032],"range":[33.1012977633532],"skew":[1.06399594324517],"kurtosis":[-0.931669045939915],"se":[6.53131970764638]},{"vars":[1],"n":[2],"mean":[2.00659449952],"sd":[1.42259266486177],"median":[2.00659449952],"trimmed":[2.00659449952],"mad":[1.49138428667369],"min":[1.00066957933],"max":[3.01251941971],"range":[2.01184984038],"skew":[1.15688393236649e-16],"kurtosis":[-2.75],"se":[1.00592492019]},{"vars":[1],"n":[1],"mean":[3.00966651434],"sd":[null],"median":[3.00966651434],"trimmed":[3.00966651434],"mad":[0],"min":[3.00966651434],"max":[3.00966651434],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]},{"vars":[1],"n":[5],"mean":[2.005613231306],"sd":[1.23171758063696],"median":[2.00451029935],"trimmed":[2.005613231306],"mad":[1.48863814939312],"min":[1.00036332451],"max":[4.01747955025],"range":[3.01711622574],"skew":[0.654132738099798],"kurtosis":[-1.39898156544987],"se":[0.550840847877162]},{"vars":[1],"n":[1],"mean":[8.05080491757],"sd":[null],"median":[8.05080491757],"trimmed":[8.05080491757],"mad":[0],"min":[8.05080491757],"max":[8.05080491757],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]}]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_describe<\/th>\n      <th>fragmentEstimate_describe<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><ol start="3" style="list-style-type: decimal">
+<div id="htmlwidget-6431d7e46d831eb855c5" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6431d7e46d831eb855c5">{"x":{"filter":"none","vertical":false,"data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],[{"vars":[1],"n":[2],"mean":[271.5],"sd":[382.544768621922],"median":[271.5],"trimmed":[271.5],"mad":[401.0433],"min":[1],"max":[542],"range":[541],"skew":[0],"kurtosis":[-2.75],"se":[270.5]},{"vars":[1],"n":[5],"mean":[285.4],"sd":[446.517972762575],"median":[41],"trimmed":[285.4],"mad":[59.304],"min":[1],"max":[1046],"range":[1045],"skew":[0.856800373228547],"kurtosis":[-1.23591494808505],"se":[199.688908054504]},{"vars":[1],"n":[2],"mean":[851],"sd":[940.452018978108],"median":[851],"trimmed":[851],"mad":[985.929],"min":[186],"max":[1516],"range":[1330],"skew":[0],"kurtosis":[-2.75],"se":[665]},{"vars":[1],"n":[1],"mean":[562],"sd":[null],"median":[562],"trimmed":[562],"mad":[0],"min":[562],"max":[562],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]},{"vars":[1],"n":[5],"mean":[321.4],"sd":[349.678137720962],"median":[299],"trimmed":[321.4],"mad":[441.8148],"min":[1],"max":[831],"range":[830],"skew":[0.328226886350142],"kurtosis":[-1.80847144754097],"se":[156.380817237921]},{"vars":[1],"n":[1],"mean":[1843],"sd":[null],"median":[1843],"trimmed":[1843],"mad":[0],"min":[1843],"max":[1843],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]}],[{"vars":[1],"n":[2],"mean":[2.00636554648],"sd":[1.42144274538478],"median":[2.00636554648],"trimmed":[2.00636554648],"mad":[1.49017876109966],"min":[1.00125374215],"max":[3.01147735081],"range":[2.01022360866],"skew":[-1.1596938940058e-16],"kurtosis":[-2.75],"se":[1.00511180433]},{"vars":[1],"n":[5],"mean":[8.02272577172465],"sd":[14.6044748490814],"median":[1.00133972344],"trimmed":[8.02272577172465],"mad":[0.00153858207161425],"min":[1.00030196405],"max":[34.1015997274032],"range":[33.1012977633532],"skew":[1.06399594324517],"kurtosis":[-0.931669045939915],"se":[6.53131970764638]},{"vars":[1],"n":[2],"mean":[2.00659449952],"sd":[1.42259266486177],"median":[2.00659449952],"trimmed":[2.00659449952],"mad":[1.49138428667369],"min":[1.00066957933],"max":[3.01251941971],"range":[2.01184984038],"skew":[1.15688393236649e-16],"kurtosis":[-2.75],"se":[1.00592492019]},{"vars":[1],"n":[1],"mean":[3.00966651434],"sd":[null],"median":[3.00966651434],"trimmed":[3.00966651434],"mad":[0],"min":[3.00966651434],"max":[3.00966651434],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]},{"vars":[1],"n":[5],"mean":[2.005613231306],"sd":[1.23171758063696],"median":[2.00451029935],"trimmed":[2.005613231306],"mad":[1.48863814939312],"min":[1.00036332451],"max":[4.01747955025],"range":[3.01711622574],"skew":[0.654132738099798],"kurtosis":[-1.39898156544987],"se":[0.550840847877162]},{"vars":[1],"n":[1],"mean":[8.05080491757],"sd":[null],"median":[8.05080491757],"trimmed":[8.05080491757],"mad":[0],"min":[8.05080491757],"max":[8.05080491757],"range":[0],"skew":[null],"kurtosis":[null],"se":[null]}]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_describe<\/th>\n      <th>fragmentEstimate_describe<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><ol start="3" style="list-style-type: decimal">
 <li>
 <strong>Changing the <code>value_cols</code> value</strong><br>
 The <code>value_cols</code> parameter tells the function on which numeric columns of x the functions should be applied. Note that every function contained in <code>lambda</code> will be applied to every column in <code>value_cols</code>: resulting columns will be named as “original name_function applied”.</li>
@@ -391,8 +394,8 @@ The <code>value_cols</code> parameter tells the function on which numeric column
     lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>sum <span class="op">=</span> <span class="va">sum</span>, mean <span class="op">=</span> <span class="va">mean</span><span class="op">)</span>,
     value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<div id="htmlwidget-7ac6b1160851bda7171d" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7ac6b1160851bda7171d">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],[543,1427,1702,562,1607,1843],[271.5,285.4,851,562,321.4,1843],[4.01273109296,40.1136288586232,4.01318899904,3.00966651434,10.02806615653,8.05080491757],[2.00636554648,8.02272577172465,2.00659449952,3.00966651434,2.005613231306,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_sum<\/th>\n      <th>seqCount_mean<\/th>\n      <th>fragmentEstimate_sum<\/th>\n      <th>fragmentEstimate_mean<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,6,7,8,9]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><ol start="4" style="list-style-type: decimal">
+<div id="htmlwidget-c59ba1b3bc8317976936" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c59ba1b3bc8317976936">{"x":{"filter":"none","vertical":false,"data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["RERE","RERE","RERE","RERE","UBIAD1","VPS13D"],["-","-","-","-","+","+"],["PT001","PT001","PT001","PT002","PT001","PT002"],[543,1427,1702,562,1607,1843],[271.5,285.4,851,562,321.4,1843],[4.01273109296,40.1136288586232,4.01318899904,3.00966651434,10.02806615653,8.05080491757],[2.00636554648,8.02272577172465,2.00659449952,3.00966651434,2.005613231306,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_sum<\/th>\n      <th>seqCount_mean<\/th>\n      <th>fragmentEstimate_sum<\/th>\n      <th>fragmentEstimate_mean<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,6,7,8,9]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><ol start="4" style="list-style-type: decimal">
 <li>
 <strong>Changing the <code>group</code> value</strong><br>
 The <code>group</code> parameter should contain all other variables to include in the grouping besides <code>key</code>. By default this contains <code><a href="https://rdrr.io/r/base/c.html">c("chr", "integration_locus","strand", "GeneName", "GeneStrand")</a></code>. You can change this grouping as you see fit, if you don’t want to add any other variable to the key, just set it to <code>NULL</code>.</li>
@@ -406,8 +409,8 @@ The <code>group</code> parameter should contain all other variables to include i
     group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/mandatory_IS_vars.html">mandatory_IS_vars</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,
     value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<div id="htmlwidget-f6ac8aaac4141038808d" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-f6ac8aaac4141038808d">{"x":{"filter":"none","data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["PT001","PT001","PT001","PT002","PT001","PT002"],[543,1427,1702,562,1607,1843],[271.5,285.4,851,562,321.4,1843],[4.01273109296,40.1136288586232,4.01318899904,3.00966651434,10.02806615653,8.05080491757],[2.00636554648,8.02272577172465,2.00659449952,3.00966651434,2.005613231306,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_sum<\/th>\n      <th>seqCount_mean<\/th>\n      <th>fragmentEstimate_sum<\/th>\n      <th>fragmentEstimate_mean<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,4,5,6,7]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b3a9fc8d27dbc54cba0a" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b3a9fc8d27dbc54cba0a">{"x":{"filter":"none","vertical":false,"data":[["1","1","1","1","1","1"],[8464757,8607357,8607362,8850362,11339120,12341466],["-","+","-","+","+","-"],["PT001","PT001","PT001","PT002","PT001","PT002"],[543,1427,1702,562,1607,1843],[271.5,285.4,851,562,321.4,1843],[4.01273109296,40.1136288586232,4.01318899904,3.00966651434,10.02806615653,8.05080491757],[2.00636554648,8.02272577172465,2.00659449952,3.00966651434,2.005613231306,8.05080491757]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>SubjectID<\/th>\n      <th>seqCount_sum<\/th>\n      <th>seqCount_mean<\/th>\n      <th>fragmentEstimate_sum<\/th>\n      <th>fragmentEstimate_mean<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,4,5,6,7]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </div>
@@ -417,7 +420,7 @@ The <code>group</code> parameter should contain all other variables to include i
 <p><code>R</code> session information.</p>
 <pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  setting  value                       
-#&gt;  version  R version 4.1.0 (2021-05-18)
+#&gt;  version  R version 4.1.1 (2021-08-10)
 #&gt;  os       macOS Catalina 10.15.7      
 #&gt;  system   x86_64, darwin17.0          
 #&gt;  ui       X11                         
@@ -425,16 +428,16 @@ The <code>group</code> parameter should contain all other variables to include i
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       UTC                         
-#&gt;  date     2021-08-03                  
+#&gt;  date     2021-09-21                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  package      * version date       lib source        
 #&gt;  BiocManager    1.30.16 2021-06-15 [1] CRAN (R 4.1.0)
-#&gt;  BiocParallel   1.26.1  2021-07-04 [1] Bioconductor  
+#&gt;  BiocParallel   1.26.2  2021-08-22 [1] Bioconductor  
 #&gt;  BiocStyle    * 2.20.2  2021-06-17 [1] Bioconductor  
-#&gt;  bookdown       0.22    2021-04-22 [1] CRAN (R 4.1.0)
-#&gt;  bslib          0.2.5.1 2021-05-18 [1] CRAN (R 4.1.0)
-#&gt;  cachem         1.0.5   2021-05-15 [1] CRAN (R 4.1.0)
+#&gt;  bookdown       0.24    2021-09-02 [1] CRAN (R 4.1.0)
+#&gt;  bslib          0.3.0   2021-09-02 [1] CRAN (R 4.1.0)
+#&gt;  cachem         1.0.6   2021-08-19 [1] CRAN (R 4.1.0)
 #&gt;  cli            3.0.1   2021-07-17 [1] CRAN (R 4.1.0)
 #&gt;  colorspace     2.0-2   2021-06-24 [1] CRAN (R 4.1.0)
 #&gt;  crayon         1.4.1   2021-02-08 [1] CRAN (R 4.1.0)
@@ -443,7 +446,7 @@ The <code>group</code> parameter should contain all other variables to include i
 #&gt;  desc           1.3.0   2021-03-05 [1] CRAN (R 4.1.0)
 #&gt;  digest         0.6.27  2020-10-24 [1] CRAN (R 4.1.0)
 #&gt;  dplyr          1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
-#&gt;  DT             0.18    2021-04-14 [1] CRAN (R 4.1.0)
+#&gt;  DT             0.19    2021-09-02 [1] CRAN (R 4.1.0)
 #&gt;  ellipsis       0.3.2   2021-04-29 [1] CRAN (R 4.1.0)
 #&gt;  evaluate       0.14    2019-05-28 [1] CRAN (R 4.1.0)
 #&gt;  fansi          0.5.0   2021-05-25 [1] CRAN (R 4.1.0)
@@ -456,44 +459,44 @@ The <code>group</code> parameter should contain all other variables to include i
 #&gt;  gtable         0.3.0   2019-03-25 [1] CRAN (R 4.1.0)
 #&gt;  highr          0.9     2021-04-16 [1] CRAN (R 4.1.0)
 #&gt;  hms            1.1.0   2021-05-17 [1] CRAN (R 4.1.0)
-#&gt;  htmltools      0.5.1.1 2021-01-22 [1] CRAN (R 4.1.0)
-#&gt;  htmlwidgets    1.5.3   2020-12-10 [1] CRAN (R 4.1.0)
+#&gt;  htmltools      0.5.2   2021-08-25 [1] CRAN (R 4.1.0)
+#&gt;  htmlwidgets    1.5.4   2021-09-08 [1] CRAN (R 4.1.0)
 #&gt;  httr           1.4.2   2020-07-20 [1] CRAN (R 4.1.0)
-#&gt;  ISAnalytics  * 1.3.4   2021-08-03 [1] Bioconductor  
+#&gt;  ISAnalytics  * 1.3.5   2021-09-21 [1] Bioconductor  
 #&gt;  jquerylib      0.1.4   2021-04-26 [1] CRAN (R 4.1.0)
 #&gt;  jsonlite       1.7.2   2020-12-09 [1] CRAN (R 4.1.0)
-#&gt;  knitr          1.33    2021-04-24 [1] CRAN (R 4.1.0)
-#&gt;  lattice        0.20-44 2021-05-02 [2] CRAN (R 4.1.0)
+#&gt;  knitr          1.34    2021-09-09 [1] CRAN (R 4.1.0)
+#&gt;  lattice        0.20-44 2021-05-02 [2] CRAN (R 4.1.1)
 #&gt;  lifecycle      1.0.0   2021-02-15 [1] CRAN (R 4.1.0)
 #&gt;  lubridate      1.7.10  2021-02-26 [1] CRAN (R 4.1.0)
 #&gt;  magrittr     * 2.0.1   2020-11-17 [1] CRAN (R 4.1.0)
 #&gt;  memoise        2.0.0   2021-01-26 [1] CRAN (R 4.1.0)
 #&gt;  mnormt         2.0.2   2020-09-01 [1] CRAN (R 4.1.0)
 #&gt;  munsell        0.5.0   2018-06-12 [1] CRAN (R 4.1.0)
-#&gt;  nlme           3.1-152 2021-02-04 [2] CRAN (R 4.1.0)
+#&gt;  nlme           3.1-152 2021-02-04 [2] CRAN (R 4.1.1)
 #&gt;  pillar         1.6.2   2021-07-29 [1] CRAN (R 4.1.0)
 #&gt;  pkgconfig      2.0.3   2019-09-22 [1] CRAN (R 4.1.0)
 #&gt;  pkgdown        1.6.1   2020-09-12 [1] CRAN (R 4.1.0)
 #&gt;  plyr           1.8.6   2020-03-03 [1] CRAN (R 4.1.0)
 #&gt;  psych          2.1.6   2021-06-18 [1] CRAN (R 4.1.0)
 #&gt;  purrr          0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#&gt;  R6             2.5.0   2020-10-28 [1] CRAN (R 4.1.0)
+#&gt;  R6             2.5.1   2021-08-19 [1] CRAN (R 4.1.0)
 #&gt;  ragg           1.1.3   2021-06-09 [1] CRAN (R 4.1.0)
 #&gt;  Rcapture       1.4-3   2019-12-16 [1] CRAN (R 4.1.0)
 #&gt;  Rcpp           1.0.7   2021-07-07 [1] CRAN (R 4.1.0)
-#&gt;  readr          2.0.0   2021-07-20 [1] CRAN (R 4.1.0)
+#&gt;  readr          2.0.1   2021-08-10 [1] CRAN (R 4.1.0)
 #&gt;  RefManageR   * 1.3.0   2020-11-13 [1] CRAN (R 4.1.0)
 #&gt;  rlang          0.4.11  2021-04-30 [1] CRAN (R 4.1.0)
-#&gt;  rmarkdown      2.9     2021-06-15 [1] CRAN (R 4.1.0)
+#&gt;  rmarkdown      2.11    2021-09-14 [1] CRAN (R 4.1.0)
 #&gt;  rprojroot      2.0.2   2020-11-15 [1] CRAN (R 4.1.0)
 #&gt;  sass           0.4.0   2021-05-12 [1] CRAN (R 4.1.0)
 #&gt;  scales         1.1.1   2020-05-11 [1] CRAN (R 4.1.0)
 #&gt;  sessioninfo  * 1.1.1   2018-11-05 [1] CRAN (R 4.1.0)
-#&gt;  stringi        1.7.3   2021-07-16 [1] CRAN (R 4.1.0)
+#&gt;  stringi        1.7.4   2021-08-25 [1] CRAN (R 4.1.0)
 #&gt;  stringr        1.4.0   2019-02-10 [1] CRAN (R 4.1.0)
 #&gt;  systemfonts    1.0.2   2021-05-11 [1] CRAN (R 4.1.0)
 #&gt;  textshaping    0.3.5   2021-06-09 [1] CRAN (R 4.1.0)
-#&gt;  tibble         3.1.3   2021-07-23 [1] CRAN (R 4.1.0)
+#&gt;  tibble         3.1.4   2021-08-25 [1] CRAN (R 4.1.0)
 #&gt;  tidyr          1.1.3   2021-03-03 [1] CRAN (R 4.1.0)
 #&gt;  tidyselect     1.1.1   2021-04-30 [1] CRAN (R 4.1.0)
 #&gt;  tmvnsim        1.0-2   2016-12-15 [1] CRAN (R 4.1.0)
@@ -501,7 +504,7 @@ The <code>group</code> parameter should contain all other variables to include i
 #&gt;  utf8           1.2.2   2021-07-24 [1] CRAN (R 4.1.0)
 #&gt;  vctrs          0.3.8   2021-04-29 [1] CRAN (R 4.1.0)
 #&gt;  withr          2.4.2   2021-04-18 [1] CRAN (R 4.1.0)
-#&gt;  xfun           0.24    2021-06-15 [1] CRAN (R 4.1.0)
+#&gt;  xfun           0.26    2021-09-14 [1] CRAN (R 4.1.0)
 #&gt;  xml2           1.3.2   2020-04-23 [1] CRAN (R 4.1.0)
 #&gt;  yaml           2.2.1   2020-02-01 [1] CRAN (R 4.1.0)
 #&gt;  zip            2.2.0   2021-05-31 [1] CRAN (R 4.1.0)
@@ -515,7 +518,7 @@ The <code>group</code> parameter should contain all other variables to include i
 <p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.13/BiocStyle">BiocStyle</a></em> (Oleś, 2021) with <em><a href="https://CRAN.R-project.org/package=knitr">knitr</a></em> (Xie, 2021) and <em><a href="https://CRAN.R-project.org/package=rmarkdown">rmarkdown</a></em> (Allaire, Xie, McPherson, Luraschi, Ushey, Atkins, Wickham, Cheng, Chang, and Iannone, 2021) running behind the scenes.</p>
 <p>Citations made with <em><a href="https://CRAN.R-project.org/package=RefManageR">RefManageR</a></em> (McLean, 2017).</p>
 <p>
-<a id="bib-allaire2021rmarkdown"></a><a href="#cite-allaire2021rmarkdown">[1]</a><cite> J. Allaire, Y. Xie, J. McPherson, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.9. 2021. URL: <a href="https://github.com/rstudio/rmarkdown">https://github.com/rstudio/rmarkdown</a>.</cite>
+<a id="bib-allaire2021rmarkdown"></a><a href="#cite-allaire2021rmarkdown">[1]</a><cite> J. Allaire, Y. Xie, J. McPherson, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.11. 2021. URL: <a href="https://github.com/rstudio/rmarkdown">https://github.com/rstudio/rmarkdown</a>.</cite>
 </p>
 <p>
 <a id="bib-mclean2017refmanager"></a><a href="#cite-mclean2017refmanager">[2]</a><cite> M. W. McLean. “RefManageR: Import and Manage BibTeX and BibLaTeX References in R”. In: <em>The Journal of Open Source Software</em> (2017). DOI: <a href="https://doi.org/10.21105/joss.00338">10.21105/joss.00338</a>.</cite>
@@ -524,7 +527,7 @@ The <code>group</code> parameter should contain all other variables to include i
 <a id="bib-ole2021biocstyle"></a><a href="#cite-ole2021biocstyle">[3]</a><cite> A. Oleś. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.20.2. 2021. URL: <a href="https://github.com/Bioconductor/BiocStyle">https://github.com/Bioconductor/BiocStyle</a>.</cite>
 </p>
 <p>
-<a id="bib-xie2021knitr"></a><a href="#cite-xie2021knitr">[4]</a><cite> Y. Xie. <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.33. 2021. URL: <a href="https://yihui.org/knitr/">https://yihui.org/knitr/</a>.</cite>
+<a id="bib-xie2021knitr"></a><a href="#cite-xie2021knitr">[4]</a><cite> Y. Xie. <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.34. 2021. URL: <a href="https://yihui.org/knitr/">https://yihui.org/knitr/</a>.</cite>
 </p>
 </div>
   </div>

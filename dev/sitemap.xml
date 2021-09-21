@@ -64,6 +64,9 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/cumulative_count_union.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/cumulative_is.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/date_columns_coll.html</loc>
   </url>
   <url>
@@ -160,6 +163,9 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/sharing_heatmap.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/sharing_venn.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/threshold_filter.html</loc>
   </url>
   <url>
@@ -182,5 +188,8 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/articles/report_system.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/articles/sharing_analyses.html</loc>
   </url>
 </urlset>

@@ -82,7 +82,7 @@ Displays the IS sharing calculated via is_sharing as heatmaps." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.4</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.5</span>
       </span>
     </div>
 
@@ -115,6 +115,9 @@ Displays the IS sharing calculated via is_sharing as heatmaps." />
     </li>
     <li>
       <a href="../articles/report_system.html">ISAnalytics report system</a>
+    </li>
+    <li>
+      <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
 </li>
@@ -162,8 +165,8 @@ Displays the IS sharing calculated via <a href='is_sharing.html'>is_sharing</a> 
 
     <pre class="usage"><span class='fu'>sharing_heatmap</span><span class='op'>(</span>
   <span class='va'>sharing_df</span>,
-  show_on_x <span class='op'>=</span> <span class='st'>"group1"</span>,
-  show_on_y <span class='op'>=</span> <span class='st'>"group2"</span>,
+  show_on_x <span class='op'>=</span> <span class='st'>"g1"</span>,
+  show_on_y <span class='op'>=</span> <span class='st'>"g2"</span>,
   absolute_sharing_col <span class='op'>=</span> <span class='st'>"shared"</span>,
   title_annot <span class='op'>=</span> <span class='cn'>NULL</span>,
   plot_relative_sharing <span class='op'>=</span> <span class='cn'>TRUE</span>,
@@ -225,18 +228,28 @@ functionality. Returns the heatmaps as interactive HTML widgets.</p></td>
     <p>A list of plots or widgets</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><a href='is_sharing.html'>is_sharing</a></p></div>
+    <div class='dont-index'><p><a href='is_sharing.html'>is_sharing</a></p>
+<p>Other Plotting functions: 
+<code><a href='CIS_volcano_plot.html'>CIS_volcano_plot</a>()</code>,
+<code><a href='HSC_population_plot.html'>HSC_population_plot</a>()</code>,
+<code><a href='circos_genomic_density.html'>circos_genomic_density</a>()</code>,
+<code><a href='integration_alluvial_plot.html'>integration_alluvial_plot</a>()</code>,
+<code><a href='sharing_venn.html'>sharing_venn</a>()</code>,
+<code><a href='top_abund_tableGrob.html'>top_abund_tableGrob</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"association_file"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>aggreg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
-    x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
-    association_file <span class='op'>=</span> <span class='va'>association_file</span>,
-    value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
+  x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
+  association_file <span class='op'>=</span> <span class='va'>association_file</span>,
+  value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
 <span class='op'>)</span>
-<span class='va'>sharing</span> <span class='op'>&lt;-</span> <span class='fu'><a href='is_sharing.html'>is_sharing</a></span><span class='op'>(</span><span class='va'>aggreg</span><span class='op'>)</span>
-<span class='va'>sharing_heatmaps</span> <span class='op'>&lt;-</span> <span class='fu'>sharing_heatmap</span><span class='op'>(</span>sharing_df <span class='op'>=</span> <span class='va'>sharing</span><span class='op'>$</span><span class='va'>sharing</span><span class='op'>)</span>
+<span class='va'>sharing</span> <span class='op'>&lt;-</span> <span class='fu'><a href='is_sharing.html'>is_sharing</a></span><span class='op'>(</span><span class='va'>aggreg</span>,
+  minimal <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  include_self_comp <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Calculating combinations...</span></div><div class='output co'>#&gt; <span class='message'>Calculating self groups (requested)...</span></div><div class='output co'>#&gt; <span class='message'>Calculating permutations (requested)...</span></div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='input'><span class='va'>sharing_heatmaps</span> <span class='op'>&lt;-</span> <span class='fu'>sharing_heatmap</span><span class='op'>(</span>sharing_df <span class='op'>=</span> <span class='va'>sharing</span><span class='op'>)</span>
 <span class='va'>sharing_heatmaps</span><span class='op'>$</span><span class='va'>absolute</span>
 </div><div class='img'><img src='sharing_heatmap-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='va'>sharing_heatmaps</span><span class='op'>$</span><span class='va'>on_g1</span>
 </div><div class='img'><img src='sharing_heatmap-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='va'>sharing_heatmaps</span><span class='op'>$</span><span class='va'>on_union</span>

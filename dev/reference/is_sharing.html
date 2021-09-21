@@ -49,11 +49,8 @@
 <meta property="og:title" content="Sharing of integration sites between given groups. — is_sharing" />
 <meta property="og:description" content="
 
-Computes the amount of integrations shared between the groups identified
-by the fields in the group_key argument.
-An integration site is always identified by the triple
-(chr, integration_locus, strand), thus these columns must be present
-in the input data frame." />
+Computes the amount of integration sites shared between the groups identified
+in the input data." />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -86,7 +83,7 @@ in the input data frame." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.4</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.5</span>
       </span>
     </div>
 
@@ -119,6 +116,9 @@ in the input data frame." />
     </li>
     <li>
       <a href="../articles/report_system.html">ISAnalytics report system</a>
+    </li>
+    <li>
+      <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
 </li>
@@ -161,27 +161,29 @@ in the input data frame." />
     <div class="ref-description">
     <p><a href='https://lifecycle.r-lib.org/articles/stages.html#experimental'><img src='figures/lifecycle-experimental.svg' alt='[Experimental]' /></a>
 
-Computes the amount of integrations shared between the groups identified
-by the fields in the <code>group_key</code> argument.
-An integration site is always identified by the triple
-<code>(chr, integration_locus, strand)</code>, thus these columns must be present
-in the input data frame.</p>
+Computes the amount of integration sites shared between the groups identified
+in the input data.</p>
     </div>
 
     <pre class="usage"><span class='fu'>is_sharing</span><span class='op'>(</span>
-  <span class='va'>x</span>,
+  <span class='va'>...</span>,
   group_key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span>,
+  group_keys <span class='op'>=</span> <span class='cn'>NULL</span>,
+  n_comp <span class='op'>=</span> <span class='fl'>2</span>,
   is_count <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  relative_is_sharing <span class='op'>=</span> <span class='cn'>TRUE</span>
+  relative_is_sharing <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  minimal <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  include_self_comp <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  keep_genomic_coord <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  table_for_venn <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>An integration matrix, aka a data frame containing the columns
-<code><a href='mandatory_IS_vars.html'>mandatory_IS_vars()</a></code>. See details.</p></td>
+      <th>...</th>
+      <td><p>One or more integration matrices</p></td>
     </tr>
     <tr>
       <th>group_key</th>
@@ -190,54 +192,69 @@ single group. An associated group id will be derived by concatenating
 the values of these fields, separated by "_"</p></td>
     </tr>
     <tr>
+      <th>group_keys</th>
+      <td><p>A list of keys for asymmetric grouping.
+If not NULL the argument <code>group_key</code> is ignored</p></td>
+    </tr>
+    <tr>
+      <th>n_comp</th>
+      <td><p>Number of comparisons to compute. This argument is relevant
+only if provided a single data frame and a single key.</p></td>
+    </tr>
+    <tr>
       <th>is_count</th>
-      <td><p>Logical, if TRUE returns also the count of IS for
-each group</p></td>
+      <td><p>Logical, if <code>TRUE</code> returns also the count of IS for
+each group and the count for the union set</p></td>
     </tr>
     <tr>
       <th>relative_is_sharing</th>
-      <td><p>Logical, if TRUE also returns the relative
-sharing. See details.</p></td>
+      <td><p>Logical, if <code>TRUE</code> also returns the relative
+sharing.</p></td>
+    </tr>
+    <tr>
+      <th>minimal</th>
+      <td><p>Compute only combinations instead of all possible
+permutations? If <code>TRUE</code> saves time and excludes redundant comparisons.</p></td>
+    </tr>
+    <tr>
+      <th>include_self_comp</th>
+      <td><p>Include comparisons with the same group?</p></td>
+    </tr>
+    <tr>
+      <th>keep_genomic_coord</th>
+      <td><p>If <code>TRUE</code> keeps the genomic coordinates of the
+shared integration sites in a dedicated column (as a nested table)</p></td>
+    </tr>
+    <tr>
+      <th>table_for_venn</th>
+      <td><p>Add column with truth tables for venn plots?</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named list of data frames or a single data frame</p>
+    <p>A data frame</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    
-<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Input data frame</h3>
+    <p>An integration site is always identified by the triple
+<code>(chr, integration_locus, strand)</code>, thus these columns must be present
+in the input(s).</p>
+<p>The function accepts multiple inputs for different scenarios, please refer
+to the vignette
+<code><a href='../articles/sharing_analyses.html'>vignette("sharing_analyses", package = "ISAnalytics")</a></code>
+for a more in-depth explanation.</p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Output</h3>
 
 
-<p>The data frame provided in input must be in a suitable format for the
-calculations to be accurate. Please note that this function does not
-perform any sort of aggregation, it only relies on counts of
-distinct integration sites.</p>
-
-<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Outputs</h3>
-
-
-<p>By default the function outputs a list of 2 data frames:</p><ul>
-<li><p>The classical sharing data frame with absolute values.
-If the argument <code>relative_is_sharing</code> is set to TRUE it also contains
-the relative sharing (see below).</p></li>
-<li><p>The count of distinct IS for each group</p></li>
-</ul>
-
-<p>The relative sharing is calculated, for each pair of groups (A, B) as
-3 separate columns</p><ul>
-<li><p>Shared over A: (intersection(A,B) / |A|) * 100</p></li>
-<li><p>Shared over B: (intersection(A,B) / |B|) * 100</p></li>
-<li><p>Shared over union: (intersection(A,B) / |union(A,B)|) * 100</p></li>
-</ul>
-
+<p>The function outputs a single data frame containing all requested
+comparisons and optionally individual group counts, genomic coordinates
+of the shared integration sites and truth tables for plotting venn diagrams.</p>
 
 <h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Plotting sharing</h3>
 
 
 <p>The sharing data obtained can be easily plotted in a heatmap via the
-function <code><a href='sharing_heatmap.html'>sharing_heatmap</a></code>.</p>
+function <code><a href='sharing_heatmap.html'>sharing_heatmap</a></code> or via the function
+<code><a href='sharing_venn.html'>sharing_venn</a></code></p>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -246,6 +263,7 @@ function <code><a href='sharing_heatmap.html'>sharing_heatmap</a></code>.</p>
 <code><a href='comparison_matrix.html'>comparison_matrix</a>()</code>,
 <code><a href='compute_abundance.html'>compute_abundance</a>()</code>,
 <code><a href='cumulative_count_union.html'>cumulative_count_union</a>()</code>,
+<code><a href='cumulative_is.html'>cumulative_is</a>()</code>,
 <code><a href='sample_statistics.html'>sample_statistics</a>()</code>,
 <code><a href='separate_quant_matrices.html'>separate_quant_matrices</a>()</code>,
 <code><a href='threshold_filter.html'>threshold_filter</a>()</code>,
@@ -255,53 +273,36 @@ function <code><a href='sharing_heatmap.html'>sharing_heatmap</a></code>.</p>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"association_file"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>aggreg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
-    x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
-    association_file <span class='op'>=</span> <span class='va'>association_file</span>,
-    value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
+  x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
+  association_file <span class='op'>=</span> <span class='va'>association_file</span>,
+  value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
 <span class='op'>)</span>
 <span class='va'>sharing</span> <span class='op'>&lt;-</span> <span class='fu'>is_sharing</span><span class='op'>(</span><span class='va'>aggreg</span><span class='op'>)</span>
-<span class='va'>sharing</span>
-</div><div class='output co'>#&gt; $is_count
-#&gt; <span style='color: #949494;'># A tibble: 20 × 2</span>
-#&gt;    group_id          num_IS
-#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>              <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>
-#&gt; <span style='color: #BCBCBC;'> 1</span> PT001_MNC_BM_0030     54
-#&gt; <span style='color: #BCBCBC;'> 2</span> PT001_MNC_BM_0060    114
-#&gt; <span style='color: #BCBCBC;'> 3</span> PT001_MNC_BM_0180     89
-#&gt; <span style='color: #BCBCBC;'> 4</span> PT001_MNC_BM_0360     78
-#&gt; <span style='color: #BCBCBC;'> 5</span> PT002_MNC_BM_0360     91
-#&gt; <span style='color: #BCBCBC;'> 6</span> PT001_MNC_PB_0060     59
-#&gt; <span style='color: #BCBCBC;'> 7</span> PT001_MNC_PB_0180     29
-#&gt; <span style='color: #BCBCBC;'> 8</span> PT002_MNC_PB_0360     53
-#&gt; <span style='color: #BCBCBC;'> 9</span> PT002_MNC_PB_0180     32
-#&gt; <span style='color: #BCBCBC;'>10</span> PT002_MNC_BM_0030     98
-#&gt; <span style='color: #BCBCBC;'>11</span> PT002_MNC_PB_0060     18
-#&gt; <span style='color: #BCBCBC;'>12</span> PT002_MNC_PB_0030     15
-#&gt; <span style='color: #BCBCBC;'>13</span> PT001_MNC_PB_0030     28
-#&gt; <span style='color: #BCBCBC;'>14</span> PT002_MNC_BM_0180     69
-#&gt; <span style='color: #BCBCBC;'>15</span> PT001_MNC_BM_0090     59
-#&gt; <span style='color: #BCBCBC;'>16</span> PT002_MNC_BM_0060     33
-#&gt; <span style='color: #BCBCBC;'>17</span> PT002_MNC_BM_0090     40
-#&gt; <span style='color: #BCBCBC;'>18</span> PT001_MNC_PB_0090     48
-#&gt; <span style='color: #BCBCBC;'>19</span> PT001_MNC_PB_0360     43
-#&gt; <span style='color: #BCBCBC;'>20</span> PT002_MNC_PB_0090     24
-#&gt; 
-#&gt; $sharing
-#&gt; <span style='color: #949494;'># A tibble: 400 × 6</span>
-#&gt;    group1            group2            shared  on_g1  on_g2 on_union
-#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>             <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>              <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
-#&gt; <span style='color: #BCBCBC;'> 1</span> PT001_MNC_BM_0030 PT001_MNC_BM_0030     54 100    100     100    
-#&gt; <span style='color: #BCBCBC;'> 2</span> PT001_MNC_BM_0030 PT001_MNC_BM_0060     21  38.9   18.4    14.3  
-#&gt; <span style='color: #BCBCBC;'> 3</span> PT001_MNC_BM_0060 PT001_MNC_BM_0030     21  18.4   38.9    14.3  
-#&gt; <span style='color: #BCBCBC;'> 4</span> PT001_MNC_BM_0030 PT001_MNC_BM_0180     15  27.8   16.9    11.7  
-#&gt; <span style='color: #BCBCBC;'> 5</span> PT001_MNC_BM_0180 PT001_MNC_BM_0030     15  16.9   27.8    11.7  
-#&gt; <span style='color: #BCBCBC;'> 6</span> PT001_MNC_BM_0030 PT001_MNC_BM_0360     21  38.9   26.9    18.9  
-#&gt; <span style='color: #BCBCBC;'> 7</span> PT001_MNC_BM_0360 PT001_MNC_BM_0030     21  26.9   38.9    18.9  
-#&gt; <span style='color: #BCBCBC;'> 8</span> PT001_MNC_BM_0030 PT002_MNC_BM_0360      1   1.85   1.10    0.694
-#&gt; <span style='color: #BCBCBC;'> 9</span> PT002_MNC_BM_0360 PT001_MNC_BM_0030      1   1.10   1.85    0.694
-#&gt; <span style='color: #BCBCBC;'>10</span> PT001_MNC_BM_0030 PT001_MNC_PB_0060      8  14.8   13.6     7.62 
-#&gt; <span style='color: #949494;'># … with 390 more rows</span>
-#&gt; </div></pre>
+</div><div class='output co'>#&gt; <span class='message'>Calculating combinations...</span></div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='input'><span class='va'>sharing</span>
+</div><div class='output co'>#&gt;                     g1                g2 shared count_g1 count_g2 count_union
+#&gt;   1: PT001_MNC_BM_0030 PT001_MNC_BM_0060     21       54      114         147
+#&gt;   2: PT001_MNC_BM_0030 PT001_MNC_BM_0180     15       54       89         128
+#&gt;   3: PT001_MNC_BM_0060 PT001_MNC_BM_0180     13      114       89         190
+#&gt;   4: PT001_MNC_BM_0090 PT001_MNC_BM_0180     18       59       89         130
+#&gt;   5: PT001_MNC_BM_0030 PT001_MNC_BM_0360     21       54       78         111
+#&gt;  ---                                                                         
+#&gt; 186: PT001_MNC_BM_0090 PT002_MNC_PB_0090      0       59       24          83
+#&gt; 187: PT002_MNC_BM_0060 PT002_MNC_PB_0090      4       33       24          53
+#&gt; 188: PT002_MNC_BM_0090 PT002_MNC_PB_0090      2       40       24          62
+#&gt; 189: PT001_MNC_PB_0090 PT002_MNC_PB_0090      0       48       24          72
+#&gt; 190: PT001_MNC_PB_0360 PT002_MNC_PB_0090      0       43       24          67
+#&gt;         on_g1     on_g2  on_union
+#&gt;   1: 38.88889 18.421053 14.285714
+#&gt;   2: 27.77778 16.853933 11.718750
+#&gt;   3: 11.40351 14.606742  6.842105
+#&gt;   4: 30.50847 20.224719 13.846154
+#&gt;   5: 38.88889 26.923077 18.918919
+#&gt;  ---                             
+#&gt; 186:  0.00000  0.000000  0.000000
+#&gt; 187: 12.12121 16.666667  7.547170
+#&gt; 188:  5.00000  8.333333  3.225806
+#&gt; 189:  0.00000  0.000000  0.000000
+#&gt; 190:  0.00000  0.000000  0.000000</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
