@@ -48,7 +48,7 @@ quantification matrices as a named list of tibbles.
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 separated <- separate_quant_matrices(
-    integration_matrices
+  integration_matrices
 )
 separated
 }
@@ -60,6 +60,7 @@ Other Analysis functions:
 \code{\link{comparison_matrix}()},
 \code{\link{compute_abundance}()},
 \code{\link{cumulative_count_union}()},
+\code{\link{cumulative_is}()},
 \code{\link{is_sharing}()},
 \code{\link{sample_statistics}()},
 \code{\link{threshold_filter}()},

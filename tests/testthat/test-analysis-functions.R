@@ -926,64 +926,24 @@ test_that("cumulative_count_union produces correct output", {
 })
 
 #------------------------------------------------------------------------------#
-# Test is_sharing
+# Test cumulative_is
 #------------------------------------------------------------------------------#
-test_sharing_input <- tibble::tribble(
-    ~chr, ~integration_locus, ~strand, ~SubjectID,
-    "1", 10032, "+", "S1",
-    "10", 20162, "-", "S1",
-    "5", 45612, "-", "S1",
-    "2", 21206, "+", "S1",
-    "1", 10102, "+", "S1",
-    "3", 38167, "-", "S1",
-    "1", 10032, "+", "S2",
-    "5", 45612, "-", "S2",
-    "6", 12542, "-", "S2",
-    "1", 42571, "-", "S2",
-    "4", 21054, "+", "S2",
-    "4", 12072, "-", "S2",
-    "11", 25722, "-", "S2",
-    "10", 11725, "+", "S2",
-    "10", 12247, "+", "S2",
-    "11", 25722, "-", "S2",
-    "1", 10032, "+", "S3",
-    "2", 21206, "+", "S3",
-    "6", 12542, "-", "S3",
-    "1", 42571, "-", "S3",
-    "2", 51232, "+", "S3"
-)
 
-test_expected_shared_counts <- tibble::tribble(
-    ~group_id, ~num_IS,
-    "S1", 6,
-    "S2", 9,
-    "S3", 5
-)
-
-test_expected_sharing_df <- tibble::tribble(
-    ~group1, ~group2, ~shared, ~on_g1, ~on_g2, ~on_union,
-    "S1", "S1", 6, 100, 100, 100,
-    "S1", "S2", 2, (2 / 6) * 100, (2 / 9) * 100, (2 / 13) * 100,
-    "S2", "S1", 2, (2 / 9) * 100, (2 / 6) * 100, (2 / 13) * 100,
-    "S1", "S3", 2, (2 / 6) * 100, (2 / 5) * 100, (2 / 9) * 100,
-    "S3", "S1", 2, (2 / 5) * 100, (2 / 6) * 100, (2 / 9) * 100,
-    "S2", "S2", 9, 100, 100, 100,
-    "S2", "S3", 3, (3 / 9) * 100, (3 / 5) * 100, (3 / 11) * 100,
-    "S3", "S2", 3, (3 / 5) * 100, (3 / 9) * 100, (3 / 11) * 100,
-    "S3", "S3", 5, 100, 100, 100
-)
-
-test_that("is_sharing expects mandatory cols", {
-    expect_error({
-        sharing <- is_sharing(test_sharing_input %>%
-            dplyr::select(-.data$chr))
-    })
-})
-
-test_that("is_sharing produces expected output", {
-    sharing_res <- is_sharing(test_sharing_input,
-        group_key = "SubjectID"
+test_that("cumulative_is produces correct output", {
+    c_is <- cumulative_is(minimal_agg_example)
+    expect_true(nrow(c_is) == 5)
+    expect_true(all(c("is", "cumulative_is") %in% colnames(c_is)))
+    counts <- purrr::map_int(c_is$cumulative_is, ~ nrow(.x))
+    expect_equal(counts, c(3, 4, 5, 2, 4))
+    c_is <- cumulative_is(minimal_agg_example, keep_og_is = FALSE)
+    expect_true(nrow(c_is) == 5)
+    expect_true(all(c("cumulative_is") %in% colnames(c_is)))
+    counts <- purrr::map_int(c_is$cumulative_is, ~ nrow(.x))
+    expect_equal(counts, c(3, 4, 5, 2, 4))
+    c_is <- cumulative_is(minimal_agg_example,
+        keep_og_is = FALSE,
+        expand = TRUE
     )
-    expect_equal(sharing_res$is_count, test_expected_shared_counts)
-    expect_equal(sharing_res$sharing, test_expected_sharing_df)
+    expect_true(all(mandatory_IS_vars() %in% colnames(c_is)))
+    expect_true(nrow(c_is) == sum(counts))
 })

@@ -233,7 +233,7 @@ remove_collisions <- function(x,
     final_matr <- fixed_collisions %>%
         dplyr::bind_rows(splitted_df$non_collisions) %>%
         dplyr::select(dplyr::all_of(colnames(pre_process)))
-    if (getOption("ISAnalytics.reports") == TRUE) {
+    if (getOption("ISAnalytics.reports") == TRUE & !is.null(report_path)) {
         input_summary <- .summary_input(x, quant_cols)
         missing_smpl <- if (!is.null(missing_ind)) {
             x[missing_ind, ] %>%
@@ -259,7 +259,10 @@ remove_collisions <- function(x,
             group_key = c(
                 "ProjectID",
                 "SubjectID"
-            )
+            ), n_comp = 2,
+            is_count = FALSE,
+            minimal = FALSE,
+            include_self_comp = TRUE
         )
         coll_info <- list(
             coll_n = splitted_df$collisions %>%
@@ -285,7 +288,10 @@ remove_collisions <- function(x,
             group_key = c(
                 "ProjectID",
                 "SubjectID"
-            )
+            ), n_comp = 2,
+            is_count = FALSE,
+            minimal = FALSE,
+            include_self_comp = TRUE
         )
         summary_tbl <- .summary_table(
             before = joined, after = post_joined,
@@ -345,7 +351,7 @@ remove_collisions <- function(x,
 #' \code{vignette("collision_removal", package = "ISAnalytics")}
 #'
 #' @param sc_matrix The sequence count matrix already processed for collisions
-#' via `remove_collisions`
+#' via `remove_collisions()`
 #' @param other_matrices A named list of matrices to re-align. Names in the list
 #' must be quantification types (\code{quantification_types()}) except
 #' "seqCount".

@@ -4160,3 +4160,578 @@
         }
     )
 }
+
+#---- USED IN : is_sharing ----
+## Internal to find absolute shared number of is between an arbitrary
+## number of groups
+## Dots are group names in sharing df (actually a data.table)
+.find_in_common <- function(..., lookup_tbl, keep_genomic_coord) {
+    groups <- as.list(...)
+    in_common <- purrr::pmap(groups, function(...) {
+        grps <- list(...)
+        filt <- lookup_tbl[group_id %chin% grps, ]
+        common <- purrr::reduce(filt$is, function(l, r) {
+            l[r, on = mandatory_IS_vars(), nomatch = 0]
+        })
+        common
+    })
+    if (!keep_genomic_coord) {
+        return(purrr::map(in_common, ~ nrow(.x)))
+    }
+    return(list(purrr::map(in_common, ~ nrow(.x)), in_common))
+}
+
+## Internal, to use on each row of the combinations df.
+## Expands the row with all its permutations keeping same absolute shared is
+## and counts if present
+## - ... : row passed as a list
+## - g_names: names of the groups (g1, g2...)
+## - counts: are counts present? TRUE/FALSE
+.sh_row_permut <- function(..., g_names, counts) {
+    og_row <- list(...)
+    coord <- if ("is_coord" %in% names(og_row)) {
+        og_row$is_coord <- list(og_row$is_coord)
+        TRUE
+    } else {
+        FALSE
+    }
+    ids <- unlist(og_row[g_names])
+    og_row <- data.table::setDT(og_row)
+    # If row of all equal elements no need for permutations
+    if (length(unique(ids)) == 1) {
+        return(og_row)
+    }
+    # If elements are different
+    shared_is <- og_row$shared
+    if (counts) {
+        count_union <- og_row$count_union
+    }
+    perm <- gtools::permutations(
+        n = length(g_names),
+        r = length(g_names),
+        v = g_names,
+        set = TRUE,
+        repeats.allowed = FALSE
+    )
+    colnames(perm) <- g_names
+    perm <- data.table::setDT(as.data.frame(perm))
+    perm[, shared := shared_is]
+    if (coord) {
+        perm[, is_coord := list(og_row$is_coord)]
+    }
+    if (counts) {
+        for (g in g_names) {
+            count_col <- paste0("count_", g)
+            perm[, c(count_col) := paste0("count_", get(g))]
+        }
+        perm[, count_union := count_union]
+    }
+    sub_with_val <- function(val) {
+        unlist(purrr::map(val, ~ og_row[[.x]]))
+    }
+    for (g in g_names) {
+        perm[, c(g) := .(sub_with_val(get(g)))]
+        if (counts) {
+            count_col <- paste0("count_", g)
+            perm[, c(count_col) := .(sub_with_val(get(count_col)))]
+        }
+    }
+    return(perm)
+}
+
+# Counts the number of integrations in the union of all groups of a row
+.count_group_union <- function(..., col_groups, lookup_tbl) {
+    dots <- list(...)
+    if ("is_coord" %in% names(dots)) {
+        dots$is_coord <- list(dots$is_coord)
+    }
+    row <- data.table::setDT(dots)
+    groups_in_row <- row[1, ..col_groups]
+    sub_lookup <- lookup_tbl[group_id %chin% groups_in_row]
+    count_union <- nrow(purrr::reduce(sub_lookup$is, data.table::funion))
+    row[, count_union := count_union]
+    return(row)
+}
+
+# Obtains lookup table for groups
+.sh_obtain_lookup <- function(key, df) {
+    temp <- df %>%
+        dplyr::select(dplyr::all_of(c(key, mandatory_IS_vars()))) %>%
+        dplyr::group_by(dplyr::across({{ key }})) %>%
+        dplyr::distinct(dplyr::across(dplyr::all_of(mandatory_IS_vars())),
+            .keep_all = TRUE
+        ) %>%
+        tidyr::unite(col = "group_id", dplyr::all_of(key))
+    temp <- data.table::setDT(temp)
+    temp <- temp[, .(is = list(.SD)), by = "group_id"]
+    return(temp)
+}
+
+# Obtains truth table for venn diagrams. To apply to each row with pmap.
+# - groups : g1, g2, g3...
+# - lookup : either list (mult/mult) or df
+.sh_truth_tbl_venn <- function(..., lookup, groups) {
+    row <- list(...)
+    if (!is.data.frame(lookup)) {
+        # If lookup is a list and not single df
+        retrieve_is <- function(group_name) {
+            label <- row[[group_name]] # a string
+            retrieved <- (lookup[[group_name]])[group_id == label]
+            retrieved[, group_id := paste0(group_id, "(", group_name, ")")]
+            retrieved <- retrieved %>%
+                tidyr::unnest(.data$is) %>%
+                tidyr::unite(
+                    col = "int_id",
+                    dplyr::all_of(mandatory_IS_vars())
+                ) %>%
+                data.table::setDT()
+        }
+        retrieved_iss <- purrr::map(groups, retrieve_is)
+        retrieved_iss <- data.table::rbindlist(retrieved_iss)
+        retrieved_iss[, observed := TRUE]
+        truth_tbl <- data.table::dcast(retrieved_iss, int_id ~ group_id,
+            value.var = "observed",
+            fill = FALSE
+        )
+        return(truth_tbl)
+    } else {
+        labels <- unlist(row[groups])
+        retrieved <- lookup[group_id %in% labels]
+        retrieved <- retrieved %>%
+            tidyr::unnest(.data$is) %>%
+            tidyr::unite(
+                col = "int_id",
+                dplyr::all_of(mandatory_IS_vars())
+            ) %>%
+            data.table::setDT()
+        retrieved[, observed := TRUE]
+        truth_tbl <- data.table::dcast(retrieved, int_id ~ group_id,
+            value.var = "observed",
+            fill = FALSE
+        )
+        return(truth_tbl)
+    }
+}
+
+## Computes sharing table for single input df and single key
+## -key: name of the columns to do a group by
+## -minimal: true or false, if true computes ONLY combinations and not
+## all permutations
+## -n_comp: number of comparisons (2-way sharing, 3-way sharing...).
+## Should be less or equal to the distinct number of groups
+## -is_count: keep the counts in the table?
+## -rel_sharing: compute relative sharing? (on g_i & on_union)
+## -include_self_comp: include rows with the same group for each comparison?
+## useful for heatmaps. Sharing for this rows is always 100%
+.sharing_singledf_single_key <- function(df, key, minimal, n_comp,
+    is_count, rel_sharing,
+    include_self_comp,
+    keep_genomic_coord,
+    venn) {
+    temp <- .sh_obtain_lookup(key, df)
+    # Check n and k
+    if (nrow(temp) < n_comp) {
+        n_comp <- nrow(temp)
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            warn_msg <- c("Number of requested comparisons too big",
+                i = paste(
+                    "The number of requested comparisons",
+                    "is greater than the number of groups.",
+                    "Reducing comparisons to the biggest value",
+                    "allowed"
+                )
+            )
+            rlang::inform(warn_msg)
+        }
+    }
+    if (getOption("ISAnalytics.verbose") == TRUE) {
+        rlang::inform("Calculating combinations...")
+    }
+    group_comb <- gtools::combinations(
+        n = length(temp$group_id),
+        r = n_comp,
+        v = temp$group_id,
+        set = TRUE,
+        repeats.allowed = FALSE
+    )
+    cols <- paste0("g", seq_len(ncol(group_comb)))
+    colnames(group_comb) <- cols
+    group_comb <- data.table::setDT(as.data.frame(group_comb))
+    is_counts <- temp %>%
+        dplyr::mutate(count = purrr::map_int(is, ~ nrow(.x))) %>%
+        dplyr::select(-.data$is)
+    sharing_df <- if (!keep_genomic_coord) {
+        group_comb[, shared := .find_in_common(.SD,
+            lookup_tbl = temp,
+            keep_genomic_coord = keep_genomic_coord
+        ),
+        .SDcols = cols
+        ]
+    } else {
+        group_comb[, c("shared", "is_coord") := .find_in_common(.SD,
+            lookup_tbl = temp,
+            keep_genomic_coord = keep_genomic_coord
+        ),
+        .SDcols = cols
+        ]
+    }
+
+    if (include_self_comp) {
+        ## Calculate groups with equal components
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            rlang::inform("Calculating self groups (requested)...")
+        }
+        self_rows <- purrr::map2_df(
+            is_counts$group_id, is_counts$count,
+            function(x, y) {
+                row_ls <- as.list(setNames(rep_len(
+                    x,
+                    length.out = n_comp
+                ), nm = cols))
+                row <- data.table::setDT(row_ls)
+                row[, shared := y]
+                if (keep_genomic_coord) {
+                    row[, is_coord := list(temp[group_id == x]$is)]
+                }
+                return(row)
+            }
+        )
+        sharing_df <- data.table::rbindlist(list(
+            self_rows,
+            sharing_df
+        ))
+    }
+    group_cols <- colnames(sharing_df)[!colnames(sharing_df) %in% c(
+        "shared",
+        "is_coord"
+    )]
+    if (is_count || rel_sharing) {
+        ## Add counts -groups
+        for (col in group_cols) {
+            count_col_name <- paste0("count_", col)
+            sharing_df <- sharing_df[
+                dplyr::rename(
+                    is_counts,
+                    !!col := .data$group_id,
+                    !!count_col_name := .data$count
+                ),
+                on = col,
+                nomatch = 0
+            ]
+        }
+        ## Add counts -union
+        sharing_df <- purrr::pmap_df(sharing_df, .count_group_union,
+            col_groups = group_cols,
+            lookup_tbl = temp
+        )
+    }
+    if (!minimal) {
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            rlang::inform("Calculating permutations (requested)...")
+        }
+        sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
+            g_names = group_cols,
+            counts = is_count || rel_sharing
+        )
+    }
+    if (rel_sharing) {
+        # for groups
+        for (col in group_cols) {
+            rel_col_name <- paste0("on_", col)
+            count_col_name <- paste0("count_", col)
+            sharing_df <- sharing_df %>%
+                dplyr::mutate(!!rel_col_name := (.data$shared /
+                    .data[[count_col_name]]) * 100)
+        }
+        # for union
+        sharing_df <- sharing_df %>%
+            dplyr::mutate(on_union = (.data$shared /
+                .data$count_union) * 100)
+    }
+    if (!is_count) {
+        sharing_df <- sharing_df %>%
+            dplyr::select(!dplyr::contains("count_"))
+    }
+    if (venn) {
+        sharing_df <- sharing_df %>%
+            dplyr::mutate(truth_tbl_venn = purrr::pmap(.,
+                .sh_truth_tbl_venn,
+                lookup = temp,
+                groups = group_cols
+            ))
+    }
+    sharing_df
+}
+
+## Computes sharing table for single input df and multiple keys
+## -keys: name of the columns to do a group by (it is a named list)
+## -minimal: true or false, if true computes ONLY combinations and not
+## all permutations
+## -is_count: keep the counts in the table?
+## -rel_sharing: compute relative sharing? (on g_i & on_union)
+.sharing_singledf_mult_key <- function(df, keys,
+    minimal, is_count,
+    rel_sharing, keep_genomic_coord,
+    venn) {
+    g_names <- names(keys)
+    ## Obtain lookup table for each key
+    lookup <- purrr::map(keys, ~ .sh_obtain_lookup(.x, df))
+    group_labels <- purrr::map(lookup, ~ .x$group_id)
+    unique_keys <- names(keys[!duplicated(keys)])
+    lookup <- data.table::rbindlist(lookup[unique_keys])
+    ## Obtain combinations
+    combin <- data.table::setDT(purrr::cross_df(group_labels))
+    sharing_df <- if (!keep_genomic_coord) {
+        combin[, shared := .find_in_common(.SD,
+            lookup_tbl = lookup,
+            keep_genomic_coord = keep_genomic_coord
+        ),
+        .SDcols = g_names
+        ]
+    } else {
+        combin[, c("shared", "is_coord") := .find_in_common(.SD,
+            lookup_tbl = lookup,
+            keep_genomic_coord = keep_genomic_coord
+        ),
+        .SDcols = g_names
+        ]
+    }
+
+    if (is_count || rel_sharing) {
+        is_counts <- lookup %>%
+            dplyr::mutate(count = purrr::map_int(is, ~ nrow(.x))) %>%
+            dplyr::select(-.data$is)
+        ## Add counts -groups
+        for (col in g_names) {
+            count_col_name <- paste0("count_", col)
+            sharing_df <- sharing_df[
+                dplyr::rename(
+                    is_counts,
+                    !!col := .data$group_id,
+                    !!count_col_name := .data$count
+                ),
+                on = col,
+                nomatch = 0
+            ]
+        }
+        ## Add counts -union
+        sharing_df <- purrr::pmap_df(sharing_df, .count_group_union,
+            col_groups = g_names,
+            lookup_tbl = lookup
+        )
+    }
+    if (!minimal) {
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            rlang::inform("Calculating permutations (requested)...")
+        }
+        sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
+            g_names = g_names,
+            counts = is_count || rel_sharing
+        )
+    }
+    if (rel_sharing) {
+        # for groups
+        for (col in g_names) {
+            rel_col_name <- paste0("on_", col)
+            count_col_name <- paste0("count_", col)
+            sharing_df <- sharing_df %>%
+                dplyr::mutate(!!rel_col_name := (.data$shared /
+                    .data[[count_col_name]]) * 100)
+        }
+        # for union
+        sharing_df <- sharing_df %>%
+            dplyr::mutate(on_union = (.data$shared /
+                .data$count_union) * 100)
+    }
+    if (!is_count) {
+        sharing_df <- sharing_df %>%
+            dplyr::select(!dplyr::contains("count_"))
+    }
+    if (venn) {
+        sharing_df <- sharing_df %>%
+            dplyr::mutate(truth_tbl_venn = purrr::pmap(.,
+                .sh_truth_tbl_venn,
+                lookup = lookup,
+                groups = g_names
+            ))
+    }
+    sharing_df
+}
+
+## Computes sharing table for mult input dfs and single key
+.sharing_multdf_single_key <- function(dfs, key, minimal,
+    is_count, rel_sharing, keep_genomic_coord, venn) {
+    if (is.null(names(dfs))) {
+        g_names <- paste0("g", seq_len(length(dfs)))
+        names(dfs) <- g_names
+    }
+    lookups <- purrr::map(dfs, ~ .sh_obtain_lookup(key, .x))
+    group_labels <- purrr::map(lookups, ~ .x$group_id)
+    lookup <- data.table::rbindlist(lookups)
+    ## Obtain combinations
+    combin <- data.table::setDT(purrr::cross_df(group_labels))
+    sharing_df <- if (!keep_genomic_coord) {
+        combin[, shared := .find_in_common(.SD,
+            lookup_tbl = lookup,
+            keep_genomic_coord = keep_genomic_coord
+        ),
+        .SDcols = names(dfs)
+        ]
+    } else {
+        combin[, c("shared", "is_coord") := .find_in_common(.SD,
+            lookup_tbl = lookup,
+            keep_genomic_coord = keep_genomic_coord
+        ),
+        .SDcols = names(dfs)
+        ]
+    }
+
+    if (is_count || rel_sharing) {
+        is_counts <- purrr::map2(lookups, names(lookups), function(x, y) {
+            count_col_name <- paste0("count_", y)
+            x %>%
+                dplyr::mutate(!!count_col_name := purrr::map_int(
+                    is, ~ nrow(.x)
+                )) %>%
+                dplyr::select(-.data$is) %>%
+                dplyr::rename(!!y := .data$group_id)
+        })
+        ## Add counts -groups
+        for (col in names(dfs)) {
+            cnt_tbl <- is_counts[[col]]
+            sharing_df <- sharing_df[
+                cnt_tbl,
+                on = col,
+                nomatch = 0
+            ]
+        }
+        ## Add counts -union
+        sharing_df <- purrr::pmap_df(sharing_df, .count_group_union,
+            col_groups = names(dfs),
+            lookup_tbl = lookup
+        )
+    }
+    if (!minimal) {
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            rlang::inform("Calculating permutations (requested)...")
+        }
+        sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
+            g_names = names(dfs),
+            counts = is_count || rel_sharing
+        )
+    }
+    if (rel_sharing) {
+        # for groups
+        for (col in names(dfs)) {
+            rel_col_name <- paste0("on_", col)
+            count_col_name <- paste0("count_", col)
+            sharing_df <- sharing_df %>%
+                dplyr::mutate(!!rel_col_name := (.data$shared /
+                    .data[[count_col_name]]) * 100)
+        }
+        # for union
+        sharing_df <- sharing_df %>%
+            dplyr::mutate(on_union = (.data$shared /
+                .data$count_union) * 100)
+    }
+    if (!is_count) {
+        sharing_df <- sharing_df %>%
+            dplyr::select(!dplyr::contains("count_"))
+    }
+    if (venn) {
+        sharing_df <- sharing_df %>%
+            dplyr::mutate(truth_tbl_venn = purrr::pmap(.,
+                .sh_truth_tbl_venn,
+                lookup = lookups,
+                groups = names(dfs)
+            ))
+    }
+    sharing_df
+}
+
+## Computes sharing table for mult input dfs and mult key
+.sharing_multdf_mult_key <- function(dfs, keys, minimal,
+    is_count, rel_sharing, keep_genomic_coord, venn) {
+    lookups <- purrr::map2(dfs, keys, ~ .sh_obtain_lookup(.y, .x)) %>%
+        purrr::set_names(names(keys))
+    group_labels <- purrr::map(lookups, ~ .x$group_id)
+    lookup <- data.table::rbindlist(lookups)
+    ## Obtain combinations
+    combin <- data.table::setDT(purrr::cross_df(group_labels))
+    sharing_df <- if (!keep_genomic_coord) {
+        combin[, shared := .find_in_common(.SD,
+            lookup_tbl = lookup,
+            keep_genomic_coord = keep_genomic_coord
+        ),
+        .SDcols = names(keys)
+        ]
+    } else {
+        combin[, c("shared", "is_coord") := .find_in_common(.SD,
+            lookup_tbl = lookup,
+            keep_genomic_coord = keep_genomic_coord
+        ),
+        .SDcols = names(keys)
+        ]
+    }
+    if (is_count || rel_sharing) {
+        is_counts <- purrr::map2(lookups, names(lookups), function(x, y) {
+            count_col_name <- paste0("count_", y)
+            x %>%
+                dplyr::mutate(!!count_col_name := purrr::map_int(
+                    is, ~ nrow(.x)
+                )) %>%
+                dplyr::select(-.data$is) %>%
+                dplyr::rename(!!y := .data$group_id)
+        })
+        ## Add counts -groups
+        for (col in names(keys)) {
+            cnt_tbl <- is_counts[[col]]
+            sharing_df <- sharing_df[
+                cnt_tbl,
+                on = col,
+                nomatch = 0
+            ]
+        }
+        ## Add counts -union
+        sharing_df <- purrr::pmap_df(sharing_df, .count_group_union,
+            col_groups = names(keys),
+            lookup_tbl = lookup
+        )
+    }
+    if (!minimal) {
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            rlang::inform("Calculating permutations (requested)...")
+        }
+        sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
+            g_names = names(keys),
+            counts = is_count || rel_sharing
+        )
+    }
+    if (rel_sharing) {
+        # for groups
+        for (col in names(keys)) {
+            rel_col_name <- paste0("on_", col)
+            count_col_name <- paste0("count_", col)
+            sharing_df <- sharing_df %>%
+                dplyr::mutate(!!rel_col_name := (.data$shared /
+                    .data[[count_col_name]]) * 100)
+        }
+        # for union
+        sharing_df <- sharing_df %>%
+            dplyr::mutate(on_union = (.data$shared /
+                .data$count_union) * 100)
+    }
+    if (!is_count) {
+        sharing_df <- sharing_df %>%
+            dplyr::select(!dplyr::contains("count_"))
+    }
+    if (venn) {
+        sharing_df <- sharing_df %>%
+            dplyr::mutate(truth_tbl_venn = purrr::pmap(.,
+                .sh_truth_tbl_venn,
+                lookup = lookups,
+                groups = names(keys)
+            ))
+    }
+    sharing_df
+}

@@ -5,78 +5,85 @@
 \title{Sharing of integration sites between given groups.}
 \usage{
 is_sharing(
-  x,
+  ...,
   group_key = c("SubjectID", "CellMarker", "Tissue", "TimePoint"),
+  group_keys = NULL,
+  n_comp = 2,
   is_count = TRUE,
-  relative_is_sharing = TRUE
+  relative_is_sharing = TRUE,
+  minimal = TRUE,
+  include_self_comp = FALSE,
+  keep_genomic_coord = FALSE,
+  table_for_venn = FALSE
 )
 }
 \arguments{
-\item{x}{An integration matrix, aka a data frame containing the columns
-\code{mandatory_IS_vars()}. See details.}
+\item{...}{One or more integration matrices}
 
 \item{group_key}{Character vector of column names which identify a
 single group. An associated group id will be derived by concatenating
 the values of these fields, separated by "_"}
 
-\item{is_count}{Logical, if TRUE returns also the count of IS for
-each group}
+\item{group_keys}{A list of keys for asymmetric grouping.
+If not NULL the argument \code{group_key} is ignored}
 
-\item{relative_is_sharing}{Logical, if TRUE also returns the relative
-sharing. See details.}
+\item{n_comp}{Number of comparisons to compute. This argument is relevant
+only if provided a single data frame and a single key.}
+
+\item{is_count}{Logical, if \code{TRUE} returns also the count of IS for
+each group and the count for the union set}
+
+\item{relative_is_sharing}{Logical, if \code{TRUE} also returns the relative
+sharing.}
+
+\item{minimal}{Compute only combinations instead of all possible
+permutations? If \code{TRUE} saves time and excludes redundant comparisons.}
+
+\item{include_self_comp}{Include comparisons with the same group?}
+
+\item{keep_genomic_coord}{If \code{TRUE} keeps the genomic coordinates of the
+shared integration sites in a dedicated column (as a nested table)}
+
+\item{table_for_venn}{Add column with truth tables for venn plots?}
 }
 \value{
-A named list of data frames or a single data frame
+A data frame
 }
 \description{
 \lifecycle{experimental}
-Computes the amount of integrations shared between the groups identified
-by the fields in the \code{group_key} argument.
-An integration site is always identified by the triple
-\verb{(chr, integration_locus, strand)}, thus these columns must be present
-in the input data frame.
+Computes the amount of integration sites shared between the groups identified
+in the input data.
 }
 \details{
-\subsection{Input data frame}{
+An integration site is always identified by the triple
+\verb{(chr, integration_locus, strand)}, thus these columns must be present
+in the input(s).
 
-The data frame provided in input must be in a suitable format for the
-calculations to be accurate. Please note that this function does not
-perform any sort of aggregation, it only relies on counts of
-distinct integration sites.
-}
+The function accepts multiple inputs for different scenarios, please refer
+to the vignette
+\code{vignette("sharing_analyses", package = "ISAnalytics")}
+for a more in-depth explanation.
+\subsection{Output}{
 
-\subsection{Outputs}{
-
-By default the function outputs a list of 2 data frames:
-\itemize{
-\item The classical sharing data frame with absolute values.
-If the argument \code{relative_is_sharing} is set to TRUE it also contains
-the relative sharing (see below).
-\item The count of distinct IS for each group
-}
-
-The relative sharing is calculated, for each pair of groups (A, B) as
-3 separate columns
-\itemize{
-\item Shared over A: (intersection(A,B) / |A|) * 100
-\item Shared over B: (intersection(A,B) / |B|) * 100
-\item Shared over union: (intersection(A,B) / |union(A,B)|) * 100
-}
+The function outputs a single data frame containing all requested
+comparisons and optionally individual group counts, genomic coordinates
+of the shared integration sites and truth tables for plotting venn diagrams.
 }
 
 \subsection{Plotting sharing}{
 
 The sharing data obtained can be easily plotted in a heatmap via the
-function \code{\link{sharing_heatmap}}.
+function \code{\link{sharing_heatmap}} or via the function
+\code{\link{sharing_venn}}
 }
 }
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-    x = integration_matrices,
-    association_file = association_file,
-    value_cols = c("seqCount", "fragmentEstimate")
+  x = integration_matrices,
+  association_file = association_file,
+  value_cols = c("seqCount", "fragmentEstimate")
 )
 sharing <- is_sharing(aggreg)
 sharing
@@ -87,6 +94,7 @@ Other Analysis functions:
 \code{\link{comparison_matrix}()},
 \code{\link{compute_abundance}()},
 \code{\link{cumulative_count_union}()},
+\code{\link{cumulative_is}()},
 \code{\link{sample_statistics}()},
 \code{\link{separate_quant_matrices}()},
 \code{\link{threshold_filter}()},

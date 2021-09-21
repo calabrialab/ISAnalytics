@@ -279,6 +279,7 @@
 # - outliers_by_pool_fragments
 # - sample_statistics
 # - compute_near_integrations
+# - cumulative_is
 .missing_user_cols_error <- function(missing_cols) {
     c(paste(
         "Some or all of the input column names were not found",
@@ -566,6 +567,47 @@
         i = paste(
             "All paths are NA, no matrices to import.",
             "Check your association file."
+        )
+    )
+}
+
+# USED IN:
+# - is_sharing
+.non_df_input_err <- function() {
+    c("Non-data frame found",
+        x = paste("Input list contains objects that are not data.frame")
+    )
+}
+
+# USED IN:
+# - is_sharing
+.unnamed_keys_warn <- function() {
+    c("Unnamed keys",
+        i = paste("Group keys should be named, using default names")
+    )
+}
+
+# USED IN:
+# - is_sharing
+.keys_not_char_err <- function() {
+    c("Keys need to be character vectors")
+}
+
+# USED IN:
+# - is_sharing
+.no_data_supp <- function() {
+    c("No data supplied",
+        x = paste("You must provide at least 1 data frame to the function")
+    )
+}
+
+# USED IN:
+# - cumulative_is
+.only_zero_tp <- function() {
+    c("Data frame empty after filtering",
+        i = paste(
+            "Data frame has 0 rows after filtering",
+            "out zero-timepoints. Nothing to do."
         )
     )
 }

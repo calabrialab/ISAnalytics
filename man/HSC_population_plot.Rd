@@ -33,18 +33,18 @@ Plot of the estimated HSC population size for each patient.
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-    x = integration_matrices,
-    association_file = association_file,
-    value_cols = c("seqCount", "fragmentEstimate")
+  x = integration_matrices,
+  association_file = association_file,
+  value_cols = c("seqCount", "fragmentEstimate")
 )
 aggreg_meta <- aggregate_metadata(
-    association_file = association_file
+  association_file = association_file
 )
 estimate <- HSC_population_size_estimate(
-    x = aggreg,
-    metadata = aggreg_meta,
-    stable_timepoints = c(90, 180, 360),
-    cell_type = "Other"
+  x = aggreg,
+  metadata = aggreg_meta,
+  stable_timepoints = c(90, 180, 360),
+  cell_type = "Other"
 )
 p <- HSC_population_plot(estimate, "PJ01")
 p
@@ -52,6 +52,10 @@ p
 \seealso{
 Other Plotting functions: 
 \code{\link{CIS_volcano_plot}()},
-\code{\link{integration_alluvial_plot}()}
+\code{\link{circos_genomic_density}()},
+\code{\link{integration_alluvial_plot}()},
+\code{\link{sharing_heatmap}()},
+\code{\link{sharing_venn}()},
+\code{\link{top_abund_tableGrob}()}
 }
 \concept{Plotting functions}

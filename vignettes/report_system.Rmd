@@ -46,7 +46,7 @@ bib <- c(
     flexdashboard = citation("flexdashboard")[1],
     DT = citation("DT")[1],
     plotly = citation("plotly")[1],
-    ggvenn = citation("ggvenn")[1]
+    eulerr = citation("eulerr")[1]
 )
 ```
 
@@ -78,7 +78,7 @@ Reports require a few additional packages that are listed under the package
 * `r CRANpkg("flexdashboard")` `r Citep(bib[["flexdashboard"]])`
 * `r CRANpkg("DT")` `r Citep(bib[["DT"]])`
 * `r CRANpkg("plotly")` `r Citep(bib[["plotly"]])`
-* `r CRANpkg("ggvenn")` `r Citep(bib[["ggvenn"]])`
+* `r CRANpkg("eulerr")` `r Citep(bib[["eulerr"]])`
 
 # Functions
 

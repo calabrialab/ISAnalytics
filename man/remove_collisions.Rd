@@ -54,9 +54,9 @@ For more details refer to the vignette "Collision removal functionality":
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 no_coll <- remove_collisions(
-    x = integration_matrices,
-    association_file = association_file,
-    report_path = NULL
+  x = integration_matrices,
+  association_file = association_file,
+  report_path = NULL
 )
 head(no_coll)
 }

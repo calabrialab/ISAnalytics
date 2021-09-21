@@ -79,18 +79,7 @@ This page contains summary information regarding the input matrix as is
 Additional info {data-orientation=rows}
 ===============================================================================
 ```{r echo=FALSE}
-.venn_diag <- function(info) {
-  all_camps <- union(info$MATRIX, info$AF)
-  info_df <- tibble::tibble(Sample = all_camps)
-  info_df <- info_df %>% 
-    dplyr::mutate(MATRIX = .data$Sample %in% info$MATRIX,
-                  AF = .data$Sample %in% info$AF)
-    venn_plot <- ggvenn::ggvenn(data = info_df, c("MATRIX", "AF"))
-    plotly::ggplotly(p = venn_plot, width = 4, height = 4) %>%
-        plotly::layout(xaxis = list(autorange = TRUE),
-               yaxis = list(autorange = TRUE))
-}
-venn_diag <- .venn_diag(samples_info)
+venn_diag <- eulerr::venn(samples_info)
 ```
 
 Row1 {data-height=500}
@@ -98,7 +87,7 @@ Row1 {data-height=500}
 ### Overview of samples contained in matrix and association file
 <!-- Venn diagram for shared samples between AF and matrix  -->
 ```{r}
-venn_diag
+plot(venn_diag, fills = list(fill = c("gold", "navyblue"), alpha = 0.5))
 ```
 
 ### About this page
@@ -214,7 +203,7 @@ Row4 {data-height=800 .tabset .tabset-fade}
 -------------------------------------------------------------------------------
 <!-- Sharing heatmaps -->
 ```{r echo=FALSE}
-heatmaps <- ISAnalytics::sharing_heatmap(pre_sharing$sharing, interactive = TRUE)
+heatmaps <- ISAnalytics::sharing_heatmap(pre_sharing, interactive = TRUE)
 ```
 
 ### IS sharing: absolute values
@@ -377,7 +366,7 @@ Row5 {data-height=800 .tabset .tabset-fade}
 -------------------------------------------------------------------------------
 <!-- Sharing heatmaps -->
 ```{r echo=FALSE}
-heatmaps_post <- ISAnalytics::sharing_heatmap(post_sharing$sharing, interactive = TRUE)
+heatmaps_post <- ISAnalytics::sharing_heatmap(post_sharing, interactive = TRUE)
 ```
 
 ### IS sharing: absolute values

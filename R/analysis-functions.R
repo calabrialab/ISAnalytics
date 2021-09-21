@@ -1081,60 +1081,158 @@ cumulative_count_union <- function(x,
     return(res)
 }
 
+#' Expands integration matrix with the cumulative is union over time.
+#'
+#' @description \lifecycle{experimental}
+#' Given an input integration matrix that can be grouped over time,
+#' this function adds integrations in groups assuming that
+#' if an integration is observed at time point "t" then it is also observed in
+#' time point "t+1".
+#'
+#' @param x An integration matrix, ideally aggregated via
+#' `aggregate_values_by_key()`
+#' @param key The aggregation key used
+#' @param timepoint_col The name of the time point column
+#' @param include_tp_zero Should time point 0 be included?
+#' @param keep_og_is Keep original set of integrations as a separate column?
+#' @param expand If `FALSE`, for each group, the set of integration sites is
+#' returned in a separate column as a nested table, otherwise the resulting
+#' column is unnested.
+#'
+#' @family Analysis functions
+#' @return A data frame
+#' @export
+#'
+#' @importFrom rlang .data
+#' @importFrom data.table .SD
+#'
+#' @examples
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = rlang::current_env()$integration_matrices,
+#'     association_file = rlang::current_env()$association_file,
+#'     value_cols = c("seqCount", "fragmentEstimate")
+#' )
+#' cumulated_is <- cumulative_is(aggreg)
+#' cumulated_is
+cumulative_is <- function(x,
+    key = c(
+        "SubjectID",
+        "CellMarker",
+        "Tissue",
+        "TimePoint"
+    ),
+    timepoint_col = "TimePoint",
+    include_tp_zero = FALSE,
+    keep_og_is = TRUE,
+    expand = FALSE) {
+    stopifnot(is.data.frame(x))
+    stopifnot(is.character(key))
+    stopifnot(is.character(timepoint_col))
+    timepoint_col <- timepoint_col[1]
+    stopifnot(is.logical(include_tp_zero))
+    include_tp_zero <- include_tp_zero[1]
+    stopifnot(is.logical(keep_og_is))
+    stopifnot(is.logical(expand))
+    if (!timepoint_col %in% key) {
+        rlang::abort(.key_without_tp_err())
+    }
+    if (!all(key %in% colnames(x))) {
+        rlang::abort(.missing_user_cols_error(key[!key %in% colnames(x)]))
+    }
+    is_vars <- if (.is_annotated(x)) {
+        c(mandatory_IS_vars(), annotation_IS_vars())
+    } else {
+        mandatory_IS_vars()
+    }
+    temp <- x %>%
+        dplyr::select(dplyr::all_of(c(key, is_vars))) %>%
+        dplyr::mutate(!!timepoint_col := as.numeric(.data[[timepoint_col]]))
+    if (!include_tp_zero) {
+        temp <- temp %>%
+            dplyr::filter(.data[[timepoint_col]] != 0)
+        if (nrow(temp) == 0) {
+            rlang::inform(.only_zero_tp())
+            return(NULL)
+        }
+    }
+    temp <- temp %>%
+        dplyr::group_by(dplyr::across({{ key }})) %>%
+        dplyr::arrange(.data[[timepoint_col]], .by_group = TRUE) %>%
+        dplyr::distinct(dplyr::across(dplyr::all_of(is_vars)),
+            .keep_all = TRUE
+        )
+    temp <- data.table::setDT(temp)
+    temp <- temp[, .(is = list(.SD)), by = key]
+    no_tp_key <- key[key != timepoint_col]
+    splitted <- split(temp, by = no_tp_key)
+    cumulate <- purrr::map(splitted, function(x) {
+        x[, cumulative_is := purrr::accumulate(
+            is,
+            ~ data.table::funion(.x, .y)
+        )]
+    })
+    cumulate <- data.table::rbindlist(cumulate)
+    if (!keep_og_is) {
+        cumulate[, is := NULL]
+    }
+    if (expand) {
+        cumulate <- tidyr::unnest(cumulate,
+            cols = "cumulative_is"
+        )
+        cumulate <- data.table::setDT(cumulate)
+    }
+    cumulate
+}
+
 #' Sharing of integration sites between given groups.
 #'
 #' \lifecycle{experimental}
-#' Computes the amount of integrations shared between the groups identified
-#' by the fields in the `group_key` argument.
-#' An integration site is always identified by the triple
-#' `(chr, integration_locus, strand)`, thus these columns must be present
-#' in the input data frame.
+#' Computes the amount of integration sites shared between the groups identified
+#' in the input data.
 #'
 #' @details
-#' ## Input data frame
-#' The data frame provided in input must be in a suitable format for the
-#' calculations to be accurate. Please note that this function does not
-#' perform any sort of aggregation, it only relies on counts of
-#' distinct integration sites.
+#' An integration site is always identified by the triple
+#' `(chr, integration_locus, strand)`, thus these columns must be present
+#' in the input(s).
 #'
-#' ## Outputs
-#' By default the function outputs a list of 2 data frames:
-#' * The classical sharing data frame with absolute values.
-#' If the argument `relative_is_sharing` is set to TRUE it also contains
-#' the relative sharing (see below).
-#' * The count of distinct IS for each group
+#' The function accepts multiple inputs for different scenarios, please refer
+#' to the vignette
+#' \code{vignette("sharing_analyses", package = "ISAnalytics")}
+#' for a more in-depth explanation.
 #'
-#' The relative sharing is calculated, for each pair of groups (A, B) as
-#' 3 separate columns
-#' \itemize{
-#'   \item Shared over A: (intersection(A,B) / |A|) * 100
-#'   \item Shared over B: (intersection(A,B) / |B|) * 100
-#'   \item Shared over union: (intersection(A,B) / |union(A,B)|) * 100
-#' }
+#' ## Output
+#' The function outputs a single data frame containing all requested
+#' comparisons and optionally individual group counts, genomic coordinates
+#' of the shared integration sites and truth tables for plotting venn diagrams.
 #'
 #' ## Plotting sharing
 #' The sharing data obtained can be easily plotted in a heatmap via the
-#' function \code{\link{sharing_heatmap}}.
+#' function \code{\link{sharing_heatmap}} or via the function
+#' \code{\link{sharing_venn}}
 #'
-#' @param x An integration matrix, aka a data frame containing the columns
-#' `mandatory_IS_vars()`. See details.
+#' @param ... One or more integration matrices
 #' @param group_key Character vector of column names which identify a
 #' single group. An associated group id will be derived by concatenating
 #' the values of these fields, separated by "_"
-#' @param is_count Logical, if TRUE returns also the count of IS for
-#' each group
-#' @param relative_is_sharing Logical, if TRUE also returns the relative
-#' sharing. See details.
-#'
-#' @importFrom rlang abort .data
-#' @importFrom dplyr select all_of distinct transmute inner_join filter
-#' @importFrom dplyr pull mutate
-#' @importFrom tidyr nest unite
-#' @importFrom purrr map_int pmap_dbl
-#' @importFrom tibble tibble add_case
+#' @param group_keys A list of keys for asymmetric grouping.
+#' If not NULL the argument `group_key` is ignored
+#' @param n_comp Number of comparisons to compute. This argument is relevant
+#' only if provided a single data frame and a single key.
+#' @param is_count Logical, if `TRUE` returns also the count of IS for
+#' each group and the count for the union set
+#' @param relative_is_sharing Logical, if `TRUE` also returns the relative
+#' sharing.
+#' @param minimal Compute only combinations instead of all possible
+#' permutations? If `TRUE` saves time and excludes redundant comparisons.
+#' @param include_self_comp Include comparisons with the same group?
+#' @param keep_genomic_coord If `TRUE` keeps the genomic coordinates of the
+#' shared integration sites in a dedicated column (as a nested table)
+#' @param table_for_venn Add column with truth tables for venn plots?
 #'
 #' @family Analysis functions
-#' @return A named list of data frames or a single data frame
+#' @return A data frame
 #' @export
 #'
 #' @examples
@@ -1147,144 +1245,220 @@ cumulative_count_union <- function(x,
 #' )
 #' sharing <- is_sharing(aggreg)
 #' sharing
-is_sharing <- function(x,
+is_sharing <- function(...,
     group_key = c(
         "SubjectID",
         "CellMarker",
         "Tissue",
         "TimePoint"
     ),
+    group_keys = NULL,
+    n_comp = 2,
     is_count = TRUE,
-    relative_is_sharing = TRUE) {
+    relative_is_sharing = TRUE,
+    minimal = TRUE,
+    include_self_comp = FALSE,
+    keep_genomic_coord = FALSE,
+    table_for_venn = FALSE) {
     ## Checks
-    stopifnot(is.data.frame(x))
-    stopifnot(is.character(group_key))
+    if (!requireNamespace("gtools", quietly = TRUE)) {
+        rlang::abort(.missing_pkg_error("gtools"))
+    }
+    dots <- rlang::list2(...)
+    if (is.null(dots) || purrr::is_empty(dots)) {
+        rlang::abort(.no_data_supp())
+    }
+    all_dfs <- purrr::map_lgl(dots, ~ is.data.frame(.x))
+    if (!all(all_dfs)) {
+        rlang::abort(.non_df_input_err())
+    }
+    stopifnot(is.null(group_keys) || is.list(group_keys))
+    stopifnot(is.null(group_key) || is.character(group_key))
+    stopifnot(is.logical(minimal))
+    stopifnot(is.logical(keep_genomic_coord))
+    stopifnot(is.logical(table_for_venn))
+    key_mode <- if (!is.null(group_keys)) {
+        if (any(purrr::map_lgl(
+            group_keys,
+            ~ all(is.character(.x))
+        ) == FALSE)) {
+            rlang::abort(.keys_not_char_err())
+        }
+        if (length(unique(group_keys)) == 1) {
+            if (getOption("ISAnalytics.verbose") == TRUE) {
+                one_key_list <- c("Single key in list",
+                    i = paste(
+                        "Provided a single key in list,",
+                        "automatically performing",
+                        "group comparisons"
+                    )
+                )
+                rlang::inform(one_key_list, class = "one_key_list")
+            }
+            group_key <- group_keys[[1]]
+            "SINGLE_KEY"
+        } else {
+            if (is.null(names(group_keys))) {
+                rlang::inform(.unnamed_keys_warn())
+                def_keys <- paste0("g", seq_along(group_keys))
+                names(group_keys) <- def_keys
+            }
+            "MULT_KEY"
+        }
+    } else {
+        if (!is.character(group_key)) {
+            rlang::abort(.keys_not_char_err())
+        }
+        "SINGLE_KEY"
+    }
+    if (key_mode == "SINGLE_KEY") {
+        stopifnot(is.logical(include_self_comp))
+    }
+    df_mode <- if (length(dots) == 1) {
+        "SINGLE_DF"
+    } else {
+        "MULT_DF"
+    }
     stopifnot(is.logical(is_count))
     stopifnot(is.logical(relative_is_sharing))
-    if (!all(group_key %in% colnames(x))) {
-        rlang::abort(
-            .missing_user_cols_error(
-                group_key[!group_key %in% colnames(x)]
+    if (df_mode == "SINGLE_DF") {
+        ## Single dataframe provided
+        if (!all(mandatory_IS_vars() %in% colnames(dots[[1]]))) {
+            rlang::abort(
+                .missing_mand_vars()
             )
-        )
-    }
-    if (!all(mandatory_IS_vars() %in% colnames(x))) {
-        rlang::abort(
-            .missing_needed_cols(
-                mandatory_IS_vars()[!mandatory_IS_vars() %in% colnames(x)]
-            )
-        )
-    }
-
-    ## --- Nest
-    nested <- x %>%
-        dplyr::select(dplyr::all_of(c(mandatory_IS_vars(), group_key))) %>%
-        dplyr::distinct() %>%
-        tidyr::nest(is_set = mandatory_IS_vars()) %>%
-        tidyr::unite(col = "group_id", group_key)
-
-    ## --- Number of IS for each group
-    is_n <- nested %>%
-        dplyr::transmute(
-            group_id = .data$group_id,
-            num_IS = purrr::map_int(.data$is_set, nrow)
-        )
-
-    ## --- Absolute numeber of IS shared
-    abs_shared_df <- tibble::tibble(
-        group1 = character(0),
-        group2 = character(0),
-        shared = integer(0)
-    )
-    group_ids <- unique(nested$group_id)
-    groups2 <- group_ids
-    for (i in seq_along(group_ids)) {
-        id1 <- group_ids[i]
-        if (i > 1) {
-            groups2 <- groups2[-1]
         }
-        for (id2 in groups2) {
-            if (id1 != id2) {
-                shared_n <- dplyr::inner_join(
-                    x = (dplyr::filter(nested, .data$group_id == id1) %>%
-                        dplyr::pull(.data$is_set))[[1]],
-                    y = (dplyr::filter(nested, .data$group_id == id2) %>%
-                        dplyr::pull(.data$is_set))[[1]],
-                    by = mandatory_IS_vars()
-                ) %>% nrow()
-                abs_shared_df <- abs_shared_df %>%
-                    tibble::add_case(
-                        group1 = c(id1, id2),
-                        group2 = c(id2, id1),
-                        shared = shared_n
+        if (key_mode == "SINGLE_KEY") {
+            ## Single df - Single key
+            if (!all(group_key %in% colnames(dots[[1]]))) {
+                rlang::abort(
+                    .missing_user_cols_error(
+                        group_key[!group_key %in% colnames(dots[[1]])]
                     )
-            } else {
-                shared_n <- nrow((dplyr::filter(
-                    nested,
-                    .data$group_id == id1
-                ) %>%
-                    dplyr::pull(.data$is_set))[[1]])
-                abs_shared_df <- abs_shared_df %>%
-                    tibble::add_case(
-                        group1 = id1,
-                        group2 = id2,
-                        shared = shared_n
+                )
+            }
+            stopifnot(is.numeric(n_comp) || is.integer(n_comp))
+            n_comp <- n_comp[1]
+            if (n_comp < 2) {
+                rlang::abort("`n_comp` must be at least 2")
+            }
+        } else {
+            ## Single df - multiple keys
+            all_cols <- unique(unlist(group_keys))
+            if (!all(all_cols %in% colnames(dots[[1]]))) {
+                rlang::abort(
+                    .missing_user_cols_error(
+                        all_cols[!all_cols %in% colnames(dots[[1]])]
                     )
+                )
+            }
+        }
+    } else {
+        all_mand_vars <- purrr::map_lgl(
+            dots,
+            ~ all(mandatory_IS_vars() %in%
+                colnames(.x))
+        )
+        if (!all(all_mand_vars)) {
+            missing_mand_at <- c("Missing mandatory vars in data frames",
+                i = paste(
+                    "At positions: ",
+                    paste0(which(!all_mand_vars),
+                        collapse = ", "
+                    )
+                )
+            )
+            rlang::abort(missing_mand_at)
+        }
+        if (key_mode == "SINGLE_KEY") {
+            ## Multiple df - single key
+            key_found_df <- purrr::map_lgl(
+                dots,
+                ~ all(group_key %in% colnames(.x))
+            )
+            if (!all(key_found_df)) {
+                err_msg_key_not_found <- paste(
+                    "Key not found in data frames",
+                    paste0(which(!key_found_df),
+                        collapse = ", "
+                    )
+                )
+                rlang::abort(err_msg_key_not_found)
+            }
+        } else {
+            ## Multiple df - multiple keys
+            if (length(dots) != length(group_keys)) {
+                keys_length_err <- c("Wrong key length",
+                    i = paste(
+                        "When providing multiple",
+                        "input data frames,",
+                        "`group_keys` must have",
+                        "the same length"
+                    )
+                )
+                rlang::abort(keys_length_err)
+            }
+            keys_ok <- purrr::map2_lgl(
+                dots, group_keys,
+                ~ all(.y %in% colnames(.x))
+            )
+            if (!all(keys_ok)) {
+                mult_key_err <- c("Some keys not found in corresponding df",
+                    x = paste(
+                        "Issues identified at positions:",
+                        paste0(which(!keys_ok),
+                            collapse = ", "
+                        )
+                    )
+                )
+                rlang::abort(mult_key_err)
             }
         }
     }
-    ### --- Relative number of IS shared
-    if (relative_is_sharing) {
-        abs_shared_df <- abs_shared_df %>%
-            dplyr::mutate(
-                on_g1 = purrr::pmap_dbl(
-                    list(.data$group1, .data$group2, .data$shared),
-                    function(x, y, s) {
-                        if (x == y) {
-                            100
-                        } else {
-                            x_count <- dplyr::filter(
-                                is_n,
-                                .data$group_id == x
-                            ) %>%
-                                dplyr::pull(.data$num_IS)
-                            (s / x_count) * 100
-                        }
-                    }
-                ),
-                on_g2 = purrr::pmap_dbl(
-                    list(.data$group1, .data$group2, .data$shared),
-                    function(x, y, s) {
-                        if (x == y) {
-                            100
-                        } else {
-                            y_count <- dplyr::filter(
-                                is_n,
-                                .data$group_id == y
-                            ) %>%
-                                dplyr::pull(.data$num_IS)
-                            (s / y_count) * 100
-                        }
-                    }
-                ),
-                on_union = purrr::pmap_dbl(
-                    list(.data$group1, .data$group2, .data$shared),
-                    function(x, y, s) {
-                        x_count <- dplyr::filter(is_n, .data$group_id == x) %>%
-                            dplyr::pull(.data$num_IS)
-                        y_count <- dplyr::filter(is_n, .data$group_id == y) %>%
-                            dplyr::pull(.data$num_IS)
-                        union_count <- (s / (x_count + y_count - s)) * 100
-                    }
-                )
-            )
+    sharing <- if (key_mode == "SINGLE_KEY" & df_mode == "SINGLE_DF") {
+        .sharing_singledf_single_key(
+            df = dots[[1]],
+            key = group_key,
+            minimal = minimal,
+            n_comp = n_comp,
+            is_count = is_count,
+            rel_sharing = relative_is_sharing,
+            include_self_comp = include_self_comp,
+            keep_genomic_coord = keep_genomic_coord,
+            venn = table_for_venn
+        )
+    } else if (key_mode == "SINGLE_KEY" & df_mode == "MULT_DF") {
+        .sharing_multdf_single_key(
+            dfs = dots, key = group_key,
+            minimal = minimal, is_count = is_count,
+            rel_sharing = relative_is_sharing,
+            keep_genomic_coord = keep_genomic_coord,
+            venn = table_for_venn
+        )
+    } else if (key_mode == "MULT_KEY" & df_mode == "SINGLE_DF") {
+        .sharing_singledf_mult_key(
+            df = dots[[1]],
+            keys = group_keys,
+            minimal = minimal,
+            is_count = is_count,
+            rel_sharing = relative_is_sharing,
+            keep_genomic_coord = keep_genomic_coord,
+            venn = table_for_venn
+        )
+    } else {
+        .sharing_multdf_mult_key(
+            dfs = dots, keys = group_keys,
+            minimal = minimal,
+            is_count = is_count,
+            rel_sharing = relative_is_sharing,
+            keep_genomic_coord = keep_genomic_coord,
+            venn = table_for_venn
+        )
     }
-
-    if (!is_count) {
-        return(abs_shared_df)
+    if (getOption("ISAnalytics.verbose") == TRUE) {
+        rlang::inform("Done!")
     }
-
-    return(list(is_count = is_n, sharing = abs_shared_df))
+    return(sharing)
 }
 
 

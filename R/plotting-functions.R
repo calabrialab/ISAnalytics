@@ -719,6 +719,7 @@ integration_alluvial_plot <- function(x,
 #' @param perc_symbol Logical. Show percentage symbol in the quantification
 #' column?
 #'
+#' @family Plotting functions
 #' @return A tableGrob object
 #' @export
 #'
@@ -889,6 +890,7 @@ top_abund_tableGrob <- function(df,
 #' [plotly](https://plotly.com/r/getting-started/) is required for this
 #' functionality. Returns the heatmaps as interactive HTML widgets.
 #'
+#' @family Plotting functions
 #' @return A list of plots or widgets
 #' @seealso \link{is_sharing}
 #' @export
@@ -908,14 +910,17 @@ top_abund_tableGrob <- function(df,
 #'     association_file = association_file,
 #'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
-#' sharing <- is_sharing(aggreg)
-#' sharing_heatmaps <- sharing_heatmap(sharing_df = sharing$sharing)
+#' sharing <- is_sharing(aggreg,
+#'     minimal = FALSE,
+#'     include_self_comp = TRUE
+#' )
+#' sharing_heatmaps <- sharing_heatmap(sharing_df = sharing)
 #' sharing_heatmaps$absolute
 #' sharing_heatmaps$on_g1
 #' sharing_heatmaps$on_union
 sharing_heatmap <- function(sharing_df,
-    show_on_x = "group1",
-    show_on_y = "group2",
+    show_on_x = "g1",
+    show_on_y = "g2",
     absolute_sharing_col = "shared",
     title_annot = NULL,
     plot_relative_sharing = TRUE,
@@ -1061,6 +1066,100 @@ sharing_heatmap <- function(sharing_df,
     return(result)
 }
 
+
+#' Produce tables to plot sharing venn or euler diagrams.
+#'
+#' @description \lifecycle{experimental}
+#' This function processes a sharing data frame obtained via `is_sharing()`
+#' with the option `table_for_venn = TRUE` to obtain a list of objects
+#' that can be plotted as venn or euler diagrams.
+#'
+#' @details
+#' The functions requires the package
+#' [eulerr](https://jolars.github.io/eulerr/index.html). Each row of the
+#' input data frame is representable as a venn/euler diagram. The function
+#' allows to specify a range of row indexes to obtain a list of plottable
+#' objects all at once, leave it to NULL to process all rows.
+#'
+#' To actually plot the data it is sufficient to call the function `plot()`
+#' and specify optional customization arguments. See
+#' [eulerr docs](https://jolars.github.io/eulerr/reference/plot.euler.html)
+#' for more detail on this.
+#'
+#' @param sharing_df The sharing data frame
+#' @param row_range Either `NULL` or a numeric vector of row indexes (e.g.
+#' `c(1, 4, 5)` will produce tables only for rows 1, 4 and 5)
+#' @param euler If `TRUE` will produce tables for euler diagrams, otherwise
+#' will produce tables for venn diagrams
+#'
+#' @family Plotting functions
+#'
+#' @return A list of data frames
+#' @export
+#'
+#' @examples
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
+#'     association_file = association_file,
+#'     value_cols = c("seqCount", "fragmentEstimate")
+#' )
+#' sharing <- is_sharing(aggreg, n_comp = 3, table_for_venn = TRUE)
+#' venn_tbls <- sharing_venn(sharing, row_range = 1:3, euler = FALSE)
+#' venn_tbls
+#' plot(venn_tbls[[1]])
+sharing_venn <- function(sharing_df,
+    row_range = NULL,
+    euler = TRUE) {
+    if (!requireNamespace("eulerr", quietly = TRUE)) {
+        rlang::abort(.missing_pkg_error("eulerr"))
+    }
+    stopifnot(is.data.frame(sharing_df))
+    stopifnot(is.null(row_range) ||
+        is.numeric(row_range) || is.integer(row_range))
+    stopifnot(is.logical(euler))
+    # Check row range
+    if (is.null(row_range)) {
+        row_range <- seq_len(nrow(sharing_df))
+    }
+    # Check truth table
+    if (!"truth_tbl_venn" %in% colnames(sharing_df)) {
+        no_truth_tbl_msg <- c("No truth table column",
+            x = paste(
+                "The column 'truth_tbl_venn'",
+                "is required but seems to be missing"
+            ),
+            i = paste(
+                "Did you forget to call",
+                "`is_sharing(..., table_for_venn",
+                "= TRUE)`?"
+            )
+        )
+        rlang::abort(no_truth_tbl_msg)
+    }
+    # Filter data
+    filtered_df <- sharing_df[row_range]
+    if (nrow(filtered_df) == 0) {
+        rlang::inform("Empty table, nothing to compute")
+        return(NULL)
+    }
+    fixed_tbls <- if (euler) {
+        purrr::map(filtered_df$truth_tbl_venn, function(x) {
+            as_matrix <- as.matrix(x, rownames = "int_id")
+            eul <- eulerr::euler(as_matrix)
+            eul
+        })
+    } else {
+        purrr::map(filtered_df$truth_tbl_venn, function(x) {
+            as_matrix <- as.matrix(x, rownames = "int_id")
+            eul <- eulerr::venn(as_matrix)
+            eul
+        })
+    }
+    fixed_tbls
+}
+
 #' Trace a circos plot of genomic densities.
 #'
 #' @description \lifecycle{experimental}
@@ -1109,6 +1208,7 @@ sharing_heatmap <- function(sharing_df,
 #' @importFrom fs is_dir dir_exists dir_create path path_ext_set path_ext
 #' @importFrom lubridate today
 #'
+#' @family Plotting functions
 #' @return `NULL`
 #' @export
 #'

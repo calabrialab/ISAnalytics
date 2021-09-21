@@ -64,9 +64,9 @@ sample_key = c("SubjectID", "CellMarker","Tissue", "TimePoint"))
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 stats <- sample_statistics(
-    x = integration_matrices,
-    metadata = association_file,
-    value_columns = c("seqCount", "fragmentEstimate")
+  x = integration_matrices,
+  metadata = association_file,
+  value_columns = c("seqCount", "fragmentEstimate")
 )
 stats
 }
@@ -76,6 +76,7 @@ Other Analysis functions:
 \code{\link{comparison_matrix}()},
 \code{\link{compute_abundance}()},
 \code{\link{cumulative_count_union}()},
+\code{\link{cumulative_is}()},
 \code{\link{is_sharing}()},
 \code{\link{separate_quant_matrices}()},
 \code{\link{threshold_filter}()},

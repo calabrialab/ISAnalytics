@@ -72,26 +72,30 @@ as transparent in the strata.
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-    x = integration_matrices,
-    association_file = association_file,
-    value_cols = c("seqCount", "fragmentEstimate")
+  x = integration_matrices,
+  association_file = association_file,
+  value_cols = c("seqCount", "fragmentEstimate")
 )
 abund <- compute_abundance(x = aggreg)
 alluvial_plots <- integration_alluvial_plot(abund,
-    alluvia_plot_y_threshold = 0.5
+  alluvia_plot_y_threshold = 0.5
 )
 ex_plot <- alluvial_plots[[1]]$plot +
-    ggplot2::labs(
-        title = "IS distribution over time",
-        subtitle = "Patient 1, MNC BM",
-        y = "Abundance (\%)",
-        x = "Time point (days after GT)"
-    )
+  ggplot2::labs(
+    title = "IS distribution over time",
+    subtitle = "Patient 1, MNC BM",
+    y = "Abundance (\%)",
+    x = "Time point (days after GT)"
+  )
 print(ex_plot)
 }
 \seealso{
 Other Plotting functions: 
 \code{\link{CIS_volcano_plot}()},
-\code{\link{HSC_population_plot}()}
+\code{\link{HSC_population_plot}()},
+\code{\link{circos_genomic_density}()},
+\code{\link{sharing_heatmap}()},
+\code{\link{sharing_venn}()},
+\code{\link{top_abund_tableGrob}()}
 }
 \concept{Plotting functions}

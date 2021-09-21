@@ -87,7 +87,7 @@ example_list <- list(first = example_df,
                      third = example_df)
 print(example_list)
 }\if{html}{\out{</div>}}\preformatted{## $first
-## # A tibble: 3 x 4
+## # A tibble: 3 × 4
 ##       a     b c         d
 ##   <dbl> <dbl> <chr> <int>
 ## 1    20    40 a         3
@@ -95,7 +95,7 @@ print(example_list)
 ## 3    40    60 c         5
 ## 
 ## $second
-## # A tibble: 3 x 4
+## # A tibble: 3 × 4
 ##       a     b c         d
 ##   <dbl> <dbl> <chr> <int>
 ## 1    20    40 a         3
@@ -103,7 +103,7 @@ print(example_list)
 ## 3    40    60 c         5
 ## 
 ## $third
-## # A tibble: 3 x 4
+## # A tibble: 3 × 4
 ##       a     b c         d
 ##   <dbl> <dbl> <chr> <int>
 ## 1    20    40 a         3
@@ -118,13 +118,13 @@ comparators = list(first = c(">", "<"),
 third = c(">=")))
 print(filtered)
 }\if{html}{\out{</div>}}\preformatted{## $first
-## # A tibble: 1 x 4
+## # A tibble: 1 × 4
 ##       a     b c         d
 ##   <dbl> <dbl> <chr> <int>
 ## 1    30    50 b         4
 ## 
 ## $second
-## # A tibble: 3 x 4
+## # A tibble: 3 × 4
 ##       a     b c         d
 ##   <dbl> <dbl> <chr> <int>
 ## 1    20    40 a         3
@@ -132,7 +132,7 @@ print(filtered)
 ## 3    40    60 c         5
 ## 
 ## $third
-## # A tibble: 2 x 4
+## # A tibble: 2 × 4
 ##       a     b c         d
 ##   <dbl> <dbl> <chr> <int>
 ## 1    30    50 b         4
@@ -176,30 +176,30 @@ be filtered
 }
 \examples{
 example_df <- tibble::tibble(
-    a = c(20, 30, 40),
-    b = c(40, 50, 60),
-    c = c("a", "b", "c"),
-    d = c(3L, 4L, 5L)
+  a = c(20, 30, 40),
+  b = c(40, 50, 60),
+  c = c("a", "b", "c"),
+  d = c(3L, 4L, 5L)
 )
 example_list <- list(
-    first = example_df,
-    second = example_df,
-    third = example_df
+  first = example_df,
+  second = example_df,
+  third = example_df
 )
 
 filtered <- threshold_filter(example_list,
-    threshold = list(
-        first = c(20, 60),
-        third = c(25)
-    ),
-    cols_to_compare = list(
-        first = c("a", "b"),
-        third = c("a")
-    ),
-    comparators = list(
-        first = c(">", "<"),
-        third = c(">=")
-    )
+  threshold = list(
+    first = c(20, 60),
+    third = c(25)
+  ),
+  cols_to_compare = list(
+    first = c("a", "b"),
+    third = c("a")
+  ),
+  comparators = list(
+    first = c(">", "<"),
+    third = c(">=")
+  )
 )
 filtered
 }
@@ -209,6 +209,7 @@ Other Analysis functions:
 \code{\link{comparison_matrix}()},
 \code{\link{compute_abundance}()},
 \code{\link{cumulative_count_union}()},
+\code{\link{cumulative_is}()},
 \code{\link{is_sharing}()},
 \code{\link{sample_statistics}()},
 \code{\link{separate_quant_matrices}()},

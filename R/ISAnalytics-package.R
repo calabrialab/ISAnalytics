@@ -49,6 +49,7 @@
 #'   * \code{\link{CIS_grubbs}}
 #'   * \code{\link{cumulative_count_union}}
 #'   * \code{\link{is_sharing}}
+#'   * \code{\link{cumulative_is}}
 #' * HSC population size estimate:
 #'   * \code{\link{HSC_population_size_estimate}}
 #' * Plotting functions:
@@ -58,6 +59,7 @@
 #'   * \code{\link{integration_alluvial_plot}}
 #'   * \code{\link{top_abund_tableGrob}}
 #'   * \code{\link{circos_genomic_density}}
+#'   * \code{\link{sharing_venn}}
 #' * Utility functions:
 #'   * \code{\link{generate_blank_association_file}}
 #'   * \code{\link{generate_Vispa2_launch_AF}}
@@ -71,6 +73,8 @@
 #' * \code{vignette("aggregate_function_usage",
 #' package = "ISAnalytics")}
 #' * \code{vignette("report_system",
+#' package = "ISAnalytics")}
+#' * \code{vignette("sharing_analyses",
 #' package = "ISAnalytics")}
 #'
 #' @docType package

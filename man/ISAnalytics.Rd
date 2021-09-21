@@ -71,6 +71,7 @@ and Annotation of Vector Integration Sites}
 \item \code{\link{CIS_grubbs}}
 \item \code{\link{cumulative_count_union}}
 \item \code{\link{is_sharing}}
+\item \code{\link{cumulative_is}}
 }
 \item HSC population size estimate:
 \itemize{
@@ -84,6 +85,7 @@ and Annotation of Vector Integration Sites}
 \item \code{\link{integration_alluvial_plot}}
 \item \code{\link{top_abund_tableGrob}}
 \item \code{\link{circos_genomic_density}}
+\item \code{\link{sharing_venn}}
 }
 \item Utility functions:
 \itemize{
@@ -104,6 +106,8 @@ package = "ISAnalytics")}
 \item \code{vignette("aggregate_function_usage",
 package = "ISAnalytics")}
 \item \code{vignette("report_system",
+package = "ISAnalytics")}
+\item \code{vignette("sharing_analyses",
 package = "ISAnalytics")}
 }
 }

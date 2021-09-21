@@ -39,11 +39,11 @@ For more details see the "How to use import functions" vignette:
 fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 fs <- unzip_file_system(fs_path, "fs")
 matrix_path <- fs::path(
-    fs,
-    "PJ01",
-    "quantification",
-    "POOL01-1",
-    "PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz"
+  fs,
+  "PJ01",
+  "quantification",
+  "POOL01-1",
+  "PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz"
 )
 matrix <- import_single_Vispa2Matrix(matrix_path)
 head(matrix)

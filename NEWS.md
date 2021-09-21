@@ -1,6 +1,19 @@
 NEWS
 ================
 
+# ISAnalytics 1.3.5 (2021-09-21)
+
+## MAJOR CHANGES
+
+-   Reworked `is_sharing()` function, detailed usage in vignette
+    `vignette("sharing_analyses", package = "ISAnalytics")`
+
+## NEW
+
+-   New function `cumulative_is()`
+-   New function for plotting sharing as venn/euler diagrams
+    `sharing_venn()`
+
 # ISAnalytics 1.3.4 (2021-08 -03)
 
 ## FIXES/MINOR UPDATES

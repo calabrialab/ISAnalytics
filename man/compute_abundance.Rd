@@ -49,9 +49,9 @@ column) will be produced.
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 abund <- compute_abundance(
-    x = integration_matrices,
-    columns = "fragmentEstimate",
-    key = "CompleteAmplificationID"
+  x = integration_matrices,
+  columns = "fragmentEstimate",
+  key = "CompleteAmplificationID"
 )
 head(abund)
 }
@@ -60,6 +60,7 @@ Other Analysis functions:
 \code{\link{CIS_grubbs}()},
 \code{\link{comparison_matrix}()},
 \code{\link{cumulative_count_union}()},
+\code{\link{cumulative_is}()},
 \code{\link{is_sharing}()},
 \code{\link{sample_statistics}()},
 \code{\link{separate_quant_matrices}()},

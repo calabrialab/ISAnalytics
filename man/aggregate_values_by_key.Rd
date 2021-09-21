@@ -92,9 +92,9 @@ will be added to the final data frame.
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-    x = integration_matrices,
-    association_file = association_file,
-    value_cols = c("seqCount", "fragmentEstimate")
+  x = integration_matrices,
+  association_file = association_file,
+  value_cols = c("seqCount", "fragmentEstimate")
 )
 head(aggreg)
 }

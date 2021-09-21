@@ -94,7 +94,7 @@ in sequence.
 \examples{
 data("association_file", package = "ISAnalytics")
 flagged <- outliers_by_pool_fragments(association_file,
-    report_path = NULL
+  report_path = NULL
 )
 head(flagged)
 }

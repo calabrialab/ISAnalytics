@@ -6,8 +6,8 @@
 \usage{
 sharing_heatmap(
   sharing_df,
-  show_on_x = "group1",
-  show_on_y = "group2",
+  show_on_x = "g1",
+  show_on_y = "g2",
   absolute_sharing_col = "shared",
   title_annot = NULL,
   plot_relative_sharing = TRUE,
@@ -53,16 +53,28 @@ Displays the IS sharing calculated via \link{is_sharing} as heatmaps.
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-    x = integration_matrices,
-    association_file = association_file,
-    value_cols = c("seqCount", "fragmentEstimate")
+  x = integration_matrices,
+  association_file = association_file,
+  value_cols = c("seqCount", "fragmentEstimate")
 )
-sharing <- is_sharing(aggreg)
-sharing_heatmaps <- sharing_heatmap(sharing_df = sharing$sharing)
+sharing <- is_sharing(aggreg,
+  minimal = FALSE,
+  include_self_comp = TRUE
+)
+sharing_heatmaps <- sharing_heatmap(sharing_df = sharing)
 sharing_heatmaps$absolute
 sharing_heatmaps$on_g1
 sharing_heatmaps$on_union
 }
 \seealso{
 \link{is_sharing}
+
+Other Plotting functions: 
+\code{\link{CIS_volcano_plot}()},
+\code{\link{HSC_population_plot}()},
+\code{\link{circos_genomic_density}()},
+\code{\link{integration_alluvial_plot}()},
+\code{\link{sharing_venn}()},
+\code{\link{top_abund_tableGrob}()}
 }
+\concept{Plotting functions}

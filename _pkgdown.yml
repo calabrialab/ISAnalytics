@@ -41,6 +41,8 @@ navbar:
         href: articles/how_to_import_functions.html
       - text: ISAnalytics report system
         href: articles/report_system.html
+      - text: Sharing analyses with ISAnalytics
+        href: articles/sharing_analyses.html
     release-v:
       icon: fas fa-code-branch
       text: RELEASE
@@ -79,6 +81,7 @@ reference:
   - sample_statistics
   - CIS_grubbs
   - cumulative_count_union
+  - cumulative_is
   - is_sharing
 - title: "HSC population estimate"
 - contents:
@@ -90,6 +93,7 @@ reference:
   - integration_alluvial_plot
   - top_abund_tableGrob
   - sharing_heatmap
+  - sharing_venn
   - circos_genomic_density
 - title: "Utility functions"
 - contents:

@@ -10,7 +10,7 @@
     list(
         collisions = list(
             template_name = "collision-report.Rmd",
-            required_pkgs = c("flexdashboard", "plotly", "DT", "ggvenn"),
+            required_pkgs = c("flexdashboard", "plotly", "DT", "eulerr"),
             def_filename = "collision_removal_report.html"
         ),
         vispa2_stats = list(

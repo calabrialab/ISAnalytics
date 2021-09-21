@@ -47,16 +47,16 @@ of reference.
 fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 fs <- unzip_file_system(fs_path, "fs")
 af_path <- system.file("extdata", "asso.file.tsv.gz",
-    package = "ISAnalytics"
+  package = "ISAnalytics"
 )
 af <- import_association_file(af_path,
-    root = fs,
-    import_iss = FALSE,
-    report_path = NULL
+  root = fs,
+  import_iss = FALSE,
+  report_path = NULL
 )
 matrices <- import_parallel_Vispa2Matrices(af,
-    c("seqCount", "fragmentEstimate"),
-    mode = "AUTO", report_path = NULL, multi_quant_matrix = FALSE
+  c("seqCount", "fragmentEstimate"),
+  mode = "AUTO", report_path = NULL, multi_quant_matrix = FALSE
 )
 multi_quant <- comparison_matrix(matrices)
 head(multi_quant)
@@ -68,6 +68,7 @@ Other Analysis functions:
 \code{\link{CIS_grubbs}()},
 \code{\link{compute_abundance}()},
 \code{\link{cumulative_count_union}()},
+\code{\link{cumulative_is}()},
 \code{\link{is_sharing}()},
 \code{\link{sample_statistics}()},
 \code{\link{separate_quant_matrices}()},

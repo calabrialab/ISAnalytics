@@ -34,8 +34,8 @@ Filter out outliers in metadata.
 \examples{
 data("association_file", package = "ISAnalytics")
 filtered_af <- outlier_filter(association_file,
-    key = "BARCODE_MUX",
-    report_path = NULL
+  key = "BARCODE_MUX",
+  report_path = NULL
 )
 head(filtered_af)
 }
