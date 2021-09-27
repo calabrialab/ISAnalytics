@@ -73,16 +73,16 @@ otherwise an error message is thrown.
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-  x = integration_matrices,
-  association_file = association_file,
-  value_cols = c("seqCount", "fragmentEstimate")
+    x = integration_matrices,
+    association_file = association_file,
+    value_cols = c("seqCount", "fragmentEstimate")
 )
 by_subj <- aggreg \%>\%
-  dplyr::group_by(.data$SubjectID) \%>\%
-  dplyr::group_split()
+    dplyr::group_by(.data$SubjectID) \%>\%
+    dplyr::group_split()
 circos_genomic_density(by_subj,
-  track_colors = c("navyblue", "gold"),
-  grDevice = "default", track.height = 0.1
+    track_colors = c("navyblue", "gold"),
+    grDevice = "default", track.height = 0.1
 )
 }
 }

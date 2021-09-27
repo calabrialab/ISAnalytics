@@ -748,10 +748,10 @@ sample_statistics <- function(x, metadata,
 #' ## Genomic annotation file
 #' This file is a data base, or more simply a .tsv file to import, with
 #' genes annotation for the specific genome. The annotations for the
-#' human genome (hg19) and murine genome (mm9 and mm10) are already
+#' human genome (hg19) and murine genome (mm9) are already
 #' included in this package: to use one of them just
-#' set the argument `genomic_annotation_file` to either `"hg19"`,
-#' `"mm9"` or `"mm10"`.
+#' set the argument `genomic_annotation_file` to either `"hg19"` or
+#' `"mm9"`.
 #' If for any reason the user is performing an analysis on another genome,
 #' this file needs to be changed respecting the USCS Genome Browser
 #' format, meaning the input file headers should include:
@@ -803,7 +803,7 @@ CIS_grubbs <- function(x,
     # Check other parameters
     stopifnot(is.character(genomic_annotation_file))
     genomic_annotation_file <- genomic_annotation_file[1]
-    if (genomic_annotation_file %in% c("hg19", "mm9", "mm10")) {
+    if (genomic_annotation_file %in% c("hg19", "mm9")) {
         gen_file <- paste0("refGenes_", genomic_annotation_file)
         utils::data(list = gen_file, envir = rlang::current_env())
         refgenes <- rlang::eval_tidy(rlang::sym(gen_file))

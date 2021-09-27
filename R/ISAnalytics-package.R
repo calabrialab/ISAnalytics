@@ -72,8 +72,6 @@
 #' package = "ISAnalytics")}
 #' * \code{vignette("aggregate_function_usage",
 #' package = "ISAnalytics")}
-#' * \code{vignette("report_system",
-#' package = "ISAnalytics")}
 #' * \code{vignette("sharing_analyses",
 #' package = "ISAnalytics")}
 #'

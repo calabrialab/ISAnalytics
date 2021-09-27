@@ -48,7 +48,7 @@ quantification matrices as a named list of tibbles.
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 separated <- separate_quant_matrices(
-  integration_matrices
+    integration_matrices
 )
 separated
 }

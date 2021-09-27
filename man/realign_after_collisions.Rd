@@ -35,17 +35,17 @@ For more details on how to use collision removal functionality:
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 separated <- separate_quant_matrices(
-  integration_matrices
+    integration_matrices
 )
 no_coll <- remove_collisions(
-  x = separated$seqCount,
-  association_file = association_file,
-  quant_cols = c(seqCount = "Value"),
-  report_path = NULL
+    x = separated$seqCount,
+    association_file = association_file,
+    quant_cols = c(seqCount = "Value"),
+    report_path = NULL
 )
 realigned <- realign_after_collisions(
-  sc_matrix = no_coll,
-  other_matrices = list(fragmentEstimate = separated$fragmentEstimate)
+    sc_matrix = no_coll,
+    other_matrices = list(fragmentEstimate = separated$fragmentEstimate)
 )
 realigned
 }

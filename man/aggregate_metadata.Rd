@@ -40,7 +40,7 @@ summary of info for each group. For more details on how to use this function:
 \examples{
 data("association_file", package = "ISAnalytics")
 aggreg_meta <- aggregate_metadata(
-  association_file = association_file
+    association_file = association_file
 )
 head(aggreg_meta)
 }

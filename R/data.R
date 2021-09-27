@@ -64,9 +64,6 @@
 #' @describeIn refGenes_hg19 Data frame for murine mm9 genome
 #' @usage data("refGenes_mm9")
 "refGenes_mm9"
-#' @describeIn refGenes_hg19 Data frame for murine mm10 genome
-#' @usage data("refGenes_mm10")
-"refGenes_mm10"
 
 #' Data frames for proto-oncogenes (human and mouse)
 #' amd tumor-suppressor genes from UniProt.

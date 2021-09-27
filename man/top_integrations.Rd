@@ -50,24 +50,24 @@ by passing a vector of column names or passing 2 "shortcuts":
 }
 \examples{
 smpl <- tibble::tibble(
-  chr = c("1", "2", "3", "4", "5", "6"),
-  integration_locus = c(14536, 14544, 14512, 14236, 14522, 14566),
-  strand = c("+", "+", "-", "+", "-", "+"),
-  CompleteAmplificationID = c("ID1", "ID2", "ID1", "ID1", "ID3", "ID2"),
-  Value = c(3, 10, 40, 2, 15, 150),
-  Value2 = c(456, 87, 87, 9, 64, 96),
-  Value3 = c("a", "b", "c", "d", "e", "f")
+    chr = c("1", "2", "3", "4", "5", "6"),
+    integration_locus = c(14536, 14544, 14512, 14236, 14522, 14566),
+    strand = c("+", "+", "-", "+", "-", "+"),
+    CompleteAmplificationID = c("ID1", "ID2", "ID1", "ID1", "ID3", "ID2"),
+    Value = c(3, 10, 40, 2, 15, 150),
+    Value2 = c(456, 87, 87, 9, 64, 96),
+    Value3 = c("a", "b", "c", "d", "e", "f")
 )
 top <- top_integrations(smpl,
-  n = 3,
-  columns = c("Value", "Value2"),
-  keep = "nothing"
+    n = 3,
+    columns = c("Value", "Value2"),
+    keep = "nothing"
 )
 top_key <- top_integrations(smpl,
-  n = 3,
-  columns = "Value",
-  keep = "Value2",
-  key = "CompleteAmplificationID"
+    n = 3,
+    columns = "Value",
+    keep = "Value2",
+    key = "CompleteAmplificationID"
 )
 }
 \seealso{

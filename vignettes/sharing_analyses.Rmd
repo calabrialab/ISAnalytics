@@ -74,10 +74,7 @@ data("association_file")
 ```
 
 ```{r echo=FALSE}
-DT::datatable(head(integration_matrices),
-              rownames = FALSE,
-              options = list(dom = "t",
-                             scrollX = 120))
+print(head(integration_matrices))
 ```
 
 We can aggregate our data in different ways according to our needs (to
@@ -90,13 +87,11 @@ sites.
 agg <- aggregate_values_by_key(integration_matrices,
                                association_file,
                                value_cols = c("seqCount", "fragmentEstimate"))
+agg <- agg %>% dplyr::filter(TimePoint %in% c("0030", "0060"))
 ```
 
 ```{r echo=FALSE}
-DT::datatable(head(agg),
-              rownames = FALSE,
-              options = list(dom = "t",
-                             scrollX = 120))
+print(agg, width = Inf)
 ```
 
 An integration site is *shared* between two or more groups if the same triple
@@ -281,7 +276,7 @@ df1 <- agg %>%
 df2 <- agg %>%
   dplyr::filter(TimePoint == "0060")
 df3 <- agg %>%
-  dplyr::filter(TimePoint == "0180")
+  dplyr::filter(Tissue == "BM")
 
 keys <- list(g1 = c("SubjectID", "CellMarker", "Tissue"),
              g2 = c("SubjectID", "Tissue"),

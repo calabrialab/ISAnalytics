@@ -43,9 +43,9 @@ time point "t+1".
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-  x = rlang::current_env()$integration_matrices,
-  association_file = rlang::current_env()$association_file,
-  value_cols = c("seqCount", "fragmentEstimate")
+    x = rlang::current_env()$integration_matrices,
+    association_file = rlang::current_env()$association_file,
+    value_cols = c("seqCount", "fragmentEstimate")
 )
 cumulated_is <- cumulative_is(aggreg)
 cumulated_is

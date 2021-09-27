@@ -40,9 +40,9 @@ for more detail on this.
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-  x = integration_matrices,
-  association_file = association_file,
-  value_cols = c("seqCount", "fragmentEstimate")
+    x = integration_matrices,
+    association_file = association_file,
+    value_cols = c("seqCount", "fragmentEstimate")
 )
 sharing <- is_sharing(aggreg, n_comp = 3, table_for_venn = TRUE)
 venn_tbls <- sharing_venn(sharing, row_range = 1:3, euler = FALSE)

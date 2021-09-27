@@ -78,7 +78,8 @@ It is also possible to filter different data frames with different
 sets of conditions. Besides having the possibility of defining the
 other parameters as simple vector, which has the same results as
 operating on an unnamed list, the user can define the parameters as
-named lists containing vectors. For example:\if{html}{\out{<div class="r">}}\preformatted{example_df <- tibble::tibble(a = c(20, 30, 40),
+named lists containing vectors. For example:\if{html}{\out{<div class="r">}}\preformatted{
+example_df <- tibble::tibble(a = c(20, 30, 40),
                              b = c(40, 50, 60),
                              c = c("a", "b", "c"),
                              d = c(3L, 4L, 5L))
@@ -86,30 +87,31 @@ example_list <- list(first = example_df,
                      second = example_df,
                      third = example_df)
 print(example_list)
-}\if{html}{\out{</div>}}\preformatted{## $first
-## # A tibble: 3 × 4
-##       a     b c         d
-##   <dbl> <dbl> <chr> <int>
-## 1    20    40 a         3
-## 2    30    50 b         4
-## 3    40    60 c         5
-## 
-## $second
-## # A tibble: 3 × 4
-##       a     b c         d
-##   <dbl> <dbl> <chr> <int>
-## 1    20    40 a         3
-## 2    30    50 b         4
-## 3    40    60 c         5
-## 
-## $third
-## # A tibble: 3 × 4
-##       a     b c         d
-##   <dbl> <dbl> <chr> <int>
-## 1    20    40 a         3
-## 2    30    50 b         4
-## 3    40    60 c         5
-}\if{html}{\out{<div class="r">}}\preformatted{filtered <- threshold_filter(example_list,
+#> $first
+#> # A tibble: 3 × 4
+#>       a     b c         d
+#>   <dbl> <dbl> <chr> <int>
+#> 1    20    40 a         3
+#> 2    30    50 b         4
+#> 3    40    60 c         5
+#> 
+#> $second
+#> # A tibble: 3 × 4
+#>       a     b c         d
+#>   <dbl> <dbl> <chr> <int>
+#> 1    20    40 a         3
+#> 2    30    50 b         4
+#> 3    40    60 c         5
+#> 
+#> $third
+#> # A tibble: 3 × 4
+#>       a     b c         d
+#>   <dbl> <dbl> <chr> <int>
+#> 1    20    40 a         3
+#> 2    30    50 b         4
+#> 3    40    60 c         5
+
+filtered <- threshold_filter(example_list,
 threshold = list(first = c(20, 60),
 third = c(25)),
 cols_to_compare = list(first = c("a", "b"),
@@ -117,27 +119,27 @@ third = c("a")),
 comparators = list(first = c(">", "<"),
 third = c(">=")))
 print(filtered)
-}\if{html}{\out{</div>}}\preformatted{## $first
-## # A tibble: 1 × 4
-##       a     b c         d
-##   <dbl> <dbl> <chr> <int>
-## 1    30    50 b         4
-## 
-## $second
-## # A tibble: 3 × 4
-##       a     b c         d
-##   <dbl> <dbl> <chr> <int>
-## 1    20    40 a         3
-## 2    30    50 b         4
-## 3    40    60 c         5
-## 
-## $third
-## # A tibble: 2 × 4
-##       a     b c         d
-##   <dbl> <dbl> <chr> <int>
-## 1    30    50 b         4
-## 2    40    60 c         5
-}
+#> $first
+#> # A tibble: 1 × 4
+#>       a     b c         d
+#>   <dbl> <dbl> <chr> <int>
+#> 1    30    50 b         4
+#> 
+#> $second
+#> # A tibble: 3 × 4
+#>       a     b c         d
+#>   <dbl> <dbl> <chr> <int>
+#> 1    20    40 a         3
+#> 2    30    50 b         4
+#> 3    40    60 c         5
+#> 
+#> $third
+#> # A tibble: 2 × 4
+#>       a     b c         d
+#>   <dbl> <dbl> <chr> <int>
+#> 1    30    50 b         4
+#> 2    40    60 c         5
+}\if{html}{\out{</div>}}
 
 The above signature will roughly be translated as:
 \itemize{
@@ -176,30 +178,30 @@ be filtered
 }
 \examples{
 example_df <- tibble::tibble(
-  a = c(20, 30, 40),
-  b = c(40, 50, 60),
-  c = c("a", "b", "c"),
-  d = c(3L, 4L, 5L)
+    a = c(20, 30, 40),
+    b = c(40, 50, 60),
+    c = c("a", "b", "c"),
+    d = c(3L, 4L, 5L)
 )
 example_list <- list(
-  first = example_df,
-  second = example_df,
-  third = example_df
+    first = example_df,
+    second = example_df,
+    third = example_df
 )
 
 filtered <- threshold_filter(example_list,
-  threshold = list(
-    first = c(20, 60),
-    third = c(25)
-  ),
-  cols_to_compare = list(
-    first = c("a", "b"),
-    third = c("a")
-  ),
-  comparators = list(
-    first = c(">", "<"),
-    third = c(">=")
-  )
+    threshold = list(
+        first = c(20, 60),
+        third = c(25)
+    ),
+    cols_to_compare = list(
+        first = c("a", "b"),
+        third = c("a")
+    ),
+    comparators = list(
+        first = c(">", "<"),
+        third = c(">=")
+    )
 )
 filtered
 }

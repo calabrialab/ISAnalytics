@@ -64,9 +64,9 @@ is required. To visualize the resulting object:\preformatted{gridExtra::grid.arr
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-  x = integration_matrices,
-  association_file = association_file,
-  value_cols = c("seqCount", "fragmentEstimate")
+    x = integration_matrices,
+    association_file = association_file,
+    value_cols = c("seqCount", "fragmentEstimate")
 )
 abund <- compute_abundance(x = aggreg)
 grob <- top_abund_tableGrob(abund)

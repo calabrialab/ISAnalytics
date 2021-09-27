@@ -105,8 +105,6 @@ and Annotation of Vector Integration Sites}
 package = "ISAnalytics")}
 \item \code{vignette("aggregate_function_usage",
 package = "ISAnalytics")}
-\item \code{vignette("report_system",
-package = "ISAnalytics")}
 \item \code{vignette("sharing_analyses",
 package = "ISAnalytics")}
 }

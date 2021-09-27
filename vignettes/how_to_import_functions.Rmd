@@ -124,9 +124,7 @@ sample_sparse_matrix <- tibble::tribble(
   "6", 657532, "+", "LOC100507487", "+", 76,545,5,
   "7", 657532, "+", "EDIL3", "-", NA_integer_,56,NA_integer_,
 )
-DT::datatable(sample_sparse_matrix, 
-              rownames = FALSE,
-              options = list(dom = "t", scrollX = 120))
+print(sample_sparse_matrix, width = Inf)
 ```
 
 The package uses a more compact form of these matrices, limiting the amount
@@ -167,9 +165,7 @@ withr::with_options(list(ISAnalytics.reports = FALSE), code = {
 ```
 
 ```{r echo=FALSE}
-DT::datatable(head(af), 
-              rownames = FALSE,
-              options = list(dom = "t", scrollX = 120))
+print(head(af), width = Inf)
 ```
 
 ## Function arguments
@@ -242,9 +238,7 @@ withr::with_options(list(ISAnalytics.reports = FALSE), {
 ```
 
 ```{r echo=FALSE}
-DT::datatable(head(vispa_stats), 
-              rownames = FALSE,
-              options = list(dom = "t", scrollX = 120))
+print(head(vispa_stats))
 ```
 
 The function requires as input the imported and file system aligned
@@ -276,9 +270,7 @@ matrix <- import_single_Vispa2Matrix(matrix_path)
 ```
 
 ```{r echo=FALSE}
-DT::datatable(head(matrix), 
-              rownames = FALSE,
-              options = list(dom = "t", scrollX = 120))
+matrix
 ```
 
 Other arguments you can pass to the function are
@@ -357,9 +349,7 @@ single data frames that has a dedicated column for each quantification.
 For example, for the matrices we've imported before:
 
 ```{r echo=FALSE}
-DT::datatable(head(matrices), 
-              rownames = FALSE,
-              options = list(dom = "t", scrollX = 120))
+print(head(matrices), width = Inf)
 ```
 
 ### `report_path` argument

@@ -39,8 +39,6 @@ navbar:
         href: articles/collision_removal.html
       - text: How to use import functions
         href: articles/how_to_import_functions.html
-      - text: ISAnalytics report system
-        href: articles/report_system.html
       - text: Sharing analyses with ISAnalytics
         href: articles/sharing_analyses.html
     release-v:
@@ -131,6 +129,5 @@ reference:
   - proto_oncogenes
   - refGenes_hg19
   - refGenes_mm9
-  - refGenes_mm10
   - tumor_suppressors
 

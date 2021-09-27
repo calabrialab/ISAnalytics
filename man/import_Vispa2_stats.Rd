@@ -45,16 +45,16 @@ file has been aligned with the file system
 fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 fs <- unzip_file_system(fs_path, "fs")
 af_path <- system.file("extdata", "asso.file.tsv.gz",
-  package = "ISAnalytics"
+    package = "ISAnalytics"
 )
 af <- import_association_file(af_path,
-  root = fs,
-  import_iss = FALSE,
-  report_path = NULL
+    root = fs,
+    import_iss = FALSE,
+    report_path = NULL
 )
 stats_files <- import_Vispa2_stats(af,
-  join_with_af = FALSE,
-  report_path = NULL
+    join_with_af = FALSE,
+    report_path = NULL
 )
 head(stats_files)
 }

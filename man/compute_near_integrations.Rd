@@ -83,7 +83,7 @@ all quantification matrices.
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 rec <- compute_near_integrations(
-  x = integration_matrices, map_as_file = FALSE
+    x = integration_matrices, map_as_file = FALSE
 )
 head(rec)
 }

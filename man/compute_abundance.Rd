@@ -49,9 +49,9 @@ column) will be produced.
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 abund <- compute_abundance(
-  x = integration_matrices,
-  columns = "fragmentEstimate",
-  key = "CompleteAmplificationID"
+    x = integration_matrices,
+    columns = "fragmentEstimate",
+    key = "CompleteAmplificationID"
 )
 head(abund)
 }

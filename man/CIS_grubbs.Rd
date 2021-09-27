@@ -46,10 +46,10 @@ this paper:
 
 This file is a data base, or more simply a .tsv file to import, with
 genes annotation for the specific genome. The annotations for the
-human genome (hg19) and murine genome (mm9 and mm10) are already
+human genome (hg19) and murine genome (mm9) are already
 included in this package: to use one of them just
-set the argument \code{genomic_annotation_file} to either \code{"hg19"},
-\code{"mm9"} or \code{"mm10"}.
+set the argument \code{genomic_annotation_file} to either \code{"hg19"} or
+\code{"mm9"}.
 If for any reason the user is performing an analysis on another genome,
 this file needs to be changed respecting the USCS Genome Browser
 format, meaning the input file headers should include:

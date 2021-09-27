@@ -4,21 +4,16 @@
 \name{refGenes_hg19}
 \alias{refGenes_hg19}
 \alias{refGenes_mm9}
-\alias{refGenes_mm10}
 \title{Gene annotation files for hg19, mm9 and mm10.}
 \format{
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 27275 rows and 12 columns.
 
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 24487 rows and 12 columns.
-
-An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 24627 rows and 11 columns.
 }
 \usage{
 data("refGenes_hg19")
 
 data("refGenes_mm9")
-
-data("refGenes_mm10")
 }
 \description{
 This file was obtained following this steps:
@@ -46,8 +41,6 @@ ORDER BY kg.chrom ASC , kg.txStart ASC
 \section{Functions}{
 \itemize{
 \item \code{refGenes_mm9}: Data frame for murine mm9 genome
-
-\item \code{refGenes_mm10}: Data frame for murine mm10 genome
 }}
 
 \keyword{datasets}

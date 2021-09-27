@@ -64,9 +64,9 @@ sample_key = c("SubjectID", "CellMarker","Tissue", "TimePoint"))
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 stats <- sample_statistics(
-  x = integration_matrices,
-  metadata = association_file,
-  value_columns = c("seqCount", "fragmentEstimate")
+    x = integration_matrices,
+    metadata = association_file,
+    value_columns = c("seqCount", "fragmentEstimate")
 )
 stats
 }

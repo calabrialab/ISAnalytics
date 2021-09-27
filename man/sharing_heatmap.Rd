@@ -53,13 +53,13 @@ Displays the IS sharing calculated via \link{is_sharing} as heatmaps.
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-  x = integration_matrices,
-  association_file = association_file,
-  value_cols = c("seqCount", "fragmentEstimate")
+    x = integration_matrices,
+    association_file = association_file,
+    value_cols = c("seqCount", "fragmentEstimate")
 )
 sharing <- is_sharing(aggreg,
-  minimal = FALSE,
-  include_self_comp = TRUE
+    minimal = FALSE,
+    include_self_comp = TRUE
 )
 sharing_heatmaps <- sharing_heatmap(sharing_df = sharing)
 sharing_heatmaps$absolute
