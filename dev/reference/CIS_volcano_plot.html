@@ -114,9 +114,6 @@ Traces a volcano plot for IS frequency and CIS results." />
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/report_system.html">ISAnalytics report system</a>
-    </li>
-    <li>
       <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
@@ -265,30 +262,28 @@ For more details on how this files were generated use the help
 
 <p>The default values are included in this package and
 it can be accessed by doing:<div class="r"></p><pre><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='fu'><a href='known_clinical_oncogenes.html'>known_clinical_oncogenes</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
-</pre><p></div></p><pre><span class='co'>## # A tibble: 5 × 2</span>
-<span class='co'>##   GeneName KnownClonalExpansion</span>
-<span class='co'>##   &lt;chr&gt;    &lt;lgl&gt;               </span>
-<span class='co'>## 1 MECOM    TRUE                </span>
-<span class='co'>## 2 CCND2    TRUE                </span>
-<span class='co'>## 3 TAL1     TRUE                </span>
-<span class='co'>## 4 LMO2     TRUE                </span>
-<span class='co'>## 5 HMGA2    TRUE</span>
-</pre>
-
+<span class='co'>#&gt; # A tibble: 5 × 2</span>
+<span class='co'>#&gt;   GeneName KnownClonalExpansion</span>
+<span class='co'>#&gt;   &lt;chr&gt;    &lt;lgl&gt;               </span>
+<span class='co'>#&gt; 1 MECOM    TRUE                </span>
+<span class='co'>#&gt; 2 CCND2    TRUE                </span>
+<span class='co'>#&gt; 3 TAL1     TRUE                </span>
+<span class='co'>#&gt; 4 LMO2     TRUE                </span>
+<span class='co'>#&gt; 5 HMGA2    TRUE</span>
+</pre><p></div></p>
 <p>If the user wants to change this parameter the input data frame must
 preserve the column structure. The same goes for the <code>suspicious_genes</code>
 parameter (DOIReference column is optional):<div class="r"></p><pre><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='fu'><a href='clinical_relevant_suspicious_genes.html'>clinical_relevant_suspicious_genes</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
-</pre><p></div></p><pre><span class='co'>## # A tibble: 6 × 3</span>
-<span class='co'>##   GeneName ClinicalRelevance DOIReference                                </span>
-<span class='co'>##   &lt;chr&gt;    &lt;lgl&gt;             &lt;chr&gt;                                       </span>
-<span class='co'>## 1 DNMT3A   TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
-<span class='co'>## 2 TET2     TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
-<span class='co'>## 3 ASXL1    TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
-<span class='co'>## 4 JAK2     TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
-<span class='co'>## 5 CBL      TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
-<span class='co'>## 6 TP53     TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
-</pre>
-
+<span class='co'>#&gt; # A tibble: 6 × 3</span>
+<span class='co'>#&gt;   GeneName ClinicalRelevance DOIReference                                </span>
+<span class='co'>#&gt;   &lt;chr&gt;    &lt;lgl&gt;             &lt;chr&gt;                                       </span>
+<span class='co'>#&gt; 1 DNMT3A   TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
+<span class='co'>#&gt; 2 TET2     TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
+<span class='co'>#&gt; 3 ASXL1    TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
+<span class='co'>#&gt; 4 JAK2     TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
+<span class='co'>#&gt; 5 CBL      TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
+<span class='co'>#&gt; 6 TP53     TRUE              https://doi.org/10.1182/blood-2018-01-829937</span>
+</pre><p></div></p>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -303,7 +298,7 @@ parameter (DOIReference column is optional):<div class="r"></p><pre><span class=
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>cis_plot</span> <span class='op'>&lt;-</span> <span class='fu'>CIS_volcano_plot</span><span class='op'>(</span><span class='va'>integration_matrices</span>,
-  title_prefix <span class='op'>=</span> <span class='st'>"PJ01"</span>
+    title_prefix <span class='op'>=</span> <span class='st'>"PJ01"</span>
 <span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Loading annotated genes -  species selected: </span>
 #&gt; <span class='message'>* Homo sapiens (Human)</span></div><div class='output co'>#&gt; <span class='message'>Loading annotated genes -  done</span></div><div class='output co'>#&gt; <span class='message'>Calculating CIS_grubbs for x...</span></div><div class='input'><span class='va'>cis_plot</span>

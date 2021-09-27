@@ -71,9 +71,6 @@
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/report_system.html">ISAnalytics report system</a>
-    </li>
-    <li>
       <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
@@ -106,11 +103,7 @@
 
       
 
-      </header><script src="sharing_analyses_files/accessible-code-block-0.0.1/empty-anchor.js"></script><script src="sharing_analyses_files/htmlwidgets-1.5.4/htmlwidgets.js"></script><link href="sharing_analyses_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="sharing_analyses_files/datatables-binding-0.19/datatables.js"></script><script src="sharing_analyses_files/jquery-3.6.0/jquery-3.6.0.min.js"></script><link href="sharing_analyses_files/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="sharing_analyses_files/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet">
-<script src="sharing_analyses_files/dt-core-1.10.20/js/jquery.dataTables.min.js"></script><link href="sharing_analyses_files/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet">
-<script src="sharing_analyses_files/crosstalk-1.1.1/js/crosstalk.min.js"></script><div class="row">
+      </header><script src="sharing_analyses_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Sharing analyses with ISAnalytics</h1>
@@ -120,7 +113,7 @@
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 class="date">21 September 2021</h4>
+            <h4 class="date">27 September 2021</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/master/vignettes/sharing_analyses.Rmd"><code>vignettes/sharing_analyses.Rmd</code></a></small>
       <div class="hidden name"><code>sharing_analyses.Rmd</code></div>
@@ -219,15 +212,61 @@
 <span class="co">#&gt; Loading required package: magrittr</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"association_file"</span><span class="op">)</span></code></pre></div>
-<div id="htmlwidget-90b98af36e789ee3a713" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-90b98af36e789ee3a713">{"x":{"filter":"none","vertical":false,"data":[["16","4","5","12","5","12"],[68164148,129390130,84009671,54635693,84009671,54635693],["+","+","-","-","-","-"],["NFATC3","LOC100507487","EDIL3","CBX5","EDIL3","CBX5"],["+","+","-","-","-","-"],["PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC","PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC","PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC","PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC","PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC","PJ01_POOL01_LTR27LC94_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC"],[182,23219,20205,13269,14748,12588],[102.945718327,68.7374670022,67.1234858245,65.1576001156,61.4698100152,60.8478128336]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>CompleteAmplificationID<\/th>\n      <th>seqCount<\/th>\n      <th>fragmentEstimate<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,6,7]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>We can aggregate our data in different ways according to our needs (to know more about this topic take a look at the vignette <code><a href="../articles/aggregate_function_usage.html">vignette("aggregate_function_usage", package = "ISAnalytics")</a></code>), obtaining therefore different groups. Each group has an associated set of integration sites.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<pre><code>#&gt;    chr integration_locus strand     GeneName GeneStrand
+#&gt; 1:  16          68164148      +       NFATC3          +
+#&gt; 2:   4         129390130      + LOC100507487          +
+#&gt; 3:   5          84009671      -        EDIL3          -
+#&gt; 4:  12          54635693      -         CBX5          -
+#&gt; 5:   5          84009671      -        EDIL3          -
+#&gt; 6:  12          54635693      -         CBX5          -
+#&gt;                                                 CompleteAmplificationID
+#&gt; 1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC
+#&gt; 2:  PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
+#&gt; 3:  PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
+#&gt; 4:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
+#&gt; 5:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
+#&gt; 6:  PJ01_POOL01_LTR27LC94_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
+#&gt;    seqCount fragmentEstimate
+#&gt; 1:      182        102.94572
+#&gt; 2:    23219         68.73747
+#&gt; 3:    20205         67.12349
+#&gt; 4:    13269         65.15760
+#&gt; 5:    14748         61.46981
+#&gt; 6:    12588         60.84781</code></pre>
+<p>We can aggregate our data in different ways according to our needs (to know more about this topic take a look at the vignette <code><a href="../articles/aggregate_function_usage.html">vignette("aggregate_function_usage", package = "ISAnalytics")</a></code>), obtaining therefore different groups. Each group has an associated set of integration sites.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Aggregation by standard key</span>
 <span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span><span class="va">integration_matrices</span>,
                                <span class="va">association_file</span>,
-                               value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<div id="htmlwidget-567a1598e9e0aef60bd0" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-567a1598e9e0aef60bd0">{"x":{"filter":"none","vertical":false,"data":[["1","1","1","1","1","1"],[8464757,8464757,8607357,8607357,8607357,8607362],["-","-","+","+","+","-"],["RERE","RERE","RERE","RERE","RERE","RERE"],["-","-","-","-","-","-"],["PT001","PT001","PT001","PT001","PT001","PT001"],["MNC","MNC","MNC","MNC","MNC","MNC"],["BM","BM","BM","BM","BM","BM"],["0030","0060","0060","0180","0360","0180"],[542,1,1,1096,330,1702],[3.01147735081,1.00125374215,1.00133972344,5.01068940778,34.1015997274032,4.01318899904]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>chr<\/th>\n      <th>integration_locus<\/th>\n      <th>strand<\/th>\n      <th>GeneName<\/th>\n      <th>GeneStrand<\/th>\n      <th>SubjectID<\/th>\n      <th>CellMarker<\/th>\n      <th>Tissue<\/th>\n      <th>TimePoint<\/th>\n      <th>seqCount_sum<\/th>\n      <th>fragmentEstimate_sum<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","scrollX":120,"columnDefs":[{"className":"dt-right","targets":[1,9,10]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>An integration site is <em>shared</em> between two or more groups if the same triple is observed in all the groups considered.</p>
+                               value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">agg</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"0030"</span>, <span class="st">"0060"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code>#&gt; # A tibble: 419 × 11
+#&gt;    chr   integration_locus strand GeneName GeneStrand SubjectID CellMarker
+#&gt;    &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;     
+#&gt;  1 1               8464757 -      RERE     -          PT001     MNC       
+#&gt;  2 1               8464757 -      RERE     -          PT001     MNC       
+#&gt;  3 1               8607357 +      RERE     -          PT001     MNC       
+#&gt;  4 1              11339120 +      UBIAD1   +          PT001     MNC       
+#&gt;  5 1              11339120 +      UBIAD1   +          PT001     MNC       
+#&gt;  6 1              16186297 -      SPEN     +          PT001     MNC       
+#&gt;  7 1              16186297 -      SPEN     +          PT001     MNC       
+#&gt;  8 1              16602483 +      FBXO42   -          PT001     MNC       
+#&gt;  9 1              25337264 -      MIR4425  +          PT002     MNC       
+#&gt; 10 1              25337264 -      MIR4425  +          PT002     MNC       
+#&gt;    Tissue TimePoint seqCount_sum fragmentEstimate_sum
+#&gt;    &lt;chr&gt;  &lt;chr&gt;            &lt;dbl&gt;                &lt;dbl&gt;
+#&gt;  1 BM     0030               542                 3.01
+#&gt;  2 BM     0060                 1                 1.00
+#&gt;  3 BM     0060                 1                 1.00
+#&gt;  4 BM     0060              1605                 8.03
+#&gt;  5 PB     0060                 1                 1.00
+#&gt;  6 BM     0030                 1                 1.00
+#&gt;  7 PB     0060                 1                 1.00
+#&gt;  8 BM     0060              2947                 9.04
+#&gt;  9 BM     0030                23                 9.14
+#&gt; 10 PB     0060                36                 7.07
+#&gt; # … with 409 more rows</code></pre>
+<p>An integration site is <em>shared</em> between two or more groups if the same triple is observed in all the groups considered.</p>
 </div>
 <div id="automated-sharing-counts" class="section level1">
 <h1 class="hasAnchor">
@@ -236,7 +275,7 @@
 <div id="scenario-1-single-input-data-frame-and-single-grouping-key" class="section level2">
 <h2 class="hasAnchor">
 <a href="#scenario-1-single-input-data-frame-and-single-grouping-key" class="anchor"></a>SCENARIO 1: single input data frame and single grouping key</h2>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>, 
                         group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
                                       <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
@@ -249,30 +288,66 @@
 <span class="co">#&gt; Calculating combinations...</span>
 <span class="co">#&gt; Done!</span>
 <span class="va">sharing_1</span>
-<span class="co">#&gt;                     g1                g2 shared           is_coord count_g1</span>
-<span class="co">#&gt;   1: PT001_MNC_BM_0030 PT001_MNC_BM_0060     21 &lt;data.table[21x3]&gt;       54</span>
-<span class="co">#&gt;   2: PT001_MNC_BM_0030 PT001_MNC_BM_0180     15 &lt;data.table[15x3]&gt;       54</span>
-<span class="co">#&gt;   3: PT001_MNC_BM_0060 PT001_MNC_BM_0180     13 &lt;data.table[13x3]&gt;      114</span>
-<span class="co">#&gt;   4: PT001_MNC_BM_0090 PT001_MNC_BM_0180     18 &lt;data.table[18x3]&gt;       59</span>
-<span class="co">#&gt;   5: PT001_MNC_BM_0030 PT001_MNC_BM_0360     21 &lt;data.table[21x3]&gt;       54</span>
-<span class="co">#&gt;  ---                                                                       </span>
-<span class="co">#&gt; 186: PT001_MNC_BM_0090 PT002_MNC_PB_0090      0  &lt;data.table[0x3]&gt;       59</span>
-<span class="co">#&gt; 187: PT002_MNC_BM_0060 PT002_MNC_PB_0090      4  &lt;data.table[4x3]&gt;       33</span>
-<span class="co">#&gt; 188: PT002_MNC_BM_0090 PT002_MNC_PB_0090      2  &lt;data.table[2x3]&gt;       40</span>
-<span class="co">#&gt; 189: PT001_MNC_PB_0090 PT002_MNC_PB_0090      0  &lt;data.table[0x3]&gt;       48</span>
-<span class="co">#&gt; 190: PT001_MNC_PB_0360 PT002_MNC_PB_0090      0  &lt;data.table[0x3]&gt;       43</span>
-<span class="co">#&gt;      count_g2 count_union    on_g1     on_g2  on_union</span>
-<span class="co">#&gt;   1:      114         147 38.88889 18.421053 14.285714</span>
-<span class="co">#&gt;   2:       89         128 27.77778 16.853933 11.718750</span>
-<span class="co">#&gt;   3:       89         190 11.40351 14.606742  6.842105</span>
-<span class="co">#&gt;   4:       89         130 30.50847 20.224719 13.846154</span>
-<span class="co">#&gt;   5:       78         111 38.88889 26.923077 18.918919</span>
-<span class="co">#&gt;  ---                                                  </span>
-<span class="co">#&gt; 186:       24          83  0.00000  0.000000  0.000000</span>
-<span class="co">#&gt; 187:       24          53 12.12121 16.666667  7.547170</span>
-<span class="co">#&gt; 188:       24          62  5.00000  8.333333  3.225806</span>
-<span class="co">#&gt; 189:       24          72  0.00000  0.000000  0.000000</span>
-<span class="co">#&gt; 190:       24          67  0.00000  0.000000  0.000000</span></code></pre></div>
+<span class="co">#&gt;                    g1                g2 shared           is_coord count_g1</span>
+<span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC_BM_0060     21 &lt;data.table[21x3]&gt;       54</span>
+<span class="co">#&gt;  2: PT001_MNC_BM_0030 PT001_MNC_PB_0060      8  &lt;data.table[8x3]&gt;       54</span>
+<span class="co">#&gt;  3: PT001_MNC_BM_0060 PT001_MNC_PB_0060     29 &lt;data.table[29x3]&gt;      114</span>
+<span class="co">#&gt;  4: PT001_MNC_PB_0030 PT001_MNC_PB_0060     10 &lt;data.table[10x3]&gt;       28</span>
+<span class="co">#&gt;  5: PT001_MNC_BM_0030 PT002_MNC_BM_0030      0  &lt;data.table[0x3]&gt;       54</span>
+<span class="co">#&gt;  6: PT001_MNC_BM_0060 PT002_MNC_BM_0030      1  &lt;data.table[1x3]&gt;      114</span>
+<span class="co">#&gt;  7: PT001_MNC_PB_0060 PT002_MNC_BM_0030      1  &lt;data.table[1x3]&gt;       59</span>
+<span class="co">#&gt;  8: PT001_MNC_PB_0030 PT002_MNC_BM_0030      0  &lt;data.table[0x3]&gt;       28</span>
+<span class="co">#&gt;  9: PT001_MNC_BM_0030 PT002_MNC_PB_0060      0  &lt;data.table[0x3]&gt;       54</span>
+<span class="co">#&gt; 10: PT001_MNC_BM_0060 PT002_MNC_PB_0060      0  &lt;data.table[0x3]&gt;      114</span>
+<span class="co">#&gt; 11: PT001_MNC_PB_0060 PT002_MNC_PB_0060      0  &lt;data.table[0x3]&gt;       59</span>
+<span class="co">#&gt; 12: PT002_MNC_BM_0030 PT002_MNC_PB_0060      8  &lt;data.table[8x3]&gt;       98</span>
+<span class="co">#&gt; 13: PT002_MNC_PB_0030 PT002_MNC_PB_0060      7  &lt;data.table[7x3]&gt;       15</span>
+<span class="co">#&gt; 14: PT001_MNC_PB_0030 PT002_MNC_PB_0060      0  &lt;data.table[0x3]&gt;       28</span>
+<span class="co">#&gt; 15: PT002_MNC_BM_0060 PT002_MNC_PB_0060      5  &lt;data.table[5x3]&gt;       33</span>
+<span class="co">#&gt; 16: PT001_MNC_BM_0030 PT002_MNC_PB_0030      0  &lt;data.table[0x3]&gt;       54</span>
+<span class="co">#&gt; 17: PT001_MNC_BM_0060 PT002_MNC_PB_0030      1  &lt;data.table[1x3]&gt;      114</span>
+<span class="co">#&gt; 18: PT001_MNC_PB_0060 PT002_MNC_PB_0030      0  &lt;data.table[0x3]&gt;       59</span>
+<span class="co">#&gt; 19: PT002_MNC_BM_0030 PT002_MNC_PB_0030      3  &lt;data.table[3x3]&gt;       98</span>
+<span class="co">#&gt; 20: PT001_MNC_PB_0030 PT002_MNC_PB_0030      0  &lt;data.table[0x3]&gt;       28</span>
+<span class="co">#&gt; 21: PT002_MNC_BM_0060 PT002_MNC_PB_0030      2  &lt;data.table[2x3]&gt;       33</span>
+<span class="co">#&gt; 22: PT001_MNC_BM_0030 PT001_MNC_PB_0030      7  &lt;data.table[7x3]&gt;       54</span>
+<span class="co">#&gt; 23: PT001_MNC_BM_0060 PT001_MNC_PB_0030      7  &lt;data.table[7x3]&gt;      114</span>
+<span class="co">#&gt; 24: PT001_MNC_BM_0030 PT002_MNC_BM_0060      1  &lt;data.table[1x3]&gt;       54</span>
+<span class="co">#&gt; 25: PT001_MNC_BM_0060 PT002_MNC_BM_0060      0  &lt;data.table[0x3]&gt;      114</span>
+<span class="co">#&gt; 26: PT001_MNC_PB_0060 PT002_MNC_BM_0060      0  &lt;data.table[0x3]&gt;       59</span>
+<span class="co">#&gt; 27: PT002_MNC_BM_0030 PT002_MNC_BM_0060      5  &lt;data.table[5x3]&gt;       98</span>
+<span class="co">#&gt; 28: PT001_MNC_PB_0030 PT002_MNC_BM_0060      0  &lt;data.table[0x3]&gt;       28</span>
+<span class="co">#&gt;                    g1                g2 shared           is_coord count_g1</span>
+<span class="co">#&gt;     count_g2 count_union     on_g1     on_g2   on_union</span>
+<span class="co">#&gt;  1:      114         147 38.888889 18.421053 14.2857143</span>
+<span class="co">#&gt;  2:       59         105 14.814815 13.559322  7.6190476</span>
+<span class="co">#&gt;  3:       59         144 25.438596 49.152542 20.1388889</span>
+<span class="co">#&gt;  4:       59          77 35.714286 16.949153 12.9870130</span>
+<span class="co">#&gt;  5:       98         152  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt;  6:       98         211  0.877193  1.020408  0.4739336</span>
+<span class="co">#&gt;  7:       98         156  1.694915  1.020408  0.6410256</span>
+<span class="co">#&gt;  8:       98         126  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt;  9:       18          72  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt; 10:       18         132  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt; 11:       18          77  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt; 12:       18         108  8.163265 44.444444  7.4074074</span>
+<span class="co">#&gt; 13:       18          26 46.666667 38.888889 26.9230769</span>
+<span class="co">#&gt; 14:       18          46  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt; 15:       18          46 15.151515 27.777778 10.8695652</span>
+<span class="co">#&gt; 16:       15          69  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt; 17:       15         128  0.877193  6.666667  0.7812500</span>
+<span class="co">#&gt; 18:       15          74  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt; 19:       15         110  3.061224 20.000000  2.7272727</span>
+<span class="co">#&gt; 20:       15          43  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt; 21:       15          46  6.060606 13.333333  4.3478261</span>
+<span class="co">#&gt; 22:       28          75 12.962963 25.000000  9.3333333</span>
+<span class="co">#&gt; 23:       28         135  6.140351 25.000000  5.1851852</span>
+<span class="co">#&gt; 24:       33          86  1.851852  3.030303  1.1627907</span>
+<span class="co">#&gt; 25:       33         147  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt; 26:       33          92  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt; 27:       33         126  5.102041 15.151515  3.9682540</span>
+<span class="co">#&gt; 28:       33          61  0.000000  0.000000  0.0000000</span>
+<span class="co">#&gt;     count_g2 count_union     on_g1     on_g2   on_union</span></code></pre></div>
 <p>In this configuration we set:</p>
 <ul>
 <li>A single input data frame: <code>agg</code>
@@ -294,7 +369,7 @@
 <div id="changing-the-number-of-comparisons" class="section level3">
 <h3 class="hasAnchor">
 <a href="#changing-the-number-of-comparisons" class="anchor"></a>Changing the number of comparisons</h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_1_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>, 
                         group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
                                       <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
@@ -307,42 +382,180 @@
 <span class="co">#&gt; Calculating combinations...</span>
 <span class="co">#&gt; Done!</span>
 <span class="va">sharing_1_a</span>
-<span class="co">#&gt;                      g1                g2                g3 shared</span>
-<span class="co">#&gt;    1: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT001_MNC_BM_0180      8</span>
-<span class="co">#&gt;    2: PT001_MNC_BM_0030 PT001_MNC_BM_0090 PT001_MNC_BM_0180      9</span>
-<span class="co">#&gt;    3: PT001_MNC_BM_0060 PT001_MNC_BM_0090 PT001_MNC_BM_0180      8</span>
-<span class="co">#&gt;    4: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT001_MNC_BM_0360      6</span>
-<span class="co">#&gt;    5: PT001_MNC_BM_0030 PT001_MNC_BM_0180 PT001_MNC_BM_0360      9</span>
-<span class="co">#&gt;   ---                                                             </span>
-<span class="co">#&gt; 1136: PT001_MNC_PB_0060 PT001_MNC_PB_0360 PT002_MNC_PB_0090      0</span>
-<span class="co">#&gt; 1137: PT001_MNC_PB_0180 PT001_MNC_PB_0360 PT002_MNC_PB_0090      0</span>
-<span class="co">#&gt; 1138: PT001_MNC_PB_0030 PT001_MNC_PB_0360 PT002_MNC_PB_0090      0</span>
-<span class="co">#&gt; 1139: PT001_MNC_BM_0090 PT001_MNC_PB_0360 PT002_MNC_PB_0090      0</span>
-<span class="co">#&gt; 1140: PT001_MNC_PB_0090 PT001_MNC_PB_0360 PT002_MNC_PB_0090      0</span>
-<span class="co">#&gt;                is_coord count_g1 count_g2 count_g3 count_union     on_g1</span>
-<span class="co">#&gt;    1: &lt;data.table[8x3]&gt;       54      114       89         216 14.814815</span>
-<span class="co">#&gt;    2: &lt;data.table[9x3]&gt;       54       59       89         154 16.666667</span>
-<span class="co">#&gt;    3: &lt;data.table[8x3]&gt;      114       59       89         228  7.017544</span>
-<span class="co">#&gt;    4: &lt;data.table[6x3]&gt;       54      114       78         198 11.111111</span>
-<span class="co">#&gt;    5: &lt;data.table[9x3]&gt;       54       89       78         147 16.666667</span>
-<span class="co">#&gt;   ---                                                                   </span>
-<span class="co">#&gt; 1136: &lt;data.table[0x3]&gt;       59       43       24         114  0.000000</span>
-<span class="co">#&gt; 1137: &lt;data.table[0x3]&gt;       29       43       24          76  0.000000</span>
-<span class="co">#&gt; 1138: &lt;data.table[0x3]&gt;       28       43       24          84  0.000000</span>
-<span class="co">#&gt; 1139: &lt;data.table[0x3]&gt;       59       43       24         108  0.000000</span>
-<span class="co">#&gt; 1140: &lt;data.table[0x3]&gt;       48       43       24          89  0.000000</span>
-<span class="co">#&gt;           on_g2     on_g3 on_union</span>
-<span class="co">#&gt;    1:  7.017544  8.988764 3.703704</span>
-<span class="co">#&gt;    2: 15.254237 10.112360 5.844156</span>
-<span class="co">#&gt;    3: 13.559322  8.988764 3.508772</span>
-<span class="co">#&gt;    4:  5.263158  7.692308 3.030303</span>
-<span class="co">#&gt;    5: 10.112360 11.538462 6.122449</span>
-<span class="co">#&gt;   ---                             </span>
-<span class="co">#&gt; 1136:  0.000000  0.000000 0.000000</span>
-<span class="co">#&gt; 1137:  0.000000  0.000000 0.000000</span>
-<span class="co">#&gt; 1138:  0.000000  0.000000 0.000000</span>
-<span class="co">#&gt; 1139:  0.000000  0.000000 0.000000</span>
-<span class="co">#&gt; 1140:  0.000000  0.000000 0.000000</span></code></pre></div>
+<span class="co">#&gt;                    g1                g2                g3 shared</span>
+<span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT001_MNC_PB_0060      6</span>
+<span class="co">#&gt;  2: PT001_MNC_BM_0030 PT001_MNC_PB_0030 PT001_MNC_PB_0060      1</span>
+<span class="co">#&gt;  3: PT001_MNC_BM_0060 PT001_MNC_PB_0030 PT001_MNC_PB_0060      2</span>
+<span class="co">#&gt;  4: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT002_MNC_BM_0030      0</span>
+<span class="co">#&gt;  5: PT001_MNC_BM_0030 PT001_MNC_PB_0060 PT002_MNC_BM_0030      0</span>
+<span class="co">#&gt;  6: PT001_MNC_BM_0060 PT001_MNC_PB_0060 PT002_MNC_BM_0030      1</span>
+<span class="co">#&gt;  7: PT001_MNC_PB_0030 PT001_MNC_PB_0060 PT002_MNC_BM_0030      0</span>
+<span class="co">#&gt;  8: PT001_MNC_BM_0030 PT001_MNC_PB_0030 PT002_MNC_BM_0030      0</span>
+<span class="co">#&gt;  9: PT001_MNC_BM_0060 PT001_MNC_PB_0030 PT002_MNC_BM_0030      0</span>
+<span class="co">#&gt; 10: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 11: PT001_MNC_BM_0030 PT001_MNC_PB_0060 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 12: PT001_MNC_BM_0060 PT001_MNC_PB_0060 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 13: PT001_MNC_PB_0030 PT001_MNC_PB_0060 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 14: PT001_MNC_BM_0030 PT002_MNC_BM_0030 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 15: PT001_MNC_BM_0060 PT002_MNC_BM_0030 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 16: PT001_MNC_PB_0060 PT002_MNC_BM_0030 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 17: PT001_MNC_PB_0030 PT002_MNC_BM_0030 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 18: PT001_MNC_BM_0030 PT002_MNC_PB_0030 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 19: PT001_MNC_BM_0060 PT002_MNC_PB_0030 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 20: PT001_MNC_PB_0060 PT002_MNC_PB_0030 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 21: PT002_MNC_BM_0030 PT002_MNC_PB_0030 PT002_MNC_PB_0060      1</span>
+<span class="co">#&gt; 22: PT001_MNC_PB_0030 PT002_MNC_PB_0030 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 23: PT002_MNC_BM_0060 PT002_MNC_PB_0030 PT002_MNC_PB_0060      1</span>
+<span class="co">#&gt; 24: PT001_MNC_BM_0030 PT001_MNC_PB_0030 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 25: PT001_MNC_BM_0060 PT001_MNC_PB_0030 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 26: PT001_MNC_BM_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 27: PT001_MNC_BM_0060 PT002_MNC_BM_0060 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 28: PT001_MNC_PB_0060 PT002_MNC_BM_0060 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 29: PT002_MNC_BM_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0060      1</span>
+<span class="co">#&gt; 30: PT001_MNC_PB_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0060      0</span>
+<span class="co">#&gt; 31: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 32: PT001_MNC_BM_0030 PT001_MNC_PB_0060 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 33: PT001_MNC_BM_0060 PT001_MNC_PB_0060 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 34: PT001_MNC_PB_0030 PT001_MNC_PB_0060 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 35: PT001_MNC_BM_0030 PT002_MNC_BM_0030 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 36: PT001_MNC_BM_0060 PT002_MNC_BM_0030 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 37: PT001_MNC_PB_0060 PT002_MNC_BM_0030 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 38: PT001_MNC_PB_0030 PT002_MNC_BM_0030 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 39: PT001_MNC_BM_0030 PT001_MNC_PB_0030 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 40: PT001_MNC_BM_0060 PT001_MNC_PB_0030 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 41: PT001_MNC_BM_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 42: PT001_MNC_BM_0060 PT002_MNC_BM_0060 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 43: PT001_MNC_PB_0060 PT002_MNC_BM_0060 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 44: PT002_MNC_BM_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0030      1</span>
+<span class="co">#&gt; 45: PT001_MNC_PB_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0030      0</span>
+<span class="co">#&gt; 46: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT001_MNC_PB_0030      5</span>
+<span class="co">#&gt; 47: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT002_MNC_BM_0060      0</span>
+<span class="co">#&gt; 48: PT001_MNC_BM_0030 PT001_MNC_PB_0060 PT002_MNC_BM_0060      0</span>
+<span class="co">#&gt; 49: PT001_MNC_BM_0060 PT001_MNC_PB_0060 PT002_MNC_BM_0060      0</span>
+<span class="co">#&gt; 50: PT001_MNC_PB_0030 PT001_MNC_PB_0060 PT002_MNC_BM_0060      0</span>
+<span class="co">#&gt; 51: PT001_MNC_BM_0030 PT002_MNC_BM_0030 PT002_MNC_BM_0060      0</span>
+<span class="co">#&gt; 52: PT001_MNC_BM_0060 PT002_MNC_BM_0030 PT002_MNC_BM_0060      0</span>
+<span class="co">#&gt; 53: PT001_MNC_PB_0060 PT002_MNC_BM_0030 PT002_MNC_BM_0060      0</span>
+<span class="co">#&gt; 54: PT001_MNC_PB_0030 PT002_MNC_BM_0030 PT002_MNC_BM_0060      0</span>
+<span class="co">#&gt; 55: PT001_MNC_BM_0030 PT001_MNC_PB_0030 PT002_MNC_BM_0060      0</span>
+<span class="co">#&gt; 56: PT001_MNC_BM_0060 PT001_MNC_PB_0030 PT002_MNC_BM_0060      0</span>
+<span class="co">#&gt;                    g1                g2                g3 shared</span>
+<span class="co">#&gt;              is_coord count_g1 count_g2 count_g3 count_union     on_g1    on_g2</span>
+<span class="co">#&gt;  1: &lt;data.table[6x3]&gt;       54      114       59         175 11.111111 5.263158</span>
+<span class="co">#&gt;  2: &lt;data.table[1x3]&gt;       54       28       59         117  1.851852 3.571429</span>
+<span class="co">#&gt;  3: &lt;data.table[2x3]&gt;      114       28       59         157  1.754386 7.142857</span>
+<span class="co">#&gt;  4: &lt;data.table[0x3]&gt;       54      114       98         244  0.000000 0.000000</span>
+<span class="co">#&gt;  5: &lt;data.table[0x3]&gt;       54       59       98         202  0.000000 0.000000</span>
+<span class="co">#&gt;  6: &lt;data.table[1x3]&gt;      114       59       98         241  0.877193 1.694915</span>
+<span class="co">#&gt;  7: &lt;data.table[0x3]&gt;       28       59       98         174  0.000000 0.000000</span>
+<span class="co">#&gt;  8: &lt;data.table[0x3]&gt;       54       28       98         173  0.000000 0.000000</span>
+<span class="co">#&gt;  9: &lt;data.table[0x3]&gt;      114       28       98         232  0.000000 0.000000</span>
+<span class="co">#&gt; 10: &lt;data.table[0x3]&gt;       54      114       18         165  0.000000 0.000000</span>
+<span class="co">#&gt; 11: &lt;data.table[0x3]&gt;       54       59       18         123  0.000000 0.000000</span>
+<span class="co">#&gt; 12: &lt;data.table[0x3]&gt;      114       59       18         162  0.000000 0.000000</span>
+<span class="co">#&gt; 13: &lt;data.table[0x3]&gt;       28       59       18          95  0.000000 0.000000</span>
+<span class="co">#&gt; 14: &lt;data.table[0x3]&gt;       54       98       18         162  0.000000 0.000000</span>
+<span class="co">#&gt; 15: &lt;data.table[0x3]&gt;      114       98       18         221  0.000000 0.000000</span>
+<span class="co">#&gt; 16: &lt;data.table[0x3]&gt;       59       98       18         166  0.000000 0.000000</span>
+<span class="co">#&gt; 17: &lt;data.table[0x3]&gt;       28       98       18         136  0.000000 0.000000</span>
+<span class="co">#&gt; 18: &lt;data.table[0x3]&gt;       54       15       18          80  0.000000 0.000000</span>
+<span class="co">#&gt; 19: &lt;data.table[0x3]&gt;      114       15       18         139  0.000000 0.000000</span>
+<span class="co">#&gt; 20: &lt;data.table[0x3]&gt;       59       15       18          85  0.000000 0.000000</span>
+<span class="co">#&gt; 21: &lt;data.table[1x3]&gt;       98       15       18         114  1.020408 6.666667</span>
+<span class="co">#&gt; 22: &lt;data.table[0x3]&gt;       28       15       18          54  0.000000 0.000000</span>
+<span class="co">#&gt; 23: &lt;data.table[1x3]&gt;       33       15       18          53  3.030303 6.666667</span>
+<span class="co">#&gt; 24: &lt;data.table[0x3]&gt;       54       28       18          93  0.000000 0.000000</span>
+<span class="co">#&gt; 25: &lt;data.table[0x3]&gt;      114       28       18         153  0.000000 0.000000</span>
+<span class="co">#&gt; 26: &lt;data.table[0x3]&gt;       54       33       18          99  0.000000 0.000000</span>
+<span class="co">#&gt; 27: &lt;data.table[0x3]&gt;      114       33       18         160  0.000000 0.000000</span>
+<span class="co">#&gt; 28: &lt;data.table[0x3]&gt;       59       33       18         105  0.000000 0.000000</span>
+<span class="co">#&gt; 29: &lt;data.table[1x3]&gt;       98       33       18         132  1.020408 3.030303</span>
+<span class="co">#&gt; 30: &lt;data.table[0x3]&gt;       28       33       18          74  0.000000 0.000000</span>
+<span class="co">#&gt; 31: &lt;data.table[0x3]&gt;       54      114       15         161  0.000000 0.000000</span>
+<span class="co">#&gt; 32: &lt;data.table[0x3]&gt;       54       59       15         120  0.000000 0.000000</span>
+<span class="co">#&gt; 33: &lt;data.table[0x3]&gt;      114       59       15         158  0.000000 0.000000</span>
+<span class="co">#&gt; 34: &lt;data.table[0x3]&gt;       28       59       15          92  0.000000 0.000000</span>
+<span class="co">#&gt; 35: &lt;data.table[0x3]&gt;       54       98       15         164  0.000000 0.000000</span>
+<span class="co">#&gt; 36: &lt;data.table[0x3]&gt;      114       98       15         222  0.000000 0.000000</span>
+<span class="co">#&gt; 37: &lt;data.table[0x3]&gt;       59       98       15         168  0.000000 0.000000</span>
+<span class="co">#&gt; 38: &lt;data.table[0x3]&gt;       28       98       15         138  0.000000 0.000000</span>
+<span class="co">#&gt; 39: &lt;data.table[0x3]&gt;       54       28       15          90  0.000000 0.000000</span>
+<span class="co">#&gt; 40: &lt;data.table[0x3]&gt;      114       28       15         149  0.000000 0.000000</span>
+<span class="co">#&gt; 41: &lt;data.table[0x3]&gt;       54       33       15          99  0.000000 0.000000</span>
+<span class="co">#&gt; 42: &lt;data.table[0x3]&gt;      114       33       15         159  0.000000 0.000000</span>
+<span class="co">#&gt; 43: &lt;data.table[0x3]&gt;       59       33       15         105  0.000000 0.000000</span>
+<span class="co">#&gt; 44: &lt;data.table[1x3]&gt;       98       33       15         137  1.020408 3.030303</span>
+<span class="co">#&gt; 45: &lt;data.table[0x3]&gt;       28       33       15          74  0.000000 0.000000</span>
+<span class="co">#&gt; 46: &lt;data.table[5x3]&gt;       54      114       28         166  9.259259 4.385965</span>
+<span class="co">#&gt; 47: &lt;data.table[0x3]&gt;       54      114       33         179  0.000000 0.000000</span>
+<span class="co">#&gt; 48: &lt;data.table[0x3]&gt;       54       59       33         137  0.000000 0.000000</span>
+<span class="co">#&gt; 49: &lt;data.table[0x3]&gt;      114       59       33         177  0.000000 0.000000</span>
+<span class="co">#&gt; 50: &lt;data.table[0x3]&gt;       28       59       33         110  0.000000 0.000000</span>
+<span class="co">#&gt; 51: &lt;data.table[0x3]&gt;       54       98       33         179  0.000000 0.000000</span>
+<span class="co">#&gt; 52: &lt;data.table[0x3]&gt;      114       98       33         239  0.000000 0.000000</span>
+<span class="co">#&gt; 53: &lt;data.table[0x3]&gt;       59       98       33         184  0.000000 0.000000</span>
+<span class="co">#&gt; 54: &lt;data.table[0x3]&gt;       28       98       33         154  0.000000 0.000000</span>
+<span class="co">#&gt; 55: &lt;data.table[0x3]&gt;       54       28       33         107  0.000000 0.000000</span>
+<span class="co">#&gt; 56: &lt;data.table[0x3]&gt;      114       28       33         168  0.000000 0.000000</span>
+<span class="co">#&gt;              is_coord count_g1 count_g2 count_g3 count_union     on_g1    on_g2</span>
+<span class="co">#&gt;         on_g3  on_union</span>
+<span class="co">#&gt;  1: 10.169492 3.4285714</span>
+<span class="co">#&gt;  2:  1.694915 0.8547009</span>
+<span class="co">#&gt;  3:  3.389831 1.2738854</span>
+<span class="co">#&gt;  4:  0.000000 0.0000000</span>
+<span class="co">#&gt;  5:  0.000000 0.0000000</span>
+<span class="co">#&gt;  6:  1.020408 0.4149378</span>
+<span class="co">#&gt;  7:  0.000000 0.0000000</span>
+<span class="co">#&gt;  8:  0.000000 0.0000000</span>
+<span class="co">#&gt;  9:  0.000000 0.0000000</span>
+<span class="co">#&gt; 10:  0.000000 0.0000000</span>
+<span class="co">#&gt; 11:  0.000000 0.0000000</span>
+<span class="co">#&gt; 12:  0.000000 0.0000000</span>
+<span class="co">#&gt; 13:  0.000000 0.0000000</span>
+<span class="co">#&gt; 14:  0.000000 0.0000000</span>
+<span class="co">#&gt; 15:  0.000000 0.0000000</span>
+<span class="co">#&gt; 16:  0.000000 0.0000000</span>
+<span class="co">#&gt; 17:  0.000000 0.0000000</span>
+<span class="co">#&gt; 18:  0.000000 0.0000000</span>
+<span class="co">#&gt; 19:  0.000000 0.0000000</span>
+<span class="co">#&gt; 20:  0.000000 0.0000000</span>
+<span class="co">#&gt; 21:  5.555556 0.8771930</span>
+<span class="co">#&gt; 22:  0.000000 0.0000000</span>
+<span class="co">#&gt; 23:  5.555556 1.8867925</span>
+<span class="co">#&gt; 24:  0.000000 0.0000000</span>
+<span class="co">#&gt; 25:  0.000000 0.0000000</span>
+<span class="co">#&gt; 26:  0.000000 0.0000000</span>
+<span class="co">#&gt; 27:  0.000000 0.0000000</span>
+<span class="co">#&gt; 28:  0.000000 0.0000000</span>
+<span class="co">#&gt; 29:  5.555556 0.7575758</span>
+<span class="co">#&gt; 30:  0.000000 0.0000000</span>
+<span class="co">#&gt; 31:  0.000000 0.0000000</span>
+<span class="co">#&gt; 32:  0.000000 0.0000000</span>
+<span class="co">#&gt; 33:  0.000000 0.0000000</span>
+<span class="co">#&gt; 34:  0.000000 0.0000000</span>
+<span class="co">#&gt; 35:  0.000000 0.0000000</span>
+<span class="co">#&gt; 36:  0.000000 0.0000000</span>
+<span class="co">#&gt; 37:  0.000000 0.0000000</span>
+<span class="co">#&gt; 38:  0.000000 0.0000000</span>
+<span class="co">#&gt; 39:  0.000000 0.0000000</span>
+<span class="co">#&gt; 40:  0.000000 0.0000000</span>
+<span class="co">#&gt; 41:  0.000000 0.0000000</span>
+<span class="co">#&gt; 42:  0.000000 0.0000000</span>
+<span class="co">#&gt; 43:  0.000000 0.0000000</span>
+<span class="co">#&gt; 44:  6.666667 0.7299270</span>
+<span class="co">#&gt; 45:  0.000000 0.0000000</span>
+<span class="co">#&gt; 46: 17.857143 3.0120482</span>
+<span class="co">#&gt; 47:  0.000000 0.0000000</span>
+<span class="co">#&gt; 48:  0.000000 0.0000000</span>
+<span class="co">#&gt; 49:  0.000000 0.0000000</span>
+<span class="co">#&gt; 50:  0.000000 0.0000000</span>
+<span class="co">#&gt; 51:  0.000000 0.0000000</span>
+<span class="co">#&gt; 52:  0.000000 0.0000000</span>
+<span class="co">#&gt; 53:  0.000000 0.0000000</span>
+<span class="co">#&gt; 54:  0.000000 0.0000000</span>
+<span class="co">#&gt; 55:  0.000000 0.0000000</span>
+<span class="co">#&gt; 56:  0.000000 0.0000000</span>
+<span class="co">#&gt;         on_g3  on_union</span></code></pre></div>
 <p>Changing the <code>n_comp</code> to 3 means that we want to calculate the sharing between 3 different groups. Note that the <code>shared</code> column contains the counts of integrations that are shared by <strong>ALL</strong> groups, which is equivalent to a set intersection.</p>
 <p>Beware of the fact that the more comparisons are requested the more time the computation requires.</p>
 </div>
@@ -351,7 +564,7 @@
 <a href="#a-case-when-it-is-useful-to-set-minimal-false" class="anchor"></a>A case when it is useful to set <code>minimal = FALSE</code>
 </h3>
 <p>Setting <code>minimal = FALSE</code> produces all possible permutations of the groups and the corresponding values. In combination with <code>include_self_comp = TRUE</code>, this is useful when we want to know the sharing between pairs of groups and plot results as a heatmap.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_1_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,
                           group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
                                       <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
@@ -365,39 +578,147 @@
 <span class="co">#&gt; Calculating permutations (requested)...</span>
 <span class="co">#&gt; Done!</span>
 <span class="va">sharing_1_b</span>
-<span class="co">#&gt;                     g1                g2 shared count_g1 count_g2 count_union</span>
-<span class="co">#&gt;   1: PT001_MNC_BM_0030 PT001_MNC_BM_0030     54       54       54          54</span>
-<span class="co">#&gt;   2: PT001_MNC_BM_0030 PT001_MNC_BM_0060     21       54      114         147</span>
-<span class="co">#&gt;   3: PT001_MNC_BM_0060 PT001_MNC_BM_0030     21      114       54         147</span>
-<span class="co">#&gt;   4: PT001_MNC_BM_0060 PT001_MNC_BM_0060    114      114      114         114</span>
-<span class="co">#&gt;   5: PT001_MNC_BM_0030 PT001_MNC_BM_0180     15       54       89         128</span>
-<span class="co">#&gt;  ---                                                                         </span>
-<span class="co">#&gt; 396: PT001_MNC_PB_0090 PT002_MNC_PB_0090      0       48       24          72</span>
-<span class="co">#&gt; 397: PT002_MNC_PB_0090 PT001_MNC_PB_0090      0       24       48          72</span>
-<span class="co">#&gt; 398: PT001_MNC_PB_0360 PT002_MNC_PB_0090      0       43       24          67</span>
-<span class="co">#&gt; 399: PT002_MNC_PB_0090 PT001_MNC_PB_0360      0       24       43          67</span>
-<span class="co">#&gt; 400: PT002_MNC_PB_0090 PT002_MNC_PB_0090     24       24       24          24</span>
-<span class="co">#&gt;          on_g1     on_g2  on_union</span>
-<span class="co">#&gt;   1: 100.00000 100.00000 100.00000</span>
-<span class="co">#&gt;   2:  38.88889  18.42105  14.28571</span>
-<span class="co">#&gt;   3:  18.42105  38.88889  14.28571</span>
-<span class="co">#&gt;   4: 100.00000 100.00000 100.00000</span>
-<span class="co">#&gt;   5:  27.77778  16.85393  11.71875</span>
-<span class="co">#&gt;  ---                              </span>
-<span class="co">#&gt; 396:   0.00000   0.00000   0.00000</span>
-<span class="co">#&gt; 397:   0.00000   0.00000   0.00000</span>
-<span class="co">#&gt; 398:   0.00000   0.00000   0.00000</span>
-<span class="co">#&gt; 399:   0.00000   0.00000   0.00000</span>
-<span class="co">#&gt; 400: 100.00000 100.00000 100.00000</span>
+<span class="co">#&gt;                    g1                g2 shared count_g1 count_g2 count_union</span>
+<span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC_BM_0030     54       54       54          54</span>
+<span class="co">#&gt;  2: PT001_MNC_BM_0030 PT001_MNC_BM_0060     21       54      114         147</span>
+<span class="co">#&gt;  3: PT001_MNC_BM_0060 PT001_MNC_BM_0030     21      114       54         147</span>
+<span class="co">#&gt;  4: PT001_MNC_BM_0060 PT001_MNC_BM_0060    114      114      114         114</span>
+<span class="co">#&gt;  5: PT001_MNC_BM_0030 PT001_MNC_PB_0060      8       54       59         105</span>
+<span class="co">#&gt;  6: PT001_MNC_PB_0060 PT001_MNC_BM_0030      8       59       54         105</span>
+<span class="co">#&gt;  7: PT001_MNC_BM_0060 PT001_MNC_PB_0060     29      114       59         144</span>
+<span class="co">#&gt;  8: PT001_MNC_PB_0060 PT001_MNC_BM_0060     29       59      114         144</span>
+<span class="co">#&gt;  9: PT001_MNC_PB_0060 PT001_MNC_PB_0060     59       59       59          59</span>
+<span class="co">#&gt; 10: PT001_MNC_PB_0030 PT001_MNC_PB_0060     10       28       59          77</span>
+<span class="co">#&gt; 11: PT001_MNC_PB_0060 PT001_MNC_PB_0030     10       59       28          77</span>
+<span class="co">#&gt; 12: PT001_MNC_BM_0030 PT002_MNC_BM_0030      0       54       98         152</span>
+<span class="co">#&gt; 13: PT002_MNC_BM_0030 PT001_MNC_BM_0030      0       98       54         152</span>
+<span class="co">#&gt; 14: PT001_MNC_BM_0060 PT002_MNC_BM_0030      1      114       98         211</span>
+<span class="co">#&gt; 15: PT002_MNC_BM_0030 PT001_MNC_BM_0060      1       98      114         211</span>
+<span class="co">#&gt; 16: PT001_MNC_PB_0060 PT002_MNC_BM_0030      1       59       98         156</span>
+<span class="co">#&gt; 17: PT002_MNC_BM_0030 PT001_MNC_PB_0060      1       98       59         156</span>
+<span class="co">#&gt; 18: PT002_MNC_BM_0030 PT002_MNC_BM_0030     98       98       98          98</span>
+<span class="co">#&gt; 19: PT001_MNC_PB_0030 PT002_MNC_BM_0030      0       28       98         126</span>
+<span class="co">#&gt; 20: PT002_MNC_BM_0030 PT001_MNC_PB_0030      0       98       28         126</span>
+<span class="co">#&gt; 21: PT001_MNC_BM_0030 PT002_MNC_PB_0060      0       54       18          72</span>
+<span class="co">#&gt; 22: PT002_MNC_PB_0060 PT001_MNC_BM_0030      0       18       54          72</span>
+<span class="co">#&gt; 23: PT001_MNC_BM_0060 PT002_MNC_PB_0060      0      114       18         132</span>
+<span class="co">#&gt; 24: PT002_MNC_PB_0060 PT001_MNC_BM_0060      0       18      114         132</span>
+<span class="co">#&gt; 25: PT001_MNC_PB_0060 PT002_MNC_PB_0060      0       59       18          77</span>
+<span class="co">#&gt; 26: PT002_MNC_PB_0060 PT001_MNC_PB_0060      0       18       59          77</span>
+<span class="co">#&gt; 27: PT002_MNC_BM_0030 PT002_MNC_PB_0060      8       98       18         108</span>
+<span class="co">#&gt; 28: PT002_MNC_PB_0060 PT002_MNC_BM_0030      8       18       98         108</span>
+<span class="co">#&gt; 29: PT002_MNC_PB_0060 PT002_MNC_PB_0060     18       18       18          18</span>
+<span class="co">#&gt; 30: PT002_MNC_PB_0030 PT002_MNC_PB_0060      7       15       18          26</span>
+<span class="co">#&gt; 31: PT002_MNC_PB_0060 PT002_MNC_PB_0030      7       18       15          26</span>
+<span class="co">#&gt; 32: PT001_MNC_PB_0030 PT002_MNC_PB_0060      0       28       18          46</span>
+<span class="co">#&gt; 33: PT002_MNC_PB_0060 PT001_MNC_PB_0030      0       18       28          46</span>
+<span class="co">#&gt; 34: PT002_MNC_BM_0060 PT002_MNC_PB_0060      5       33       18          46</span>
+<span class="co">#&gt; 35: PT002_MNC_PB_0060 PT002_MNC_BM_0060      5       18       33          46</span>
+<span class="co">#&gt; 36: PT001_MNC_BM_0030 PT002_MNC_PB_0030      0       54       15          69</span>
+<span class="co">#&gt; 37: PT002_MNC_PB_0030 PT001_MNC_BM_0030      0       15       54          69</span>
+<span class="co">#&gt; 38: PT001_MNC_BM_0060 PT002_MNC_PB_0030      1      114       15         128</span>
+<span class="co">#&gt; 39: PT002_MNC_PB_0030 PT001_MNC_BM_0060      1       15      114         128</span>
+<span class="co">#&gt; 40: PT001_MNC_PB_0060 PT002_MNC_PB_0030      0       59       15          74</span>
+<span class="co">#&gt; 41: PT002_MNC_PB_0030 PT001_MNC_PB_0060      0       15       59          74</span>
+<span class="co">#&gt; 42: PT002_MNC_BM_0030 PT002_MNC_PB_0030      3       98       15         110</span>
+<span class="co">#&gt; 43: PT002_MNC_PB_0030 PT002_MNC_BM_0030      3       15       98         110</span>
+<span class="co">#&gt; 44: PT002_MNC_PB_0030 PT002_MNC_PB_0030     15       15       15          15</span>
+<span class="co">#&gt; 45: PT001_MNC_PB_0030 PT002_MNC_PB_0030      0       28       15          43</span>
+<span class="co">#&gt; 46: PT002_MNC_PB_0030 PT001_MNC_PB_0030      0       15       28          43</span>
+<span class="co">#&gt; 47: PT002_MNC_BM_0060 PT002_MNC_PB_0030      2       33       15          46</span>
+<span class="co">#&gt; 48: PT002_MNC_PB_0030 PT002_MNC_BM_0060      2       15       33          46</span>
+<span class="co">#&gt; 49: PT001_MNC_BM_0030 PT001_MNC_PB_0030      7       54       28          75</span>
+<span class="co">#&gt; 50: PT001_MNC_PB_0030 PT001_MNC_BM_0030      7       28       54          75</span>
+<span class="co">#&gt; 51: PT001_MNC_BM_0060 PT001_MNC_PB_0030      7      114       28         135</span>
+<span class="co">#&gt; 52: PT001_MNC_PB_0030 PT001_MNC_BM_0060      7       28      114         135</span>
+<span class="co">#&gt; 53: PT001_MNC_PB_0030 PT001_MNC_PB_0030     28       28       28          28</span>
+<span class="co">#&gt; 54: PT001_MNC_BM_0030 PT002_MNC_BM_0060      1       54       33          86</span>
+<span class="co">#&gt; 55: PT002_MNC_BM_0060 PT001_MNC_BM_0030      1       33       54          86</span>
+<span class="co">#&gt; 56: PT001_MNC_BM_0060 PT002_MNC_BM_0060      0      114       33         147</span>
+<span class="co">#&gt; 57: PT002_MNC_BM_0060 PT001_MNC_BM_0060      0       33      114         147</span>
+<span class="co">#&gt; 58: PT001_MNC_PB_0060 PT002_MNC_BM_0060      0       59       33          92</span>
+<span class="co">#&gt; 59: PT002_MNC_BM_0060 PT001_MNC_PB_0060      0       33       59          92</span>
+<span class="co">#&gt; 60: PT002_MNC_BM_0030 PT002_MNC_BM_0060      5       98       33         126</span>
+<span class="co">#&gt; 61: PT002_MNC_BM_0060 PT002_MNC_BM_0030      5       33       98         126</span>
+<span class="co">#&gt; 62: PT001_MNC_PB_0030 PT002_MNC_BM_0060      0       28       33          61</span>
+<span class="co">#&gt; 63: PT002_MNC_BM_0060 PT001_MNC_PB_0030      0       33       28          61</span>
+<span class="co">#&gt; 64: PT002_MNC_BM_0060 PT002_MNC_BM_0060     33       33       33          33</span>
+<span class="co">#&gt;                    g1                g2 shared count_g1 count_g2 count_union</span>
+<span class="co">#&gt;          on_g1      on_g2    on_union</span>
+<span class="co">#&gt;  1: 100.000000 100.000000 100.0000000</span>
+<span class="co">#&gt;  2:  38.888889  18.421053  14.2857143</span>
+<span class="co">#&gt;  3:  18.421053  38.888889  14.2857143</span>
+<span class="co">#&gt;  4: 100.000000 100.000000 100.0000000</span>
+<span class="co">#&gt;  5:  14.814815  13.559322   7.6190476</span>
+<span class="co">#&gt;  6:  13.559322  14.814815   7.6190476</span>
+<span class="co">#&gt;  7:  25.438596  49.152542  20.1388889</span>
+<span class="co">#&gt;  8:  49.152542  25.438596  20.1388889</span>
+<span class="co">#&gt;  9: 100.000000 100.000000 100.0000000</span>
+<span class="co">#&gt; 10:  35.714286  16.949153  12.9870130</span>
+<span class="co">#&gt; 11:  16.949153  35.714286  12.9870130</span>
+<span class="co">#&gt; 12:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 13:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 14:   0.877193   1.020408   0.4739336</span>
+<span class="co">#&gt; 15:   1.020408   0.877193   0.4739336</span>
+<span class="co">#&gt; 16:   1.694915   1.020408   0.6410256</span>
+<span class="co">#&gt; 17:   1.020408   1.694915   0.6410256</span>
+<span class="co">#&gt; 18: 100.000000 100.000000 100.0000000</span>
+<span class="co">#&gt; 19:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 20:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 21:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 22:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 23:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 24:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 25:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 26:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 27:   8.163265  44.444444   7.4074074</span>
+<span class="co">#&gt; 28:  44.444444   8.163265   7.4074074</span>
+<span class="co">#&gt; 29: 100.000000 100.000000 100.0000000</span>
+<span class="co">#&gt; 30:  46.666667  38.888889  26.9230769</span>
+<span class="co">#&gt; 31:  38.888889  46.666667  26.9230769</span>
+<span class="co">#&gt; 32:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 33:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 34:  15.151515  27.777778  10.8695652</span>
+<span class="co">#&gt; 35:  27.777778  15.151515  10.8695652</span>
+<span class="co">#&gt; 36:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 37:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 38:   0.877193   6.666667   0.7812500</span>
+<span class="co">#&gt; 39:   6.666667   0.877193   0.7812500</span>
+<span class="co">#&gt; 40:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 41:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 42:   3.061224  20.000000   2.7272727</span>
+<span class="co">#&gt; 43:  20.000000   3.061224   2.7272727</span>
+<span class="co">#&gt; 44: 100.000000 100.000000 100.0000000</span>
+<span class="co">#&gt; 45:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 46:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 47:   6.060606  13.333333   4.3478261</span>
+<span class="co">#&gt; 48:  13.333333   6.060606   4.3478261</span>
+<span class="co">#&gt; 49:  12.962963  25.000000   9.3333333</span>
+<span class="co">#&gt; 50:  25.000000  12.962963   9.3333333</span>
+<span class="co">#&gt; 51:   6.140351  25.000000   5.1851852</span>
+<span class="co">#&gt; 52:  25.000000   6.140351   5.1851852</span>
+<span class="co">#&gt; 53: 100.000000 100.000000 100.0000000</span>
+<span class="co">#&gt; 54:   1.851852   3.030303   1.1627907</span>
+<span class="co">#&gt; 55:   3.030303   1.851852   1.1627907</span>
+<span class="co">#&gt; 56:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 57:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 58:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 59:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 60:   5.102041  15.151515   3.9682540</span>
+<span class="co">#&gt; 61:  15.151515   5.102041   3.9682540</span>
+<span class="co">#&gt; 62:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 63:   0.000000   0.000000   0.0000000</span>
+<span class="co">#&gt; 64: 100.000000 100.000000 100.0000000</span>
+<span class="co">#&gt;          on_g1      on_g2    on_union</span>
 <span class="va">heatmaps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_heatmap.html">sharing_heatmap</a></span><span class="op">(</span><span class="va">sharing_1_b</span><span class="op">)</span></code></pre></div>
 <p>The function <code><a href="../reference/sharing_heatmap.html">sharing_heatmap()</a></code> automatically plots sharing between 2 groups. There are several arguments to this function that allow us to obtain heatmaps for the absolute sharing values or the relative (percentage) values.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">heatmaps</span><span class="op">$</span><span class="va">absolute</span></code></pre></div>
 <p><img src="sharing_analyses_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">heatmaps</span><span class="op">$</span><span class="va">on_g1</span></code></pre></div>
 <p><img src="sharing_analyses_files/figure-html/unnamed-chunk-11-2.png" width="700"></p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">heatmaps</span><span class="op">$</span><span class="va">on_union</span></code></pre></div>
 <p><img src="sharing_analyses_files/figure-html/unnamed-chunk-11-3.png" width="700"></p>
 <p>Beware of the fact that calculating all permutations takes longer than calculating only distinct combinations, therefore if you don’t need your results plotted or you have more than 2 groups to compare you should stick with <code>minimal = TRUE</code> and <code>include_self_comp = FALSE</code>.</p>
@@ -407,7 +728,7 @@
 <h2 class="hasAnchor">
 <a href="#scenario-2-single-input-data-frame-and-multiple-grouping-keys" class="anchor"></a>SCENARIO 2: single input data frame and multiple grouping keys</h2>
 <p>In the first scenario, groups were homogeneous, that is, they were grouped all with the same key. In this other scenario we want to start with data contained in just one data frame but we want to compare sets of integrations that are grouped differently. To do this we give as input a <strong>list of keys</strong> through the argument <code>group_keys</code>.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,
                         group_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
                           g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
@@ -418,168 +739,72 @@
 <span class="co">#&gt; Done!</span>
 <span class="va">sharing_2</span>
 <span class="co">#&gt;                    g1        g2     g3 shared count_g1 count_g2 count_g3</span>
-<span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC MNC_BM     54       54      261      501</span>
-<span class="co">#&gt;  2: PT001_MNC_BM_0060 PT001_MNC MNC_BM    114      114      261      501</span>
-<span class="co">#&gt;  3: PT001_MNC_BM_0180 PT001_MNC MNC_BM     89       89      261      501</span>
-<span class="co">#&gt;  4: PT001_MNC_BM_0360 PT001_MNC MNC_BM     78       78      261      501</span>
-<span class="co">#&gt;  5: PT002_MNC_BM_0360 PT001_MNC MNC_BM      2       91      261      501</span>
-<span class="co">#&gt;  6: PT001_MNC_PB_0060 PT001_MNC MNC_BM     52       59      261      501</span>
-<span class="co">#&gt;  7: PT001_MNC_PB_0180 PT001_MNC MNC_BM     26       29      261      501</span>
-<span class="co">#&gt;  8: PT002_MNC_PB_0360 PT001_MNC MNC_BM      3       53      261      501</span>
-<span class="co">#&gt;  9: PT002_MNC_PB_0180 PT001_MNC MNC_BM      1       32      261      501</span>
-<span class="co">#&gt; 10: PT002_MNC_BM_0030 PT001_MNC MNC_BM      1       98      261      501</span>
-<span class="co">#&gt; 11: PT002_MNC_PB_0060 PT001_MNC MNC_BM      0       18      261      501</span>
-<span class="co">#&gt; 12: PT002_MNC_PB_0030 PT001_MNC MNC_BM      1       15      261      501</span>
-<span class="co">#&gt; 13: PT001_MNC_PB_0030 PT001_MNC MNC_BM     11       28      261      501</span>
-<span class="co">#&gt; 14: PT002_MNC_BM_0180 PT001_MNC MNC_BM      1       69      261      501</span>
-<span class="co">#&gt; 15: PT001_MNC_BM_0090 PT001_MNC MNC_BM     59       59      261      501</span>
-<span class="co">#&gt; 16: PT002_MNC_BM_0060 PT001_MNC MNC_BM      1       33      261      501</span>
-<span class="co">#&gt; 17: PT002_MNC_BM_0090 PT001_MNC MNC_BM      0       40      261      501</span>
-<span class="co">#&gt; 18: PT001_MNC_PB_0090 PT001_MNC MNC_BM     38       48      261      501</span>
-<span class="co">#&gt; 19: PT001_MNC_PB_0360 PT001_MNC MNC_BM     35       43      261      501</span>
-<span class="co">#&gt; 20: PT002_MNC_PB_0090 PT001_MNC MNC_BM      0       24      261      501</span>
-<span class="co">#&gt; 21: PT001_MNC_BM_0030 PT002_MNC MNC_BM      2       54      316      501</span>
-<span class="co">#&gt; 22: PT001_MNC_BM_0060 PT002_MNC MNC_BM      3      114      316      501</span>
-<span class="co">#&gt; 23: PT001_MNC_BM_0180 PT002_MNC MNC_BM      3       89      316      501</span>
-<span class="co">#&gt; 24: PT001_MNC_BM_0360 PT002_MNC MNC_BM      4       78      316      501</span>
-<span class="co">#&gt; 25: PT002_MNC_BM_0360 PT002_MNC MNC_BM     91       91      316      501</span>
-<span class="co">#&gt; 26: PT001_MNC_PB_0060 PT002_MNC MNC_BM      3       59      316      501</span>
-<span class="co">#&gt; 27: PT001_MNC_PB_0180 PT002_MNC MNC_BM      2       29      316      501</span>
-<span class="co">#&gt; 28: PT002_MNC_PB_0360 PT002_MNC MNC_BM      7       53      316      501</span>
-<span class="co">#&gt; 29: PT002_MNC_PB_0180 PT002_MNC MNC_BM     26       32      316      501</span>
-<span class="co">#&gt; 30: PT002_MNC_BM_0030 PT002_MNC MNC_BM     98       98      316      501</span>
-<span class="co">#&gt; 31: PT002_MNC_PB_0060 PT002_MNC MNC_BM     12       18      316      501</span>
-<span class="co">#&gt; 32: PT002_MNC_PB_0030 PT002_MNC MNC_BM      9       15      316      501</span>
-<span class="co">#&gt; 33: PT001_MNC_PB_0030 PT002_MNC MNC_BM      1       28      316      501</span>
-<span class="co">#&gt; 34: PT002_MNC_BM_0180 PT002_MNC MNC_BM     69       69      316      501</span>
-<span class="co">#&gt; 35: PT001_MNC_BM_0090 PT002_MNC MNC_BM      2       59      316      501</span>
-<span class="co">#&gt; 36: PT002_MNC_BM_0060 PT002_MNC MNC_BM     33       33      316      501</span>
-<span class="co">#&gt; 37: PT002_MNC_BM_0090 PT002_MNC MNC_BM     40       40      316      501</span>
-<span class="co">#&gt; 38: PT001_MNC_PB_0090 PT002_MNC MNC_BM      3       48      316      501</span>
-<span class="co">#&gt; 39: PT001_MNC_PB_0360 PT002_MNC MNC_BM      2       43      316      501</span>
-<span class="co">#&gt; 40: PT002_MNC_PB_0090 PT002_MNC MNC_BM     18       24      316      501</span>
-<span class="co">#&gt; 41: PT001_MNC_BM_0030 PT001_MNC MNC_PB     27       54      261      227</span>
-<span class="co">#&gt; 42: PT001_MNC_BM_0060 PT001_MNC MNC_PB     46      114      261      227</span>
-<span class="co">#&gt; 43: PT001_MNC_BM_0180 PT001_MNC MNC_PB     39       89      261      227</span>
-<span class="co">#&gt; 44: PT001_MNC_BM_0360 PT001_MNC MNC_PB     41       78      261      227</span>
-<span class="co">#&gt; 45: PT002_MNC_BM_0360 PT001_MNC MNC_PB      2       91      261      227</span>
-<span class="co">#&gt; 46: PT001_MNC_PB_0060 PT001_MNC MNC_PB     59       59      261      227</span>
-<span class="co">#&gt; 47: PT001_MNC_PB_0180 PT001_MNC MNC_PB     29       29      261      227</span>
-<span class="co">#&gt; 48: PT002_MNC_PB_0360 PT001_MNC MNC_PB      3       53      261      227</span>
-<span class="co">#&gt; 49: PT002_MNC_PB_0180 PT001_MNC MNC_PB      1       32      261      227</span>
-<span class="co">#&gt; 50: PT002_MNC_BM_0030 PT001_MNC MNC_PB      1       98      261      227</span>
-<span class="co">#&gt; 51: PT002_MNC_PB_0060 PT001_MNC MNC_PB      0       18      261      227</span>
-<span class="co">#&gt; 52: PT002_MNC_PB_0030 PT001_MNC MNC_PB      1       15      261      227</span>
-<span class="co">#&gt; 53: PT001_MNC_PB_0030 PT001_MNC MNC_PB     28       28      261      227</span>
-<span class="co">#&gt; 54: PT002_MNC_BM_0180 PT001_MNC MNC_PB      1       69      261      227</span>
-<span class="co">#&gt; 55: PT001_MNC_BM_0090 PT001_MNC MNC_PB     37       59      261      227</span>
-<span class="co">#&gt; 56: PT002_MNC_BM_0060 PT001_MNC MNC_PB      1       33      261      227</span>
-<span class="co">#&gt; 57: PT002_MNC_BM_0090 PT001_MNC MNC_PB      0       40      261      227</span>
-<span class="co">#&gt; 58: PT001_MNC_PB_0090 PT001_MNC MNC_PB     48       48      261      227</span>
-<span class="co">#&gt; 59: PT001_MNC_PB_0360 PT001_MNC MNC_PB     43       43      261      227</span>
-<span class="co">#&gt; 60: PT002_MNC_PB_0090 PT001_MNC MNC_PB      0       24      261      227</span>
-<span class="co">#&gt; 61: PT001_MNC_BM_0030 PT002_MNC MNC_PB      2       54      316      227</span>
-<span class="co">#&gt; 62: PT001_MNC_BM_0060 PT002_MNC MNC_PB      3      114      316      227</span>
-<span class="co">#&gt; 63: PT001_MNC_BM_0180 PT002_MNC MNC_PB      3       89      316      227</span>
-<span class="co">#&gt; 64: PT001_MNC_BM_0360 PT002_MNC MNC_PB      4       78      316      227</span>
-<span class="co">#&gt; 65: PT002_MNC_BM_0360 PT002_MNC MNC_PB     10       91      316      227</span>
-<span class="co">#&gt; 66: PT001_MNC_PB_0060 PT002_MNC MNC_PB      3       59      316      227</span>
-<span class="co">#&gt; 67: PT001_MNC_PB_0180 PT002_MNC MNC_PB      2       29      316      227</span>
-<span class="co">#&gt; 68: PT002_MNC_PB_0360 PT002_MNC MNC_PB     53       53      316      227</span>
-<span class="co">#&gt; 69: PT002_MNC_PB_0180 PT002_MNC MNC_PB     32       32      316      227</span>
-<span class="co">#&gt; 70: PT002_MNC_BM_0030 PT002_MNC MNC_PB     31       98      316      227</span>
-<span class="co">#&gt; 71: PT002_MNC_PB_0060 PT002_MNC MNC_PB     18       18      316      227</span>
-<span class="co">#&gt; 72: PT002_MNC_PB_0030 PT002_MNC MNC_PB     15       15      316      227</span>
-<span class="co">#&gt; 73: PT001_MNC_PB_0030 PT002_MNC MNC_PB      1       28      316      227</span>
-<span class="co">#&gt; 74: PT002_MNC_BM_0180 PT002_MNC MNC_PB     26       69      316      227</span>
-<span class="co">#&gt; 75: PT001_MNC_BM_0090 PT002_MNC MNC_PB      2       59      316      227</span>
-<span class="co">#&gt; 76: PT002_MNC_BM_0060 PT002_MNC MNC_PB     12       33      316      227</span>
-<span class="co">#&gt; 77: PT002_MNC_BM_0090 PT002_MNC MNC_PB      7       40      316      227</span>
-<span class="co">#&gt; 78: PT001_MNC_PB_0090 PT002_MNC MNC_PB      3       48      316      227</span>
-<span class="co">#&gt; 79: PT001_MNC_PB_0360 PT002_MNC MNC_PB      2       43      316      227</span>
-<span class="co">#&gt; 80: PT002_MNC_PB_0090 PT002_MNC MNC_PB     24       24      316      227</span>
+<span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC MNC_BM     54       54      186      271</span>
+<span class="co">#&gt;  2: PT001_MNC_BM_0060 PT001_MNC MNC_BM    114      114      186      271</span>
+<span class="co">#&gt;  3: PT001_MNC_PB_0060 PT001_MNC MNC_BM     31       59      186      271</span>
+<span class="co">#&gt;  4: PT002_MNC_BM_0030 PT001_MNC MNC_BM      1       98      186      271</span>
+<span class="co">#&gt;  5: PT002_MNC_PB_0060 PT001_MNC MNC_BM      0       18      186      271</span>
+<span class="co">#&gt;  6: PT002_MNC_PB_0030 PT001_MNC MNC_BM      1       15      186      271</span>
+<span class="co">#&gt;  7: PT001_MNC_PB_0030 PT001_MNC MNC_BM      9       28      186      271</span>
+<span class="co">#&gt;  8: PT002_MNC_BM_0060 PT001_MNC MNC_BM      1       33      186      271</span>
+<span class="co">#&gt;  9: PT001_MNC_BM_0030 PT002_MNC MNC_BM      1       54      137      271</span>
+<span class="co">#&gt; 10: PT001_MNC_BM_0060 PT002_MNC MNC_BM      2      114      137      271</span>
+<span class="co">#&gt; 11: PT001_MNC_PB_0060 PT002_MNC MNC_BM      1       59      137      271</span>
+<span class="co">#&gt; 12: PT002_MNC_BM_0030 PT002_MNC MNC_BM     98       98      137      271</span>
+<span class="co">#&gt; 13: PT002_MNC_PB_0060 PT002_MNC MNC_BM     12       18      137      271</span>
+<span class="co">#&gt; 14: PT002_MNC_PB_0030 PT002_MNC MNC_BM      5       15      137      271</span>
+<span class="co">#&gt; 15: PT001_MNC_PB_0030 PT002_MNC MNC_BM      0       28      137      271</span>
+<span class="co">#&gt; 16: PT002_MNC_BM_0060 PT002_MNC MNC_BM     33       33      137      271</span>
+<span class="co">#&gt; 17: PT001_MNC_BM_0030 PT001_MNC MNC_PB     14       54      186      103</span>
+<span class="co">#&gt; 18: PT001_MNC_BM_0060 PT001_MNC MNC_PB     35      114      186      103</span>
+<span class="co">#&gt; 19: PT001_MNC_PB_0060 PT001_MNC MNC_PB     59       59      186      103</span>
+<span class="co">#&gt; 20: PT002_MNC_BM_0030 PT001_MNC MNC_PB      1       98      186      103</span>
+<span class="co">#&gt; 21: PT002_MNC_PB_0060 PT001_MNC MNC_PB      0       18      186      103</span>
+<span class="co">#&gt; 22: PT002_MNC_PB_0030 PT001_MNC MNC_PB      1       15      186      103</span>
+<span class="co">#&gt; 23: PT001_MNC_PB_0030 PT001_MNC MNC_PB     28       28      186      103</span>
+<span class="co">#&gt; 24: PT002_MNC_BM_0060 PT001_MNC MNC_PB      0       33      186      103</span>
+<span class="co">#&gt; 25: PT001_MNC_BM_0030 PT002_MNC MNC_PB      0       54      137      103</span>
+<span class="co">#&gt; 26: PT001_MNC_BM_0060 PT002_MNC MNC_PB      2      114      137      103</span>
+<span class="co">#&gt; 27: PT001_MNC_PB_0060 PT002_MNC MNC_PB      1       59      137      103</span>
+<span class="co">#&gt; 28: PT002_MNC_BM_0030 PT002_MNC MNC_PB     11       98      137      103</span>
+<span class="co">#&gt; 29: PT002_MNC_PB_0060 PT002_MNC MNC_PB     18       18      137      103</span>
+<span class="co">#&gt; 30: PT002_MNC_PB_0030 PT002_MNC MNC_PB     15       15      137      103</span>
+<span class="co">#&gt; 31: PT001_MNC_PB_0030 PT002_MNC MNC_PB      0       28      137      103</span>
+<span class="co">#&gt; 32: PT002_MNC_BM_0060 PT002_MNC MNC_PB      6       33      137      103</span>
 <span class="co">#&gt;                    g1        g2     g3 shared count_g1 count_g2 count_g3</span>
 <span class="co">#&gt;     count_union      on_g1      on_g2      on_g3   on_union</span>
-<span class="co">#&gt;  1:         521 100.000000 20.6896552 10.7784431 10.3646833</span>
-<span class="co">#&gt;  2:         521 100.000000 43.6781609 22.7544910 21.8809981</span>
-<span class="co">#&gt;  3:         521 100.000000 34.0996169 17.7644711 17.0825336</span>
-<span class="co">#&gt;  4:         521 100.000000 29.8850575 15.5688623 14.9712092</span>
-<span class="co">#&gt;  5:         521   2.197802  0.7662835  0.3992016  0.3838772</span>
-<span class="co">#&gt;  6:         521  88.135593 19.9233716 10.3792415  9.9808061</span>
-<span class="co">#&gt;  7:         521  89.655172  9.9616858  5.1896208  4.9904031</span>
-<span class="co">#&gt;  8:         567   5.660377  1.1494253  0.5988024  0.5291005</span>
-<span class="co">#&gt;  9:         527   3.125000  0.3831418  0.1996008  0.1897533</span>
-<span class="co">#&gt; 10:         521   1.020408  0.3831418  0.1996008  0.1919386</span>
-<span class="co">#&gt; 11:         527   0.000000  0.0000000  0.0000000  0.0000000</span>
-<span class="co">#&gt; 12:         527   6.666667  0.3831418  0.1996008  0.1897533</span>
-<span class="co">#&gt; 13:         521  39.285714  4.2145594  2.1956088  2.1113244</span>
-<span class="co">#&gt; 14:         521   1.449275  0.3831418  0.1996008  0.1919386</span>
-<span class="co">#&gt; 15:         521 100.000000 22.6053640 11.7764471 11.3243762</span>
-<span class="co">#&gt; 16:         521   3.030303  0.3831418  0.1996008  0.1919386</span>
-<span class="co">#&gt; 17:         521   0.000000  0.0000000  0.0000000  0.0000000</span>
-<span class="co">#&gt; 18:         521  79.166667 14.5593870  7.5848303  7.2936660</span>
-<span class="co">#&gt; 19:         521  81.395349 13.4099617  6.9860279  6.7178503</span>
-<span class="co">#&gt; 20:         527   0.000000  0.0000000  0.0000000  0.0000000</span>
-<span class="co">#&gt; 21:         547   3.703704  0.6329114  0.3992016  0.3656307</span>
-<span class="co">#&gt; 22:         547   2.631579  0.9493671  0.5988024  0.5484461</span>
-<span class="co">#&gt; 23:         547   3.370787  0.9493671  0.5988024  0.5484461</span>
-<span class="co">#&gt; 24:         547   5.128205  1.2658228  0.7984032  0.7312614</span>
-<span class="co">#&gt; 25:         547 100.000000 28.7974684 18.1636727 16.6361974</span>
-<span class="co">#&gt; 26:         554   5.084746  0.9493671  0.5988024  0.5415162</span>
-<span class="co">#&gt; 27:         550   6.896552  0.6329114  0.3992016  0.3636364</span>
-<span class="co">#&gt; 28:         547  13.207547  2.2151899  1.3972056  1.2797075</span>
-<span class="co">#&gt; 29:         547  81.250000  8.2278481  5.1896208  4.7531993</span>
-<span class="co">#&gt; 30:         547 100.000000 31.0126582 19.5608782 17.9159049</span>
-<span class="co">#&gt; 31:         547  66.666667  3.7974684  2.3952096  2.1937843</span>
-<span class="co">#&gt; 32:         547  60.000000  2.8481013  1.7964072  1.6453382</span>
-<span class="co">#&gt; 33:         564   3.571429  0.3164557  0.1996008  0.1773050</span>
-<span class="co">#&gt; 34:         547 100.000000 21.8354430 13.7724551 12.6142596</span>
-<span class="co">#&gt; 35:         547   3.389831  0.6329114  0.3992016  0.3656307</span>
-<span class="co">#&gt; 36:         547 100.000000 10.4430380  6.5868263  6.0329068</span>
-<span class="co">#&gt; 37:         547 100.000000 12.6582278  7.9840319  7.3126143</span>
-<span class="co">#&gt; 38:         557   6.250000  0.9493671  0.5988024  0.5385996</span>
-<span class="co">#&gt; 39:         555   4.651163  0.6329114  0.3992016  0.3603604</span>
-<span class="co">#&gt; 40:         547  75.000000  5.6962025  3.5928144  3.2906764</span>
-<span class="co">#&gt; 41:         365  50.000000 10.3448276 11.8942731  7.3972603</span>
-<span class="co">#&gt; 42:         365  40.350877 17.6245211 20.2643172 12.6027397</span>
-<span class="co">#&gt; 43:         365  43.820225 14.9425287 17.1806167 10.6849315</span>
-<span class="co">#&gt; 44:         365  52.564103 15.7088123 18.0616740 11.2328767</span>
-<span class="co">#&gt; 45:         446   2.197802  0.7662835  0.8810573  0.4484305</span>
-<span class="co">#&gt; 46:         365 100.000000 22.6053640 25.9911894 16.1643836</span>
-<span class="co">#&gt; 47:         365 100.000000 11.1111111 12.7753304  7.9452055</span>
-<span class="co">#&gt; 48:         365   5.660377  1.1494253  1.3215859  0.8219178</span>
-<span class="co">#&gt; 49:         365   3.125000  0.3831418  0.4405286  0.2739726</span>
-<span class="co">#&gt; 50:         432   1.020408  0.3831418  0.4405286  0.2314815</span>
-<span class="co">#&gt; 51:         365   0.000000  0.0000000  0.0000000  0.0000000</span>
-<span class="co">#&gt; 52:         365   6.666667  0.3831418  0.4405286  0.2739726</span>
-<span class="co">#&gt; 53:         365 100.000000 10.7279693 12.3348018  7.6712329</span>
-<span class="co">#&gt; 54:         408   1.449275  0.3831418  0.4405286  0.2450980</span>
-<span class="co">#&gt; 55:         365  62.711864 14.1762452 16.2995595 10.1369863</span>
-<span class="co">#&gt; 56:         386   3.030303  0.3831418  0.4405286  0.2590674</span>
-<span class="co">#&gt; 57:         398   0.000000  0.0000000  0.0000000  0.0000000</span>
-<span class="co">#&gt; 58:         365 100.000000 18.3908046 21.1453744 13.1506849</span>
-<span class="co">#&gt; 59:         365 100.000000 16.4750958 18.9427313 11.7808219</span>
-<span class="co">#&gt; 60:         365   0.000000  0.0000000  0.0000000  0.0000000</span>
-<span class="co">#&gt; 61:         456   3.703704  0.6329114  0.8810573  0.4385965</span>
-<span class="co">#&gt; 62:         497   2.631579  0.9493671  1.3215859  0.6036217</span>
-<span class="co">#&gt; 63:         479   3.370787  0.9493671  1.3215859  0.6263048</span>
-<span class="co">#&gt; 64:         466   5.128205  1.2658228  1.7621145  0.8583691</span>
-<span class="co">#&gt; 65:         429  10.989011  3.1645570  4.4052863  2.3310023</span>
-<span class="co">#&gt; 66:         429   5.084746  0.9493671  1.3215859  0.6993007</span>
-<span class="co">#&gt; 67:         429   6.896552  0.6329114  0.8810573  0.4662005</span>
-<span class="co">#&gt; 68:         429 100.000000 16.7721519 23.3480176 12.3543124</span>
-<span class="co">#&gt; 69:         429 100.000000 10.1265823 14.0969163  7.4592075</span>
-<span class="co">#&gt; 70:         429  31.632653  9.8101266 13.6563877  7.2261072</span>
-<span class="co">#&gt; 71:         429 100.000000  5.6962025  7.9295154  4.1958042</span>
-<span class="co">#&gt; 72:         429 100.000000  4.7468354  6.6079295  3.4965035</span>
-<span class="co">#&gt; 73:         429   3.571429  0.3164557  0.4405286  0.2331002</span>
-<span class="co">#&gt; 74:         429  37.681159  8.2278481 11.4537445  6.0606061</span>
-<span class="co">#&gt; 75:         451   3.389831  0.6329114  0.8810573  0.4434590</span>
-<span class="co">#&gt; 76:         429  36.363636  3.7974684  5.2863436  2.7972028</span>
-<span class="co">#&gt; 77:         429  17.500000  2.2151899  3.0837004  1.6317016</span>
-<span class="co">#&gt; 78:         429   6.250000  0.9493671  1.3215859  0.6993007</span>
-<span class="co">#&gt; 79:         429   4.651163  0.6329114  0.8810573  0.4662005</span>
-<span class="co">#&gt; 80:         429 100.000000  7.5949367 10.5726872  5.5944056</span>
+<span class="co">#&gt;  1:         310 100.000000 29.0322581 19.9261993 17.4193548</span>
+<span class="co">#&gt;  2:         310 100.000000 61.2903226 42.0664207 36.7741935</span>
+<span class="co">#&gt;  3:         310  52.542373 16.6666667 11.4391144 10.0000000</span>
+<span class="co">#&gt;  4:         310   1.020408  0.5376344  0.3690037  0.3225806</span>
+<span class="co">#&gt;  5:         316   0.000000  0.0000000  0.0000000  0.0000000</span>
+<span class="co">#&gt;  6:         320   6.666667  0.5376344  0.3690037  0.3125000</span>
+<span class="co">#&gt;  7:         310  32.142857  4.8387097  3.3210332  2.9032258</span>
+<span class="co">#&gt;  8:         310   3.030303  0.5376344  0.3690037  0.3225806</span>
+<span class="co">#&gt;  9:         281   1.851852  0.7299270  0.3690037  0.3558719</span>
+<span class="co">#&gt; 10:         281   1.754386  1.4598540  0.7380074  0.7117438</span>
+<span class="co">#&gt; 11:         309   1.694915  0.7299270  0.3690037  0.3236246</span>
+<span class="co">#&gt; 12:         281 100.000000 71.5328467 36.1623616 34.8754448</span>
+<span class="co">#&gt; 13:         281  66.666667  8.7591241  4.4280443  4.2704626</span>
+<span class="co">#&gt; 14:         281  33.333333  3.6496350  1.8450185  1.7793594</span>
+<span class="co">#&gt; 15:         300   0.000000  0.0000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 16:         281 100.000000 24.0875912 12.1771218 11.7437722</span>
+<span class="co">#&gt; 17:         211  25.925926  7.5268817 13.5922330  6.6350711</span>
+<span class="co">#&gt; 18:         211  30.701754 18.8172043 33.9805825 16.5876777</span>
+<span class="co">#&gt; 19:         211 100.000000 31.7204301 57.2815534 27.9620853</span>
+<span class="co">#&gt; 20:         298   1.020408  0.5376344  0.9708738  0.3355705</span>
+<span class="co">#&gt; 21:         211   0.000000  0.0000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 22:         211   6.666667  0.5376344  0.9708738  0.4739336</span>
+<span class="co">#&gt; 23:         211 100.000000 15.0537634 27.1844660 13.2701422</span>
+<span class="co">#&gt; 24:         237   0.000000  0.0000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 25:         252   0.000000  0.0000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 26:         292   1.754386  1.4598540  1.9417476  0.6849315</span>
+<span class="co">#&gt; 27:         213   1.694915  0.7299270  0.9708738  0.4694836</span>
+<span class="co">#&gt; 28:         213  11.224490  8.0291971 10.6796117  5.1643192</span>
+<span class="co">#&gt; 29:         213 100.000000 13.1386861 17.4757282  8.4507042</span>
+<span class="co">#&gt; 30:         213 100.000000 10.9489051 14.5631068  7.0422535</span>
+<span class="co">#&gt; 31:         213   0.000000  0.0000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 32:         213  18.181818  4.3795620  5.8252427  2.8169014</span>
 <span class="co">#&gt;     count_union      on_g1      on_g2      on_g3   on_union</span></code></pre></div>
 <p>There are a few things to keep in mind in this case:</p>
 <ul>
@@ -592,7 +817,7 @@
 <a href="#scenario-3-multiple-input-data-frame-and-single-grouping-key" class="anchor"></a>SCENARIO 3: multiple input data frame and single grouping key</h2>
 <p>Providing multiple input data frames and the same grouping key is an effective way to reduce the number of comparisons performed. Let’s make an example: suppose we’re interested in comparing groups labelled by a unique combination of <code>SubjectID</code>, <code>CellMarker</code>, <code>Tissue</code> and <code>TimePoint</code>, but this time we want the first group to contain only integrations relative to <code>PT001_MNC_BM_0030</code> and the second group to contain only integrations relative to <code>PT001_MNC_BM_0060</code>.</p>
 <p>We’re going to filter the original data frame in order to obtain only relevant data in 2 separated tables and then proceed by calling the function.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">first_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">%&gt;%</span>
   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">SubjectID</span> <span class="op">==</span> <span class="st">"PT001"</span>, <span class="va">CellMarker</span> <span class="op">==</span> <span class="st">"MNC"</span>, <span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span>, 
          <span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0030"</span><span class="op">)</span>
@@ -617,13 +842,13 @@
 <h2 class="hasAnchor">
 <a href="#scenario-4-multiple-input-data-frame-and-multiple-grouping-keys" class="anchor"></a>SCENARIO 4: multiple input data frame and multiple grouping keys</h2>
 <p>Finally, the most general scenario is when we have multiple data frames with multiple keys. In this case the number of data frames must be equal to the number of provided keys and grouping keys are applied in order ( data frame 1 is grouped with key 1, data frame 2 is grouped with key 2, and so on).</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">%&gt;%</span>
   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0030"</span><span class="op">)</span>
 <span class="va">df2</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">%&gt;%</span>
   <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0060"</span><span class="op">)</span>
 <span class="va">df3</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">%&gt;%</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0180"</span><span class="op">)</span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span><span class="op">)</span>
 
 <span class="va">keys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span>,
              g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"Tissue"</span><span class="op">)</span>,
@@ -633,137 +858,73 @@
 <span class="co">#&gt; Done!</span>
 <span class="va">sharing_4</span>
 <span class="co">#&gt;               g1       g2           g3 shared count_g1 count_g2 count_g3</span>
-<span class="co">#&gt;  1: PT001_MNC_BM PT001_BM PT001_MNC_BM      8       54      114       89</span>
-<span class="co">#&gt;  2: PT002_MNC_BM PT001_BM PT001_MNC_BM      0       98      114       89</span>
-<span class="co">#&gt;  3: PT002_MNC_PB PT001_BM PT001_MNC_BM      0       15      114       89</span>
-<span class="co">#&gt;  4: PT001_MNC_PB PT001_BM PT001_MNC_BM      0       28      114       89</span>
-<span class="co">#&gt;  5: PT001_MNC_BM PT001_PB PT001_MNC_BM      8       54       59       89</span>
-<span class="co">#&gt;  6: PT002_MNC_BM PT001_PB PT001_MNC_BM      0       98       59       89</span>
-<span class="co">#&gt;  7: PT002_MNC_PB PT001_PB PT001_MNC_BM      0       15       59       89</span>
-<span class="co">#&gt;  8: PT001_MNC_PB PT001_PB PT001_MNC_BM      0       28       59       89</span>
-<span class="co">#&gt;  9: PT001_MNC_BM PT002_PB PT001_MNC_BM      0       54       18       89</span>
-<span class="co">#&gt; 10: PT002_MNC_BM PT002_PB PT001_MNC_BM      0       98       18       89</span>
-<span class="co">#&gt; 11: PT002_MNC_PB PT002_PB PT001_MNC_BM      0       15       18       89</span>
-<span class="co">#&gt; 12: PT001_MNC_PB PT002_PB PT001_MNC_BM      0       28       18       89</span>
-<span class="co">#&gt; 13: PT001_MNC_BM PT002_BM PT001_MNC_BM      0       54       33       89</span>
-<span class="co">#&gt; 14: PT002_MNC_BM PT002_BM PT001_MNC_BM      0       98       33       89</span>
-<span class="co">#&gt; 15: PT002_MNC_PB PT002_BM PT001_MNC_BM      0       15       33       89</span>
-<span class="co">#&gt; 16: PT001_MNC_PB PT002_BM PT001_MNC_BM      0       28       33       89</span>
-<span class="co">#&gt; 17: PT001_MNC_BM PT001_BM PT001_MNC_PB      0       54      114       29</span>
-<span class="co">#&gt; 18: PT002_MNC_BM PT001_BM PT001_MNC_PB      0       98      114       29</span>
-<span class="co">#&gt; 19: PT002_MNC_PB PT001_BM PT001_MNC_PB      0       15      114       29</span>
-<span class="co">#&gt; 20: PT001_MNC_PB PT001_BM PT001_MNC_PB      0       28      114       29</span>
-<span class="co">#&gt; 21: PT001_MNC_BM PT001_PB PT001_MNC_PB      0       54       59       29</span>
-<span class="co">#&gt; 22: PT002_MNC_BM PT001_PB PT001_MNC_PB      0       98       59       29</span>
-<span class="co">#&gt; 23: PT002_MNC_PB PT001_PB PT001_MNC_PB      0       15       59       29</span>
-<span class="co">#&gt; 24: PT001_MNC_PB PT001_PB PT001_MNC_PB      0       28       59       29</span>
-<span class="co">#&gt; 25: PT001_MNC_BM PT002_PB PT001_MNC_PB      0       54       18       29</span>
-<span class="co">#&gt; 26: PT002_MNC_BM PT002_PB PT001_MNC_PB      0       98       18       29</span>
-<span class="co">#&gt; 27: PT002_MNC_PB PT002_PB PT001_MNC_PB      0       15       18       29</span>
-<span class="co">#&gt; 28: PT001_MNC_PB PT002_PB PT001_MNC_PB      0       28       18       29</span>
-<span class="co">#&gt; 29: PT001_MNC_BM PT002_BM PT001_MNC_PB      0       54       33       29</span>
-<span class="co">#&gt; 30: PT002_MNC_BM PT002_BM PT001_MNC_PB      0       98       33       29</span>
-<span class="co">#&gt; 31: PT002_MNC_PB PT002_BM PT001_MNC_PB      0       15       33       29</span>
-<span class="co">#&gt; 32: PT001_MNC_PB PT002_BM PT001_MNC_PB      0       28       33       29</span>
-<span class="co">#&gt; 33: PT001_MNC_BM PT001_BM PT002_MNC_PB      0       54      114       32</span>
-<span class="co">#&gt; 34: PT002_MNC_BM PT001_BM PT002_MNC_PB      0       98      114       32</span>
-<span class="co">#&gt; 35: PT002_MNC_PB PT001_BM PT002_MNC_PB      0       15      114       32</span>
-<span class="co">#&gt; 36: PT001_MNC_PB PT001_BM PT002_MNC_PB      0       28      114       32</span>
-<span class="co">#&gt; 37: PT001_MNC_BM PT001_PB PT002_MNC_PB      0       54       59       32</span>
-<span class="co">#&gt; 38: PT002_MNC_BM PT001_PB PT002_MNC_PB      0       98       59       32</span>
-<span class="co">#&gt; 39: PT002_MNC_PB PT001_PB PT002_MNC_PB      0       15       59       32</span>
-<span class="co">#&gt; 40: PT001_MNC_PB PT001_PB PT002_MNC_PB      0       28       59       32</span>
-<span class="co">#&gt; 41: PT001_MNC_BM PT002_PB PT002_MNC_PB      0       54       18       32</span>
-<span class="co">#&gt; 42: PT002_MNC_BM PT002_PB PT002_MNC_PB      0       98       18       32</span>
-<span class="co">#&gt; 43: PT002_MNC_PB PT002_PB PT002_MNC_PB      6       15       18       32</span>
-<span class="co">#&gt; 44: PT001_MNC_PB PT002_PB PT002_MNC_PB      0       28       18       32</span>
-<span class="co">#&gt; 45: PT001_MNC_BM PT002_BM PT002_MNC_PB      0       54       33       32</span>
-<span class="co">#&gt; 46: PT002_MNC_BM PT002_BM PT002_MNC_PB      0       98       33       32</span>
-<span class="co">#&gt; 47: PT002_MNC_PB PT002_BM PT002_MNC_PB      0       15       33       32</span>
-<span class="co">#&gt; 48: PT001_MNC_PB PT002_BM PT002_MNC_PB      0       28       33       32</span>
-<span class="co">#&gt; 49: PT001_MNC_BM PT001_BM PT002_MNC_BM      0       54      114       69</span>
-<span class="co">#&gt; 50: PT002_MNC_BM PT001_BM PT002_MNC_BM      0       98      114       69</span>
-<span class="co">#&gt; 51: PT002_MNC_PB PT001_BM PT002_MNC_BM      0       15      114       69</span>
-<span class="co">#&gt; 52: PT001_MNC_PB PT001_BM PT002_MNC_BM      0       28      114       69</span>
-<span class="co">#&gt; 53: PT001_MNC_BM PT001_PB PT002_MNC_BM      0       54       59       69</span>
-<span class="co">#&gt; 54: PT002_MNC_BM PT001_PB PT002_MNC_BM      0       98       59       69</span>
-<span class="co">#&gt; 55: PT002_MNC_PB PT001_PB PT002_MNC_BM      0       15       59       69</span>
-<span class="co">#&gt; 56: PT001_MNC_PB PT001_PB PT002_MNC_BM      0       28       59       69</span>
-<span class="co">#&gt; 57: PT001_MNC_BM PT002_PB PT002_MNC_BM      0       54       18       69</span>
-<span class="co">#&gt; 58: PT002_MNC_BM PT002_PB PT002_MNC_BM      3       98       18       69</span>
-<span class="co">#&gt; 59: PT002_MNC_PB PT002_PB PT002_MNC_BM      0       15       18       69</span>
-<span class="co">#&gt; 60: PT001_MNC_PB PT002_PB PT002_MNC_BM      0       28       18       69</span>
-<span class="co">#&gt; 61: PT001_MNC_BM PT002_BM PT002_MNC_BM      0       54       33       69</span>
-<span class="co">#&gt; 62: PT002_MNC_BM PT002_BM PT002_MNC_BM      3       98       33       69</span>
-<span class="co">#&gt; 63: PT002_MNC_PB PT002_BM PT002_MNC_BM      0       15       33       69</span>
-<span class="co">#&gt; 64: PT001_MNC_PB PT002_BM PT002_MNC_BM      0       28       33       69</span>
+<span class="co">#&gt;  1: PT001_MNC_BM PT001_BM PT001_MNC_BM     21       54      114      147</span>
+<span class="co">#&gt;  2: PT002_MNC_BM PT001_BM PT001_MNC_BM      0       98      114      147</span>
+<span class="co">#&gt;  3: PT002_MNC_PB PT001_BM PT001_MNC_BM      0       15      114      147</span>
+<span class="co">#&gt;  4: PT001_MNC_PB PT001_BM PT001_MNC_BM      5       28      114      147</span>
+<span class="co">#&gt;  5: PT001_MNC_BM PT001_PB PT001_MNC_BM      8       54       59      147</span>
+<span class="co">#&gt;  6: PT002_MNC_BM PT001_PB PT001_MNC_BM      0       98       59      147</span>
+<span class="co">#&gt;  7: PT002_MNC_PB PT001_PB PT001_MNC_BM      0       15       59      147</span>
+<span class="co">#&gt;  8: PT001_MNC_PB PT001_PB PT001_MNC_BM      1       28       59      147</span>
+<span class="co">#&gt;  9: PT001_MNC_BM PT002_PB PT001_MNC_BM      0       54       18      147</span>
+<span class="co">#&gt; 10: PT002_MNC_BM PT002_PB PT001_MNC_BM      0       98       18      147</span>
+<span class="co">#&gt; 11: PT002_MNC_PB PT002_PB PT001_MNC_BM      0       15       18      147</span>
+<span class="co">#&gt; 12: PT001_MNC_PB PT002_PB PT001_MNC_BM      0       28       18      147</span>
+<span class="co">#&gt; 13: PT001_MNC_BM PT002_BM PT001_MNC_BM      1       54       33      147</span>
+<span class="co">#&gt; 14: PT002_MNC_BM PT002_BM PT001_MNC_BM      0       98       33      147</span>
+<span class="co">#&gt; 15: PT002_MNC_PB PT002_BM PT001_MNC_BM      0       15       33      147</span>
+<span class="co">#&gt; 16: PT001_MNC_PB PT002_BM PT001_MNC_BM      0       28       33      147</span>
+<span class="co">#&gt; 17: PT001_MNC_BM PT001_BM PT002_MNC_BM      0       54      114      126</span>
+<span class="co">#&gt; 18: PT002_MNC_BM PT001_BM PT002_MNC_BM      1       98      114      126</span>
+<span class="co">#&gt; 19: PT002_MNC_PB PT001_BM PT002_MNC_BM      0       15      114      126</span>
+<span class="co">#&gt; 20: PT001_MNC_PB PT001_BM PT002_MNC_BM      0       28      114      126</span>
+<span class="co">#&gt; 21: PT001_MNC_BM PT001_PB PT002_MNC_BM      0       54       59      126</span>
+<span class="co">#&gt; 22: PT002_MNC_BM PT001_PB PT002_MNC_BM      1       98       59      126</span>
+<span class="co">#&gt; 23: PT002_MNC_PB PT001_PB PT002_MNC_BM      0       15       59      126</span>
+<span class="co">#&gt; 24: PT001_MNC_PB PT001_PB PT002_MNC_BM      0       28       59      126</span>
+<span class="co">#&gt; 25: PT001_MNC_BM PT002_PB PT002_MNC_BM      0       54       18      126</span>
+<span class="co">#&gt; 26: PT002_MNC_BM PT002_PB PT002_MNC_BM      8       98       18      126</span>
+<span class="co">#&gt; 27: PT002_MNC_PB PT002_PB PT002_MNC_BM      1       15       18      126</span>
+<span class="co">#&gt; 28: PT001_MNC_PB PT002_PB PT002_MNC_BM      0       28       18      126</span>
+<span class="co">#&gt; 29: PT001_MNC_BM PT002_BM PT002_MNC_BM      0       54       33      126</span>
+<span class="co">#&gt; 30: PT002_MNC_BM PT002_BM PT002_MNC_BM      5       98       33      126</span>
+<span class="co">#&gt; 31: PT002_MNC_PB PT002_BM PT002_MNC_BM      1       15       33      126</span>
+<span class="co">#&gt; 32: PT001_MNC_PB PT002_BM PT002_MNC_BM      0       28       33      126</span>
 <span class="co">#&gt;               g1       g2           g3 shared count_g1 count_g2 count_g3</span>
-<span class="co">#&gt;     count_union     on_g1     on_g2     on_g3  on_union</span>
-<span class="co">#&gt;  1:         216 14.814815  7.017544  8.988764  3.703704</span>
-<span class="co">#&gt;  2:         370  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt;  3:         255  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt;  4:         240  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt;  5:         160 14.814815 13.559322  8.988764  5.000000</span>
-<span class="co">#&gt;  6:         314  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt;  7:         201  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt;  8:         188  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt;  9:         146  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 10:         291  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 11:         180  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 12:         189  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 13:         160  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 14:         299  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 15:         196  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 16:         203  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 17:         240  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 18:         297  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 19:         183  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 20:         144  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 21:         188  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 22:         248  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 23:         135  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 24:          95  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 25:         189  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 26:         219  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 27:         108  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 28:          75  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 29:         203  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 30:         228  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 31:         125  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 32:          90  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 33:         255  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 34:         279  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 35:         153  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 36:         183  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 37:         201  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 38:         226  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 39:         100  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 40:         135  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 41:         180  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 42:         170  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 43:          52 40.000000 33.333333 18.750000 11.538462</span>
-<span class="co">#&gt; 44:         108  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 45:         196  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 46:         184  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 47:          69  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 48:         125  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 49:         370  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 50:         268  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 51:         279  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 52:         297  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 53:         314  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 54:         213  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 55:         226  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 56:         248  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 57:         291  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 58:         163  3.061224 16.666667  4.347826  1.840491</span>
-<span class="co">#&gt; 59:         170  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 60:         219  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 61:         299  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 62:         172  3.061224  9.090909  4.347826  1.744186</span>
-<span class="co">#&gt; 63:         184  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt; 64:         228  0.000000  0.000000  0.000000  0.000000</span>
-<span class="co">#&gt;     count_union     on_g1     on_g2     on_g3  on_union</span></code></pre></div>
+<span class="co">#&gt;     count_union     on_g1     on_g2      on_g3   on_union</span>
+<span class="co">#&gt;  1:         147 38.888889 18.421053 14.2857143 14.2857143</span>
+<span class="co">#&gt;  2:         271  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt;  3:         161  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt;  4:         166 17.857143  4.385965  3.4013605  3.0120482</span>
+<span class="co">#&gt;  5:         175 14.814815 13.559322  5.4421769  4.5714286</span>
+<span class="co">#&gt;  6:         299  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt;  7:         189  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt;  8:         186  3.571429  1.694915  0.6802721  0.5376344</span>
+<span class="co">#&gt;  9:         165  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 10:         277  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 11:         172  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 12:         184  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 13:         179  1.851852  3.030303  0.6802721  0.5586592</span>
+<span class="co">#&gt; 14:         271  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 15:         191  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 16:         198  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 17:         271  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 18:         239  1.020408  0.877193  0.7936508  0.4184100</span>
+<span class="co">#&gt; 19:         249  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 20:         260  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 21:         299  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 22:         184  1.020408  1.694915  0.7936508  0.5434783</span>
+<span class="co">#&gt; 23:         195  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 24:         202  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 25:         277  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 26:         132  8.163265 44.444444  6.3492063  6.0606061</span>
+<span class="co">#&gt; 27:         137  6.666667  5.555556  0.7936508  0.7299270</span>
+<span class="co">#&gt; 28:         160  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 29:         271  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt; 30:         126  5.102041 15.151515  3.9682540  3.9682540</span>
+<span class="co">#&gt; 31:         137  6.666667  3.030303  0.7936508  0.7299270</span>
+<span class="co">#&gt; 32:         154  0.000000  0.000000  0.0000000  0.0000000</span>
+<span class="co">#&gt;     count_union     on_g1     on_g2      on_g3   on_union</span></code></pre></div>
 <p>Notice that in this example the keys for g1 and g3 are the same, meaning the labels of the groups are actually the same, however you should remember that the groups contain a <strong>different set of integration sites</strong> since they come from different data frames.</p>
 </div>
 </div>
@@ -771,7 +932,7 @@
 <h1 class="hasAnchor">
 <a href="#plotting-sharing-results" class="anchor"></a>Plotting sharing results</h1>
 <p>When we have more than 2 comparisons it is convenient to plot them as venn or euler diagrams. ISAnalytics has a fast way to do that through the functions <code><a href="../reference/is_sharing.html">is_sharing()</a></code> and <code><a href="../reference/sharing_venn.html">sharing_venn()</a></code>.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,
                         group_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
                           g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
@@ -782,179 +943,83 @@
 <span class="co">#&gt; Done!</span>
 <span class="va">sharing_5</span>
 <span class="co">#&gt;                    g1        g2     g3 shared count_g1 count_g2 count_g3</span>
-<span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC MNC_BM     54       54      261      501</span>
-<span class="co">#&gt;  2: PT001_MNC_BM_0060 PT001_MNC MNC_BM    114      114      261      501</span>
-<span class="co">#&gt;  3: PT001_MNC_BM_0180 PT001_MNC MNC_BM     89       89      261      501</span>
-<span class="co">#&gt;  4: PT001_MNC_BM_0360 PT001_MNC MNC_BM     78       78      261      501</span>
-<span class="co">#&gt;  5: PT002_MNC_BM_0360 PT001_MNC MNC_BM      2       91      261      501</span>
-<span class="co">#&gt;  6: PT001_MNC_PB_0060 PT001_MNC MNC_BM     52       59      261      501</span>
-<span class="co">#&gt;  7: PT001_MNC_PB_0180 PT001_MNC MNC_BM     26       29      261      501</span>
-<span class="co">#&gt;  8: PT002_MNC_PB_0360 PT001_MNC MNC_BM      3       53      261      501</span>
-<span class="co">#&gt;  9: PT002_MNC_PB_0180 PT001_MNC MNC_BM      1       32      261      501</span>
-<span class="co">#&gt; 10: PT002_MNC_BM_0030 PT001_MNC MNC_BM      1       98      261      501</span>
-<span class="co">#&gt; 11: PT002_MNC_PB_0060 PT001_MNC MNC_BM      0       18      261      501</span>
-<span class="co">#&gt; 12: PT002_MNC_PB_0030 PT001_MNC MNC_BM      1       15      261      501</span>
-<span class="co">#&gt; 13: PT001_MNC_PB_0030 PT001_MNC MNC_BM     11       28      261      501</span>
-<span class="co">#&gt; 14: PT002_MNC_BM_0180 PT001_MNC MNC_BM      1       69      261      501</span>
-<span class="co">#&gt; 15: PT001_MNC_BM_0090 PT001_MNC MNC_BM     59       59      261      501</span>
-<span class="co">#&gt; 16: PT002_MNC_BM_0060 PT001_MNC MNC_BM      1       33      261      501</span>
-<span class="co">#&gt; 17: PT002_MNC_BM_0090 PT001_MNC MNC_BM      0       40      261      501</span>
-<span class="co">#&gt; 18: PT001_MNC_PB_0090 PT001_MNC MNC_BM     38       48      261      501</span>
-<span class="co">#&gt; 19: PT001_MNC_PB_0360 PT001_MNC MNC_BM     35       43      261      501</span>
-<span class="co">#&gt; 20: PT002_MNC_PB_0090 PT001_MNC MNC_BM      0       24      261      501</span>
-<span class="co">#&gt; 21: PT001_MNC_BM_0030 PT002_MNC MNC_BM      2       54      316      501</span>
-<span class="co">#&gt; 22: PT001_MNC_BM_0060 PT002_MNC MNC_BM      3      114      316      501</span>
-<span class="co">#&gt; 23: PT001_MNC_BM_0180 PT002_MNC MNC_BM      3       89      316      501</span>
-<span class="co">#&gt; 24: PT001_MNC_BM_0360 PT002_MNC MNC_BM      4       78      316      501</span>
-<span class="co">#&gt; 25: PT002_MNC_BM_0360 PT002_MNC MNC_BM     91       91      316      501</span>
-<span class="co">#&gt; 26: PT001_MNC_PB_0060 PT002_MNC MNC_BM      3       59      316      501</span>
-<span class="co">#&gt; 27: PT001_MNC_PB_0180 PT002_MNC MNC_BM      2       29      316      501</span>
-<span class="co">#&gt; 28: PT002_MNC_PB_0360 PT002_MNC MNC_BM      7       53      316      501</span>
-<span class="co">#&gt; 29: PT002_MNC_PB_0180 PT002_MNC MNC_BM     26       32      316      501</span>
-<span class="co">#&gt; 30: PT002_MNC_BM_0030 PT002_MNC MNC_BM     98       98      316      501</span>
-<span class="co">#&gt; 31: PT002_MNC_PB_0060 PT002_MNC MNC_BM     12       18      316      501</span>
-<span class="co">#&gt; 32: PT002_MNC_PB_0030 PT002_MNC MNC_BM      9       15      316      501</span>
-<span class="co">#&gt; 33: PT001_MNC_PB_0030 PT002_MNC MNC_BM      1       28      316      501</span>
-<span class="co">#&gt; 34: PT002_MNC_BM_0180 PT002_MNC MNC_BM     69       69      316      501</span>
-<span class="co">#&gt; 35: PT001_MNC_BM_0090 PT002_MNC MNC_BM      2       59      316      501</span>
-<span class="co">#&gt; 36: PT002_MNC_BM_0060 PT002_MNC MNC_BM     33       33      316      501</span>
-<span class="co">#&gt; 37: PT002_MNC_BM_0090 PT002_MNC MNC_BM     40       40      316      501</span>
-<span class="co">#&gt; 38: PT001_MNC_PB_0090 PT002_MNC MNC_BM      3       48      316      501</span>
-<span class="co">#&gt; 39: PT001_MNC_PB_0360 PT002_MNC MNC_BM      2       43      316      501</span>
-<span class="co">#&gt; 40: PT002_MNC_PB_0090 PT002_MNC MNC_BM     18       24      316      501</span>
-<span class="co">#&gt; 41: PT001_MNC_BM_0030 PT001_MNC MNC_PB     27       54      261      227</span>
-<span class="co">#&gt; 42: PT001_MNC_BM_0060 PT001_MNC MNC_PB     46      114      261      227</span>
-<span class="co">#&gt; 43: PT001_MNC_BM_0180 PT001_MNC MNC_PB     39       89      261      227</span>
-<span class="co">#&gt; 44: PT001_MNC_BM_0360 PT001_MNC MNC_PB     41       78      261      227</span>
-<span class="co">#&gt; 45: PT002_MNC_BM_0360 PT001_MNC MNC_PB      2       91      261      227</span>
-<span class="co">#&gt; 46: PT001_MNC_PB_0060 PT001_MNC MNC_PB     59       59      261      227</span>
-<span class="co">#&gt; 47: PT001_MNC_PB_0180 PT001_MNC MNC_PB     29       29      261      227</span>
-<span class="co">#&gt; 48: PT002_MNC_PB_0360 PT001_MNC MNC_PB      3       53      261      227</span>
-<span class="co">#&gt; 49: PT002_MNC_PB_0180 PT001_MNC MNC_PB      1       32      261      227</span>
-<span class="co">#&gt; 50: PT002_MNC_BM_0030 PT001_MNC MNC_PB      1       98      261      227</span>
-<span class="co">#&gt; 51: PT002_MNC_PB_0060 PT001_MNC MNC_PB      0       18      261      227</span>
-<span class="co">#&gt; 52: PT002_MNC_PB_0030 PT001_MNC MNC_PB      1       15      261      227</span>
-<span class="co">#&gt; 53: PT001_MNC_PB_0030 PT001_MNC MNC_PB     28       28      261      227</span>
-<span class="co">#&gt; 54: PT002_MNC_BM_0180 PT001_MNC MNC_PB      1       69      261      227</span>
-<span class="co">#&gt; 55: PT001_MNC_BM_0090 PT001_MNC MNC_PB     37       59      261      227</span>
-<span class="co">#&gt; 56: PT002_MNC_BM_0060 PT001_MNC MNC_PB      1       33      261      227</span>
-<span class="co">#&gt; 57: PT002_MNC_BM_0090 PT001_MNC MNC_PB      0       40      261      227</span>
-<span class="co">#&gt; 58: PT001_MNC_PB_0090 PT001_MNC MNC_PB     48       48      261      227</span>
-<span class="co">#&gt; 59: PT001_MNC_PB_0360 PT001_MNC MNC_PB     43       43      261      227</span>
-<span class="co">#&gt; 60: PT002_MNC_PB_0090 PT001_MNC MNC_PB      0       24      261      227</span>
-<span class="co">#&gt; 61: PT001_MNC_BM_0030 PT002_MNC MNC_PB      2       54      316      227</span>
-<span class="co">#&gt; 62: PT001_MNC_BM_0060 PT002_MNC MNC_PB      3      114      316      227</span>
-<span class="co">#&gt; 63: PT001_MNC_BM_0180 PT002_MNC MNC_PB      3       89      316      227</span>
-<span class="co">#&gt; 64: PT001_MNC_BM_0360 PT002_MNC MNC_PB      4       78      316      227</span>
-<span class="co">#&gt; 65: PT002_MNC_BM_0360 PT002_MNC MNC_PB     10       91      316      227</span>
-<span class="co">#&gt; 66: PT001_MNC_PB_0060 PT002_MNC MNC_PB      3       59      316      227</span>
-<span class="co">#&gt; 67: PT001_MNC_PB_0180 PT002_MNC MNC_PB      2       29      316      227</span>
-<span class="co">#&gt; 68: PT002_MNC_PB_0360 PT002_MNC MNC_PB     53       53      316      227</span>
-<span class="co">#&gt; 69: PT002_MNC_PB_0180 PT002_MNC MNC_PB     32       32      316      227</span>
-<span class="co">#&gt; 70: PT002_MNC_BM_0030 PT002_MNC MNC_PB     31       98      316      227</span>
-<span class="co">#&gt; 71: PT002_MNC_PB_0060 PT002_MNC MNC_PB     18       18      316      227</span>
-<span class="co">#&gt; 72: PT002_MNC_PB_0030 PT002_MNC MNC_PB     15       15      316      227</span>
-<span class="co">#&gt; 73: PT001_MNC_PB_0030 PT002_MNC MNC_PB      1       28      316      227</span>
-<span class="co">#&gt; 74: PT002_MNC_BM_0180 PT002_MNC MNC_PB     26       69      316      227</span>
-<span class="co">#&gt; 75: PT001_MNC_BM_0090 PT002_MNC MNC_PB      2       59      316      227</span>
-<span class="co">#&gt; 76: PT002_MNC_BM_0060 PT002_MNC MNC_PB     12       33      316      227</span>
-<span class="co">#&gt; 77: PT002_MNC_BM_0090 PT002_MNC MNC_PB      7       40      316      227</span>
-<span class="co">#&gt; 78: PT001_MNC_PB_0090 PT002_MNC MNC_PB      3       48      316      227</span>
-<span class="co">#&gt; 79: PT001_MNC_PB_0360 PT002_MNC MNC_PB      2       43      316      227</span>
-<span class="co">#&gt; 80: PT002_MNC_PB_0090 PT002_MNC MNC_PB     24       24      316      227</span>
+<span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC MNC_BM     54       54      186      271</span>
+<span class="co">#&gt;  2: PT001_MNC_BM_0060 PT001_MNC MNC_BM    114      114      186      271</span>
+<span class="co">#&gt;  3: PT001_MNC_PB_0060 PT001_MNC MNC_BM     31       59      186      271</span>
+<span class="co">#&gt;  4: PT002_MNC_BM_0030 PT001_MNC MNC_BM      1       98      186      271</span>
+<span class="co">#&gt;  5: PT002_MNC_PB_0060 PT001_MNC MNC_BM      0       18      186      271</span>
+<span class="co">#&gt;  6: PT002_MNC_PB_0030 PT001_MNC MNC_BM      1       15      186      271</span>
+<span class="co">#&gt;  7: PT001_MNC_PB_0030 PT001_MNC MNC_BM      9       28      186      271</span>
+<span class="co">#&gt;  8: PT002_MNC_BM_0060 PT001_MNC MNC_BM      1       33      186      271</span>
+<span class="co">#&gt;  9: PT001_MNC_BM_0030 PT002_MNC MNC_BM      1       54      137      271</span>
+<span class="co">#&gt; 10: PT001_MNC_BM_0060 PT002_MNC MNC_BM      2      114      137      271</span>
+<span class="co">#&gt; 11: PT001_MNC_PB_0060 PT002_MNC MNC_BM      1       59      137      271</span>
+<span class="co">#&gt; 12: PT002_MNC_BM_0030 PT002_MNC MNC_BM     98       98      137      271</span>
+<span class="co">#&gt; 13: PT002_MNC_PB_0060 PT002_MNC MNC_BM     12       18      137      271</span>
+<span class="co">#&gt; 14: PT002_MNC_PB_0030 PT002_MNC MNC_BM      5       15      137      271</span>
+<span class="co">#&gt; 15: PT001_MNC_PB_0030 PT002_MNC MNC_BM      0       28      137      271</span>
+<span class="co">#&gt; 16: PT002_MNC_BM_0060 PT002_MNC MNC_BM     33       33      137      271</span>
+<span class="co">#&gt; 17: PT001_MNC_BM_0030 PT001_MNC MNC_PB     14       54      186      103</span>
+<span class="co">#&gt; 18: PT001_MNC_BM_0060 PT001_MNC MNC_PB     35      114      186      103</span>
+<span class="co">#&gt; 19: PT001_MNC_PB_0060 PT001_MNC MNC_PB     59       59      186      103</span>
+<span class="co">#&gt; 20: PT002_MNC_BM_0030 PT001_MNC MNC_PB      1       98      186      103</span>
+<span class="co">#&gt; 21: PT002_MNC_PB_0060 PT001_MNC MNC_PB      0       18      186      103</span>
+<span class="co">#&gt; 22: PT002_MNC_PB_0030 PT001_MNC MNC_PB      1       15      186      103</span>
+<span class="co">#&gt; 23: PT001_MNC_PB_0030 PT001_MNC MNC_PB     28       28      186      103</span>
+<span class="co">#&gt; 24: PT002_MNC_BM_0060 PT001_MNC MNC_PB      0       33      186      103</span>
+<span class="co">#&gt; 25: PT001_MNC_BM_0030 PT002_MNC MNC_PB      0       54      137      103</span>
+<span class="co">#&gt; 26: PT001_MNC_BM_0060 PT002_MNC MNC_PB      2      114      137      103</span>
+<span class="co">#&gt; 27: PT001_MNC_PB_0060 PT002_MNC MNC_PB      1       59      137      103</span>
+<span class="co">#&gt; 28: PT002_MNC_BM_0030 PT002_MNC MNC_PB     11       98      137      103</span>
+<span class="co">#&gt; 29: PT002_MNC_PB_0060 PT002_MNC MNC_PB     18       18      137      103</span>
+<span class="co">#&gt; 30: PT002_MNC_PB_0030 PT002_MNC MNC_PB     15       15      137      103</span>
+<span class="co">#&gt; 31: PT001_MNC_PB_0030 PT002_MNC MNC_PB      0       28      137      103</span>
+<span class="co">#&gt; 32: PT002_MNC_BM_0060 PT002_MNC MNC_PB      6       33      137      103</span>
 <span class="co">#&gt;                    g1        g2     g3 shared count_g1 count_g2 count_g3</span>
 <span class="co">#&gt;     count_union      on_g1      on_g2      on_g3   on_union      truth_tbl_venn</span>
-<span class="co">#&gt;  1:         521 100.000000 20.6896552 10.7784431 10.3646833 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt;  2:         521 100.000000 43.6781609 22.7544910 21.8809981 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt;  3:         521 100.000000 34.0996169 17.7644711 17.0825336 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt;  4:         521 100.000000 29.8850575 15.5688623 14.9712092 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt;  5:         521   2.197802  0.7662835  0.3992016  0.3838772 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt;  6:         521  88.135593 19.9233716 10.3792415  9.9808061 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt;  7:         521  89.655172  9.9616858  5.1896208  4.9904031 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt;  8:         567   5.660377  1.1494253  0.5988024  0.5291005 &lt;data.table[567x4]&gt;</span>
-<span class="co">#&gt;  9:         527   3.125000  0.3831418  0.1996008  0.1897533 &lt;data.table[527x4]&gt;</span>
-<span class="co">#&gt; 10:         521   1.020408  0.3831418  0.1996008  0.1919386 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt; 11:         527   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[527x4]&gt;</span>
-<span class="co">#&gt; 12:         527   6.666667  0.3831418  0.1996008  0.1897533 &lt;data.table[527x4]&gt;</span>
-<span class="co">#&gt; 13:         521  39.285714  4.2145594  2.1956088  2.1113244 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt; 14:         521   1.449275  0.3831418  0.1996008  0.1919386 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt; 15:         521 100.000000 22.6053640 11.7764471 11.3243762 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt; 16:         521   3.030303  0.3831418  0.1996008  0.1919386 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt; 17:         521   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt; 18:         521  79.166667 14.5593870  7.5848303  7.2936660 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt; 19:         521  81.395349 13.4099617  6.9860279  6.7178503 &lt;data.table[521x4]&gt;</span>
-<span class="co">#&gt; 20:         527   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[527x4]&gt;</span>
-<span class="co">#&gt; 21:         547   3.703704  0.6329114  0.3992016  0.3656307 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 22:         547   2.631579  0.9493671  0.5988024  0.5484461 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 23:         547   3.370787  0.9493671  0.5988024  0.5484461 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 24:         547   5.128205  1.2658228  0.7984032  0.7312614 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 25:         547 100.000000 28.7974684 18.1636727 16.6361974 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 26:         554   5.084746  0.9493671  0.5988024  0.5415162 &lt;data.table[554x4]&gt;</span>
-<span class="co">#&gt; 27:         550   6.896552  0.6329114  0.3992016  0.3636364 &lt;data.table[550x4]&gt;</span>
-<span class="co">#&gt; 28:         547  13.207547  2.2151899  1.3972056  1.2797075 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 29:         547  81.250000  8.2278481  5.1896208  4.7531993 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 30:         547 100.000000 31.0126582 19.5608782 17.9159049 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 31:         547  66.666667  3.7974684  2.3952096  2.1937843 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 32:         547  60.000000  2.8481013  1.7964072  1.6453382 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 33:         564   3.571429  0.3164557  0.1996008  0.1773050 &lt;data.table[564x4]&gt;</span>
-<span class="co">#&gt; 34:         547 100.000000 21.8354430 13.7724551 12.6142596 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 35:         547   3.389831  0.6329114  0.3992016  0.3656307 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 36:         547 100.000000 10.4430380  6.5868263  6.0329068 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 37:         547 100.000000 12.6582278  7.9840319  7.3126143 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 38:         557   6.250000  0.9493671  0.5988024  0.5385996 &lt;data.table[557x4]&gt;</span>
-<span class="co">#&gt; 39:         555   4.651163  0.6329114  0.3992016  0.3603604 &lt;data.table[555x4]&gt;</span>
-<span class="co">#&gt; 40:         547  75.000000  5.6962025  3.5928144  3.2906764 &lt;data.table[547x4]&gt;</span>
-<span class="co">#&gt; 41:         365  50.000000 10.3448276 11.8942731  7.3972603 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 42:         365  40.350877 17.6245211 20.2643172 12.6027397 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 43:         365  43.820225 14.9425287 17.1806167 10.6849315 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 44:         365  52.564103 15.7088123 18.0616740 11.2328767 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 45:         446   2.197802  0.7662835  0.8810573  0.4484305 &lt;data.table[446x4]&gt;</span>
-<span class="co">#&gt; 46:         365 100.000000 22.6053640 25.9911894 16.1643836 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 47:         365 100.000000 11.1111111 12.7753304  7.9452055 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 48:         365   5.660377  1.1494253  1.3215859  0.8219178 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 49:         365   3.125000  0.3831418  0.4405286  0.2739726 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 50:         432   1.020408  0.3831418  0.4405286  0.2314815 &lt;data.table[432x4]&gt;</span>
-<span class="co">#&gt; 51:         365   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 52:         365   6.666667  0.3831418  0.4405286  0.2739726 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 53:         365 100.000000 10.7279693 12.3348018  7.6712329 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 54:         408   1.449275  0.3831418  0.4405286  0.2450980 &lt;data.table[408x4]&gt;</span>
-<span class="co">#&gt; 55:         365  62.711864 14.1762452 16.2995595 10.1369863 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 56:         386   3.030303  0.3831418  0.4405286  0.2590674 &lt;data.table[386x4]&gt;</span>
-<span class="co">#&gt; 57:         398   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[398x4]&gt;</span>
-<span class="co">#&gt; 58:         365 100.000000 18.3908046 21.1453744 13.1506849 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 59:         365 100.000000 16.4750958 18.9427313 11.7808219 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 60:         365   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[365x4]&gt;</span>
-<span class="co">#&gt; 61:         456   3.703704  0.6329114  0.8810573  0.4385965 &lt;data.table[456x4]&gt;</span>
-<span class="co">#&gt; 62:         497   2.631579  0.9493671  1.3215859  0.6036217 &lt;data.table[497x4]&gt;</span>
-<span class="co">#&gt; 63:         479   3.370787  0.9493671  1.3215859  0.6263048 &lt;data.table[479x4]&gt;</span>
-<span class="co">#&gt; 64:         466   5.128205  1.2658228  1.7621145  0.8583691 &lt;data.table[466x4]&gt;</span>
-<span class="co">#&gt; 65:         429  10.989011  3.1645570  4.4052863  2.3310023 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 66:         429   5.084746  0.9493671  1.3215859  0.6993007 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 67:         429   6.896552  0.6329114  0.8810573  0.4662005 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 68:         429 100.000000 16.7721519 23.3480176 12.3543124 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 69:         429 100.000000 10.1265823 14.0969163  7.4592075 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 70:         429  31.632653  9.8101266 13.6563877  7.2261072 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 71:         429 100.000000  5.6962025  7.9295154  4.1958042 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 72:         429 100.000000  4.7468354  6.6079295  3.4965035 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 73:         429   3.571429  0.3164557  0.4405286  0.2331002 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 74:         429  37.681159  8.2278481 11.4537445  6.0606061 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 75:         451   3.389831  0.6329114  0.8810573  0.4434590 &lt;data.table[451x4]&gt;</span>
-<span class="co">#&gt; 76:         429  36.363636  3.7974684  5.2863436  2.7972028 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 77:         429  17.500000  2.2151899  3.0837004  1.6317016 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 78:         429   6.250000  0.9493671  1.3215859  0.6993007 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 79:         429   4.651163  0.6329114  0.8810573  0.4662005 &lt;data.table[429x4]&gt;</span>
-<span class="co">#&gt; 80:         429 100.000000  7.5949367 10.5726872  5.5944056 &lt;data.table[429x4]&gt;</span>
+<span class="co">#&gt;  1:         310 100.000000 29.0322581 19.9261993 17.4193548 &lt;data.table[310x4]&gt;</span>
+<span class="co">#&gt;  2:         310 100.000000 61.2903226 42.0664207 36.7741935 &lt;data.table[310x4]&gt;</span>
+<span class="co">#&gt;  3:         310  52.542373 16.6666667 11.4391144 10.0000000 &lt;data.table[310x4]&gt;</span>
+<span class="co">#&gt;  4:         310   1.020408  0.5376344  0.3690037  0.3225806 &lt;data.table[310x4]&gt;</span>
+<span class="co">#&gt;  5:         316   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[316x4]&gt;</span>
+<span class="co">#&gt;  6:         320   6.666667  0.5376344  0.3690037  0.3125000 &lt;data.table[320x4]&gt;</span>
+<span class="co">#&gt;  7:         310  32.142857  4.8387097  3.3210332  2.9032258 &lt;data.table[310x4]&gt;</span>
+<span class="co">#&gt;  8:         310   3.030303  0.5376344  0.3690037  0.3225806 &lt;data.table[310x4]&gt;</span>
+<span class="co">#&gt;  9:         281   1.851852  0.7299270  0.3690037  0.3558719 &lt;data.table[281x4]&gt;</span>
+<span class="co">#&gt; 10:         281   1.754386  1.4598540  0.7380074  0.7117438 &lt;data.table[281x4]&gt;</span>
+<span class="co">#&gt; 11:         309   1.694915  0.7299270  0.3690037  0.3236246 &lt;data.table[309x4]&gt;</span>
+<span class="co">#&gt; 12:         281 100.000000 71.5328467 36.1623616 34.8754448 &lt;data.table[281x4]&gt;</span>
+<span class="co">#&gt; 13:         281  66.666667  8.7591241  4.4280443  4.2704626 &lt;data.table[281x4]&gt;</span>
+<span class="co">#&gt; 14:         281  33.333333  3.6496350  1.8450185  1.7793594 &lt;data.table[281x4]&gt;</span>
+<span class="co">#&gt; 15:         300   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[300x4]&gt;</span>
+<span class="co">#&gt; 16:         281 100.000000 24.0875912 12.1771218 11.7437722 &lt;data.table[281x4]&gt;</span>
+<span class="co">#&gt; 17:         211  25.925926  7.5268817 13.5922330  6.6350711 &lt;data.table[211x4]&gt;</span>
+<span class="co">#&gt; 18:         211  30.701754 18.8172043 33.9805825 16.5876777 &lt;data.table[211x4]&gt;</span>
+<span class="co">#&gt; 19:         211 100.000000 31.7204301 57.2815534 27.9620853 &lt;data.table[211x4]&gt;</span>
+<span class="co">#&gt; 20:         298   1.020408  0.5376344  0.9708738  0.3355705 &lt;data.table[298x4]&gt;</span>
+<span class="co">#&gt; 21:         211   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[211x4]&gt;</span>
+<span class="co">#&gt; 22:         211   6.666667  0.5376344  0.9708738  0.4739336 &lt;data.table[211x4]&gt;</span>
+<span class="co">#&gt; 23:         211 100.000000 15.0537634 27.1844660 13.2701422 &lt;data.table[211x4]&gt;</span>
+<span class="co">#&gt; 24:         237   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[237x4]&gt;</span>
+<span class="co">#&gt; 25:         252   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[252x4]&gt;</span>
+<span class="co">#&gt; 26:         292   1.754386  1.4598540  1.9417476  0.6849315 &lt;data.table[292x4]&gt;</span>
+<span class="co">#&gt; 27:         213   1.694915  0.7299270  0.9708738  0.4694836 &lt;data.table[213x4]&gt;</span>
+<span class="co">#&gt; 28:         213  11.224490  8.0291971 10.6796117  5.1643192 &lt;data.table[213x4]&gt;</span>
+<span class="co">#&gt; 29:         213 100.000000 13.1386861 17.4757282  8.4507042 &lt;data.table[213x4]&gt;</span>
+<span class="co">#&gt; 30:         213 100.000000 10.9489051 14.5631068  7.0422535 &lt;data.table[213x4]&gt;</span>
+<span class="co">#&gt; 31:         213   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[213x4]&gt;</span>
+<span class="co">#&gt; 32:         213  18.181818  4.3795620  5.8252427  2.8169014 &lt;data.table[213x4]&gt;</span>
 <span class="co">#&gt;     count_union      on_g1      on_g2      on_g3   on_union      truth_tbl_venn</span></code></pre></div>
 <p>The argument <code>table_for_venn = TRUE</code> will add a new column <code>truth_tbl_venn</code> that contains corresponding truth tables for each row.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_plots1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_venn.html">sharing_venn</a></span><span class="op">(</span><span class="va">sharing_5</span>, row_range <span class="op">=</span> <span class="fl">1</span>, euler <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">sharing_plots2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_venn.html">sharing_venn</a></span><span class="op">(</span><span class="va">sharing_5</span>, row_range <span class="op">=</span> <span class="fl">1</span>, euler <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <p>Say that we’re interested in plotting just the first row of our sharing data frame. Then we can call the function <code>sharing_venn</code> and specify in the <code>row_range</code> argument the index 1. Note that this function requires the package <em><a href="https://CRAN.R-project.org/package=eulerr">eulerr</a></em> to work. The argument <code>euler</code> indicates if the function should produce euler or venn diagrams instead.</p>
 <p>Once obtained the lists of euler/venn objects we can plot them by simply calling the function <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code>:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sharing_plots1</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 <p><img src="sharing_analyses_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sharing_plots2</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 <p><img src="sharing_analyses_files/figure-html/unnamed-chunk-17-2.png" width="700"></p>
 <p>There are several options that can be set, for this please refer to <a href="https://jolars.github.io/eulerr/reference/plot.euler.html">eulerr docs</a>.</p>
@@ -973,7 +1038,7 @@
 #&gt;  collate  en_US.UTF-8                 
 #&gt;  ctype    en_US.UTF-8                 
 #&gt;  tz       UTC                         
-#&gt;  date     2021-09-21                  
+#&gt;  date     2021-09-27                  
 #&gt; 
 #&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 #&gt;  package      * version date       lib source        
@@ -986,12 +1051,10 @@
 #&gt;  cli            3.0.1   2021-07-17 [1] CRAN (R 4.1.0)
 #&gt;  colorspace     2.0-2   2021-06-24 [1] CRAN (R 4.1.0)
 #&gt;  crayon         1.4.1   2021-02-08 [1] CRAN (R 4.1.0)
-#&gt;  crosstalk      1.1.1   2021-01-12 [1] CRAN (R 4.1.0)
 #&gt;  data.table     1.14.0  2021-02-21 [1] CRAN (R 4.1.0)
 #&gt;  desc           1.3.0   2021-03-05 [1] CRAN (R 4.1.0)
-#&gt;  digest         0.6.27  2020-10-24 [1] CRAN (R 4.1.0)
+#&gt;  digest         0.6.28  2021-09-23 [1] CRAN (R 4.1.0)
 #&gt;  dplyr          1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
-#&gt;  DT             0.19    2021-09-02 [1] CRAN (R 4.1.0)
 #&gt;  ellipsis       0.3.2   2021-04-29 [1] CRAN (R 4.1.0)
 #&gt;  eulerr         6.1.1   2021-09-06 [1] CRAN (R 4.1.0)
 #&gt;  evaluate       0.14    2019-05-28 [1] CRAN (R 4.1.0)
@@ -1006,20 +1069,19 @@
 #&gt;  gtable         0.3.0   2019-03-25 [1] CRAN (R 4.1.0)
 #&gt;  gtools         3.9.2   2021-06-06 [1] CRAN (R 4.1.0)
 #&gt;  highr          0.9     2021-04-16 [1] CRAN (R 4.1.0)
-#&gt;  hms            1.1.0   2021-05-17 [1] CRAN (R 4.1.0)
+#&gt;  hms            1.1.1   2021-09-26 [1] CRAN (R 4.1.1)
 #&gt;  htmltools      0.5.2   2021-08-25 [1] CRAN (R 4.1.0)
-#&gt;  htmlwidgets    1.5.4   2021-09-08 [1] CRAN (R 4.1.0)
 #&gt;  httr           1.4.2   2020-07-20 [1] CRAN (R 4.1.0)
-#&gt;  ISAnalytics  * 1.3.5   2021-09-21 [1] Bioconductor  
+#&gt;  ISAnalytics  * 1.3.5   2021-09-27 [1] Bioconductor  
 #&gt;  jquerylib      0.1.4   2021-04-26 [1] CRAN (R 4.1.0)
 #&gt;  jsonlite       1.7.2   2020-12-09 [1] CRAN (R 4.1.0)
 #&gt;  knitr          1.34    2021-09-09 [1] CRAN (R 4.1.0)
-#&gt;  lifecycle      1.0.0   2021-02-15 [1] CRAN (R 4.1.0)
+#&gt;  lifecycle      1.0.1   2021-09-24 [1] CRAN (R 4.1.0)
 #&gt;  lubridate      1.7.10  2021-02-26 [1] CRAN (R 4.1.0)
 #&gt;  magrittr     * 2.0.1   2020-11-17 [1] CRAN (R 4.1.0)
 #&gt;  memoise        2.0.0   2021-01-26 [1] CRAN (R 4.1.0)
 #&gt;  munsell        0.5.0   2018-06-12 [1] CRAN (R 4.1.0)
-#&gt;  pillar         1.6.2   2021-07-29 [1] CRAN (R 4.1.0)
+#&gt;  pillar         1.6.3   2021-09-26 [1] CRAN (R 4.1.1)
 #&gt;  pkgconfig      2.0.3   2019-09-22 [1] CRAN (R 4.1.0)
 #&gt;  pkgdown        1.6.1   2020-09-12 [1] CRAN (R 4.1.0)
 #&gt;  plyr           1.8.6   2020-03-03 [1] CRAN (R 4.1.0)

@@ -115,9 +115,6 @@ predicates assembled from the function parameters." />
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/report_system.html">ISAnalytics report system</a>
-    </li>
-    <li>
       <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
@@ -247,7 +244,8 @@ that have the same structure but different data.</p>
 sets of conditions. Besides having the possibility of defining the
 other parameters as simple vector, which has the same results as
 operating on an unnamed list, the user can define the parameters as
-named lists containing vectors. For example:<div class="r"></p><pre><span class='va'>example_df</span> <span class='op'>&lt;-</span> <span class='fu'>tibble</span><span class='fu'>::</span><span class='fu'><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></span><span class='op'>(</span>a <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>30</span>, <span class='fl'>40</span><span class='op'>)</span>,
+named lists containing vectors. For example:<div class="r"></p><pre>
+<span class='va'>example_df</span> <span class='op'>&lt;-</span> <span class='fu'>tibble</span><span class='fu'>::</span><span class='fu'><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></span><span class='op'>(</span>a <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>30</span>, <span class='fl'>40</span><span class='op'>)</span>,
                              b <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>40</span>, <span class='fl'>50</span>, <span class='fl'>60</span><span class='op'>)</span>,
                              c <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='st'>"c"</span><span class='op'>)</span>,
                              d <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3L</span>, <span class='fl'>4L</span>, <span class='fl'>5L</span><span class='op'>)</span><span class='op'>)</span>
@@ -255,30 +253,31 @@ named lists containing vectors. For example:<div class="r"></p><pre><span class=
                      second <span class='op'>=</span> <span class='va'>example_df</span>,
                      third <span class='op'>=</span> <span class='va'>example_df</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>example_list</span><span class='op'>)</span>
-</pre><p></div></p><pre><span class='co'>## $first</span>
-<span class='co'>## # A tibble: 3 × 4</span>
-<span class='co'>##       a     b c         d</span>
-<span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
-<span class='co'>## 1    20    40 a         3</span>
-<span class='co'>## 2    30    50 b         4</span>
-<span class='co'>## 3    40    60 c         5</span>
-<span class='co'>## </span>
-<span class='co'>## $second</span>
-<span class='co'>## # A tibble: 3 × 4</span>
-<span class='co'>##       a     b c         d</span>
-<span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
-<span class='co'>## 1    20    40 a         3</span>
-<span class='co'>## 2    30    50 b         4</span>
-<span class='co'>## 3    40    60 c         5</span>
-<span class='co'>## </span>
-<span class='co'>## $third</span>
-<span class='co'>## # A tibble: 3 × 4</span>
-<span class='co'>##       a     b c         d</span>
-<span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
-<span class='co'>## 1    20    40 a         3</span>
-<span class='co'>## 2    30    50 b         4</span>
-<span class='co'>## 3    40    60 c         5</span>
-</pre><p><div class="r"></p><pre><span class='va'>filtered</span> <span class='op'>&lt;-</span> <span class='fu'>threshold_filter</span><span class='op'>(</span><span class='va'>example_list</span>,
+<span class='co'>#&gt; $first</span>
+<span class='co'>#&gt; # A tibble: 3 × 4</span>
+<span class='co'>#&gt;       a     b c         d</span>
+<span class='co'>#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
+<span class='co'>#&gt; 1    20    40 a         3</span>
+<span class='co'>#&gt; 2    30    50 b         4</span>
+<span class='co'>#&gt; 3    40    60 c         5</span>
+<span class='co'>#&gt; </span>
+<span class='co'>#&gt; $second</span>
+<span class='co'>#&gt; # A tibble: 3 × 4</span>
+<span class='co'>#&gt;       a     b c         d</span>
+<span class='co'>#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
+<span class='co'>#&gt; 1    20    40 a         3</span>
+<span class='co'>#&gt; 2    30    50 b         4</span>
+<span class='co'>#&gt; 3    40    60 c         5</span>
+<span class='co'>#&gt; </span>
+<span class='co'>#&gt; $third</span>
+<span class='co'>#&gt; # A tibble: 3 × 4</span>
+<span class='co'>#&gt;       a     b c         d</span>
+<span class='co'>#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
+<span class='co'>#&gt; 1    20    40 a         3</span>
+<span class='co'>#&gt; 2    30    50 b         4</span>
+<span class='co'>#&gt; 3    40    60 c         5</span>
+
+<span class='va'>filtered</span> <span class='op'>&lt;-</span> <span class='fu'>threshold_filter</span><span class='op'>(</span><span class='va'>example_list</span>,
 threshold <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>60</span><span class='op'>)</span>,
 third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>25</span><span class='op'>)</span><span class='op'>)</span>,
 cols_to_compare <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span><span class='op'>)</span>,
@@ -286,28 +285,27 @@ third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base
 comparators <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;"</span>, <span class='st'>"&lt;"</span><span class='op'>)</span>,
 third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;="</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>filtered</span><span class='op'>)</span>
-</pre><p></div></p><pre><span class='co'>## $first</span>
-<span class='co'>## # A tibble: 1 × 4</span>
-<span class='co'>##       a     b c         d</span>
-<span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
-<span class='co'>## 1    30    50 b         4</span>
-<span class='co'>## </span>
-<span class='co'>## $second</span>
-<span class='co'>## # A tibble: 3 × 4</span>
-<span class='co'>##       a     b c         d</span>
-<span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
-<span class='co'>## 1    20    40 a         3</span>
-<span class='co'>## 2    30    50 b         4</span>
-<span class='co'>## 3    40    60 c         5</span>
-<span class='co'>## </span>
-<span class='co'>## $third</span>
-<span class='co'>## # A tibble: 2 × 4</span>
-<span class='co'>##       a     b c         d</span>
-<span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
-<span class='co'>## 1    30    50 b         4</span>
-<span class='co'>## 2    40    60 c         5</span>
-</pre>
-
+<span class='co'>#&gt; $first</span>
+<span class='co'>#&gt; # A tibble: 1 × 4</span>
+<span class='co'>#&gt;       a     b c         d</span>
+<span class='co'>#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
+<span class='co'>#&gt; 1    30    50 b         4</span>
+<span class='co'>#&gt; </span>
+<span class='co'>#&gt; $second</span>
+<span class='co'>#&gt; # A tibble: 3 × 4</span>
+<span class='co'>#&gt;       a     b c         d</span>
+<span class='co'>#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
+<span class='co'>#&gt; 1    20    40 a         3</span>
+<span class='co'>#&gt; 2    30    50 b         4</span>
+<span class='co'>#&gt; 3    40    60 c         5</span>
+<span class='co'>#&gt; </span>
+<span class='co'>#&gt; $third</span>
+<span class='co'>#&gt; # A tibble: 2 × 4</span>
+<span class='co'>#&gt;       a     b c         d</span>
+<span class='co'>#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
+<span class='co'>#&gt; 1    30    50 b         4</span>
+<span class='co'>#&gt; 2    40    60 c         5</span>
+</pre><p></div></p>
 <p>The above signature will roughly be translated as:</p><ul>
 <li><p>Filter the element "first" in the list by checking that values in
 column "a" are bigger than 20 AND values in column "b" are less than
@@ -354,30 +352,30 @@ be filtered</p></li>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>example_df</span> <span class='op'>&lt;-</span> <span class='fu'>tibble</span><span class='fu'>::</span><span class='fu'><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></span><span class='op'>(</span>
-  a <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>30</span>, <span class='fl'>40</span><span class='op'>)</span>,
-  b <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>40</span>, <span class='fl'>50</span>, <span class='fl'>60</span><span class='op'>)</span>,
-  c <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='st'>"c"</span><span class='op'>)</span>,
-  d <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3L</span>, <span class='fl'>4L</span>, <span class='fl'>5L</span><span class='op'>)</span>
+    a <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>30</span>, <span class='fl'>40</span><span class='op'>)</span>,
+    b <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>40</span>, <span class='fl'>50</span>, <span class='fl'>60</span><span class='op'>)</span>,
+    c <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='st'>"c"</span><span class='op'>)</span>,
+    d <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>3L</span>, <span class='fl'>4L</span>, <span class='fl'>5L</span><span class='op'>)</span>
 <span class='op'>)</span>
 <span class='va'>example_list</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-  first <span class='op'>=</span> <span class='va'>example_df</span>,
-  second <span class='op'>=</span> <span class='va'>example_df</span>,
-  third <span class='op'>=</span> <span class='va'>example_df</span>
+    first <span class='op'>=</span> <span class='va'>example_df</span>,
+    second <span class='op'>=</span> <span class='va'>example_df</span>,
+    third <span class='op'>=</span> <span class='va'>example_df</span>
 <span class='op'>)</span>
 
 <span class='va'>filtered</span> <span class='op'>&lt;-</span> <span class='fu'>threshold_filter</span><span class='op'>(</span><span class='va'>example_list</span>,
-  threshold <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-    first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>60</span><span class='op'>)</span>,
-    third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>25</span><span class='op'>)</span>
-  <span class='op'>)</span>,
-  cols_to_compare <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-    first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span><span class='op'>)</span>,
-    third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span><span class='op'>)</span>
-  <span class='op'>)</span>,
-  comparators <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
-    first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;"</span>, <span class='st'>"&lt;"</span><span class='op'>)</span>,
-    third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;="</span><span class='op'>)</span>
-  <span class='op'>)</span>
+    threshold <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+        first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>60</span><span class='op'>)</span>,
+        third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>25</span><span class='op'>)</span>
+    <span class='op'>)</span>,
+    cols_to_compare <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+        first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span><span class='op'>)</span>,
+        third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span><span class='op'>)</span>
+    <span class='op'>)</span>,
+    comparators <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>
+        first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;"</span>, <span class='st'>"&lt;"</span><span class='op'>)</span>,
+        third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;="</span><span class='op'>)</span>
+    <span class='op'>)</span>
 <span class='op'>)</span>
 <span class='va'>filtered</span>
 </div><div class='output co'>#&gt; $first

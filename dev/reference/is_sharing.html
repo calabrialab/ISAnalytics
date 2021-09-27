@@ -115,9 +115,6 @@ in the input data." />
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/report_system.html">ISAnalytics report system</a>
-    </li>
-    <li>
       <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
@@ -273,9 +270,9 @@ function <code><a href='sharing_heatmap.html'>sharing_heatmap</a></code> or via 
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"association_file"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>aggreg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
-  x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
-  association_file <span class='op'>=</span> <span class='va'>association_file</span>,
-  value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
+    x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
+    association_file <span class='op'>=</span> <span class='va'>association_file</span>,
+    value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
 <span class='op'>)</span>
 <span class='va'>sharing</span> <span class='op'>&lt;-</span> <span class='fu'>is_sharing</span><span class='op'>(</span><span class='va'>aggreg</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Calculating combinations...</span></div><div class='output co'>#&gt; <span class='message'>Done!</span></div><div class='input'><span class='va'>sharing</span>

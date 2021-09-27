@@ -116,9 +116,6 @@ file has been aligned with the file system
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/report_system.html">ISAnalytics report system</a>
-    </li>
-    <li>
       <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
@@ -223,16 +220,16 @@ Defaults to <code>{user_home}/ISAnalytics_reports</code>.</p></td>
     <pre class="examples"><div class='input'><span class='va'>fs_path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>fs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>fs_path</span>, <span class='st'>"fs"</span><span class='op'>)</span>
 <span class='va'>af_path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"asso.file.tsv.gz"</span>,
-  package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
+    package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
 <span class='op'>)</span>
 <span class='va'>af</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>af_path</span>,
-  root <span class='op'>=</span> <span class='va'>fs</span>,
-  import_iss <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  report_path <span class='op'>=</span> <span class='cn'>NULL</span>
+    root <span class='op'>=</span> <span class='va'>fs</span>,
+    import_iss <span class='op'>=</span> <span class='cn'>FALSE</span>,
+    report_path <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span>
 <span class='va'>stats_files</span> <span class='op'>&lt;-</span> <span class='fu'>import_Vispa2_stats</span><span class='op'>(</span><span class='va'>af</span>,
-  join_with_af <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  report_path <span class='op'>=</span> <span class='cn'>NULL</span>
+    join_with_af <span class='op'>=</span> <span class='cn'>FALSE</span>,
+    report_path <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span>
 </div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |==================                                                    |  25%  |                                                                              |===================================                                   |  50%  |                                                                              |====================================================                  |  75%  |                                                                              |======================================================================| 100%
 #&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>stats_files</span><span class='op'>)</span>
