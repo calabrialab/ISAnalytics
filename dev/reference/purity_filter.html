@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Integrations cumulative count in time by sample — cumulative_count_union • ISAnalytics</title>
+<title>Filter integration sites based on purity. — purity_filter • ISAnalytics</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,13 +46,11 @@
 
 
 
-<meta property="og:title" content="Integrations cumulative count in time by sample — cumulative_count_union" />
+<meta property="og:title" content="Filter integration sites based on purity. — purity_filter" />
 <meta property="og:description" content="
 
-This function computes the cumulative number of integrations
-observed in each sample at different time points by assuming that
-if an integration is observed at time point &quot;t&quot; then it is also observed in
-time point &quot;t+1&quot;." />
+Filter that targets possible contamination between cell lines based on
+a numeric quantification (likely abundance or sequence count)." />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -152,29 +150,30 @@ time point &quot;t+1&quot;." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Integrations cumulative count in time by sample</h1>
+    <h1>Filter integration sites based on purity.</h1>
     <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/analysis-functions.R'><code>R/analysis-functions.R</code></a></small>
-    <div class="hidden name"><code>cumulative_count_union.Rd</code></div>
+    <div class="hidden name"><code>purity_filter.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p><a href='https://lifecycle.r-lib.org/articles/stages.html#experimental'><img src='figures/lifecycle-experimental.svg' alt='[Experimental]' /></a>
 
-This function computes the cumulative number of integrations
-observed in each sample at different time points by assuming that
-if an integration is observed at time point "t" then it is also observed in
-time point "t+1".</p>
+Filter that targets possible contamination between cell lines based on
+a numeric quantification (likely abundance or sequence count).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cumulative_count_union</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>purity_filter</span><span class='op'>(</span>
   <span class='va'>x</span>,
-  association_file <span class='op'>=</span> <span class='cn'>NULL</span>,
+  lineages <span class='op'>=</span> <span class='fu'><a href='blood_lineages_default.html'>blood_lineages_default</a></span><span class='op'>(</span><span class='op'>)</span>,
+  aggregation_key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span>,
+  group_key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span><span class='op'>)</span>,
+  selected_groups <span class='op'>=</span> <span class='cn'>NULL</span>,
+  join_on <span class='op'>=</span> <span class='st'>"CellMarker"</span>,
+  min_value <span class='op'>=</span> <span class='fl'>3</span>,
+  impurity_threshold <span class='op'>=</span> <span class='fl'>10</span>,
+  by_timepoint <span class='op'>=</span> <span class='cn'>TRUE</span>,
   timepoint_column <span class='op'>=</span> <span class='st'>"TimePoint"</span>,
-  key <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SubjectID"</span>, <span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span>, <span class='st'>"TimePoint"</span><span class='op'>)</span>,
-  include_tp_zero <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  zero <span class='op'>=</span> <span class='st'>"0000"</span>,
-  aggregate <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  <span class='va'>...</span>
+  value_column <span class='op'>=</span> <span class='st'>"seqCount_sum"</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -182,36 +181,54 @@ time point "t+1".</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A simple integration matrix or an aggregated matrix (see details)</p></td>
+      <td><p>An aggregated integration matrix, obtained via
+<code><a href='aggregate_values_by_key.html'>aggregate_values_by_key()</a></code></p></td>
     </tr>
     <tr>
-      <th>association_file</th>
-      <td><p>NULL or the association file for x if <code>aggregate</code>
-is set to TRUE</p></td>
+      <th>lineages</th>
+      <td><p>A data frame containing cell lineages information</p></td>
+    </tr>
+    <tr>
+      <th>aggregation_key</th>
+      <td><p>The key used for aggregating <code>x</code></p></td>
+    </tr>
+    <tr>
+      <th>group_key</th>
+      <td><p>A character vector of column names for re-aggregation.
+Column names must be either in <code>x</code> or in <code>lineages</code>. See details.</p></td>
+    </tr>
+    <tr>
+      <th>selected_groups</th>
+      <td><p>Either NULL, a character vector or a
+data frame for group selection. See details.</p></td>
+    </tr>
+    <tr>
+      <th>join_on</th>
+      <td><p>Common columns to perform a join operation on</p></td>
+    </tr>
+    <tr>
+      <th>min_value</th>
+      <td><p>A minimum value to filter the input matrix. Integrations
+with a value strictly lower than <code>min_value</code> are excluded (dropped) from
+the output.</p></td>
+    </tr>
+    <tr>
+      <th>impurity_threshold</th>
+      <td><p>The ratio threshold for impurity in groups</p></td>
+    </tr>
+    <tr>
+      <th>by_timepoint</th>
+      <td><p>Should filtering be applied on each time point? If
+<code>FALSE</code>, all time points are merged together</p></td>
     </tr>
     <tr>
       <th>timepoint_column</th>
-      <td><p>What is the name of the time point column?</p></td>
+      <td><p>Column in <code>x</code> containing the time point</p></td>
     </tr>
     <tr>
-      <th>key</th>
-      <td><p>The aggregation key - must always contain the <code>timepoint_column</code></p></td>
-    </tr>
-    <tr>
-      <th>include_tp_zero</th>
-      <td><p>Include timepoint 0?</p></td>
-    </tr>
-    <tr>
-      <th>zero</th>
-      <td><p>How is 0 coded in the data frame?</p></td>
-    </tr>
-    <tr>
-      <th>aggregate</th>
-      <td><p>Should x be aggregated?</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Additional parameters to pass to <code>aggregate_values_by_key</code></p></td>
+      <th>value_column</th>
+      <td><p>Column in <code>x</code> containing the numeric
+quantification of interest</p></td>
     </tr>
     </table>
 
@@ -221,34 +238,47 @@ is set to TRUE</p></td>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     
-<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Input data frame</h3>
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Setting input arguments</h3>
 
 
-<p>The user can provide as input for the <code>x</code> parameter both a simple
-integration matrix AND setting the <code>aggregate</code> parameter to TRUE,
-or provide an already aggregated matrix via
-<a href='aggregate_values_by_key.html'>aggregate_values_by_key</a>.
-If the user supplies a matrix to be aggregated the <code>association_file</code>
-parameter must not be NULL: aggregation will be done by an internal
-call to the aggregation function.
-If the user supplies an already aggregated matrix, the <code>key</code> parameter
-is the key used for aggregation -
-<strong>NOTE: for this operation is mandatory
-that the time point column is included in the key.</strong></p>
+<p>The input matrix can be re-aggregated with the provided <code>group_key</code>
+argument. This key contains the names of the columns to group on
+(besides the columns holding genomic coordinates of the integration
+sites) and must be contained in at least one of <code>x</code> or <code>lineages</code>
+data frames. If the key is not found only in <code>x</code>, then a join operation
+with the <code>lineages</code> data frame is performed on the common column(s)
+<code>join_on</code>.</p>
 
-<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Assumptions on time point format</h3>
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Group selection</h3>
 
 
-<p>By using the functions provided by this package, when imported,
-an association file will be correctly formatted for future usage.
-In the formatting process there is also a padding operation performed on
-time points: this means the functions expects the time point column to
-be of type character and to be correctly padded with 0s. If the
-chosen column for time point is detected as numeric the function will
-attempt the conversion to character and automatic padding.
-If you choose to import the association file not using the
-<a href='import_association_file.html'>import_association_file</a> function, be sure to check the format of
-the chosen column to avoid undesired results.</p>
+<p>It is possible for the user to specify on which groups the logic of the
+filter should be applied to. For example: if we have
+<code>group_key = c("HematoLineage")</code> and we set
+<code>selected_groups = c("CD34", "Myeloid","Lymphoid")</code>
+it means that a single integration will be evaluated for the filter only
+for groups that have the values of "CD34", "Myeloid" and "Lymphoid" in
+the "HematoLineage" column.
+If the same integration is present in other groups it is
+kept as it is. <code>selected_groups</code> can be set to <code>NULL</code> if we want
+the logic to apply to every group present in the data frame,
+it can be set as a simple character vector as the example above if
+the group key has length 1 (and there is no need to filter on time point).
+If the group key is longer than 1 then the filter is applied only on the
+first element of the key.</p>
+<p>If a more refined selection on groups is needed, a data frame can
+be provided instead:</p><pre><span class='va'>group_key</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"CellMarker"</span>, <span class='st'>"Tissue"</span><span class='op'>)</span>
+<span class='va'>selected_groups</span> <span class='op'>=</span> <span class='fu'>tibble</span><span class='fu'>::</span><span class='fu'><a href='https://tibble.tidyverse.org/reference/tribble.html'>tribble</a></span><span class='op'>(</span>
+<span class='op'>~</span> <span class='va'>CellMarker</span>, <span class='op'>~</span> <span class='va'>Tissue</span>,
+<span class='st'>"CD34"</span>, <span class='st'>"BM"</span>,
+<span class='st'>"CD14"</span>, <span class='st'>"BM"</span>,
+<span class='st'>"CD14"</span>, <span class='st'>"PB"</span>
+<span class='op'>)</span>
+</pre>
+
+<p>Columns in the data frame should be the same as group key (plus,
+eventually, the time point column). In this example only those groups
+identified by the rows in the provided data frame are processed.</p>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -256,9 +286,9 @@ the chosen column to avoid undesired results.</p>
 <code><a href='CIS_grubbs.html'>CIS_grubbs</a>()</code>,
 <code><a href='comparison_matrix.html'>comparison_matrix</a>()</code>,
 <code><a href='compute_abundance.html'>compute_abundance</a>()</code>,
+<code><a href='cumulative_count_union.html'>cumulative_count_union</a>()</code>,
 <code><a href='cumulative_is.html'>cumulative_is</a>()</code>,
 <code><a href='is_sharing.html'>is_sharing</a>()</code>,
-<code><a href='purity_filter.html'>purity_filter</a>()</code>,
 <code><a href='sample_statistics.html'>sample_statistics</a>()</code>,
 <code><a href='separate_quant_matrices.html'>separate_quant_matrices</a>()</code>,
 <code><a href='threshold_filter.html'>threshold_filter</a>()</code>,
@@ -268,35 +298,14 @@ the chosen column to avoid undesired results.</p>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"association_file"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>aggreg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
-    x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
-    association_file <span class='op'>=</span> <span class='va'>association_file</span>,
+    x <span class='op'>=</span> <span class='fu'>rlang</span><span class='fu'>::</span><span class='fu'><a href='https://rlang.r-lib.org/reference/caller_env.html'>current_env</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>integration_matrices</span>,
+    association_file <span class='op'>=</span> <span class='fu'>rlang</span><span class='fu'>::</span><span class='fu'><a href='https://rlang.r-lib.org/reference/caller_env.html'>current_env</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>association_file</span>,
     value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
 <span class='op'>)</span>
-<span class='va'>cumulative_count</span> <span class='op'>&lt;-</span> <span class='fu'>cumulative_count_union</span><span class='op'>(</span><span class='va'>aggreg</span><span class='op'>)</span>
-<span class='va'>cumulative_count</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 20 × 5</span>
-#&gt;    SubjectID CellMarker Tissue TimePoint count
-#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>
-#&gt; <span style='color: #BCBCBC;'> 1</span> PT001     MNC        BM     0030         54
-#&gt; <span style='color: #BCBCBC;'> 2</span> PT001     MNC        BM     0060        147
-#&gt; <span style='color: #BCBCBC;'> 3</span> PT001     MNC        BM     0090        179
-#&gt; <span style='color: #BCBCBC;'> 4</span> PT001     MNC        BM     0180        240
-#&gt; <span style='color: #BCBCBC;'> 5</span> PT001     MNC        BM     0360        240
-#&gt; <span style='color: #BCBCBC;'> 6</span> PT001     MNC        PB     0030         28
-#&gt; <span style='color: #BCBCBC;'> 7</span> PT001     MNC        PB     0060         77
-#&gt; <span style='color: #BCBCBC;'> 8</span> PT001     MNC        PB     0090        104
-#&gt; <span style='color: #BCBCBC;'> 9</span> PT001     MNC        PB     0180        121
-#&gt; <span style='color: #BCBCBC;'>10</span> PT001     MNC        PB     0360        121
-#&gt; <span style='color: #BCBCBC;'>11</span> PT002     MNC        BM     0030         98
-#&gt; <span style='color: #BCBCBC;'>12</span> PT002     MNC        BM     0060        126
-#&gt; <span style='color: #BCBCBC;'>13</span> PT002     MNC        BM     0090        141
-#&gt; <span style='color: #BCBCBC;'>14</span> PT002     MNC        BM     0180        184
-#&gt; <span style='color: #BCBCBC;'>15</span> PT002     MNC        BM     0360        265
-#&gt; <span style='color: #BCBCBC;'>16</span> PT002     MNC        PB     0030         15
-#&gt; <span style='color: #BCBCBC;'>17</span> PT002     MNC        PB     0060         26
-#&gt; <span style='color: #BCBCBC;'>18</span> PT002     MNC        PB     0090         38
-#&gt; <span style='color: #BCBCBC;'>19</span> PT002     MNC        PB     0180         62
-#&gt; <span style='color: #BCBCBC;'>20</span> PT002     MNC        PB     0360        109</div></pre>
+</div><div class='output co'>#&gt; <span class='error'>Error in aggregate_values_by_key(x = rlang::current_env()$integration_matrices,     association_file = rlang::current_env()$association_file,     value_cols = c("seqCount", "fragmentEstimate")): is.data.frame(x) || is.list(x) is not TRUE</span></div><div class='input'><span class='va'>filtered_by_purity</span> <span class='op'>&lt;-</span> <span class='fu'>purity_filter</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>aggreg</span>,
+value_column <span class='op'>=</span> <span class='st'>"seqCount_sum"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in is.data.frame(x): object 'aggreg' not found</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>filtered_by_purity</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in head(filtered_by_purity): object 'filtered_by_purity' not found</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
