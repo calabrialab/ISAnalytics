@@ -81,29 +81,29 @@ For more details on how this files were generated use the help
 
 The default values are included in this package and
 it can be accessed by doing:\if{html}{\out{<div class="r">}}\preformatted{head(known_clinical_oncogenes())
-#> # A tibble: 5 × 2
-#>   GeneName KnownClonalExpansion
-#>   <chr>    <lgl>               
-#> 1 MECOM    TRUE                
-#> 2 CCND2    TRUE                
-#> 3 TAL1     TRUE                
-#> 4 LMO2     TRUE                
-#> 5 HMGA2    TRUE
-}\if{html}{\out{</div>}}
+}\if{html}{\out{</div>}}\preformatted{## # A tibble: 5 × 2
+##   GeneName KnownClonalExpansion
+##   <chr>    <lgl>               
+## 1 MECOM    TRUE                
+## 2 CCND2    TRUE                
+## 3 TAL1     TRUE                
+## 4 LMO2     TRUE                
+## 5 HMGA2    TRUE
+}
 
 If the user wants to change this parameter the input data frame must
 preserve the column structure. The same goes for the \code{suspicious_genes}
 parameter (DOIReference column is optional):\if{html}{\out{<div class="r">}}\preformatted{head(clinical_relevant_suspicious_genes())
-#> # A tibble: 6 × 3
-#>   GeneName ClinicalRelevance DOIReference                                
-#>   <chr>    <lgl>             <chr>                                       
-#> 1 DNMT3A   TRUE              https://doi.org/10.1182/blood-2018-01-829937
-#> 2 TET2     TRUE              https://doi.org/10.1182/blood-2018-01-829937
-#> 3 ASXL1    TRUE              https://doi.org/10.1182/blood-2018-01-829937
-#> 4 JAK2     TRUE              https://doi.org/10.1182/blood-2018-01-829937
-#> 5 CBL      TRUE              https://doi.org/10.1182/blood-2018-01-829937
-#> 6 TP53     TRUE              https://doi.org/10.1182/blood-2018-01-829937
-}\if{html}{\out{</div>}}
+}\if{html}{\out{</div>}}\preformatted{## # A tibble: 6 × 3
+##   GeneName ClinicalRelevance DOIReference                                
+##   <chr>    <lgl>             <chr>                                       
+## 1 DNMT3A   TRUE              https://doi.org/10.1182/blood-2018-01-829937
+## 2 TET2     TRUE              https://doi.org/10.1182/blood-2018-01-829937
+## 3 ASXL1    TRUE              https://doi.org/10.1182/blood-2018-01-829937
+## 4 JAK2     TRUE              https://doi.org/10.1182/blood-2018-01-829937
+## 5 CBL      TRUE              https://doi.org/10.1182/blood-2018-01-829937
+## 6 TP53     TRUE              https://doi.org/10.1182/blood-2018-01-829937
+}
 }
 }
 \examples{

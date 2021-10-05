@@ -108,6 +108,7 @@ test_that(paste(func_name, "reads type NEW standard"), {
 })
 
 test_that(paste(func_name, "reads type NEW different params"), {
+    skip_on_os("windows")
     tf <- withr::local_tempfile(fileext = ".tsv")
     readr::write_tsv(sample_df, tf)
     expected_summary_msg <- .summary_ism_import_msg(

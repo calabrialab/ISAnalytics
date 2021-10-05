@@ -129,16 +129,16 @@ logic <- if (length(params$key) > 1) {
         combined <- rbind(base_flag, c(flag_logic, ""))
         paste(
             "* Key length > 1, flagging formula used: ",
-            paste(combined, collapse = " ")
+            paste0(combined, collapse = " ")
         )
     } else {
         base_flag <- paste0(
-            "(tdist_", key, " < ", params$outlier_thresh,
-            " & zscore_", key, " < 0)"
+            "(tdist_", params$key, " < ", params$outlier_thresh,
+            " & zscore_", params$key, " < 0)"
         )
         paste(
             "* Flagging formula used: ",
-            paste(base_flag)
+            paste0(base_flag)
         )
     }
 log2 <- if (params$log2_req) {

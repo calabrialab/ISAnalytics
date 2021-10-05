@@ -80,6 +80,7 @@ Other Analysis functions:
 \code{\link{cumulative_count_union}()},
 \code{\link{cumulative_is}()},
 \code{\link{is_sharing}()},
+\code{\link{purity_filter}()},
 \code{\link{sample_statistics}()},
 \code{\link{separate_quant_matrices}()},
 \code{\link{threshold_filter}()},

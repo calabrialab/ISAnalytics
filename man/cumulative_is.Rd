@@ -57,6 +57,7 @@ Other Analysis functions:
 \code{\link{compute_abundance}()},
 \code{\link{cumulative_count_union}()},
 \code{\link{is_sharing}()},
+\code{\link{purity_filter}()},
 \code{\link{sample_statistics}()},
 \code{\link{separate_quant_matrices}()},
 \code{\link{threshold_filter}()},

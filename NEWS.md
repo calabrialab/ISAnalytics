@@ -1,6 +1,16 @@
 NEWS
 ================
 
+# ISAnalytics 1.3.6 (2021-10-05)
+
+## NEW
+
+-   Added new feature `purity_filter()`
+
+## FIXES
+
+-   Fixed small issue in printing information in reports
+
 # ISAnalytics 1.3.5 (2021-09-21)
 
 ## MAJOR CHANGES
