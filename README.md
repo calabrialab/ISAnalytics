@@ -11,7 +11,7 @@ status](https://travis-ci.com/calabrialab/isanalytics.svg?branch=master)](https:
 [![R build status -
 bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
 [![BioC
-status](http://www.bioconductor.org/shields/build/release/bioc/ISAnalytics.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics)
+status](http://www.bioconductor.org/shields/build/devel/bioc/ISAnalytics.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->

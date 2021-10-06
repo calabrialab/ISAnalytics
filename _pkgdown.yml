@@ -81,6 +81,7 @@ reference:
   - cumulative_count_union
   - cumulative_is
   - is_sharing
+  - purity_filter
 - title: "HSC population estimate"
 - contents:
   - HSC_population_size_estimate
