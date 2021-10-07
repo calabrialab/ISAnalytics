@@ -174,7 +174,7 @@ compute_near_integrations <- function(x,
                 g2 <- data.table::setDT(g2)
                 data.table::rbindlist(list(g1, g2))
             }
-        )
+        ) %>% data.table::setDT()
         mand_vars <- mandatory_IS_vars()
         map_fine <- unique(split_fine[, ..mand_vars])
         data.table::setnames(
