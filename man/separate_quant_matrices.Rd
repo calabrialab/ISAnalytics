@@ -62,6 +62,7 @@ Other Analysis functions:
 \code{\link{cumulative_count_union}()},
 \code{\link{cumulative_is}()},
 \code{\link{is_sharing}()},
+\code{\link{iss_source}()},
 \code{\link{purity_filter}()},
 \code{\link{sample_statistics}()},
 \code{\link{threshold_filter}()},

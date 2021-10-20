@@ -4735,3 +4735,170 @@
     }
     sharing_df
 }
+
+#---- USED IN : iss_source ----
+.assign_iss_by_tp <- function(df, timepoint_column) {
+    is_vars <- if (.is_annotated(df)) {
+        c(mandatory_IS_vars(), annotation_IS_vars())
+    } else {
+        mandatory_IS_vars()
+    }
+    return(df %>%
+        dplyr::mutate(!!timepoint_column := as.numeric(
+            .data[[timepoint_column]]
+        )) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(is_vars))) %>%
+        dplyr::group_modify(~ {
+            if (nrow(.x) == 1) {
+                return(.x)
+            }
+            min_tp <- min(.x[[timepoint_column]])
+            return(.x %>%
+                dplyr::filter(.data[[timepoint_column]] == min_tp))
+        }) %>%
+        dplyr::ungroup())
+}
+
+.sharing_for_source <- function(ref,
+    sel,
+    ref_key,
+    sel_key,
+    tp_col,
+    subj_col) {
+    if (!is.data.frame(ref)) {
+        ### Workflow by subject
+        common_names <- if (!all(names(ref) == names(sel))) {
+            intersect(names(ref), names(sel))
+        } else {
+            names(ref)
+        }
+        if (length(common_names) == 0) {
+            no_common_err <- c("No common subjects",
+                x = paste(
+                    "No common subjects between",
+                    "reference and selection"
+                ),
+                i = paste(
+                    "In reference:",
+                    paste0(names(ref), collapse = ", "),
+                    "\n",
+                    "In selection: ",
+                    paste0(names(sel), collapse = ", ")
+                )
+            )
+            rlang::abort(no_common_err)
+        }
+        if (getOption("ISAnalytics.verbose") == TRUE &&
+            (length(common_names) < length(names(ref)) ||
+                length(common_names) < length(names(sel)))) {
+            all_names <- union(names(ref), names(sel))
+            common_warn_msg <- c("Mismatch in subjects found",
+                i = paste(
+                    "Some subjects were excluded from",
+                    "computations because they were",
+                    "absent from reference or from",
+                    "selection"
+                ),
+                paste(
+                    "Excluded: ",
+                    paste0(all_names[!all_names %in%
+                        common_names],
+                    collapse = ", "
+                    )
+                )
+            )
+        }
+        if (.Platform$OS.type == "windows") {
+            p <- BiocParallel::SnowParam(
+                tasks = length(common_names),
+                progressbar = getOption("ISAnalytics.verbose"),
+                exportglobals = FALSE
+            )
+        } else {
+            p <- BiocParallel::MulticoreParam(
+                tasks = length(common_names),
+                progressbar = getOption("ISAnalytics.verbose"),
+                exportglobals = FALSE
+            )
+        }
+        FUN <- function(subj,
+    ref, sel, ref_key, sel_key,
+    tp_col) {
+            ref_df <- ref[[subj]]
+            sel_df <- sel[[subj]]
+            ref_key_min <- ref_key[ref_key != tp_col]
+            ref_split <- ref_df %>%
+                dplyr::group_by(dplyr::across(dplyr::all_of(ref_key_min))) %>%
+                dplyr::group_split()
+            quiet_sharing <- purrr::quietly(is_sharing)
+            sharing <- purrr::map_df(ref_split, ~ {
+                assigned_ref <- .assign_iss_by_tp(.x,
+                    timepoint_column = tp_col
+                )
+                sh <- (quiet_sharing(assigned_ref,
+                    sel_df,
+                    group_keys = list(
+                        g1 = ref_key,
+                        g2 = sel_key
+                    ),
+                    keep_genomic_coord = TRUE
+                ))$result
+                sh <- sh %>%
+                    tidyr::separate(
+                        col = "g1",
+                        into = paste0("g1_", ref_key),
+                        remove = FALSE,
+                        convert = TRUE
+                    ) %>%
+                    tidyr::separate(
+                        col = "g2",
+                        into = paste0("g2_", sel_key),
+                        remove = FALSE,
+                        convert = TRUE
+                    )
+            })
+        }
+
+        shared <- BiocParallel::bplapply(common_names, FUN,
+            ref = ref,
+            sel = sel,
+            ref_key = ref_key,
+            sel_key = sel_key,
+            tp_col = tp_col,
+            BPPARAM = p
+        ) %>%
+            purrr::set_names(common_names)
+        return(shared)
+    }
+    ref_key_min <- ref_key[ref_key != tp_col]
+    ref_split <- ref %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(ref_key_min))) %>%
+        dplyr::group_split()
+    quiet_sharing <- purrr::quietly(is_sharing)
+    sharing <- purrr::map_df(ref_split, ~ {
+        assigned_ref <- .assign_iss_by_tp(.x,
+            timepoint_column = tp_col
+        )
+        (quiet_sharing(assigned_ref,
+            sel,
+            group_keys = list(
+                g1 = ref_key,
+                g2 = sel_key
+            ),
+            keep_genomic_coord = TRUE
+        ))$result
+    })
+    sharing %>%
+        tidyr::separate(
+            col = "g1",
+            into = paste0("g1_", ref_key),
+            remove = FALSE,
+            convert = TRUE
+        ) %>%
+        tidyr::separate(
+            col = "g2",
+            into = paste0("g2_", sel_key),
+            remove = FALSE,
+            convert = TRUE
+        )
+}

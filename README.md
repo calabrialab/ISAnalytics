@@ -137,6 +137,17 @@ options("ISAnalytics.reports" = TRUE)
 Show more
 </summary>
 
+# ISAnalytics 1.3.7 (2021-10-20)
+
+## NEW
+
+-   Added new feature `iss_source()`
+
+## FIXES
+
+-   Fixed minor issues in data files `refGenes_mm9` and function
+    `compute_near_integrations()`
+
 # ISAnalytics 1.3.6 (2021-10-05)
 
 ## NEW

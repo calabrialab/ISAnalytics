@@ -1545,21 +1545,25 @@ is_sharing <- function(...,
 #'     association_file = rlang::current_env()$association_file,
 #'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
-#' filtered_by_purity <- purity_filter(x = aggreg,
-#' value_column = "seqCount_sum")
+#' filtered_by_purity <- purity_filter(
+#'     x = aggreg,
+#'     value_column = "seqCount_sum"
+#' )
 #' head(filtered_by_purity)
 purity_filter <- function(x,
-                          lineages = blood_lineages_default(),
-                          aggregation_key = c("SubjectID", "CellMarker",
-                                              "Tissue", "TimePoint"),
-                          group_key = c("CellMarker", "Tissue"),
-                          selected_groups = NULL,
-                          join_on = "CellMarker",
-                          min_value = 3,
-                          impurity_threshold = 10,
-                          by_timepoint = TRUE,
-                          timepoint_column = "TimePoint",
-                          value_column = "seqCount_sum") {
+    lineages = blood_lineages_default(),
+    aggregation_key = c(
+        "SubjectID", "CellMarker",
+        "Tissue", "TimePoint"
+    ),
+    group_key = c("CellMarker", "Tissue"),
+    selected_groups = NULL,
+    join_on = "CellMarker",
+    min_value = 3,
+    impurity_threshold = 10,
+    by_timepoint = TRUE,
+    timepoint_column = "TimePoint",
+    value_column = "seqCount_sum") {
     ## Checks
     #### - Base
     stopifnot(is.data.frame(x))
@@ -1570,12 +1574,12 @@ purity_filter <- function(x,
     stopifnot(is.numeric(impurity_threshold) || is.integer(impurity_threshold))
     stopifnot(is.character(value_column))
     stopifnot(is.null(selected_groups) || is.character(selected_groups) ||
-                  is.data.frame(selected_groups))
+        is.data.frame(selected_groups))
     #### - Keys
     if (!all(aggregation_key %in% colnames(x))) {
         rlang::abort(.missing_user_cols_error(
             aggregation_key[!aggregation_key %in% colnames(x)]
-            ))
+        ))
     }
     if (!value_column[1] %in% colnames(x)) {
         rlang::abort(.missing_user_cols_error(value_column))
@@ -1588,23 +1592,28 @@ purity_filter <- function(x,
         ### If lineages info is needed
         stopifnot(is.data.frame(lineages))
         if (!all(group_key %in% unique(c(colnames(x), colnames(lineages))))) {
-            missing_cols <- group_key[!group_key %in% unique(c(colnames(x),
-                                               colnames(lineages)))]
+            missing_cols <- group_key[!group_key %in% unique(c(
+                colnames(x),
+                colnames(lineages)
+            ))]
             rlang::abort(.missing_user_cols_error(missing_cols))
         }
         if (!(all(join_on %in% colnames(x)) &
-              all(join_on %in% colnames(lineages)))
-            ) {
+            all(join_on %in% colnames(lineages)))
+        ) {
             missing_common <- c("Missing common column(s) to join on",
-                                i = paste("The column(s) provided in argument",
-                                          "`join_on` is missing from one or",
-                                          "both data frames, aborting"))
-           rlang::abort(missing_common)
+                i = paste(
+                    "The column(s) provided in argument",
+                    "`join_on` is missing from one or",
+                    "both data frames, aborting"
+                )
+            )
+            rlang::abort(missing_common)
         }
         TRUE
     }
     if (by_timepoint) {
-       stopifnot(is.character(timepoint_column))
+        stopifnot(is.character(timepoint_column))
         timepoint_column <- timepoint_column[1]
         if (!timepoint_column %in% colnames(x)) {
             rlang::abort(.missing_user_cols_error(timepoint_column))
@@ -1625,13 +1634,17 @@ purity_filter <- function(x,
     }
     grouped <- x %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(c(is_vars, group_key)))) %>%
-        dplyr::summarise(Value = sum(.data[[value_column]]),
-                         .groups = "drop")
+        dplyr::summarise(
+            Value = sum(.data[[value_column]]),
+            .groups = "drop"
+        )
     #### - value filter
-    filtered_value <- threshold_filter(x = grouped,
-                                 threshold = min_value,
-                                 cols_to_compare = "Value",
-                                 comparators = ">=")
+    filtered_value <- threshold_filter(
+        x = grouped,
+        threshold = min_value,
+        cols_to_compare = "Value",
+        comparators = ">="
+    )
     #### - Separating IS 1: group filtering
     pre_filt <- list()
     if (is.null(selected_groups) || purrr::is_empty(selected_groups)) {
@@ -1644,7 +1657,7 @@ purity_filter <- function(x,
             dplyr::filter(!.data[[group_key[1]]] %in% selected_groups)
     } else {
         ok_cols <- colnames(selected_groups)[colnames(selected_groups) %in%
-                                                 group_key]
+            group_key]
         selected_groups <- selected_groups %>%
             dplyr::select(dplyr::all_of(ok_cols)) %>%
             dplyr::distinct()
@@ -1654,11 +1667,13 @@ purity_filter <- function(x,
             pre_filt[["keep"]] <- filtered_value[0, ]
         } else {
             pre_filt[["process"]] <- dplyr::inner_join(filtered_value,
-                                                       selected_groups,
-                                                       by = ok_cols)
+                selected_groups,
+                by = ok_cols
+            )
             pre_filt[["keep"]] <- dplyr::anti_join(filtered_value,
-                                                   selected_groups,
-                                                   by = ok_cols)
+                selected_groups,
+                by = ok_cols
+            )
         }
     }
     if (nrow(pre_filt$process) == 0) {
@@ -1695,7 +1710,7 @@ purity_filter <- function(x,
         max_val <- max(group$Value)
         processed <- group %>%
             dplyr::mutate(remove = (max_val / .data$Value) >
-                              impurity_threshold) %>%
+                impurity_threshold) %>%
             dplyr::filter(remove == FALSE) %>%
             dplyr::select(-.data$remove)
         processed
@@ -1709,6 +1724,163 @@ purity_filter <- function(x,
         dplyr::bind_rows(to_keep) %>%
         dplyr::bind_rows(pre_filt$keep)
     final
+}
+
+#' Find the source of IS by evaluating sharing.
+#'
+#' @description \lifecycle{experimental}
+#' The function computes the sharing between a reference group of interest
+#' for each time point and a selection of groups of interest. In this way
+#' it is possible to observe the percentage of shared integration sites between
+#' reference and each group and identify in which time point a certain IS was
+#' observed for the first time.
+#'
+#' @param reference A data frame containing one or more groups of reference.
+#' Groups are identified by `ref_group_key`
+#' @param selection A data frame containing one or more groups of interest
+#' to compare.
+#' Groups are identified by `selection_group_key`
+#' @param ref_group_key Character vector of column names that identify a
+#' unique group in the `reference` data frame
+#' @param selection_group_key Character vector of column names that identify a
+#' unique group in the `selection` data frame
+#' @param timepoint_column Name of the column holding time point
+#' info?
+#' @param by_subject Should calculations be performed for each subject
+#' separately?
+#' @param subject_column Name of the column holding subjects information.
+#' Relevant only if `by_subject = TRUE`
+#'
+#' @return A list of data frames or a data frame
+#' @family Analysis functions
+#' @export
+#'
+#' @examples
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = rlang::current_env()$integration_matrices,
+#'     association_file = rlang::current_env()$association_file,
+#'     value_cols = c("seqCount", "fragmentEstimate")
+#' )
+#' df1 <- aggreg %>%
+#'     dplyr::filter(.data$Tissue == "BM")
+#' df2 <- aggreg %>%
+#'     dplyr::filter(.data$Tissue == "PB")
+#' source <- iss_source(df1, df2)
+#' source
+#' ggplot2::ggplot(source$PT001, ggplot2::aes(
+#'     x = as.factor(g2_TimePoint),
+#'     y = sharing_perc, fill = g1
+#' )) +
+#'     ggplot2::geom_col() +
+#'     ggplot2::labs(
+#'         x = "Time point", y = "Shared IS % with MNC BM",
+#'         title = "Source of is MNC BM vs MNC PB"
+#'     )
+iss_source <- function(reference,
+    selection,
+    ref_group_key = c(
+        "SubjectID", "CellMarker",
+        "Tissue", "TimePoint"
+    ),
+    selection_group_key = c(
+        "SubjectID", "CellMarker",
+        "Tissue", "TimePoint"
+    ),
+    timepoint_column = "TimePoint",
+    by_subject = TRUE,
+    subject_column = "SubjectID") {
+    ## Checks
+    stopifnot(is.data.frame(reference) & is.data.frame(selection))
+    stopifnot(is.character(ref_group_key) & is.character(selection_group_key))
+    stopifnot(is.character(timepoint_column))
+    stopifnot(is.logical(by_subject))
+    by_subject <- by_subject[1]
+    if (!all(ref_group_key %in% colnames(reference))) {
+        rlang::abort(.missing_user_cols_error(
+            ref_group_key[!ref_group_key %in% colnames(reference)]
+        ))
+    }
+    if (!all(selection_group_key %in% colnames(selection))) {
+        rlang::abort(.missing_user_cols_error(
+            selection_group_key[!selection_group_key %in% colnames(selection)]
+        ))
+    }
+    timepoint_column <- timepoint_column[1]
+    if (!timepoint_column %in% colnames(reference) |
+        !timepoint_column %in% colnames(selection)) {
+        rlang::abort(.missing_needed_cols(timepoint_column))
+    }
+    ## Workflow choice
+    if (by_subject) {
+        stopifnot(is.character(subject_column))
+        subject_column <- subject_column[1]
+        ref_split <- reference %>%
+            dplyr::group_by(dplyr::across({{ subject_column }}))
+        ref_subjs <- ref_split %>%
+            dplyr::group_keys() %>%
+            dplyr::pull(.data[[subject_column]])
+        ref_split <- ref_split %>%
+            dplyr::group_split() %>%
+            purrr::set_names(ref_subjs)
+        sel_split <- selection %>%
+            dplyr::group_by(dplyr::across({{ subject_column }}))
+        sel_subjs <- sel_split %>%
+            dplyr::group_keys() %>%
+            dplyr::pull(.data[[subject_column]])
+        sel_split <- sel_split %>%
+            dplyr::group_split() %>%
+            purrr::set_names(sel_subjs)
+        shared <- .sharing_for_source(ref_split,
+            sel_split,
+            ref_key = ref_group_key,
+            sel_key = selection_group_key,
+            tp_col = timepoint_column,
+            subj_col = subject_column
+        )
+        shared <- purrr::map(
+            shared,
+            ~ .x %>%
+                dplyr::select(
+                    -.data$count_g1, -.data$count_g2,
+                    -.data$count_union
+                ) %>%
+                tidyr::unnest(.data$is_coord, keep_empty = TRUE) %>%
+                dplyr::mutate(sharing_perc = dplyr::if_else(
+                    shared == 0, 0, .data$on_g2 / .data$shared
+                )) %>%
+                dplyr::select(
+                    -.data$shared, -.data$on_g1, -.data$on_g2,
+                    -.data$on_union
+                )
+        )
+    } else {
+        shared <- .sharing_for_source(reference,
+            selection,
+            ref_key = ref_group_key,
+            sel_key = selection_group_key,
+            tp_col = timepoint_column,
+            subj_col = subject_column
+        )
+        shared <- shared %>%
+            dplyr::select(
+                -.data$count_g1, -.data$count_g2,
+                -.data$count_union
+            ) %>%
+            tidyr::unnest(.data$is_coord, keep_empty = TRUE) %>%
+            dplyr::mutate(sharing_perc = dplyr::if_else(shared == 0,
+                0,
+                .data$on_g2 /
+                    .data$shared
+            )) %>%
+            dplyr::select(
+                -.data$shared, -.data$on_g1, -.data$on_g2,
+                -.data$on_union
+            )
+    }
+
+    return(shared)
 }
 
 #' A set of pre-defined functions for `sample_statistics`.
