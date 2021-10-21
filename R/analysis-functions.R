@@ -1110,8 +1110,8 @@ cumulative_count_union <- function(x,
 #' data("integration_matrices", package = "ISAnalytics")
 #' data("association_file", package = "ISAnalytics")
 #' aggreg <- aggregate_values_by_key(
-#'     x = rlang::current_env()$integration_matrices,
-#'     association_file = rlang::current_env()$association_file,
+#'     x = integration_matrices,
+#'     association_file = association_file,
 #'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
 #' cumulated_is <- cumulative_is(aggreg)
@@ -1541,8 +1541,8 @@ is_sharing <- function(...,
 #' data("integration_matrices", package = "ISAnalytics")
 #' data("association_file", package = "ISAnalytics")
 #' aggreg <- aggregate_values_by_key(
-#'     x = rlang::current_env()$integration_matrices,
-#'     association_file = rlang::current_env()$association_file,
+#'     x = integration_matrices,
+#'     association_file = association_file,
 #'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
 #' filtered_by_purity <- purity_filter(
@@ -1759,8 +1759,8 @@ purity_filter <- function(x,
 #' data("integration_matrices", package = "ISAnalytics")
 #' data("association_file", package = "ISAnalytics")
 #' aggreg <- aggregate_values_by_key(
-#'     x = rlang::current_env()$integration_matrices,
-#'     association_file = rlang::current_env()$association_file,
+#'     x = integration_matrices,
+#'     association_file = association_file,
 #'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
 #' df1 <- aggreg %>%
@@ -1769,15 +1769,11 @@ purity_filter <- function(x,
 #'     dplyr::filter(.data$Tissue == "PB")
 #' source <- iss_source(df1, df2)
 #' source
-#' ggplot2::ggplot(source$PT001, ggplot2::aes(
-#'     x = as.factor(g2_TimePoint),
-#'     y = sharing_perc, fill = g1
-#' )) +
+#' ggplot2::ggplot(source$PT001, ggplot2::aes(x = as.factor(g2_TimePoint),
+#'                                            y = sharing_perc, fill = g1)) +
 #'     ggplot2::geom_col() +
-#'     ggplot2::labs(
-#'         x = "Time point", y = "Shared IS % with MNC BM",
-#'         title = "Source of is MNC BM vs MNC PB"
-#'     )
+#'     ggplot2::labs(x = "Time point", y = "Shared IS % with MNC BM",
+#'                   title = "Source of is MNC BM vs MNC PB")
 iss_source <- function(reference,
     selection,
     ref_group_key = c(

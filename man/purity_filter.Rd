@@ -104,8 +104,8 @@ identified by the rows in the provided data frame are processed.
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-    x = rlang::current_env()$integration_matrices,
-    association_file = rlang::current_env()$association_file,
+    x = integration_matrices,
+    association_file = association_file,
     value_cols = c("seqCount", "fragmentEstimate")
 )
 filtered_by_purity <- purity_filter(
