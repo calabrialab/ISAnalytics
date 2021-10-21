@@ -86,7 +86,7 @@ observed for the first time." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.7</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.8</span>
       </span>
     </div>
 
@@ -241,255 +241,58 @@ Relevant only if <code>by_subject = TRUE</code></p></td>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"association_file"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>aggreg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
-    x <span class='op'>=</span> <span class='fu'>rlang</span><span class='fu'>::</span><span class='fu'><a href='https://rlang.r-lib.org/reference/caller_env.html'>current_env</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>integration_matrices</span>,
-    association_file <span class='op'>=</span> <span class='fu'>rlang</span><span class='fu'>::</span><span class='fu'><a href='https://rlang.r-lib.org/reference/caller_env.html'>current_env</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>association_file</span>,
+    x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
+    association_file <span class='op'>=</span> <span class='va'>association_file</span>,
     value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in aggregate_values_by_key(x = rlang::current_env()$integration_matrices,     association_file = rlang::current_env()$association_file,     value_cols = c("seqCount", "fragmentEstimate")): is.data.frame(x) || is.list(x) is not TRUE</span></div><div class='input'><span class='va'>df1</span> <span class='op'>&lt;-</span> <span class='va'>aggreg</span> <span class='op'>%&gt;%</span>
+<span class='va'>df1</span> <span class='op'>&lt;-</span> <span class='va'>aggreg</span> <span class='op'>%&gt;%</span>
     <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>.data</span><span class='op'>$</span><span class='va'>Tissue</span> <span class='op'>==</span> <span class='st'>"BM"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in dplyr::filter(., .data$Tissue == "BM"): object 'aggreg' not found</span></div><div class='input'><span class='va'>df2</span> <span class='op'>&lt;-</span> <span class='va'>aggreg</span> <span class='op'>%&gt;%</span>
+<span class='va'>df2</span> <span class='op'>&lt;-</span> <span class='va'>aggreg</span> <span class='op'>%&gt;%</span>
     <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>.data</span><span class='op'>$</span><span class='va'>Tissue</span> <span class='op'>==</span> <span class='st'>"PB"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in dplyr::filter(., .data$Tissue == "PB"): object 'aggreg' not found</span></div><div class='input'><span class='va'>source</span> <span class='op'>&lt;-</span> <span class='fu'>iss_source</span><span class='op'>(</span><span class='va'>df1</span>, <span class='va'>df2</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in is.data.frame(reference): object 'df1' not found</span></div><div class='input'><span class='va'>source</span>
-</div><div class='output co'>#&gt; function (file, local = FALSE, echo = verbose, print.eval = echo, 
-#&gt;     exprs, spaced = use_file, verbose = getOption("verbose"), 
-#&gt;     prompt.echo = getOption("prompt"), max.deparse.length = 150, 
-#&gt;     width.cutoff = 60L, deparseCtrl = "showAttributes", chdir = FALSE, 
-#&gt;     encoding = getOption("encoding"), continue.echo = getOption("continue"), 
-#&gt;     skip.echo = 0, keep.source = getOption("keep.source")) 
-#&gt; {
-#&gt;     envir &lt;- if (isTRUE(local)) 
-#&gt;         parent.frame()
-#&gt;     else if (isFALSE(local)) 
-#&gt;         .GlobalEnv
-#&gt;     else if (is.environment(local)) 
-#&gt;         local
-#&gt;     else stop("'local' must be TRUE, FALSE or an environment")
-#&gt;     if (!missing(echo)) {
-#&gt;         if (!is.logical(echo)) 
-#&gt;             stop("'echo' must be logical")
-#&gt;         if (!echo &amp;&amp; verbose) {
-#&gt;             warning("'verbose' is TRUE, 'echo' not; ... coercing 'echo &lt;- TRUE'")
-#&gt;             echo &lt;- TRUE
-#&gt;         }
-#&gt;     }
-#&gt;     if (verbose) {
-#&gt;         cat("'envir' chosen:")
-#&gt;         print(envir)
-#&gt;     }
-#&gt;     if (use_file &lt;- missing(exprs)) {
-#&gt;         ofile &lt;- file
-#&gt;         from_file &lt;- FALSE
-#&gt;         srcfile &lt;- NULL
-#&gt;         if (is.character(file)) {
-#&gt;             have_encoding &lt;- !missing(encoding) &amp;&amp; encoding != 
-#&gt;                 "unknown"
-#&gt;             if (identical(encoding, "unknown")) {
-#&gt;                 enc &lt;- utils::localeToCharset()
-#&gt;                 encoding &lt;- enc[length(enc)]
-#&gt;             }
-#&gt;             else enc &lt;- encoding
-#&gt;             if (length(enc) &gt; 1L) {
-#&gt;                 encoding &lt;- NA
-#&gt;                 owarn &lt;- options(warn = 2)
-#&gt;                 for (e in enc) {
-#&gt;                   if (is.na(e)) 
-#&gt;                     next
-#&gt;                   zz &lt;- file(file, encoding = e)
-#&gt;                   res &lt;- tryCatch(readLines(zz, warn = FALSE), 
-#&gt;                     error = identity)
-#&gt;                   close(zz)
-#&gt;                   if (!inherits(res, "error")) {
-#&gt;                     encoding &lt;- e
-#&gt;                     break
-#&gt;                   }
-#&gt;                 }
-#&gt;                 options(owarn)
-#&gt;             }
-#&gt;             if (is.na(encoding)) 
-#&gt;                 stop("unable to find a plausible encoding")
-#&gt;             if (verbose) 
-#&gt;                 cat(gettextf("encoding = \"%s\" chosen", encoding), 
-#&gt;                   "\n", sep = "")
-#&gt;             if (file == "") {
-#&gt;                 file &lt;- stdin()
-#&gt;                 srcfile &lt;- "&lt;stdin&gt;"
-#&gt;             }
-#&gt;             else {
-#&gt;                 filename &lt;- file
-#&gt;                 file &lt;- file(filename, "r", encoding = encoding)
-#&gt;                 on.exit(close(file))
-#&gt;                 if (isTRUE(keep.source)) {
-#&gt;                   lines &lt;- readLines(file, warn = FALSE)
-#&gt;                   on.exit()
-#&gt;                   close(file)
-#&gt;                   srcfile &lt;- srcfilecopy(filename, lines, file.mtime(filename)[1], 
-#&gt;                     isFile = TRUE)
-#&gt;                 }
-#&gt;                 else {
-#&gt;                   from_file &lt;- TRUE
-#&gt;                   srcfile &lt;- filename
-#&gt;                 }
-#&gt;                 loc &lt;- utils::localeToCharset()[1L]
-#&gt;                 encoding &lt;- if (have_encoding) 
-#&gt;                   switch(loc, `UTF-8` = "UTF-8", `ISO8859-1` = "latin1", 
-#&gt;                     "unknown")
-#&gt;                 else "unknown"
-#&gt;             }
-#&gt;         }
-#&gt;         else {
-#&gt;             lines &lt;- readLines(file, warn = FALSE)
-#&gt;             srcfile &lt;- if (isTRUE(keep.source)) 
-#&gt;                 srcfilecopy(deparse1(substitute(file), ""), lines)
-#&gt;             else deparse1(substitute(file), "")
-#&gt;         }
-#&gt;         exprs &lt;- if (!from_file) {
-#&gt;             if (length(lines)) 
-#&gt;                 .Internal(parse(stdin(), n = -1, lines, "?", 
-#&gt;                   srcfile, encoding))
-#&gt;             else expression()
-#&gt;         }
-#&gt;         else .Internal(parse(file, n = -1, NULL, "?", srcfile, 
-#&gt;             encoding))
-#&gt;         on.exit()
-#&gt;         if (from_file) 
-#&gt;             close(file)
-#&gt;         if (verbose) 
-#&gt;             cat("--&gt; parsed", length(exprs), "expressions; now eval(.)ing them:\n")
-#&gt;         if (chdir) {
-#&gt;             if (is.character(ofile)) {
-#&gt;                 if (grepl("^(ftp|http|file)://", ofile)) 
-#&gt;                   warning("'chdir = TRUE' makes no sense for a URL")
-#&gt;                 else if ((path &lt;- dirname(ofile)) != ".") {
-#&gt;                   owd &lt;- getwd()
-#&gt;                   if (is.null(owd)) 
-#&gt;                     stop("cannot 'chdir' as current directory is unknown")
-#&gt;                   on.exit(setwd(owd), add = TRUE)
-#&gt;                   setwd(path)
-#&gt;                 }
-#&gt;             }
-#&gt;             else {
-#&gt;                 warning("'chdir = TRUE' makes no sense for a connection")
-#&gt;             }
-#&gt;         }
-#&gt;     }
-#&gt;     else {
-#&gt;         if (!missing(file)) 
-#&gt;             stop("specify either 'file' or 'exprs' but not both")
-#&gt;         if (!is.expression(exprs)) 
-#&gt;             exprs &lt;- as.expression(exprs)
-#&gt;     }
-#&gt;     Ne &lt;- length(exprs)
-#&gt;     if (echo) {
-#&gt;         sd &lt;- "\""
-#&gt;         nos &lt;- "[^\"]*"
-#&gt;         oddsd &lt;- paste0("^", nos, sd, "(", nos, sd, nos, sd, 
-#&gt;             ")*", nos, "$")
-#&gt;         trySrcLines &lt;- function(srcfile, showfrom, showto) {
-#&gt;             tryCatch(suppressWarnings(getSrcLines(srcfile, showfrom, 
-#&gt;                 showto)), error = function(e) character())
-#&gt;         }
-#&gt;     }
-#&gt;     yy &lt;- NULL
-#&gt;     lastshown &lt;- 0
-#&gt;     srcrefs &lt;- attr(exprs, "srcref")
-#&gt;     if (verbose &amp;&amp; !is.null(srcrefs)) {
-#&gt;         cat("has srcrefs:\n")
-#&gt;         utils::str(srcrefs)
-#&gt;     }
-#&gt;     for (i in seq_len(Ne + echo)) {
-#&gt;         tail &lt;- i &gt; Ne
-#&gt;         if (!tail) {
-#&gt;             if (verbose) 
-#&gt;                 cat("\n&gt;&gt;&gt;&gt; eval(expression_nr.", i, ")\n\t\t =================\n")
-#&gt;             ei &lt;- exprs[i]
-#&gt;         }
-#&gt;         if (echo) {
-#&gt;             nd &lt;- 0
-#&gt;             srcref &lt;- if (tail) 
-#&gt;                 attr(exprs, "wholeSrcref")
-#&gt;             else if (i &lt;= length(srcrefs)) 
-#&gt;                 srcrefs[[i]]
-#&gt;             if (!is.null(srcref)) {
-#&gt;                 if (i == 1) 
-#&gt;                   lastshown &lt;- min(skip.echo, srcref[3L] - 1)
-#&gt;                 if (lastshown &lt; srcref[3L]) {
-#&gt;                   srcfile &lt;- attr(srcref, "srcfile")
-#&gt;                   dep &lt;- trySrcLines(srcfile, lastshown + 1, 
-#&gt;                     srcref[3L])
-#&gt;                   if (length(dep)) {
-#&gt;                     leading &lt;- if (tail) 
-#&gt;                       length(dep)
-#&gt;                     else srcref[1L] - lastshown
-#&gt;                     lastshown &lt;- srcref[3L]
-#&gt;                     while (length(dep) &amp;&amp; grepl("^[[:blank:]]*$", 
-#&gt;                       dep[1L])) {
-#&gt;                       dep &lt;- dep[-1L]
-#&gt;                       leading &lt;- leading - 1L
-#&gt;                     }
-#&gt;                     dep &lt;- paste0(rep.int(c(prompt.echo, continue.echo), 
-#&gt;                       pmax(0L, c(leading, length(dep) - leading))), 
-#&gt;                       dep, collapse = "\n")
-#&gt;                     nd &lt;- nchar(dep, "c")
-#&gt;                   }
-#&gt;                   else srcref &lt;- NULL
-#&gt;                 }
-#&gt;             }
-#&gt;             if (is.null(srcref)) {
-#&gt;                 if (!tail) {
-#&gt;                   dep &lt;- substr(paste(deparse(ei, width.cutoff = width.cutoff, 
-#&gt;                     control = deparseCtrl), collapse = "\n"), 
-#&gt;                     12L, 1000000L)
-#&gt;                   dep &lt;- paste0(prompt.echo, gsub("\n", paste0("\n", 
-#&gt;                     continue.echo), dep, fixed = TRUE))
-#&gt;                   nd &lt;- nchar(dep, "c") - 1L
-#&gt;                 }
-#&gt;             }
-#&gt;             if (nd) {
-#&gt;                 do.trunc &lt;- nd &gt; max.deparse.length
-#&gt;                 dep &lt;- substr(dep, 1L, if (do.trunc) 
-#&gt;                   max.deparse.length
-#&gt;                 else nd)
-#&gt;                 cat(if (spaced) 
-#&gt;                   "\n", dep, if (do.trunc) 
-#&gt;                   paste(if (grepl(sd, dep) &amp;&amp; grepl(oddsd, dep)) 
-#&gt;                     " ...\" ..."
-#&gt;                   else " ....", "[TRUNCATED] "), "\n", sep = "")
-#&gt;             }
-#&gt;         }
-#&gt;         if (!tail) {
-#&gt;             yy &lt;- withVisible(eval(ei, envir))
-#&gt;             i.symbol &lt;- mode(ei[[1L]]) == "name"
-#&gt;             if (!i.symbol) {
-#&gt;                 curr.fun &lt;- ei[[1L]][[1L]]
-#&gt;                 if (verbose) {
-#&gt;                   cat("curr.fun:")
-#&gt;                   utils::str(curr.fun)
-#&gt;                 }
-#&gt;             }
-#&gt;             if (verbose &gt;= 2) {
-#&gt;                 cat(".... mode(ei[[1L]])=", mode(ei[[1L]]), "; paste(curr.fun)=")
-#&gt;                 utils::str(paste(curr.fun))
-#&gt;             }
-#&gt;             if (print.eval &amp;&amp; yy$visible) {
-#&gt;                 if (isS4(yy$value)) 
-#&gt;                   methods::show(yy$value)
-#&gt;                 else print(yy$value)
-#&gt;             }
-#&gt;             if (verbose) 
-#&gt;                 cat(" .. after ", sQuote(deparse(ei, control = unique(c(deparseCtrl, 
-#&gt;                   "useSource")))), "\n", sep = "")
-#&gt;         }
-#&gt;     }
-#&gt;     invisible(yy)
-#&gt; }
-#&gt; &lt;bytecode: 0x7f99dd332b38&gt;
-#&gt; &lt;environment: namespace:base&gt;</div><div class='input'><span class='fu'>ggplot2</span><span class='fu'>::</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>source</span><span class='op'>$</span><span class='va'>PT001</span>, <span class='fu'>ggplot2</span><span class='fu'>::</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>g2_TimePoint</span><span class='op'>)</span>,
+<span class='va'>source</span> <span class='op'>&lt;-</span> <span class='fu'>iss_source</span><span class='op'>(</span><span class='va'>df1</span>, <span class='va'>df2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%
+#&gt; </div><div class='input'><span class='va'>source</span>
+</div><div class='output co'>#&gt; $PT001
+#&gt; <span style='color: #949494;'># A tibble: 161 × 14</span>
+#&gt;    g1      g1_SubjectID g1_CellMarker g1_Tissue g1_TimePoint g2     g2_SubjectID
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>        <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>         <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       
+#&gt; <span style='color: #BCBCBC;'> 1</span> PT001_… PT001        MNC           BM                  30 PT001… PT001       
+#&gt; <span style='color: #BCBCBC;'> 2</span> PT001_… PT001        MNC           BM                  30 PT001… PT001       
+#&gt; <span style='color: #BCBCBC;'> 3</span> PT001_… PT001        MNC           BM                  30 PT001… PT001       
+#&gt; <span style='color: #BCBCBC;'> 4</span> PT001_… PT001        MNC           BM                  30 PT001… PT001       
+#&gt; <span style='color: #BCBCBC;'> 5</span> PT001_… PT001        MNC           BM                  30 PT001… PT001       
+#&gt; <span style='color: #BCBCBC;'> 6</span> PT001_… PT001        MNC           BM                  30 PT001… PT001       
+#&gt; <span style='color: #BCBCBC;'> 7</span> PT001_… PT001        MNC           BM                  30 PT001… PT001       
+#&gt; <span style='color: #BCBCBC;'> 8</span> PT001_… PT001        MNC           BM                  30 PT001… PT001       
+#&gt; <span style='color: #BCBCBC;'> 9</span> PT001_… PT001        MNC           BM                  60 PT001… PT001       
+#&gt; <span style='color: #BCBCBC;'>10</span> PT001_… PT001        MNC           BM                  60 PT001… PT001       
+#&gt; <span style='color: #949494;'># … with 151 more rows, and 7 more variables: g2_CellMarker &lt;chr&gt;,</span>
+#&gt; <span style='color: #949494;'>#   g2_Tissue &lt;chr&gt;, g2_TimePoint &lt;int&gt;, chr &lt;chr&gt;, integration_locus &lt;dbl&gt;,</span>
+#&gt; <span style='color: #949494;'>#   strand &lt;chr&gt;, sharing_perc &lt;dbl&gt;</span>
+#&gt; 
+#&gt; $PT002
+#&gt; <span style='color: #949494;'># A tibble: 77 × 14</span>
+#&gt;    g1      g1_SubjectID g1_CellMarker g1_Tissue g1_TimePoint g2     g2_SubjectID
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>        <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>         <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       
+#&gt; <span style='color: #BCBCBC;'> 1</span> PT002_… PT002        MNC           BM                 360 PT002… PT002       
+#&gt; <span style='color: #BCBCBC;'> 2</span> PT002_… PT002        MNC           BM                 360 PT002… PT002       
+#&gt; <span style='color: #BCBCBC;'> 3</span> PT002_… PT002        MNC           BM                  30 PT002… PT002       
+#&gt; <span style='color: #BCBCBC;'> 4</span> PT002_… PT002        MNC           BM                 180 PT002… PT002       
+#&gt; <span style='color: #BCBCBC;'> 5</span> PT002_… PT002        MNC           BM                 180 PT002… PT002       
+#&gt; <span style='color: #BCBCBC;'> 6</span> PT002_… PT002        MNC           BM                  60 PT002… PT002       
+#&gt; <span style='color: #BCBCBC;'> 7</span> PT002_… PT002        MNC           BM                  90 PT002… PT002       
+#&gt; <span style='color: #BCBCBC;'> 8</span> PT002_… PT002        MNC           BM                 360 PT002… PT002       
+#&gt; <span style='color: #BCBCBC;'> 9</span> PT002_… PT002        MNC           BM                 360 PT002… PT002       
+#&gt; <span style='color: #BCBCBC;'>10</span> PT002_… PT002        MNC           BM                  30 PT002… PT002       
+#&gt; <span style='color: #949494;'># … with 67 more rows, and 7 more variables: g2_CellMarker &lt;chr&gt;,</span>
+#&gt; <span style='color: #949494;'>#   g2_Tissue &lt;chr&gt;, g2_TimePoint &lt;int&gt;, chr &lt;chr&gt;, integration_locus &lt;dbl&gt;,</span>
+#&gt; <span style='color: #949494;'>#   strand &lt;chr&gt;, sharing_perc &lt;dbl&gt;</span>
+#&gt; </div><div class='input'><span class='fu'>ggplot2</span><span class='fu'>::</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>source</span><span class='op'>$</span><span class='va'>PT001</span>, <span class='fu'>ggplot2</span><span class='fu'>::</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>g2_TimePoint</span><span class='op'>)</span>,
                                            y <span class='op'>=</span> <span class='va'>sharing_perc</span>, fill <span class='op'>=</span> <span class='va'>g1</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
     <span class='fu'>ggplot2</span><span class='fu'>::</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_col</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
     <span class='fu'>ggplot2</span><span class='fu'>::</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Time point"</span>, y <span class='op'>=</span> <span class='st'>"Shared IS % with MNC BM"</span>,
                   title <span class='op'>=</span> <span class='st'>"Source of is MNC BM vs MNC PB"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in source$PT001: object of type 'closure' is not subsettable</span></div></pre>
+</div><div class='img'><img src='iss_source-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

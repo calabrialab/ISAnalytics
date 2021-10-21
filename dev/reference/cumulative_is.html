@@ -85,7 +85,7 @@ time point &quot;t+1&quot;." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.7</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.8</span>
       </span>
     </div>
 
@@ -229,13 +229,54 @@ column is unnested.</p></td>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"association_file"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
 <span class='va'>aggreg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
-    x <span class='op'>=</span> <span class='fu'>rlang</span><span class='fu'>::</span><span class='fu'><a href='https://rlang.r-lib.org/reference/caller_env.html'>current_env</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>integration_matrices</span>,
-    association_file <span class='op'>=</span> <span class='fu'>rlang</span><span class='fu'>::</span><span class='fu'><a href='https://rlang.r-lib.org/reference/caller_env.html'>current_env</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>association_file</span>,
+    x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
+    association_file <span class='op'>=</span> <span class='va'>association_file</span>,
     value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in aggregate_values_by_key(x = rlang::current_env()$integration_matrices,     association_file = rlang::current_env()$association_file,     value_cols = c("seqCount", "fragmentEstimate")): is.data.frame(x) || is.list(x) is not TRUE</span></div><div class='input'><span class='va'>cumulated_is</span> <span class='op'>&lt;-</span> <span class='fu'>cumulative_is</span><span class='op'>(</span><span class='va'>aggreg</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in is.data.frame(x): object 'aggreg' not found</span></div><div class='input'><span class='va'>cumulated_is</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): object 'cumulated_is' not found</span></div></pre>
+<span class='va'>cumulated_is</span> <span class='op'>&lt;-</span> <span class='fu'>cumulative_is</span><span class='op'>(</span><span class='va'>aggreg</span><span class='op'>)</span>
+<span class='va'>cumulated_is</span>
+</div><div class='output co'>#&gt;     SubjectID CellMarker Tissue TimePoint                  is
+#&gt;  1:     PT001        MNC     BM        30  &lt;data.table[54x5]&gt;
+#&gt;  2:     PT001        MNC     BM        60 &lt;data.table[114x5]&gt;
+#&gt;  3:     PT001        MNC     BM        90  &lt;data.table[59x5]&gt;
+#&gt;  4:     PT001        MNC     BM       180  &lt;data.table[89x5]&gt;
+#&gt;  5:     PT001        MNC     BM       360  &lt;data.table[78x5]&gt;
+#&gt;  6:     PT001        MNC     PB        30  &lt;data.table[28x5]&gt;
+#&gt;  7:     PT001        MNC     PB        60  &lt;data.table[59x5]&gt;
+#&gt;  8:     PT001        MNC     PB        90  &lt;data.table[48x5]&gt;
+#&gt;  9:     PT001        MNC     PB       180  &lt;data.table[29x5]&gt;
+#&gt; 10:     PT001        MNC     PB       360  &lt;data.table[43x5]&gt;
+#&gt; 11:     PT002        MNC     BM        30  &lt;data.table[98x5]&gt;
+#&gt; 12:     PT002        MNC     BM        60  &lt;data.table[33x5]&gt;
+#&gt; 13:     PT002        MNC     BM        90  &lt;data.table[40x5]&gt;
+#&gt; 14:     PT002        MNC     BM       180  &lt;data.table[69x5]&gt;
+#&gt; 15:     PT002        MNC     BM       360  &lt;data.table[91x5]&gt;
+#&gt; 16:     PT002        MNC     PB        30  &lt;data.table[15x5]&gt;
+#&gt; 17:     PT002        MNC     PB        60  &lt;data.table[18x5]&gt;
+#&gt; 18:     PT002        MNC     PB        90  &lt;data.table[24x5]&gt;
+#&gt; 19:     PT002        MNC     PB       180  &lt;data.table[32x5]&gt;
+#&gt; 20:     PT002        MNC     PB       360  &lt;data.table[53x5]&gt;
+#&gt;           cumulative_is
+#&gt;  1:  &lt;data.table[54x5]&gt;
+#&gt;  2: &lt;data.table[147x5]&gt;
+#&gt;  3: &lt;data.table[179x5]&gt;
+#&gt;  4: &lt;data.table[240x5]&gt;
+#&gt;  5: &lt;data.table[240x5]&gt;
+#&gt;  6:  &lt;data.table[28x5]&gt;
+#&gt;  7:  &lt;data.table[77x5]&gt;
+#&gt;  8: &lt;data.table[104x5]&gt;
+#&gt;  9: &lt;data.table[121x5]&gt;
+#&gt; 10: &lt;data.table[121x5]&gt;
+#&gt; 11:  &lt;data.table[98x5]&gt;
+#&gt; 12: &lt;data.table[126x5]&gt;
+#&gt; 13: &lt;data.table[141x5]&gt;
+#&gt; 14: &lt;data.table[184x5]&gt;
+#&gt; 15: &lt;data.table[265x5]&gt;
+#&gt; 16:  &lt;data.table[15x5]&gt;
+#&gt; 17:  &lt;data.table[26x5]&gt;
+#&gt; 18:  &lt;data.table[38x5]&gt;
+#&gt; 19:  &lt;data.table[62x5]&gt;
+#&gt; 20: &lt;data.table[109x5]&gt;</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
