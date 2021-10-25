@@ -157,7 +157,7 @@ import_single_Vispa2Matrix <- function(path,
         BiocParallel::SnowParam(
             tasks = length(chunks),
             progressbar = getOption("ISAnalytics.verbose"),
-            exportglobals = FALSE,
+            exportglobals = TRUE,
             stop.on.error = TRUE
         )
     } else {

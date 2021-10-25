@@ -1,6 +1,13 @@
 NEWS
 ================
 
+# ISAnalytics 1.3.9 (2021-10-25)
+
+## FIXES
+
+-   Fixed issues with function that make use of BiocParallel that
+    sometimes failed on Windows platform
+
 # ISAnalytics 1.3.7 (2021-10-20)
 
 ## NEW

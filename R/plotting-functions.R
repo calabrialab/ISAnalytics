@@ -519,7 +519,7 @@ integration_alluvial_plot <- function(x,
             stop.on.error = FALSE,
             progressbar = TRUE,
             tasks = length(groups_to_plot),
-            exportglobals = FALSE
+            exportglobals = TRUE
         )
     } else {
         BiocParallel::MulticoreParam(

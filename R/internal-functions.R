@@ -608,7 +608,7 @@
             stop.on.error = FALSE,
             tasks = length(stats_paths$stats_files),
             progressbar = getOption("ISAnalytics.verbose"),
-            exportglobals = FALSE
+            exportglobals = TRUE
         )
     } else {
         p <- BiocParallel::MulticoreParam(
@@ -4812,7 +4812,7 @@
             p <- BiocParallel::SnowParam(
                 tasks = length(common_names),
                 progressbar = getOption("ISAnalytics.verbose"),
-                exportglobals = FALSE
+                exportglobals = TRUE
             )
         } else {
             p <- BiocParallel::MulticoreParam(

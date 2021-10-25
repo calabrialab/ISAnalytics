@@ -182,7 +182,7 @@ HSC_population_size_estimate <- function(x,
             stop.on.error = FALSE,
             tasks = length(x_subj_split),
             progressbar = getOption("ISAnalytics.verbose"),
-            exportglobals = FALSE
+            exportglobals = TRUE
         )
     } else {
         p <- BiocParallel::MulticoreParam(

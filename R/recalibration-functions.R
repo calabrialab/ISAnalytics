@@ -130,7 +130,7 @@ compute_near_integrations <- function(x,
             stop.on.error = FALSE,
             progressbar = TRUE,
             tasks = length(split_to_process),
-            exportglobals = FALSE
+            exportglobals = TRUE
         )
     } else {
         p <- BiocParallel::MulticoreParam(
