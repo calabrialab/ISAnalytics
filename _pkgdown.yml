@@ -58,15 +58,11 @@ reference:
 - contents:
   - aggregate_metadata
   - aggregate_values_by_key
-- title: "Collision removal functions"
-- contents:
-  - remove_collisions
-  - realign_after_collisions
-- title: "Recalibration functions"
+- title: "Data cleaning and pre-processing"
 - contents:
   - compute_near_integrations
-- title: "Removal of outliers from raw reads"
-- contents:
+  - remove_collisions
+  - realign_after_collisions
   - outlier_filter
   - outliers_by_pool_fragments
 - title: "Analysis functions"
@@ -132,4 +128,3 @@ reference:
   - refGenes_hg19
   - refGenes_mm9
   - tumor_suppressors
-

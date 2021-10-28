@@ -88,7 +88,7 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_13",
+                         ref = "RELEASE_3_14",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
 ```
@@ -136,6 +136,13 @@ options("ISAnalytics.reports" = TRUE)
 <summary>
 Show more
 </summary>
+
+# ISAnalytics 1.5.1 (2021-10-28)
+
+## FIXES
+
+-   Attempt to fix issues with parallel computation on Windows for some
+    plotting functions
 
 # ISAnalytics 1.3.9 (2021-10-25)
 
@@ -358,7 +365,7 @@ Show more
 
 ## FIXES
 
--   Fixed minor issues in import\_association\_file when checking
+-   Fixed minor issues in import_association_file when checking
     parameters
 
 # ISAnalytics 1.1.6 (2020-02-06)
@@ -366,25 +373,24 @@ Show more
 ## UPGRADES
 
 -   It is now possible to save html reports to file from
-    import\_parallel\_Vispa2Matrices\_auto and
-    import\_parallel\_Vispa2Matrices\_interactive, remove\_collisions
-    and compute\_near\_integrations
+    import_parallel_Vispa2Matrices_auto and
+    import_parallel_Vispa2Matrices_interactive, remove_collisions and
+    compute_near_integrations
 
 ## FIXES
 
--   Fixed sample\_statistics: now functions that have data frame output
+-   Fixed sample_statistics: now functions that have data frame output
     do not produce nested tables. Flat tables are ready to be saved to
     file or can be nested.
--   Simplified association file check logic in remove\_collisions: now
+-   Simplified association file check logic in remove_collisions: now
     function blocks only if the af doesn’t contain the needed columns
 
 # ISAnalytics 1.1.5 (2020-02-03)
 
 ## UPGRADES
 
--   Upgraded import\_association\_file function: now file alignment is
-    not mandatory anymore and it is possible to save the html report to
-    file
+-   Upgraded import_association_file function: now file alignment is not
+    mandatory anymore and it is possible to save the html report to file
 -   Updated vignettes and documentation
 
 # ISAnalytics 1.1.4 (2020-11-16)
@@ -424,7 +430,7 @@ Show more
     environments that do not have access to a browser)
 -   Other minor fixes (typos)
 -   Bug fixes: fixed a few bugs in importing and recalibration functions
--   Minor fix in import\_association\_file file function: added multiple
+-   Minor fix in import_association_file file function: added multiple
     strings to be translated as NA
 
 ## IMPORTANT NOTES
@@ -506,7 +512,7 @@ ISanalytics is officially on bioconductor!
 -   Added functionality: aggregate functions
 -   Added vignette on aggregate functions
 -   Added recalibration functions
--   Added first analysis function (compute\_abundance)
+-   Added first analysis function (compute_abundance)
 
 ## SIGNIFICANT USER-VISIBLE CHANGES
 
