@@ -16,6 +16,9 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/HSC_population_size_estimate.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/ISAnalytics-deprecated.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/ISAnalytics.html</loc>
   </url>
   <url>
@@ -31,6 +34,9 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/as_sparse_matrix.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/association_file.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/association_file_columns.html</loc>
   </url>
   <url>
@@ -38,6 +44,9 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/blood_lineages_default.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/circos_genomic_density.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/clinical_relevant_suspicious_genes.html</loc>
@@ -55,6 +64,9 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/cumulative_count_union.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/cumulative_is.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/date_columns_coll.html</loc>
   </url>
   <url>
@@ -65,6 +77,9 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/default_meta_agg.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/default_report_path.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/default_stats.html</loc>
@@ -82,6 +97,9 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/import_association_file.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/import_parallel_Vispa2Matrices.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/import_parallel_Vispa2Matrices_auto.html</loc>
   </url>
   <url>
@@ -89,6 +107,18 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/import_single_Vispa2Matrix.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/integration_alluvial_plot.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/integration_matrices.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/is_sharing.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/iss_source.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/known_clinical_oncogenes.html</loc>
@@ -106,6 +136,12 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/outliers_by_pool_fragments.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/proto_oncogenes.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/purity_filter.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/quantification_types.html</loc>
   </url>
   <url>
@@ -113,6 +149,12 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/reduced_AF_columns.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/refGene_table_cols.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/refGenes_hg19.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/remove_collisions.html</loc>
@@ -124,7 +166,16 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/separate_quant_matrices.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/sharing_heatmap.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/sharing_venn.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/threshold_filter.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/top_abund_tableGrob.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/top_integrations.html</loc>
@@ -142,6 +193,6 @@
     <loc>https://calabrialab.github.io/ISAnalytics/articles/how_to_import_functions.html</loc>
   </url>
   <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/articles/no_rstudio_usage.html</loc>
+    <loc>https://calabrialab.github.io/ISAnalytics/articles/sharing_analyses.html</loc>
   </url>
 </urlset>

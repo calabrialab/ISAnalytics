@@ -98,7 +98,7 @@ expansions and statistics for insertional mutagenesis, etc.),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
       </span>
     </div>
 
@@ -130,7 +130,7 @@ expansions and statistics for insertional mutagenesis, etc.),
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+      <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
 </li>
@@ -173,7 +173,7 @@ clonal tracking studies</h1>
     </div>
 
     <div class="ref-description">
-    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#stable'><img src='figures/lifecycle-stable.svg' alt='[Stable]' /></a>
 
 In gene therapy, stem cells are modified using viral
 vectors to deliver the therapeutic transgene and replace functional
@@ -211,8 +211,7 @@ and Annotation of Vector Integration Sites</a></p></li>
 <li><p><code><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a></code></p></li>
 <li><p><code><a href='import_association_file.html'>import_association_file</a></code></p></li>
 <li><p><code><a href='import_Vispa2_stats.html'>import_Vispa2_stats</a></code></p></li>
-<li><p><code><a href='import_parallel_Vispa2Matrices_interactive.html'>import_parallel_Vispa2Matrices_interactive</a></code></p></li>
-<li><p><code><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></code></p></li>
+<li><p><code><a href='import_parallel_Vispa2Matrices.html'>import_parallel_Vispa2Matrices</a></code></p></li>
 </ul></li>
 <li><p>Aggregation functions:</p><ul>
 <li><p><code><a href='aggregate_metadata.html'>aggregate_metadata</a></code></p></li>
@@ -238,6 +237,8 @@ and Annotation of Vector Integration Sites</a></p></li>
 <li><p><code><a href='sample_statistics.html'>sample_statistics</a></code></p></li>
 <li><p><code><a href='CIS_grubbs.html'>CIS_grubbs</a></code></p></li>
 <li><p><code><a href='cumulative_count_union.html'>cumulative_count_union</a></code></p></li>
+<li><p><code><a href='is_sharing.html'>is_sharing</a></code></p></li>
+<li><p><code><a href='cumulative_is.html'>cumulative_is</a></code></p></li>
 </ul></li>
 <li><p>HSC population size estimate:</p><ul>
 <li><p><code><a href='HSC_population_size_estimate.html'>HSC_population_size_estimate</a></code></p></li>
@@ -245,6 +246,11 @@ and Annotation of Vector Integration Sites</a></p></li>
 <li><p>Plotting functions:</p><ul>
 <li><p><code><a href='CIS_volcano_plot.html'>CIS_volcano_plot</a></code></p></li>
 <li><p><code><a href='HSC_population_plot.html'>HSC_population_plot</a></code></p></li>
+<li><p><code><a href='sharing_heatmap.html'>sharing_heatmap</a></code></p></li>
+<li><p><code><a href='integration_alluvial_plot.html'>integration_alluvial_plot</a></code></p></li>
+<li><p><code><a href='top_abund_tableGrob.html'>top_abund_tableGrob</a></code></p></li>
+<li><p><code><a href='circos_genomic_density.html'>circos_genomic_density</a></code></p></li>
+<li><p><code><a href='sharing_venn.html'>sharing_venn</a></code></p></li>
 </ul></li>
 <li><p>Utility functions:</p><ul>
 <li><p><code><a href='generate_blank_association_file.html'>generate_blank_association_file</a></code></p></li>
@@ -259,11 +265,13 @@ and Annotation of Vector Integration Sites</a></p></li>
     
 
 <ul>
-<li><p><code>vignette("How to use import functions", package = "ISAnalytics")</code></p></li>
-<li><p><code>vignette("Collision removal functionality",
-package = "ISAnalytics")</code></p></li>
-<li><p><code>vignette("Working with aggregate functions",
-package = "ISAnalytics")</code></p></li>
+<li><p><code><a href='../articles/how_to_import_functions.html'>vignette("how_to_import_functions", package = "ISAnalytics")</a></code></p></li>
+<li><p><code><a href='../articles/collision_removal.html'>vignette("collision_removal",
+package = "ISAnalytics")</a></code></p></li>
+<li><p><code><a href='../articles/aggregate_function_usage.html'>vignette("aggregate_function_usage",
+package = "ISAnalytics")</a></code></p></li>
+<li><p><code><a href='../articles/sharing_analyses.html'>vignette("sharing_analyses",
+package = "ISAnalytics")</a></code></p></li>
 </ul>
 
 

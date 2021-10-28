@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
       </span>
     </div>
 
@@ -70,7 +70,7 @@
       <a href="articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+      <a href="articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
 </li>
@@ -125,9 +125,23 @@
 </li>
 </ul>
 </div>
-<div id="installation" class="section level1">
+<div id="installation-and-options" class="section level1">
 <h1 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h1>
+<a href="#installation-and-options" class="anchor"></a>Installation and options</h1>
+<p><code>ISAnalytics</code> can be installed quickly in different ways:</p>
+<ul>
+<li>You can install it via <a href="http://bioconductor.org">Bioconductor</a>
+</li>
+<li>You can install it via GitHub using the package <code>devtools</code>
+</li>
+</ul>
+<p>There are always 2 versions of the package active:</p>
+<ul>
+<li>
+<code>RELEASE</code> is the latest stable version</li>
+<li>
+<code>DEVEL</code> is the development version, it is the most up-to-date version where all new features are introduced</li>
+</ul>
 <div id="installation-from-bioconductor" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation-from-bioconductor" class="anchor"></a>Installation from bioconductor</h2>
@@ -155,13 +169,9 @@
   <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span>,
+                         ref <span class="op">=</span> <span class="st">"RELEASE_3_14"</span>,
                          dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
-                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-
-<span class="co">## Safer option for vignette building issue</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"RELEASE_3_12"</span><span class="op">)</span></code></pre></div>
+                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>DEVEL:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
@@ -170,23 +180,239 @@
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
                          ref <span class="op">=</span> <span class="st">"master"</span>,
                          dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
-                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="setting-options" class="section level2">
+<h2 class="hasAnchor">
+<a href="#setting-options" class="anchor"></a>Setting options</h2>
+<p><code>ISAnalytics</code> has a verbose option that allows some functions to print additional information to the console while they’re executing. To disable this feature do:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># DISABLE</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="co">## Safer option for vignette building issue</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
-                         ref <span class="op">=</span> <span class="st">"master"</span><span class="op">)</span></code></pre></div>
+<span class="co"># ENABLE</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p>Some functions also produce report in a user-friendly HTML format, to set this feature:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># DISABLE HTML REPORTS</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+
+<span class="co"># ENABLE HTML REPORTS</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="news" class="section level1">
 <h1 class="hasAnchor">
 <a href="#news" class="anchor"></a>NEWS</h1>
+<details><p><summary> Show more </summary></p>
+</details>
+</div>
+<div id="isanalytics-141-2021-10-28" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-141-2021-10-28" class="anchor"></a>ISAnalytics 1.4.1 (2021-10-28)</h1>
+<div id="fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Attempt to fix issues with parallel computation on Windows for some plotting functions</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-139-2021-10-25" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-139-2021-10-25" class="anchor"></a>ISAnalytics 1.3.9 (2021-10-25)</h1>
+<div id="fixes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes-1" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Fixed issues with function that make use of BiocParallel that sometimes failed on Windows platform</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-137-2021-10-20" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-137-2021-10-20" class="anchor"></a>ISAnalytics 1.3.7 (2021-10-20)</h1>
+<div id="new" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new" class="anchor"></a>NEW</h2>
+<ul>
+<li>Added new feature <code><a href="reference/iss_source.html">iss_source()</a></code>
+</li>
+</ul>
+</div>
+<div id="fixes-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes-2" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Fixed minor issues in data files <code>refGenes_mm9</code> and function <code><a href="reference/compute_near_integrations.html">compute_near_integrations()</a></code>
+</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-136-2021-10-05" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-136-2021-10-05" class="anchor"></a>ISAnalytics 1.3.6 (2021-10-05)</h1>
+<div id="new-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-1" class="anchor"></a>NEW</h2>
+<ul>
+<li>Added new feature <code><a href="reference/purity_filter.html">purity_filter()</a></code>
+</li>
+</ul>
+</div>
+<div id="fixes-3" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes-3" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Fixed small issue in printing information in reports</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-135-2021-09-21" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-135-2021-09-21" class="anchor"></a>ISAnalytics 1.3.5 (2021-09-21)</h1>
+<div id="major-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes" class="anchor"></a>MAJOR CHANGES</h2>
+<ul>
+<li>Reworked <code><a href="reference/is_sharing.html">is_sharing()</a></code> function, detailed usage in vignette <code><a href="articles/sharing_analyses.html">vignette("sharing_analyses", package = "ISAnalytics")</a></code>
+</li>
+</ul>
+</div>
+<div id="new-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-2" class="anchor"></a>NEW</h2>
+<ul>
+<li>New function <code><a href="reference/cumulative_is.html">cumulative_is()</a></code>
+</li>
+<li>New function for plotting sharing as venn/euler diagrams <code><a href="reference/sharing_venn.html">sharing_venn()</a></code>
+</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-134-2021-08--03" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-134-2021-08--03" class="anchor"></a>ISAnalytics 1.3.4 (2021-08 -03)</h1>
+<div id="fixesminor-updates" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixesminor-updates" class="anchor"></a>FIXES/MINOR UPDATES</h2>
+<ul>
+<li>Fixed issue in tests that lead to broken build</li>
+<li>Slightly modified included data set for better examples</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-133-2021-07-30" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-133-2021-07-30" class="anchor"></a>ISAnalytics 1.3.3 (2021-07-30)</h1>
+<div id="major-changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes-1" class="anchor"></a>MAJOR CHANGES</h2>
+<ul>
+<li>Completely reworked interactive HTML report system, for details take a look at the new vignette <code>vignette("report_system", package = "ISAnalytics")</code>
+</li>
+<li>Old <code>ISAnalytics.widgets</code> option has been replaced by <code>ISAnalytics.reports</code>
+</li>
+<li>In <code><a href="reference/remove_collisions.html">remove_collisions()</a></code>, removed arguments <code>seq_count_col</code>, <code>max_rows_reports</code> and <code>save_widget_path</code>, added arguments <code>quant_cols</code> and <code>report_path</code> (see documentation for details)</li>
+</ul>
+</div>
+<div id="minor-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes" class="anchor"></a>MINOR CHANGES</h2>
+<ul>
+<li>
+<code><a href="reference/import_single_Vispa2Matrix.html">import_single_Vispa2Matrix()</a></code> now allows keeping additional non-standard columns</li>
+<li>
+<code><a href="reference/compute_near_integrations.html">compute_near_integrations()</a></code> is now faster on bigger data sets</li>
+<li>Changed default values for arguments <code>columns</code> and <code>key</code> in <code><a href="reference/compute_abundance.html">compute_abundance()</a></code>
+</li>
+<li>
+<code><a href="reference/compute_near_integrations.html">compute_near_integrations()</a></code> now produces only re-calibration map in *.tsv format</li>
+<li>
+<code><a href="reference/CIS_grubbs.html">CIS_grubbs()</a></code> now supports calculations for each group specified in argument <code>by</code>
+</li>
+<li>In <code><a href="reference/sample_statistics.html">sample_statistics()</a></code> now there is the option to include the calculation of distinct integration sites for each group (if mandatory vars are present)</li>
+</ul>
+</div>
+<div id="new-functionality" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-functionality" class="anchor"></a>NEW FUNCTIONALITY</h2>
+<ul>
+<li>Added new plotting function <code><a href="reference/circos_genomic_density.html">circos_genomic_density()</a></code>
+</li>
+</ul>
+</div>
+<div id="fixes-4" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes-4" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Fixed minor issue with NA values in alluvial plots</li>
+</ul>
+</div>
+<div id="deprecations" class="section level2">
+<h2 class="hasAnchor">
+<a href="#deprecations" class="anchor"></a>DEPRECATIONS</h2>
+<ul>
+<li>
+<code><a href="reference/import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_interactive()</a></code> and <code><a href="reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto()</a></code> are officially deprecated in favor of <code><a href="reference/import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices()</a></code>
+</li>
+</ul>
+</div>
+<div id="other" class="section level2">
+<h2 class="hasAnchor">
+<a href="#other" class="anchor"></a>OTHER</h2>
+<ul>
+<li>The package has now a more complete and functional example data set for executable examples</li>
+<li>Reworked documentation</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-132-2021-06-28" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-132-2021-06-28" class="anchor"></a>ISAnalytics 1.3.2 (2021-06-28)</h1>
+<div id="fixes-5" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fixes-5" class="anchor"></a>FIXES</h2>
+<ul>
+<li>Corrected issues in man pages</li>
+</ul>
+</div>
+</div>
+<div id="isanalytics-131-2021-06-24" class="section level1">
+<h1 class="hasAnchor">
+<a href="#isanalytics-131-2021-06-24" class="anchor"></a>ISAnalytics 1.3.1 (2021-06-24)</h1>
+<div id="new-functionality-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-functionality-1" class="anchor"></a>NEW FUNCTIONALITY</h2>
+<ul>
+<li>
+<code>is_sharing</code> computes the sharing of IS between groups</li>
+<li>
+<code>sharing_heatmap</code> allows visualization of sharing data through heatmaps</li>
+<li>
+<code>integration_alluvial_plot</code> allows visualization of integration sites distribution in groups over time.</li>
+<li>
+<code>top_abund_tableGrob</code> can be used in combination with the previous function or by itself to obtain a summary of top abundant integrations as an R graphic (tableGrob) object that can be combined with plots.</li>
+</ul>
+</div>
+<div id="minor-updates" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-updates" class="anchor"></a>MINOR UPDATES</h2>
+<ul>
+<li>Added more default stats functions to <code>default_stats</code>
+</li>
+<li>Added optional automatic conversion of time points in months and years when importing association file</li>
+<li>Minor fixes in <code>generate_Vispa2_launch_AF</code>
+</li>
+</ul>
+</div>
 </div>
 <div id="isanalytics-1111-2021-05-11" class="section level1">
 <h1 class="hasAnchor">
 <a href="#isanalytics-1111-2021-05-11" class="anchor"></a>ISAnalytics 1.1.11 (2021-05-11)</h1>
-<div id="new-functionality" class="section level2">
+<div id="new-functionality-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-functionality" class="anchor"></a>NEW FUNCTIONALITY</h2>
+<a href="#new-functionality-2" class="anchor"></a>NEW FUNCTIONALITY</h2>
 <ul>
 <li>
 <code>HSC_population_size_estimate</code> and <code>HSC_population_plot</code> allow estimates on hematopoietic stem cell population size</li>
@@ -212,9 +438,9 @@
 <code>separate_quant_matrices</code> and <code>comparison_matrix</code> now do not require mandatory columns other than the quantifications - this allows for separation or joining also for aggregated matrices</li>
 </ul>
 </div>
-<div id="fixes" class="section level2">
+<div id="fixes-6" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes" class="anchor"></a>FIXES</h2>
+<a href="#fixes-6" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed a minor issue in <code>CIS_volcano_plot</code> that caused duplication of some labels if highlighted genes were provided in input</li>
 </ul>
@@ -223,9 +449,9 @@
 <div id="isanalytics-1110-2021-04-08" class="section level1">
 <h1 class="hasAnchor">
 <a href="#isanalytics-1110-2021-04-08" class="anchor"></a>ISAnalytics 1.1.10 (2021-04-08)</h1>
-<div id="fixes-1" class="section level2">
+<div id="fixes-7" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-1" class="anchor"></a>FIXES</h2>
+<a href="#fixes-7" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed issue in <code>compute_near_integrations</code>: when provided recalibration map export path as a folder now the function works correctly and produces an automatically generated file name</li>
 <li>Fixed issue in <code>aggregate_metadata</code>: now paths to folder that contains Vispa2 stats is looked up correctly. Also, VISPA2 stats columns are aggregated if found in the input data frame independently from the parameter <code>import_stats</code>.</li>
@@ -262,9 +488,9 @@
 <div id="isanalytics-119-2021-02-17" class="section level1">
 <h1 class="hasAnchor">
 <a href="#isanalytics-119-2021-02-17" class="anchor"></a>ISAnalytics 1.1.9 (2021-02-17)</h1>
-<div id="fixes-2" class="section level2">
+<div id="fixes-8" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-2" class="anchor"></a>FIXES</h2>
+<a href="#fixes-8" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed minor issues in internal functions with absolute file paths &amp; corrected typos</li>
 </ul>
@@ -273,9 +499,9 @@
 <div id="isanalytics-118-2020-02-15" class="section level1">
 <h1 class="hasAnchor">
 <a href="#isanalytics-118-2020-02-15" class="anchor"></a>ISAnalytics 1.1.8 (2020-02-15)</h1>
-<div id="fixes-3" class="section level2">
+<div id="fixes-9" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-3" class="anchor"></a>FIXES</h2>
+<a href="#fixes-9" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed minor issues in internal functions to optimize file system alignment</li>
 </ul>
@@ -284,9 +510,9 @@
 <div id="isanalytics-117-2020-02-10" class="section level1">
 <h1 class="hasAnchor">
 <a href="#isanalytics-117-2020-02-10" class="anchor"></a>ISAnalytics 1.1.7 (2020-02-10)</h1>
-<div id="fixes-4" class="section level2">
+<div id="fixes-10" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-4" class="anchor"></a>FIXES</h2>
+<a href="#fixes-10" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed minor issues in import_association_file when checking parameters</li>
 </ul>
@@ -302,9 +528,9 @@
 <li>It is now possible to save html reports to file from import_parallel_Vispa2Matrices_auto and import_parallel_Vispa2Matrices_interactive, remove_collisions and compute_near_integrations</li>
 </ul>
 </div>
-<div id="fixes-5" class="section level2">
+<div id="fixes-11" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-5" class="anchor"></a>FIXES</h2>
+<a href="#fixes-11" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed sample_statistics: now functions that have data frame output do not produce nested tables. Flat tables are ready to be saved to file or can be nested.</li>
 <li>Simplified association file check logic in remove_collisions: now function blocks only if the af doesn’t contain the needed columns</li>
@@ -338,9 +564,9 @@
 <div id="isanalytics-113-2020-11-10" class="section level1">
 <h1 class="hasAnchor">
 <a href="#isanalytics-113-2020-11-10" class="anchor"></a>ISAnalytics 1.1.3 (2020-11-10)</h1>
-<div id="fixes-6" class="section level2">
+<div id="fixes-12" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-6" class="anchor"></a>FIXES</h2>
+<a href="#fixes-12" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Further fixes for printing reports when widgets not available</li>
 <li>Added progress bar to collision processing in <code>remove_collisions</code>
@@ -348,9 +574,9 @@
 <li>Updated vignettes</li>
 </ul>
 </div>
-<div id="new" class="section level2">
+<div id="new-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new" class="anchor"></a>NEW</h2>
+<a href="#new-3" class="anchor"></a>NEW</h2>
 <ul>
 <li>Added vignette “Using ISAnalytics without RStudio support”</li>
 </ul>
@@ -359,9 +585,9 @@
 <div id="isanalytics-112-2020-11-05" class="section level1">
 <h1 class="hasAnchor">
 <a href="#isanalytics-112-2020-11-05" class="anchor"></a>ISAnalytics 1.1.2 (2020-11-05)</h1>
-<div id="fixes-7" class="section level2">
+<div id="fixes-13" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-7" class="anchor"></a>FIXES</h2>
+<a href="#fixes-13" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Fixed missing restarts for non-blocking widgets</li>
 </ul>
@@ -370,9 +596,9 @@
 <div id="isanalytics-111-2020-11-04" class="section level1">
 <h1 class="hasAnchor">
 <a href="#isanalytics-111-2020-11-04" class="anchor"></a>ISAnalytics 1.1.1 (2020-11-04)</h1>
-<div id="fixes-8" class="section level2">
+<div id="fixes-14" class="section level2">
 <h2 class="hasAnchor">
-<a href="#fixes-8" class="anchor"></a>FIXES</h2>
+<a href="#fixes-14" class="anchor"></a>FIXES</h2>
 <ul>
 <li>Functions that make use of widgets do not interrupt execution anymore if errors are thrown while producing or printing the widgets</li>
 <li>Optimized widget printing for importing functions</li>
@@ -431,9 +657,9 @@
 <code>aggregate_values_by_key</code> has a simplified interface and supports multi-quantification matrices</li>
 </ul>
 </div>
-<div id="minor-changes" class="section level2">
+<div id="minor-changes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes" class="anchor"></a>MINOR CHANGES</h2>
+<a href="#minor-changes-1" class="anchor"></a>MINOR CHANGES</h2>
 <ul>
 <li>Updated vignettes</li>
 <li>
@@ -531,17 +757,14 @@
 <a href="#to-do-in-future-updates" class="anchor"></a>TO DO in future updates</h1>
 <ul>
 <li>
-<input type="checkbox" disabled>
-Add further plot wrappers</li>
+<input type="checkbox" disabled checked>
+Add further plot wrappers (ISAnalytics 1.3.1)</li>
 <li>
 <input type="checkbox" disabled checked>
 New functionality: raw reads flagging/filtering (ISAnalytics 1.1.11)</li>
 <li>
 <input type="checkbox" disabled checked>
 New functionality: HSCs population size estimate (ISAnalytics 1.1.11)</li>
-<li>
-<input type="checkbox" disabled>
-New functionality: genomic annotation</li>
 <li>
 <input type="checkbox" disabled>
 Obtain a system to visualize interactive reports based on shiny (possibly replacing self-contained HTML reports)</li>
@@ -595,8 +818,8 @@ Obtain a system to visualize interactive reports based on shiny (possibly replac
 <li><a href="https://travis-ci.com/calabrialab/isanalytics"><img src="https://travis-ci.com/calabrialab/isanalytics.svg?branch=master" alt="Travis build status"></a></li>
 <li><a href="https://codecov.io/gh/calabrialab/ISAnalytics"><img src="https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg" alt="codecov"></a></li>
 <li><a href="https://github.com/calabrialab/isanalytics/actions"><img src="https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg" alt="R build status - bioc"></a></li>
-<li><a href="https://www.tidyverse.org/lifecycle/#maturing"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle: maturing"></a></li>
-<li><a href="https://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics"><img src="http://www.bioconductor.org/shields/build/release/bioc/ISAnalytics.svg" alt="BioC status"></a></li>
+<li><a href="http://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics/"><img src="http://www.bioconductor.org/shields/build/devel/bioc/ISAnalytics.svg" alt="BioC status"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></li>
 </ul>
 </div>
 </div>

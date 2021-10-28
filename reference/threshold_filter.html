@@ -83,7 +83,7 @@ predicates assembled from the function parameters." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
       </span>
     </div>
 
@@ -115,7 +115,7 @@ predicates assembled from the function parameters." />
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+      <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
 </li>
@@ -253,7 +253,7 @@ named lists containing vectors. For example:<div class="r"></p><pre><span class=
                      third <span class='op'>=</span> <span class='va'>example_df</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>example_list</span><span class='op'>)</span>
 </pre><p></div></p><pre><span class='co'>## $first</span>
-<span class='co'>## # A tibble: 3 x 4</span>
+<span class='co'>## # A tibble: 3 × 4</span>
 <span class='co'>##       a     b c         d</span>
 <span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
 <span class='co'>## 1    20    40 a         3</span>
@@ -261,7 +261,7 @@ named lists containing vectors. For example:<div class="r"></p><pre><span class=
 <span class='co'>## 3    40    60 c         5</span>
 <span class='co'>## </span>
 <span class='co'>## $second</span>
-<span class='co'>## # A tibble: 3 x 4</span>
+<span class='co'>## # A tibble: 3 × 4</span>
 <span class='co'>##       a     b c         d</span>
 <span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
 <span class='co'>## 1    20    40 a         3</span>
@@ -269,28 +269,28 @@ named lists containing vectors. For example:<div class="r"></p><pre><span class=
 <span class='co'>## 3    40    60 c         5</span>
 <span class='co'>## </span>
 <span class='co'>## $third</span>
-<span class='co'>## # A tibble: 3 x 4</span>
+<span class='co'>## # A tibble: 3 × 4</span>
 <span class='co'>##       a     b c         d</span>
 <span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
 <span class='co'>## 1    20    40 a         3</span>
 <span class='co'>## 2    30    50 b         4</span>
 <span class='co'>## 3    40    60 c         5</span>
 </pre><p><div class="r"></p><pre><span class='va'>filtered</span> <span class='op'>&lt;-</span> <span class='fu'>threshold_filter</span><span class='op'>(</span><span class='va'>example_list</span>,
-                             threshold <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>60</span><span class='op'>)</span>,
-                                              third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>25</span><span class='op'>)</span><span class='op'>)</span>,
-                             cols_to_compare <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span><span class='op'>)</span>,
-                                                    third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span><span class='op'>)</span><span class='op'>)</span>,
-                             comparators <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;"</span>, <span class='st'>"&lt;"</span><span class='op'>)</span>,
-                                                third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;="</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+threshold <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>60</span><span class='op'>)</span>,
+third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>25</span><span class='op'>)</span><span class='op'>)</span>,
+cols_to_compare <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span><span class='op'>)</span>,
+third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span><span class='op'>)</span><span class='op'>)</span>,
+comparators <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;"</span>, <span class='st'>"&lt;"</span><span class='op'>)</span>,
+third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;="</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>filtered</span><span class='op'>)</span>
 </pre><p></div></p><pre><span class='co'>## $first</span>
-<span class='co'>## # A tibble: 1 x 4</span>
+<span class='co'>## # A tibble: 1 × 4</span>
 <span class='co'>##       a     b c         d</span>
 <span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
 <span class='co'>## 1    30    50 b         4</span>
 <span class='co'>## </span>
 <span class='co'>## $second</span>
-<span class='co'>## # A tibble: 3 x 4</span>
+<span class='co'>## # A tibble: 3 × 4</span>
 <span class='co'>##       a     b c         d</span>
 <span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
 <span class='co'>## 1    20    40 a         3</span>
@@ -298,7 +298,7 @@ named lists containing vectors. For example:<div class="r"></p><pre><span class=
 <span class='co'>## 3    40    60 c         5</span>
 <span class='co'>## </span>
 <span class='co'>## $third</span>
-<span class='co'>## # A tibble: 2 x 4</span>
+<span class='co'>## # A tibble: 2 × 4</span>
 <span class='co'>##       a     b c         d</span>
 <span class='co'>##   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;int&gt;</span>
 <span class='co'>## 1    30    50 b         4</span>
@@ -317,11 +317,11 @@ are equal or bigger than 25.</p></li>
 
 <p>It is also possible to use some parameters as vectors and some as
 lists: vectors will be recycled for every element filtered.<div class="r"></p><pre><span class='va'>filtered</span> <span class='op'>&lt;-</span> <span class='fu'>threshold_filter</span><span class='op'>(</span><span class='va'>example_list</span>,
-                             threshold <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>60</span><span class='op'>)</span>,
-                                              third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>25</span>, <span class='fl'>65</span><span class='op'>)</span><span class='op'>)</span>,
-                             cols_to_compare <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span><span class='op'>)</span>,
-                             comparators <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;"</span>, <span class='st'>"&lt;"</span><span class='op'>)</span>,
-                                                third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;="</span>, <span class='st'>"&lt;="</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+threshold <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>, <span class='fl'>60</span><span class='op'>)</span>,
+third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>25</span>, <span class='fl'>65</span><span class='op'>)</span><span class='op'>)</span>,
+cols_to_compare <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"a"</span>, <span class='st'>"b"</span><span class='op'>)</span>,
+comparators <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>first <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;"</span>, <span class='st'>"&lt;"</span><span class='op'>)</span>,
+third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;="</span>, <span class='st'>"&lt;="</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
 </pre><p></div></p>
 <p>In this example, different threshold and comparators will be applied
 to the same columns in all data frames.</p>
@@ -343,6 +343,10 @@ be filtered</p></li>
 <code><a href='comparison_matrix.html'>comparison_matrix</a>()</code>,
 <code><a href='compute_abundance.html'>compute_abundance</a>()</code>,
 <code><a href='cumulative_count_union.html'>cumulative_count_union</a>()</code>,
+<code><a href='cumulative_is.html'>cumulative_is</a>()</code>,
+<code><a href='is_sharing.html'>is_sharing</a>()</code>,
+<code><a href='iss_source.html'>iss_source</a>()</code>,
+<code><a href='purity_filter.html'>purity_filter</a>()</code>,
 <code><a href='sample_statistics.html'>sample_statistics</a>()</code>,
 <code><a href='separate_quant_matrices.html'>separate_quant_matrices</a>()</code>,
 <code><a href='top_integrations.html'>top_integrations</a>()</code></p></div>
@@ -374,7 +378,28 @@ be filtered</p></li>
         third <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"&gt;="</span><span class='op'>)</span>
     <span class='op'>)</span>
 <span class='op'>)</span>
-</div></pre>
+<span class='va'>filtered</span>
+</div><div class='output co'>#&gt; $first
+#&gt; <span style='color: #949494;'># A tibble: 1 × 4</span>
+#&gt;       a     b c         d
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>    30    50 b         4
+#&gt; 
+#&gt; $second
+#&gt; <span style='color: #949494;'># A tibble: 3 × 4</span>
+#&gt;       a     b c         d
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>    20    40 a         3
+#&gt; <span style='color: #BCBCBC;'>2</span>    30    50 b         4
+#&gt; <span style='color: #BCBCBC;'>3</span>    40    60 c         5
+#&gt; 
+#&gt; $third
+#&gt; <span style='color: #949494;'># A tibble: 2 × 4</span>
+#&gt;       a     b c         d
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span>    30    50 b         4
+#&gt; <span style='color: #BCBCBC;'>2</span>    40    60 c         5
+#&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -84,7 +84,7 @@ two." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
       </span>
     </div>
 
@@ -116,7 +116,7 @@ two." />
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+      <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
 </li>
@@ -157,7 +157,7 @@ two." />
     </div>
 
     <div class="ref-description">
-    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#stable'><img src='figures/lifecycle-stable.svg' alt='[Stable]' /></a>
 
 Imports the association file and immediately performs a check on
 the file system starting from the root to assess the alignment between the
@@ -172,8 +172,8 @@ two.</p>
   separator <span class='op'>=</span> <span class='st'>"\t"</span>,
   filter_for <span class='op'>=</span> <span class='cn'>NULL</span>,
   import_iss <span class='op'>=</span> <span class='cn'>FALSE</span>,
-  export_widget_path <span class='op'>=</span> <span class='cn'>NULL</span>,
   convert_tp <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  report_path <span class='op'>=</span> <span class='fu'><a href='default_report_path.html'>default_report_path</a></span><span class='op'>(</span><span class='op'>)</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -192,7 +192,7 @@ See details.</p></td>
     <tr>
       <th>tp_padding</th>
       <td><p>Timepoint padding, indicates the number of digits of the
-"Timepoint" column once imported. Fills the content with 0s up to the length
+"TimePoint" column once imported. Fills the content with 0s up to the length
 specified (ex: 1 becomes 0001 with a tp_padding of 4)</p></td>
     </tr>
     <tr>
@@ -219,86 +219,63 @@ conditions are applied as a logical AND.</p></td>
 association file?</p></td>
     </tr>
     <tr>
-      <th>export_widget_path</th>
-      <td><p>A path on disk to save produced widgets or NULL
-if the user doesn't wish to save the html file</p></td>
-    </tr>
-    <tr>
       <th>convert_tp</th>
       <td><p>Should be time points be converted into months and
 years?</p></td>
     </tr>
     <tr>
+      <th>report_path</th>
+      <td><p>The path where the report file should be saved.
+Can be a folder, a file or NULL if no report should be produced.
+Defaults to <code>{user_home}/ISAnalytics_reports</code>.</p></td>
+    </tr>
+    <tr>
       <th>...</th>
-      <td><p>Additional arguments to pass to <code><a href='import_Vispa2_stats.html'>import_Vispa2_stats</a></code></p></td>
+      <td><p>Additional arguments to pass to
+<code><a href='import_Vispa2_stats.html'>import_Vispa2_stats</a></code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A tibble with the contents of the association file plus columns
-containing the path in the file system for every project and pool if found.</p>
+    <p>The data frame holding metadata</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The import series of functions is designed to work in combination
-with the use of Vispa2 pipeline, please refer to this article for more
-details: <a href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/'>VISPA2:
-A Scalable Pipeline for High-Throughput Identification
-and Annotation of Vector Integration Sites</a>.<br />
-The pipeline automatically produces an hierarchical structure in the file
-system which follows this schema:</p><ul>
-<li><p>/root_folder</p><ul>
-<li><p>Optional intermediate folders</p><ul>
-<li><p>ProjectID<br />
-|_bam<br />
-|_bcmuxall<br />
-|_bed<br />
-|_iss<br />
-|_quality<br />
-|_report<br />
-|_quantification<br />
-*|___concatenatePoolIDSeqRun<br /></p></li>
-</ul></li>
-</ul></li>
-</ul>
-
-<p>For each ProjectID there may be several nested PoolIDs. The alignment
-function only looks for PoolIDs in the quantification folder, since it's
-the location of the matrices to import.
-For more details on how to properly use these functions, refer to the
-vignette - vignette("how_to_import_functions").<br />
-If 'NULL' the file system alignment step is skipped.</p>
+    <p>If the <code>root</code> argument is set to <code>NULL</code> no file system alignment is
+performed. This allows to import the basic file but it won't be
+possible to perfom automated matrix and stats import.
+For more details see the "How to use import functions" vignette:
+<code>vignette("import_functions_howto", package = "ISAnalytics")</code></p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='date_formats.html'>date_formats</a></code></p>
 <p>Other Import functions: 
 <code><a href='import_Vispa2_stats.html'>import_Vispa2_stats</a>()</code>,
-<code><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a>()</code>,
-<code><a href='import_parallel_Vispa2Matrices_interactive.html'>import_parallel_Vispa2Matrices_interactive</a>()</code>,
+<code><a href='import_parallel_Vispa2Matrices.html'>import_parallel_Vispa2Matrices</a>()</code>,
 <code><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='st'>"ISAnalytics.widgets"</span> <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
-    package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
-<span class='op'>)</span>
-<span class='va'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
-<span class='va'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_pth</span>, <span class='st'>"fs"</span><span class='op'>)</span>
-<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'>import_association_file</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>root</span>, dates_format <span class='op'>=</span> <span class='st'>"dmy"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
-#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
-#&gt; <span class='message'>* Parsing problems detected: TRUE</span>
-#&gt; <span class='message'>* Date parsing problems: TRUE</span>
-#&gt; <span class='message'>* Column problems detected: TRUE</span>
-#&gt; <span class='message'>* NAs found in important columns: TRUE</span>
-#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
-#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
-#&gt; <span class='message'>* Parsing problems detected: TRUE</span>
-#&gt; <span class='message'>* Date parsing problems: TRUE</span>
-#&gt; <span class='message'>* Column problems detected: TRUE</span>
-#&gt; <span class='message'>* NAs found in important columns: TRUE</span>
-#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='va'>fs_path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
+<span class='va'>fs</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>fs_path</span>, <span class='st'>"fs"</span><span class='op'>)</span>
+<span class='va'>af_path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"asso.file.tsv.gz"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
+<span class='va'>af</span> <span class='op'>&lt;-</span> <span class='fu'>import_association_file</span><span class='op'>(</span><span class='va'>af_path</span>, root <span class='op'>=</span> <span class='va'>fs</span>, report_path <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>af</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 6 × 74</span>
+#&gt;   ProjectID FUSIONID  PoolID TagSequence SubjectID VectorType VectorID
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>   
+#&gt; <span style='color: #BCBCBC;'>1</span> PJ01      ET#382.46 POOL01 LTR75LC38   PT001     lenti      GLOBE   
+#&gt; <span style='color: #BCBCBC;'>2</span> PJ01      ET#381.40 POOL01 LTR53LC32   PT001     lenti      GLOBE   
+#&gt; <span style='color: #BCBCBC;'>3</span> PJ01      ET#381.9  POOL01 LTR83LC66   PT001     lenti      GLOBE   
+#&gt; <span style='color: #BCBCBC;'>4</span> PJ01      ET#381.71 POOL01 LTR27LC94   PT001     lenti      GLOBE   
+#&gt; <span style='color: #BCBCBC;'>5</span> PJ01      ET#381.2  POOL01 LTR69LC52   PT001     lenti      GLOBE   
+#&gt; <span style='color: #BCBCBC;'>6</span> PJ01      ET#382.28 POOL01 LTR37LC2    PT001     lenti      GLOBE   
+#&gt; <span style='color: #949494;'># … with 67 more variables: ExperimentID &lt;chr&gt;, Tissue &lt;chr&gt;, TimePoint &lt;chr&gt;,</span>
+#&gt; <span style='color: #949494;'>#   DNAFragmentation &lt;chr&gt;, PCRMethod &lt;chr&gt;, TagIDextended &lt;chr&gt;,</span>
+#&gt; <span style='color: #949494;'>#   Keywords &lt;chr&gt;, CellMarker &lt;chr&gt;, TagID &lt;chr&gt;, NGSProvider &lt;chr&gt;,</span>
+#&gt; <span style='color: #949494;'>#   NGSTechnology &lt;chr&gt;, ConverrtedFilesDir &lt;chr&gt;, ConverrtedFilesName &lt;chr&gt;,</span>
+#&gt; <span style='color: #949494;'>#   SourceFileFolder &lt;chr&gt;, SourceFileNameR1 &lt;chr&gt;, SourceFileNameR2 &lt;chr&gt;,</span>
+#&gt; <span style='color: #949494;'>#   DNAnumber &lt;chr&gt;, ReplicateNumber &lt;int&gt;, DNAextractionDate &lt;date&gt;,</span>
+#&gt; <span style='color: #949494;'>#   DNAngUsed &lt;dbl&gt;, LinearPCRID &lt;chr&gt;, LinearPCRDate &lt;date&gt;, …</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

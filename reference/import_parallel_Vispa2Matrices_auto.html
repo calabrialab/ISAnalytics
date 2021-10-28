@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Import integration matrices based on the association file. — import_parallel_Vispa2Matrices_auto • ISAnalytics</title>
+<title>Import integration matrices from association file. — import_parallel_Vispa2Matrices_auto • ISAnalytics</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,12 +46,10 @@
 
 
 
-<meta property="og:title" content="Import integration matrices based on the association file. — import_parallel_Vispa2Matrices_auto" />
+<meta property="og:title" content="Import integration matrices from association file. — import_parallel_Vispa2Matrices_auto" />
 <meta property="og:description" content="
-
-These functions are designed to import the appropriate
-integration matrix files given the association file and the root folder of
-the file system where Vispa2 matrices are generated." />
+This function was deprecated to avoid redundancy.
+Please refer to import_parallel_Vispa2Matrices." />
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png" />
 
 
@@ -84,7 +82,7 @@ the file system where Vispa2 matrices are generated." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
       </span>
     </div>
 
@@ -116,7 +114,7 @@ the file system where Vispa2 matrices are generated." />
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+      <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
 </li>
@@ -151,17 +149,15 @@ the file system where Vispa2 matrices are generated." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Import integration matrices based on the association file.</h1>
+    <h1>Import integration matrices from association file.</h1>
     <small class="dont-index">Source: <a href='https://github.com/calabrialab/ISAnalytics/blob/master/R/import-functions.R'><code>R/import-functions.R</code></a></small>
     <div class="hidden name"><code>import_parallel_Vispa2Matrices_auto.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#maturing'><img src='figures/lifecycle-maturing.svg' alt='[Maturing]' /></a>
-
-These functions are designed to import the appropriate
-integration matrix files given the association file and the root folder of
-the file system where Vispa2 matrices are generated.</p>
+    <p><a href='https://lifecycle.r-lib.org/articles/stages.html#deprecated'><img src='figures/lifecycle-deprecated.svg' alt='[Deprecated]' /></a>
+This function was deprecated to avoid redundancy.
+Please refer to <code><a href='import_parallel_Vispa2Matrices.html'>import_parallel_Vispa2Matrices</a></code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>import_parallel_Vispa2Matrices_auto</span><span class='op'>(</span>
@@ -170,215 +166,17 @@ the file system where Vispa2 matrices are generated.</p>
   matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>,
   workers <span class='op'>=</span> <span class='fl'>2</span>,
   multi_quant_matrix <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  export_report_path <span class='op'>=</span> <span class='cn'>NULL</span>,
   patterns <span class='op'>=</span> <span class='cn'>NULL</span>,
   matching_opt <span class='op'>=</span> <span class='fu'><a href='matching_options.html'>matching_options</a></span><span class='op'>(</span><span class='op'>)</span>,
+  export_report_path <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>association_file</th>
-      <td><p>A single string containing the path to the
-association file on disk, or a data frame resulting from a previous call to
-<code>import_association_file</code></p></td>
-    </tr>
-    <tr>
-      <th>quantification_type</th>
-      <td><p>A vector of requested quantification_types. Must
-be one in <code><a href='quantification_types.html'>quantification_types()</a></code></p></td>
-    </tr>
-    <tr>
-      <th>matrix_type</th>
-      <td><p>A single string representing the type of matrices to
-be imported. Can only be one in <code>"annotated"</code> or <code>"not_annotated"</code></p></td>
-    </tr>
-    <tr>
-      <th>workers</th>
-      <td><p>A single integer representing the number
-of parallel workers to use for the import</p></td>
-    </tr>
-    <tr>
-      <th>multi_quant_matrix</th>
-      <td><p>If set to TRUE will produce a
-multi-quantification matrix (data frame) through <code>comparison_matrix</code>
-instead of a list.</p></td>
-    </tr>
-    <tr>
-      <th>export_report_path</th>
-      <td><p>A path on disk to save produced import report
-or NULL if the user doesn't wish to save the html file</p></td>
-    </tr>
-    <tr>
-      <th>patterns</th>
-      <td><p>A character vector of additional patterns to match on file
-names. Please note that patterns must be regular expressions. Can be NULL if
-no patterns needs to be matched.</p></td>
-    </tr>
-    <tr>
-      <th>matching_opt</th>
-      <td><p>A single value between <code>matching_options</code></p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>&lt;<code><a href='https://rlang.r-lib.org/reference/dyn-dots.html'>dynamic-dots</a></code>&gt; Additional named arguments
-to pass to <code>ìmport_association_file</code> and <code>comparison_matrix</code></p></td>
-    </tr>
-    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named list of data frames containing data from
-all imported integration
-matrices, divided by quantification type or a multi-quantification matrix</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <p>A data frame or a list</p>
 
-    <p>Import family functions are designed to work in combination with
-Vispa2, for more details on this take a look here:
-<a href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5702242/'>VISPA2:
-A Scalable Pipeline for High-Throughput Identification
-and Annotation of Vector Integration Sites</a>.<br />
-For more details on how to properly use these functions, refer to the
-vignette - vignette("how_to_import_functions")</p>
-    <h2 class="hasAnchor" id="automatic-version"><a class="anchor" href="#automatic-version"></a>Automatic version</h2>
-
-    
-
-<p>The automatic version of import_parallel_Vispa2Matrices doesn't interact with
-the user directly, for this reason options in this modality are more limited
-compared to the interactive version. In automatic version you can't:</p><ul>
-<li><p>Choose single projects or pools: to have a selection import
-the association file first and filter it according to your needs
-before calling the function
-(more details on this in the vignette)</p></li>
-<li><p>Choose duplicates: if, after filtering by the specified patterns,
-duplicates are found they are automatically ignored</p></li>
-</ul>
-
-    <h2 class="hasAnchor" id="interactive-version"><a class="anchor" href="#interactive-version"></a>Interactive version</h2>
-
-    
-
-<p>The interactive version of import_parallel_Vispa2Matrices asks user for input
-and allows a more detailed choice of projects to import, pools to import and,
-if necessary, duplicate files. During the execution, a series of reports is
-shown in html format.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='matching_options.html'>matching_options</a></code>,
-<a href='https://stringr.tidyverse.org/articles/regular-expressions.html'>https://stringr.tidyverse.org/articles/regular-expressions.html</a></p>
-<p>Other Import functions: 
-<code><a href='import_Vispa2_stats.html'>import_Vispa2_stats</a>()</code>,
-<code><a href='import_association_file.html'>import_association_file</a>()</code>,
-<code><a href='import_parallel_Vispa2Matrices_interactive.html'>import_parallel_Vispa2Matrices_interactive</a>()</code>,
-<code><a href='import_single_Vispa2Matrix.html'>import_single_Vispa2Matrix</a>()</code></p></div>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='st'>"ISAnalytics.widgets"</span> <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>path</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
-    package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
-<span class='op'>)</span>
-<span class='va'>root_pth</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
-<span class='va'>root</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_pth</span>, <span class='st'>"fs"</span><span class='op'>)</span>
-<span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'>import_parallel_Vispa2Matrices_auto</span><span class='op'>(</span>
-    association_file <span class='op'>=</span> <span class='va'>path</span>,
-    quantification_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"fragmentEstimate"</span>, <span class='st'>"seqCount"</span><span class='op'>)</span>,
-    patterns <span class='op'>=</span> <span class='cn'>NULL</span>, matching_opt <span class='op'>=</span> <span class='st'>"ANY"</span>,
-    root <span class='op'>=</span> <span class='va'>root</span>,
-    dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>,
-    workers <span class='op'>=</span> <span class='fl'>2</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
-#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
-#&gt; <span class='message'>* Parsing problems detected: TRUE</span>
-#&gt; <span class='message'>* Date parsing problems: TRUE</span>
-#&gt; <span class='message'>* Column problems detected: TRUE</span>
-#&gt; <span class='message'>* NAs found in important columns: TRUE</span>
-#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
-#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
-#&gt; <span class='message'>* Parsing problems detected: TRUE</span>
-#&gt; <span class='message'>* Date parsing problems: TRUE</span>
-#&gt; <span class='message'>* Column problems detected: TRUE</span>
-#&gt; <span class='message'>* NAs found in important columns: TRUE</span>
-#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='output co'>#&gt; [1] "--- REPORT: FILES IMPORTED ---"
-#&gt; <span style='color: #949494;'># A tibble: 8 x 5</span>
-#&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>              
-#&gt; <span style='color: #BCBCBC;'>1</span> CLOEXP      POOL6-1                 fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>2</span> PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>3</span> PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>4</span> PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>5</span> CLOEXP      POOL6-1                 seqCount           
-#&gt; <span style='color: #BCBCBC;'>6</span> PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           
-#&gt; <span style='color: #BCBCBC;'>7</span> PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           
-#&gt; <span style='color: #BCBCBC;'>8</span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
-#&gt;   Files_chosen                                                                  
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;fs::path&gt;</span>                                                                    
-#&gt; <span style='color: #BCBCBC;'>1</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>2</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>3</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>4</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>5</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>6</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>7</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>8</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
-#&gt;   Imported
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span>   
-#&gt; <span style='color: #BCBCBC;'>1</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>2</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>3</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>4</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>5</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>6</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>7</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>8</span> TRUE    
-#&gt; [1] "--- SUMMARY OF FILES CHOSEN FOR IMPORT ---"
-#&gt; <span style='color: #949494;'># A tibble: 8 x 4</span>
-#&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>              
-#&gt; <span style='color: #BCBCBC;'>1</span> CLOEXP      POOL6-1                 fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>2</span> CLOEXP      POOL6-1                 seqCount           
-#&gt; <span style='color: #BCBCBC;'>3</span> PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>4</span> PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           
-#&gt; <span style='color: #BCBCBC;'>5</span> PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>6</span> PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           
-#&gt; <span style='color: #BCBCBC;'>7</span> PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>8</span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
-#&gt;   Files_chosen                                                                  
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;fs::path&gt;</span>                                                                    
-#&gt; <span style='color: #BCBCBC;'>1</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>2</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>3</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>4</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>5</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>6</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>7</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>8</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
-#&gt; [1] "--- INTEGRATION MATRICES FOUND REPORT ---"
-#&gt; <span style='color: #949494;'># A tibble: 8 x 5</span>
-#&gt;   ProjectID   concatenatePoolIDSeqRun Anomalies Quantification_type
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>              
-#&gt; <span style='color: #BCBCBC;'>1</span> CLOEXP      POOL6-1                 FALSE     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>2</span> CLOEXP      POOL6-1                 FALSE     seqCount           
-#&gt; <span style='color: #BCBCBC;'>3</span> PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>4</span> PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     seqCount           
-#&gt; <span style='color: #BCBCBC;'>5</span> PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>6</span> PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     seqCount           
-#&gt; <span style='color: #BCBCBC;'>7</span> PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>8</span> PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     seqCount           
-#&gt;   Files_found                                                                   
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;fs::path&gt;</span>                                                                    
-#&gt; <span style='color: #BCBCBC;'>1</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>2</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>3</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>4</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>5</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>6</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>7</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>8</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

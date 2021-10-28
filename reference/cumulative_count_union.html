@@ -85,7 +85,7 @@ time point &quot;t+1&quot;." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@ time point &quot;t+1&quot;." />
       <a href="../articles/how_to_import_functions.html">How to use import functions</a>
     </li>
     <li>
-      <a href="../articles/no_rstudio_usage.html">Using ISAnalytics without RStudio support</a>
+      <a href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
     </li>
   </ul>
 </li>
@@ -256,131 +256,48 @@ the chosen column to avoid undesired results.</p>
 <code><a href='CIS_grubbs.html'>CIS_grubbs</a>()</code>,
 <code><a href='comparison_matrix.html'>comparison_matrix</a>()</code>,
 <code><a href='compute_abundance.html'>compute_abundance</a>()</code>,
+<code><a href='cumulative_is.html'>cumulative_is</a>()</code>,
+<code><a href='is_sharing.html'>is_sharing</a>()</code>,
+<code><a href='iss_source.html'>iss_source</a>()</code>,
+<code><a href='purity_filter.html'>purity_filter</a>()</code>,
 <code><a href='sample_statistics.html'>sample_statistics</a>()</code>,
 <code><a href='separate_quant_matrices.html'>separate_quant_matrices</a>()</code>,
 <code><a href='threshold_filter.html'>threshold_filter</a>()</code>,
 <code><a href='top_integrations.html'>top_integrations</a>()</code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>op</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span>ISAnalytics.widgets <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-
-<span class='va'>path_AF</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex_association_file.tsv"</span>,
-    package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"integration_matrices"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"association_file"</span>, package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span><span class='op'>)</span>
+<span class='va'>aggreg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span>
+    x <span class='op'>=</span> <span class='va'>integration_matrices</span>,
+    association_file <span class='op'>=</span> <span class='va'>association_file</span>,
+    value_cols <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>
 <span class='op'>)</span>
-<span class='va'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"fs.zip"</span>,
-    package <span class='op'>=</span> <span class='st'>"ISAnalytics"</span>
-<span class='op'>)</span>
-<span class='va'>root_correct</span> <span class='op'>&lt;-</span> <span class='fu'><a href='unzip_file_system.html'>unzip_file_system</a></span><span class='op'>(</span><span class='va'>root_correct</span>, <span class='st'>"fs"</span><span class='op'>)</span>
-
-<span class='va'>association_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_association_file.html'>import_association_file</a></span><span class='op'>(</span><span class='va'>path_AF</span>, <span class='va'>root_correct</span>,
-    dates_format <span class='op'>=</span> <span class='st'>"dmy"</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
-#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
-#&gt; <span class='message'>* Parsing problems detected: TRUE</span>
-#&gt; <span class='message'>* Date parsing problems: TRUE</span>
-#&gt; <span class='message'>* Column problems detected: TRUE</span>
-#&gt; <span class='message'>* NAs found in important columns: TRUE</span>
-#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='output co'>#&gt; <span class='message'>*** Association file import summary ***</span>
-#&gt; <span class='message'><span style='color: #0000BB;'>ℹ</span> For detailed report please set option 'ISAnalytics.widgets' to TRUE</span>
-#&gt; <span class='message'>* Parsing problems detected: TRUE</span>
-#&gt; <span class='message'>* Date parsing problems: TRUE</span>
-#&gt; <span class='message'>* Column problems detected: TRUE</span>
-#&gt; <span class='message'>* NAs found in important columns: TRUE</span>
-#&gt; <span class='message'>* File system alignment: no problems detected</span></div><div class='input'><span class='va'>matrices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='import_parallel_Vispa2Matrices_auto.html'>import_parallel_Vispa2Matrices_auto</a></span><span class='op'>(</span>
-    association_file <span class='op'>=</span> <span class='va'>association_file</span>, root <span class='op'>=</span> <span class='cn'>NULL</span>,
-    quantification_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seqCount"</span>, <span class='st'>"fragmentEstimate"</span><span class='op'>)</span>,
-    matrix_type <span class='op'>=</span> <span class='st'>"annotated"</span>, workers <span class='op'>=</span> <span class='fl'>2</span>, patterns <span class='op'>=</span> <span class='cn'>NULL</span>,
-    matching_opt <span class='op'>=</span> <span class='st'>"ANY"</span>, multi_quant_matrix <span class='op'>=</span> <span class='cn'>FALSE</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "--- REPORT: FILES IMPORTED ---"
-#&gt; <span style='color: #949494;'># A tibble: 8 x 5</span>
-#&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>              
-#&gt; <span style='color: #BCBCBC;'>1</span> CLOEXP      POOL6-1                 fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>2</span> PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>3</span> PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>4</span> PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>5</span> CLOEXP      POOL6-1                 seqCount           
-#&gt; <span style='color: #BCBCBC;'>6</span> PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           
-#&gt; <span style='color: #BCBCBC;'>7</span> PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           
-#&gt; <span style='color: #BCBCBC;'>8</span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
-#&gt;   Files_chosen                                                                  
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;fs::path&gt;</span>                                                                    
-#&gt; <span style='color: #BCBCBC;'>1</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>2</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>3</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>4</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>5</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>6</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>7</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>8</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
-#&gt;   Imported
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span>   
-#&gt; <span style='color: #BCBCBC;'>1</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>2</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>3</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>4</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>5</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>6</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>7</span> TRUE    
-#&gt; <span style='color: #BCBCBC;'>8</span> TRUE    
-#&gt; [1] "--- SUMMARY OF FILES CHOSEN FOR IMPORT ---"
-#&gt; <span style='color: #949494;'># A tibble: 8 x 4</span>
-#&gt;   ProjectID   concatenatePoolIDSeqRun Quantification_type
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>              
-#&gt; <span style='color: #BCBCBC;'>1</span> CLOEXP      POOL6-1                 fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>2</span> CLOEXP      POOL6-1                 seqCount           
-#&gt; <span style='color: #BCBCBC;'>3</span> PROJECT1100 ABX-LR-PL5-POOL14-1     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>4</span> PROJECT1100 ABX-LR-PL5-POOL14-1     seqCount           
-#&gt; <span style='color: #BCBCBC;'>5</span> PROJECT1100 ABX-LR-PL6-POOL15-1     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>6</span> PROJECT1100 ABX-LR-PL6-POOL15-1     seqCount           
-#&gt; <span style='color: #BCBCBC;'>7</span> PROJECT1101 ABY-LR-PL4-POOL54-2     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>8</span> PROJECT1101 ABY-LR-PL4-POOL54-2     seqCount           
-#&gt;   Files_chosen                                                                  
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;fs::path&gt;</span>                                                                    
-#&gt; <span style='color: #BCBCBC;'>1</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>2</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>3</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>4</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>5</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>6</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>7</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>8</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
-#&gt; [1] "--- INTEGRATION MATRICES FOUND REPORT ---"
-#&gt; <span style='color: #949494;'># A tibble: 8 x 5</span>
-#&gt;   ProjectID   concatenatePoolIDSeqRun Anomalies Quantification_type
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;lgl&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>              
-#&gt; <span style='color: #BCBCBC;'>1</span> CLOEXP      POOL6-1                 FALSE     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>2</span> CLOEXP      POOL6-1                 FALSE     seqCount           
-#&gt; <span style='color: #BCBCBC;'>3</span> PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>4</span> PROJECT1100 ABX-LR-PL5-POOL14-1     FALSE     seqCount           
-#&gt; <span style='color: #BCBCBC;'>5</span> PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>6</span> PROJECT1100 ABX-LR-PL6-POOL15-1     FALSE     seqCount           
-#&gt; <span style='color: #BCBCBC;'>7</span> PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     fragmentEstimate   
-#&gt; <span style='color: #BCBCBC;'>8</span> PROJECT1101 ABY-LR-PL4-POOL54-2     FALSE     seqCount           
-#&gt;   Files_found                                                                   
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;fs::path&gt;</span>                                                                    
-#&gt; <span style='color: #BCBCBC;'>1</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>2</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/VA/CLOEXP/quan</span>…
-#&gt; <span style='color: #BCBCBC;'>3</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>4</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>5</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>6</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1100/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>7</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…
-#&gt; <span style='color: #BCBCBC;'>8</span> <span style='color: #BB0000; font-weight: bold;'>/var/folders/24/8k48jl6d249_n_qfxwsl6xvm0000gn/T/Rtmpq2jodc/fs/PROJECT1101/qu</span>…</div><div class='input'>
-<span class='co'>#### EXTERNAL AGGREGATION</span>
-<span class='va'>aggregated</span> <span class='op'>&lt;-</span> <span class='fu'><a href='aggregate_values_by_key.html'>aggregate_values_by_key</a></span><span class='op'>(</span><span class='va'>matrices</span><span class='op'>$</span><span class='va'>seqCount</span>, <span class='va'>association_file</span><span class='op'>)</span>
-<span class='va'>cumulative_count</span> <span class='op'>&lt;-</span> <span class='fu'>cumulative_count_union</span><span class='op'>(</span><span class='va'>aggregated</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>All time points zeros were excluded, the data frame is empty.</span></div><div class='input'>
-<span class='co'>#### INTERNAL AGGREGATION</span>
-<span class='va'>cumulative_count_2</span> <span class='op'>&lt;-</span> <span class='fu'>cumulative_count_union</span><span class='op'>(</span><span class='va'>matrices</span><span class='op'>$</span><span class='va'>seqCount</span>,
-    <span class='va'>association_file</span>,
-    aggregate <span class='op'>=</span> <span class='cn'>TRUE</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>All time points zeros were excluded, the data frame is empty.</span></div><div class='input'>
-<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span><span class='va'>op</span><span class='op'>)</span>
-</div></pre>
+<span class='va'>cumulative_count</span> <span class='op'>&lt;-</span> <span class='fu'>cumulative_count_union</span><span class='op'>(</span><span class='va'>aggreg</span><span class='op'>)</span>
+<span class='va'>cumulative_count</span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 20 × 5</span>
+#&gt;    SubjectID CellMarker Tissue TimePoint count
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>     <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span> PT001     MNC        BM     0030         54
+#&gt; <span style='color: #BCBCBC;'> 2</span> PT001     MNC        BM     0060        147
+#&gt; <span style='color: #BCBCBC;'> 3</span> PT001     MNC        BM     0090        179
+#&gt; <span style='color: #BCBCBC;'> 4</span> PT001     MNC        BM     0180        240
+#&gt; <span style='color: #BCBCBC;'> 5</span> PT001     MNC        BM     0360        240
+#&gt; <span style='color: #BCBCBC;'> 6</span> PT001     MNC        PB     0030         28
+#&gt; <span style='color: #BCBCBC;'> 7</span> PT001     MNC        PB     0060         77
+#&gt; <span style='color: #BCBCBC;'> 8</span> PT001     MNC        PB     0090        104
+#&gt; <span style='color: #BCBCBC;'> 9</span> PT001     MNC        PB     0180        121
+#&gt; <span style='color: #BCBCBC;'>10</span> PT001     MNC        PB     0360        121
+#&gt; <span style='color: #BCBCBC;'>11</span> PT002     MNC        BM     0030         98
+#&gt; <span style='color: #BCBCBC;'>12</span> PT002     MNC        BM     0060        126
+#&gt; <span style='color: #BCBCBC;'>13</span> PT002     MNC        BM     0090        141
+#&gt; <span style='color: #BCBCBC;'>14</span> PT002     MNC        BM     0180        184
+#&gt; <span style='color: #BCBCBC;'>15</span> PT002     MNC        BM     0360        265
+#&gt; <span style='color: #BCBCBC;'>16</span> PT002     MNC        PB     0030         15
+#&gt; <span style='color: #BCBCBC;'>17</span> PT002     MNC        PB     0060         26
+#&gt; <span style='color: #BCBCBC;'>18</span> PT002     MNC        PB     0090         38
+#&gt; <span style='color: #BCBCBC;'>19</span> PT002     MNC        PB     0180         62
+#&gt; <span style='color: #BCBCBC;'>20</span> PT002     MNC        PB     0360        109</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

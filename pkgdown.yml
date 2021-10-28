@@ -5,8 +5,8 @@ articles:
   aggregate_function_usage: aggregate_function_usage.html
   collision_removal: collision_removal.html
   how_to_import_functions: how_to_import_functions.html
-  no_rstudio_usage: no_rstudio_usage.html
-last_built: 2021-06-08T13:57Z
+  sharing_analyses: sharing_analyses.html
+last_built: 2021-10-28T09:17Z
 urls:
   reference: https://calabrialab.github.io/ISAnalytics/reference
   article: https://calabrialab.github.io/ISAnalytics/articles
