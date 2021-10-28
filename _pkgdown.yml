@@ -1,7 +1,7 @@
 url: https://calabrialab.github.io/ISAnalytics
 
 development:
-  mode: devel
+  mode: release
 template:
   params:
     bootswatch: flatly
@@ -15,7 +15,7 @@ navbar:
     - tutorials
     - news
     right:
-    - release-v
+    - devel-v
     - github
   components:
     home:
@@ -41,10 +41,10 @@ navbar:
         href: articles/how_to_import_functions.html
       - text: Sharing analyses with ISAnalytics
         href: articles/sharing_analyses.html
-    release-v:
+    devel-v:
       icon: fas fa-code-branch
-      text: RELEASE
-      href: https://calabrialab.github.io/ISAnalytics/
+      text: DEVEL
+      href: https://calabrialab.github.io/ISAnalytics/dev/
 reference:
 - title: "Import functions"
   desc: >
@@ -58,15 +58,11 @@ reference:
 - contents:
   - aggregate_metadata
   - aggregate_values_by_key
-- title: "Collision removal functions"
-- contents:
-  - remove_collisions
-  - realign_after_collisions
-- title: "Recalibration functions"
+- title: "Data cleaning and pre-processing"
 - contents:
   - compute_near_integrations
-- title: "Removal of outliers from raw reads"
-- contents:
+  - remove_collisions
+  - realign_after_collisions
   - outlier_filter
   - outliers_by_pool_fragments
 - title: "Analysis functions"

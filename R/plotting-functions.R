@@ -514,19 +514,10 @@ integration_alluvial_plot <- function(x,
         purrr::set_names(group_names)
 
     # Compute plots in parallel
-    p <- if (.Platform$OS.type == "windows") {
-        BiocParallel::SnowParam(
-            stop.on.error = FALSE,
-            progressbar = TRUE,
-            tasks = length(groups_to_plot),
-            exportglobals = TRUE
-        )
-    } else {
-        BiocParallel::MulticoreParam(
+    p <- BiocParallel::MulticoreParam(
             stop.on.error = FALSE, progressbar = TRUE,
             tasks = length(groups_to_plot), exportglobals = FALSE
         )
-    }
 
     FUN <- function(group_df,
     plot_x,
