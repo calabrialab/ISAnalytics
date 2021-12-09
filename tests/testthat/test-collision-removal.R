@@ -993,7 +993,8 @@ test_that(".process_collisions returns updated collisions", {
     result <- .process_collisions(
         ex_collisions %>%
             tidyr::unnest(.data$data),
-        "SequencingDate", 10, "Value"
+        "SequencingDate", 10, "Value",
+        NULL
     )
     coll <- result$coll
     removed <- result$removed
@@ -1035,7 +1036,8 @@ test_that(".process_collisions returns updated collisions", {
     result <- .process_collisions(
         ex_collisions_multi %>%
             tidyr::unnest(.data$data),
-        "SequencingDate", 10, "seqCount"
+        "SequencingDate", 10, "seqCount",
+        NULL
     )
     coll <- result$coll
     removed <- result$removed
