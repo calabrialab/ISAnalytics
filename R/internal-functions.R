@@ -273,7 +273,9 @@
             colnames(headers_peek),
             function(x) {
                 el <- getElement(t_readr, x)
-                el <- if (el == "c") {
+                el <- if (is.null(el)) {
+                  "guess"
+                } else if (el == "c") {
                     "text"
                 } else if (el %in% c("i", "d")) {
                     "numeric"
@@ -2298,39 +2300,50 @@
 # representing the number of integrations removed and a numeric value
 # representing the number of integrations reassigned
 .process_collisions <- function(collisions, date_col, reads_ratio,
-    seqCount_col) {
+    seqCount_col, max_workers) {
     # Obtain nested version of collisions
     nested <- .obtain_nested(collisions)
-    # Register backend according to platform
-    if (.Platform$OS.type == "windows") {
-        p <- BiocParallel::SnowParam(
-            stop.on.error = FALSE,
-            progressbar = TRUE,
-            tasks = 20
-        )
-    } else {
-        p <- BiocParallel::MulticoreParam(
-            stop.on.error = FALSE,
-            progressbar = TRUE,
-            tasks = 20
-        )
+    # Manage workers
+    if (.Platform$OS.type == "windows" & is.null(max_workers)) {
+        max_workers <- BiocParallel::snowWorkers()
+    } else if (.Platform$OS.type != "windows" & is.null(max_workers)) {
+        max_workers <- BiocParallel::multicoreWorkers()
     }
     # Split the data frame in chunks according to number of workers
-    workers <- BiocParallel::bpworkers(p)
-    exceeding <- nrow(nested) %% workers
-    ampl <- trunc(nrow(nested) / workers)
-    chunks <- unlist(lapply(seq_len(workers), FUN = rep_len, length.out = ampl))
+    exceeding <- nrow(nested) %% max_workers
+    ampl <- trunc(nrow(nested) / max_workers)
+    chunks <- unlist(lapply(seq_len(max_workers),
+                            FUN = rep_len,
+                            length.out = ampl))
     if (exceeding > 0) {
-        chunks <- c(chunks, rep_len(
-            x = tail(workers, n = 1),
-            length.out = exceeding
-        ))
+      chunks <- c(chunks, rep_len(
+        x = tail(max_workers, n = 1),
+        length.out = exceeding
+      ))
     }
     chunks <- tibble::as_tibble_col(chunks, column_name = "chunk")
     nested <- nested %>% tibble::add_column(chunks)
     split_data <- nested %>%
-        dplyr::group_by(.data$chunk) %>%
-        dplyr::group_split(.keep = FALSE)
+      dplyr::group_by(.data$chunk) %>%
+      dplyr::group_split(.keep = FALSE)
+
+    # Register backend according to platform
+    if (.Platform$OS.type == "windows") {
+        p <- BiocParallel::SnowParam(
+            stop.on.error = FALSE,
+            progressbar = getOption("ISAnalytics.verbose", default = TRUE),
+            tasks = length(split_data),
+            workers = max_workers
+        )
+    } else {
+        p <- BiocParallel::MulticoreParam(
+            stop.on.error = FALSE,
+            progressbar = getOption("ISAnalytics.verbose", default = TRUE),
+            tasks = length(split_data),
+            workers = max_workers
+        )
+    }
+
     # For each chunk process collisions in parallel
     suppressMessages(suppressWarnings({
         ### result is a list with n elements, each element is a list of 3,

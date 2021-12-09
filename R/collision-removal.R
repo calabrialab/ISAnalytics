@@ -60,7 +60,8 @@ remove_collisions <- function(x,
         seqCount = "seqCount",
         fragmentEstimate = "fragmentEstimate"
     ),
-    report_path = default_report_path()) {
+    report_path = default_report_path(),
+    max_workers = NULL) {
 
     # Check basic parameter correctness
     stopifnot(is.list(x) & !is.null(names(x)))
@@ -72,6 +73,8 @@ remove_collisions <- function(x,
             )
         )
     }
+    stopifnot(is.null(max_workers[1]) || is.numeric(max_workers[1]))
+    max_workers <- max_workers[1]
     mode <- NULL
     if (!is.data.frame(x)) {
         if (!all(names(x) %in% quantification_types())) {
@@ -225,7 +228,8 @@ remove_collisions <- function(x,
     fixed_collisions <- .process_collisions(
         splitted_df$collisions,
         date_col, reads_ratio,
-        seqCount_col = seq_count_col
+        seqCount_col = seq_count_col,
+        max_workers = max_workers
     )
     reassigned <- fixed_collisions$reassigned
     removed <- fixed_collisions$removed
