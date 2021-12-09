@@ -80,7 +80,7 @@ For more details on how this files were generated use the help
 \subsection{Known oncogenes}{
 
 The default values are included in this package and
-it can be accessed by doing:\if{html}{\out{<div class="r">}}\preformatted{head(known_clinical_oncogenes())
+it can be accessed by doing:\if{html}{\out{<div class="sourceCode r">}}\preformatted{head(known_clinical_oncogenes())
 }\if{html}{\out{</div>}}\preformatted{## # A tibble: 5 × 2
 ##   GeneName KnownClonalExpansion
 ##   <chr>    <lgl>               
@@ -93,7 +93,7 @@ it can be accessed by doing:\if{html}{\out{<div class="r">}}\preformatted{head(k
 
 If the user wants to change this parameter the input data frame must
 preserve the column structure. The same goes for the \code{suspicious_genes}
-parameter (DOIReference column is optional):\if{html}{\out{<div class="r">}}\preformatted{head(clinical_relevant_suspicious_genes())
+parameter (DOIReference column is optional):\if{html}{\out{<div class="sourceCode r">}}\preformatted{head(clinical_relevant_suspicious_genes())
 }\if{html}{\out{</div>}}\preformatted{## # A tibble: 6 × 3
 ##   GeneName ClinicalRelevance DOIReference                                
 ##   <chr>    <lgl>             <chr>                                       

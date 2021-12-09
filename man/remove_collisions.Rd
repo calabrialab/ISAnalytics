@@ -10,7 +10,8 @@ remove_collisions(
   date_col = "SequencingDate",
   reads_ratio = 10,
   quant_cols = c(seqCount = "seqCount", fragmentEstimate = "fragmentEstimate"),
-  report_path = default_report_path()
+  report_path = default_report_path(),
+  max_workers = NULL
 )
 }
 \arguments{
@@ -34,6 +35,12 @@ values are the names of the corresponding columns. The quantification
 \item{report_path}{The path where the report file should be saved.
 Can be a folder, a file or NULL if no report should be produced.
 Defaults to \code{{user_home}/ISAnalytics_reports}.}
+
+\item{max_workers}{Maximum number of parallel workers to distribute the
+workload. If \code{NULL} (default) produces the maximum amount of workers allowed,
+a numeric value is requested otherwise. WARNING: a higher number of workers
+speeds up computation at the cost of memory consumption! Tune this parameter
+accordingly.}
 }
 \value{
 Either a multi-quantification matrix or a list of data frames
