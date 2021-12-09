@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -87,7 +89,7 @@
   </a>
 </li>
 <li>
-  <a href="https://github.com/calabrialab/ISAnalytics/">
+  <a href="https://github.com/calabrialab/ISAnalytics/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -106,32 +108,32 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Sharing analyses with ISAnalytics</h1>
-                        <h4 class="author">Giulia Pais</h4>
+                        <h4 data-toc-skip class="author">Giulia Pais</h4>
             <address class="author_afil">
       <p>San Raffaele Telethon Institute for Gene Therapy - SR-Tiget, Via Olgettina 60, 20132 Milano - Italia</p>
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 class="date">28 October 2021</h4>
+            <h4 data-toc-skip class="date">9 December 2021</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/master/vignettes/sharing_analyses.Rmd"><code>vignettes/sharing_analyses.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/vignettes/sharing_analyses.Rmd" class="external-link"><code>vignettes/sharing_analyses.Rmd</code></a></small>
       <div class="hidden name"><code>sharing_analyses.Rmd</code></div>
 
     </div>
 
     
     
-<div id="introduction" class="section level1">
-<h1 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>In this vignette we explain in more detail how to perform sharing analyses with <em><a href="https://bioconductor.org/packages/3.14/ISAnalytics">ISAnalytics</a></em> and its dedicated sharing functions.</p>
+<div class="section level1">
+<h1 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h1>
+<p>In this vignette we explain in more detail how to perform sharing analyses with <em><a href="https://bioconductor.org/packages/3.14/ISAnalytics" class="external-link">ISAnalytics</a></em> and its dedicated sharing functions.</p>
 </div>
-<div id="installation-and-options" class="section level1">
-<h1 class="hasAnchor">
-<a href="#installation-and-options" class="anchor"></a>Installation and options</h1>
+<div class="section level1">
+<h1 id="installation-and-options">Installation and options<a class="anchor" aria-label="anchor" href="#installation-and-options"></a>
+</h1>
 <p><code>ISAnalytics</code> can be installed quickly in different ways:</p>
 <ul>
-<li>You can install it via <a href="http://bioconductor.org">Bioconductor</a>
+<li>You can install it via <a href="http://bioconductor.org" class="external-link">Bioconductor</a>
 </li>
 <li>You can install it via GitHub using the package <code>devtools</code>
 </li>
@@ -143,31 +145,31 @@
 <li>
 <code>DEVEL</code> is the development version, it is the most up-to-date version where all new features are introduced</li>
 </ul>
-<div id="installation-from-bioconductor" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation-from-bioconductor" class="anchor"></a>Installation from bioconductor</h2>
+<div class="section level2">
+<h2 id="installation-from-bioconductor">Installation from bioconductor<a class="anchor" aria-label="anchor" href="#installation-from-bioconductor"></a>
+</h2>
 <p>RELEASE version:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></code></pre></div>
 <p>DEVEL version:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
 
 <span class="co"># The following initializes usage of Bioc devel</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span>version<span class="op">=</span><span class="st">'devel'</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span>version<span class="op">=</span><span class="st">'devel'</span><span class="op">)</span>
 
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></code></pre></div>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="installation-from-github" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation-from-github" class="anchor"></a>Installation from GitHub</h2>
+<div class="section level2">
+<h2 id="installation-from-github">Installation from GitHub<a class="anchor" aria-label="anchor" href="#installation-from-github"></a>
+</h2>
 <p>RELEASE:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
                          ref <span class="op">=</span> <span class="st">"RELEASE_3_14"</span>,
@@ -175,108 +177,108 @@
                          build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>DEVEL:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">devtools</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,
                          ref <span class="op">=</span> <span class="st">"master"</span>,
                          dependencies <span class="op">=</span> <span class="cn">TRUE</span>,
                          build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="setting-options" class="section level2">
-<h2 class="hasAnchor">
-<a href="#setting-options" class="anchor"></a>Setting options</h2>
+<div class="section level2">
+<h2 id="setting-options">Setting options<a class="anchor" aria-label="anchor" href="#setting-options"></a>
+</h2>
 <p><code>ISAnalytics</code> has a verbose option that allows some functions to print additional information to the console while they’re executing. To disable this feature do:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># DISABLE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="co"># ENABLE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>Some functions also produce report in a user-friendly HTML format, to set this feature:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># DISABLE HTML REPORTS</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="co"># ENABLE HTML REPORTS</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div id="shared-integration-sites" class="section level1">
-<h1 class="hasAnchor">
-<a href="#shared-integration-sites" class="anchor"></a>Shared integration sites</h1>
+<div class="section level1">
+<h1 id="shared-integration-sites">Shared integration sites<a class="anchor" aria-label="anchor" href="#shared-integration-sites"></a>
+</h1>
 <p>An integration site is always characterized by a triple of values: <code>(chr, integration_locus, strand)</code>, hence these attributes are always present in integration matrices.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://calabrialab.github.io/ISAnalytics">ISAnalytics</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://calabrialab.github.io/ISAnalytics">ISAnalytics</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: magrittr</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"association_file"</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt;    chr integration_locus strand     GeneName GeneStrand
-#&gt; 1:  16          68164148      +       NFATC3          +
-#&gt; 2:   4         129390130      + LOC100507487          +
-#&gt; 3:   5          84009671      -        EDIL3          -
-#&gt; 4:  12          54635693      -         CBX5          -
-#&gt; 5:   5          84009671      -        EDIL3          -
-#&gt; 6:  12          54635693      -         CBX5          -
-#&gt;                                                 CompleteAmplificationID
-#&gt; 1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC
-#&gt; 2:  PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
-#&gt; 3:  PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
-#&gt; 4:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
-#&gt; 5:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
-#&gt; 6:  PJ01_POOL01_LTR27LC94_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
-#&gt;    seqCount fragmentEstimate
-#&gt; 1:      182        102.94572
-#&gt; 2:    23219         68.73747
-#&gt; 3:    20205         67.12349
-#&gt; 4:    13269         65.15760
-#&gt; 5:    14748         61.46981
-#&gt; 6:    12588         60.84781</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">#&gt;    chr integration_locus strand     GeneName GeneStrand</span>
+<span class="co">#&gt; 1:  16          68164148      +       NFATC3          +</span>
+<span class="co">#&gt; 2:   4         129390130      + LOC100507487          +</span>
+<span class="co">#&gt; 3:   5          84009671      -        EDIL3          -</span>
+<span class="co">#&gt; 4:  12          54635693      -         CBX5          -</span>
+<span class="co">#&gt; 5:   5          84009671      -        EDIL3          -</span>
+<span class="co">#&gt; 6:  12          54635693      -         CBX5          -</span>
+<span class="co">#&gt;                                                 CompleteAmplificationID</span>
+<span class="co">#&gt; 1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span>
+<span class="co">#&gt; 2:  PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
+<span class="co">#&gt; 3:  PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
+<span class="co">#&gt; 4:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
+<span class="co">#&gt; 5:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
+<span class="co">#&gt; 6:  PJ01_POOL01_LTR27LC94_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
+<span class="co">#&gt;    seqCount fragmentEstimate</span>
+<span class="co">#&gt; 1:      182        102.94572</span>
+<span class="co">#&gt; 2:    23219         68.73747</span>
+<span class="co">#&gt; 3:    20205         67.12349</span>
+<span class="co">#&gt; 4:    13269         65.15760</span>
+<span class="co">#&gt; 5:    14748         61.46981</span>
+<span class="co">#&gt; 6:    12588         60.84781</span></code></pre>
 <p>We can aggregate our data in different ways according to our needs (to know more about this topic take a look at the vignette <code><a href="../articles/aggregate_function_usage.html">vignette("aggregate_function_usage", package = "ISAnalytics")</a></code>), obtaining therefore different groups. Each group has an associated set of integration sites.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## Aggregation by standard key</span>
 <span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span><span class="va">integration_matrices</span>,
                                <span class="va">association_file</span>,
-                               value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span><span class="op">)</span>
-<span class="va">agg</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"0030"</span>, <span class="st">"0060"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; # A tibble: 419 × 11
-#&gt;    chr   integration_locus strand GeneName GeneStrand SubjectID CellMarker
-#&gt;    &lt;chr&gt;             &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;     
-#&gt;  1 1               8464757 -      RERE     -          PT001     MNC       
-#&gt;  2 1               8464757 -      RERE     -          PT001     MNC       
-#&gt;  3 1               8607357 +      RERE     -          PT001     MNC       
-#&gt;  4 1              11339120 +      UBIAD1   +          PT001     MNC       
-#&gt;  5 1              11339120 +      UBIAD1   +          PT001     MNC       
-#&gt;  6 1              16186297 -      SPEN     +          PT001     MNC       
-#&gt;  7 1              16186297 -      SPEN     +          PT001     MNC       
-#&gt;  8 1              16602483 +      FBXO42   -          PT001     MNC       
-#&gt;  9 1              25337264 -      MIR4425  +          PT002     MNC       
-#&gt; 10 1              25337264 -      MIR4425  +          PT002     MNC       
-#&gt;    Tissue TimePoint seqCount_sum fragmentEstimate_sum
-#&gt;    &lt;chr&gt;  &lt;chr&gt;            &lt;dbl&gt;                &lt;dbl&gt;
-#&gt;  1 BM     0030               542                 3.01
-#&gt;  2 BM     0060                 1                 1.00
-#&gt;  3 BM     0060                 1                 1.00
-#&gt;  4 BM     0060              1605                 8.03
-#&gt;  5 PB     0060                 1                 1.00
-#&gt;  6 BM     0030                 1                 1.00
-#&gt;  7 PB     0060                 1                 1.00
-#&gt;  8 BM     0060              2947                 9.04
-#&gt;  9 BM     0030                23                 9.14
-#&gt; 10 PB     0060                36                 7.07
-#&gt; # … with 409 more rows</code></pre>
+                               value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">agg</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0030"</span>, <span class="st">"0060"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">#&gt; <span style="color: #949494;"># A tibble: 419 × 11</span></span>
+<span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand SubjectID CellMarker</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 1               8<span style="text-decoration: underline;">464</span>757 -      RERE     -          PT001     MNC       </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 1               8<span style="text-decoration: underline;">464</span>757 -      RERE     -          PT001     MNC       </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 1               8<span style="text-decoration: underline;">607</span>357 +      RERE     -          PT001     MNC       </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 1              11<span style="text-decoration: underline;">339</span>120 +      UBIAD1   +          PT001     MNC       </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 1              11<span style="text-decoration: underline;">339</span>120 +      UBIAD1   +          PT001     MNC       </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 1              16<span style="text-decoration: underline;">186</span>297 -      SPEN     +          PT001     MNC       </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 1              16<span style="text-decoration: underline;">186</span>297 -      SPEN     +          PT001     MNC       </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 1              16<span style="text-decoration: underline;">602</span>483 +      FBXO42   -          PT001     MNC       </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 1              25<span style="text-decoration: underline;">337</span>264 -      MIR4425  +          PT002     MNC       </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 1              25<span style="text-decoration: underline;">337</span>264 -      MIR4425  +          PT002     MNC       </span>
+<span class="co">#&gt;    Tissue TimePoint seqCount_sum fragmentEstimate_sum</span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> BM     0030               542                 3.01</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> BM     0060                 1                 1.00</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> BM     0060                 1                 1.00</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> BM     0060              <span style="text-decoration: underline;">1</span>605                 8.03</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PB     0060                 1                 1.00</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> BM     0030                 1                 1.00</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PB     0060                 1                 1.00</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> BM     0060              <span style="text-decoration: underline;">2</span>947                 9.04</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> BM     0030                23                 9.14</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PB     0060                36                 7.07</span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 409 more rows</span></span></code></pre>
 <p>An integration site is <em>shared</em> between two or more groups if the same triple is observed in all the groups considered.</p>
 </div>
-<div id="automated-sharing-counts" class="section level1">
-<h1 class="hasAnchor">
-<a href="#automated-sharing-counts" class="anchor"></a>Automated sharing counts</h1>
+<div class="section level1">
+<h1 id="automated-sharing-counts">Automated sharing counts<a class="anchor" aria-label="anchor" href="#automated-sharing-counts"></a>
+</h1>
 <p>ISAnalytics provides the function <code><a href="../reference/is_sharing.html">is_sharing()</a></code> for computing automated sharing counts. The function has several arguments that can be tuned according to user needs.</p>
-<div id="scenario-1-single-input-data-frame-and-single-grouping-key" class="section level2">
-<h2 class="hasAnchor">
-<a href="#scenario-1-single-input-data-frame-and-single-grouping-key" class="anchor"></a>SCENARIO 1: single input data frame and single grouping key</h2>
+<div class="section level2">
+<h2 id="scenario-1-single-input-data-frame-and-single-grouping-key">SCENARIO 1: single input data frame and single grouping key<a class="anchor" aria-label="anchor" href="#scenario-1-single-input-data-frame-and-single-grouping-key"></a>
+</h2>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>, 
-                        group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
+                        group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
                                       <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
                         n_comp <span class="op">=</span> <span class="fl">2</span>,
                         is_count <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -365,12 +367,12 @@
 <li>
 <code>keep_genomic_coord</code> allows us to keep the genomic coordinates of the shared integration sites as a separate table</li>
 </ul>
-<div id="changing-the-number-of-comparisons" class="section level3">
-<h3 class="hasAnchor">
-<a href="#changing-the-number-of-comparisons" class="anchor"></a>Changing the number of comparisons</h3>
+<div class="section level3">
+<h3 id="changing-the-number-of-comparisons">Changing the number of comparisons<a class="anchor" aria-label="anchor" href="#changing-the-number-of-comparisons"></a>
+</h3>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_1_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>, 
-                        group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
+                        group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
                                       <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
                         n_comp <span class="op">=</span> <span class="fl">3</span>,
                         is_count <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -558,14 +560,13 @@
 <p>Changing the <code>n_comp</code> to 3 means that we want to calculate the sharing between 3 different groups. Note that the <code>shared</code> column contains the counts of integrations that are shared by <strong>ALL</strong> groups, which is equivalent to a set intersection.</p>
 <p>Beware of the fact that the more comparisons are requested the more time the computation requires.</p>
 </div>
-<div id="a-case-when-it-is-useful-to-set-minimal-false" class="section level3">
-<h3 class="hasAnchor">
-<a href="#a-case-when-it-is-useful-to-set-minimal-false" class="anchor"></a>A case when it is useful to set <code>minimal = FALSE</code>
+<div class="section level3">
+<h3 id="a-case-when-it-is-useful-to-set-minimal-false">A case when it is useful to set <code>minimal = FALSE</code><a class="anchor" aria-label="anchor" href="#a-case-when-it-is-useful-to-set-minimal-false"></a>
 </h3>
 <p>Setting <code>minimal = FALSE</code> produces all possible permutations of the groups and the corresponding values. In combination with <code>include_self_comp = TRUE</code>, this is useful when we want to know the sharing between pairs of groups and plot results as a heatmap.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_1_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,
-                          group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
+                          group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
                                       <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
                           n_comp <span class="op">=</span> <span class="fl">2</span>,
                           is_count <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -723,17 +724,17 @@
 <p>Beware of the fact that calculating all permutations takes longer than calculating only distinct combinations, therefore if you don’t need your results plotted or you have more than 2 groups to compare you should stick with <code>minimal = TRUE</code> and <code>include_self_comp = FALSE</code>.</p>
 </div>
 </div>
-<div id="scenario-2-single-input-data-frame-and-multiple-grouping-keys" class="section level2">
-<h2 class="hasAnchor">
-<a href="#scenario-2-single-input-data-frame-and-multiple-grouping-keys" class="anchor"></a>SCENARIO 2: single input data frame and multiple grouping keys</h2>
+<div class="section level2">
+<h2 id="scenario-2-single-input-data-frame-and-multiple-grouping-keys">SCENARIO 2: single input data frame and multiple grouping keys<a class="anchor" aria-label="anchor" href="#scenario-2-single-input-data-frame-and-multiple-grouping-keys"></a>
+</h2>
 <p>In the first scenario, groups were homogeneous, that is, they were grouped all with the same key. In this other scenario we want to start with data contained in just one data frame but we want to compare sets of integrations that are grouped differently. To do this we give as input a <strong>list of keys</strong> through the argument <code>group_keys</code>.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,
-                        group_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-                          g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
+                        group_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+                          g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
                                  <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
-                          g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span><span class="op">)</span>,
-                          g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span>
+                          g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span><span class="op">)</span>,
+                          g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span>
                           <span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Done!</span>
 <span class="va">sharing_2</span>
@@ -811,20 +812,20 @@
 <li>If you provide a list of identical keys or just one key you fall back to scenario 1</li>
 </ul>
 </div>
-<div id="scenario-3-multiple-input-data-frame-and-single-grouping-key" class="section level2">
-<h2 class="hasAnchor">
-<a href="#scenario-3-multiple-input-data-frame-and-single-grouping-key" class="anchor"></a>SCENARIO 3: multiple input data frame and single grouping key</h2>
+<div class="section level2">
+<h2 id="scenario-3-multiple-input-data-frame-and-single-grouping-key">SCENARIO 3: multiple input data frame and single grouping key<a class="anchor" aria-label="anchor" href="#scenario-3-multiple-input-data-frame-and-single-grouping-key"></a>
+</h2>
 <p>Providing multiple input data frames and the same grouping key is an effective way to reduce the number of comparisons performed. Let’s make an example: suppose we’re interested in comparing groups labelled by a unique combination of <code>SubjectID</code>, <code>CellMarker</code>, <code>Tissue</code> and <code>TimePoint</code>, but this time we want the first group to contain only integrations relative to <code>PT001_MNC_BM_0030</code> and the second group to contain only integrations relative to <code>PT001_MNC_BM_0060</code>.</p>
 <p>We’re going to filter the original data frame in order to obtain only relevant data in 2 separated tables and then proceed by calling the function.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">first_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">%&gt;%</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">SubjectID</span> <span class="op">==</span> <span class="st">"PT001"</span>, <span class="va">CellMarker</span> <span class="op">==</span> <span class="st">"MNC"</span>, <span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span>, 
+<code class="sourceCode R"><span class="va">first_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">SubjectID</span> <span class="op">==</span> <span class="st">"PT001"</span>, <span class="va">CellMarker</span> <span class="op">==</span> <span class="st">"MNC"</span>, <span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span>, 
          <span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0030"</span><span class="op">)</span>
-<span class="va">second_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">%&gt;%</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">SubjectID</span> <span class="op">==</span> <span class="st">"PT001"</span>, <span class="va">CellMarker</span> <span class="op">==</span> <span class="st">"MNC"</span>, <span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span>, 
+<span class="va">second_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">SubjectID</span> <span class="op">==</span> <span class="st">"PT001"</span>, <span class="va">CellMarker</span> <span class="op">==</span> <span class="st">"MNC"</span>, <span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span>, 
          <span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0060"</span><span class="op">)</span>
 <span class="va">sharing_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">first_sample</span>, <span class="va">second_sample</span>,
-                        group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
+                        group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
                                       <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
                         is_count <span class="op">=</span> <span class="cn">TRUE</span>,
                         relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -837,21 +838,21 @@
 <span class="co">#&gt; 1: 38.88889 18.42105 14.28571</span></code></pre></div>
 <p>Once again the arguments <code>n_comp</code> and <code>include_self_comp</code> are ignored: the number of comparisons is equal to the number of data frames in input.</p>
 </div>
-<div id="scenario-4-multiple-input-data-frame-and-multiple-grouping-keys" class="section level2">
-<h2 class="hasAnchor">
-<a href="#scenario-4-multiple-input-data-frame-and-multiple-grouping-keys" class="anchor"></a>SCENARIO 4: multiple input data frame and multiple grouping keys</h2>
+<div class="section level2">
+<h2 id="scenario-4-multiple-input-data-frame-and-multiple-grouping-keys">SCENARIO 4: multiple input data frame and multiple grouping keys<a class="anchor" aria-label="anchor" href="#scenario-4-multiple-input-data-frame-and-multiple-grouping-keys"></a>
+</h2>
 <p>Finally, the most general scenario is when we have multiple data frames with multiple keys. In this case the number of data frames must be equal to the number of provided keys and grouping keys are applied in order ( data frame 1 is grouped with key 1, data frame 2 is grouped with key 2, and so on).</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">%&gt;%</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0030"</span><span class="op">)</span>
-<span class="va">df2</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">%&gt;%</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0060"</span><span class="op">)</span>
-<span class="va">df3</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">%&gt;%</span>
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0030"</span><span class="op">)</span>
+<span class="va">df2</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0060"</span><span class="op">)</span>
+<span class="va">df3</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span><span class="op">)</span>
 
-<span class="va">keys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span>,
-             g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"Tissue"</span><span class="op">)</span>,
-             g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span><span class="op">)</span>
+<span class="va">keys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span>,
+             g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"Tissue"</span><span class="op">)</span>,
+             g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">sharing_4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">df1</span>, <span class="va">df2</span>, <span class="va">df3</span>, group_keys <span class="op">=</span> <span class="va">keys</span><span class="op">)</span>
 <span class="co">#&gt; Done!</span>
@@ -927,17 +928,17 @@
 <p>Notice that in this example the keys for g1 and g3 are the same, meaning the labels of the groups are actually the same, however you should remember that the groups contain a <strong>different set of integration sites</strong> since they come from different data frames.</p>
 </div>
 </div>
-<div id="plotting-sharing-results" class="section level1">
-<h1 class="hasAnchor">
-<a href="#plotting-sharing-results" class="anchor"></a>Plotting sharing results</h1>
+<div class="section level1">
+<h1 id="plotting-sharing-results">Plotting sharing results<a class="anchor" aria-label="anchor" href="#plotting-sharing-results"></a>
+</h1>
 <p>When we have more than 2 comparisons it is convenient to plot them as venn or euler diagrams. ISAnalytics has a fast way to do that through the functions <code><a href="../reference/is_sharing.html">is_sharing()</a></code> and <code><a href="../reference/sharing_venn.html">sharing_venn()</a></code>.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,
-                        group_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-                          g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
+                        group_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+                          g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, 
                                  <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
-                          g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span><span class="op">)</span>,
-                          g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span>
+                          g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span><span class="op">)</span>,
+                          g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span>
                           <span class="op">)</span>, table_for_venn <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="co">#&gt; Done!</span>
 <span class="va">sharing_5</span>
@@ -1013,127 +1014,129 @@
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sharing_plots1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_venn.html">sharing_venn</a></span><span class="op">(</span><span class="va">sharing_5</span>, row_range <span class="op">=</span> <span class="fl">1</span>, euler <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">sharing_plots2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_venn.html">sharing_venn</a></span><span class="op">(</span><span class="va">sharing_5</span>, row_range <span class="op">=</span> <span class="fl">1</span>, euler <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
-<p>Say that we’re interested in plotting just the first row of our sharing data frame. Then we can call the function <code>sharing_venn</code> and specify in the <code>row_range</code> argument the index 1. Note that this function requires the package <em><a href="https://CRAN.R-project.org/package=eulerr">eulerr</a></em> to work. The argument <code>euler</code> indicates if the function should produce euler or venn diagrams instead.</p>
-<p>Once obtained the lists of euler/venn objects we can plot them by simply calling the function <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code>:</p>
+<p>Say that we’re interested in plotting just the first row of our sharing data frame. Then we can call the function <code>sharing_venn</code> and specify in the <code>row_range</code> argument the index 1. Note that this function requires the package <em><a href="https://CRAN.R-project.org/package=eulerr" class="external-link">eulerr</a></em> to work. The argument <code>euler</code> indicates if the function should produce euler or venn diagrams instead.</p>
+<p>Once obtained the lists of euler/venn objects we can plot them by simply calling the function <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sharing_plots1</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sharing_plots1</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 <p><img src="sharing_analyses_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">sharing_plots2</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sharing_plots2</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
 <p><img src="sharing_analyses_files/figure-html/unnamed-chunk-17-2.png" width="700"></p>
-<p>There are several options that can be set, for this please refer to <a href="https://jolars.github.io/eulerr/reference/plot.euler.html">eulerr docs</a>.</p>
+<p>There are several options that can be set, for this please refer to <a href="https://jolars.github.io/eulerr/reference/plot.euler.html" class="external-link">eulerr docs</a>.</p>
 </div>
-<div id="reproducibility" class="section level1">
-<h1 class="hasAnchor">
-<a href="#reproducibility" class="anchor"></a>Reproducibility</h1>
+<div class="section level1">
+<h1 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
+</h1>
 <p><code>R</code> session information.</p>
-<pre><code>#&gt; ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt;  setting  value                       
-#&gt;  version  R version 4.1.1 (2021-08-10)
-#&gt;  os       macOS Catalina 10.15.7      
-#&gt;  system   x86_64, darwin17.0          
-#&gt;  ui       X11                         
-#&gt;  language (EN)                        
-#&gt;  collate  en_US.UTF-8                 
-#&gt;  ctype    en_US.UTF-8                 
-#&gt;  tz       UTC                         
-#&gt;  date     2021-10-28                  
-#&gt; 
-#&gt; ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
-#&gt;  package      * version date       lib source        
-#&gt;  BiocManager    1.30.16 2021-06-15 [1] CRAN (R 4.1.0)
-#&gt;  BiocParallel   1.26.2  2021-08-22 [1] Bioconductor  
-#&gt;  BiocStyle    * 2.20.2  2021-06-17 [1] Bioconductor  
-#&gt;  bookdown       0.24    2021-09-02 [1] CRAN (R 4.1.0)
-#&gt;  bslib          0.3.1   2021-10-06 [1] CRAN (R 4.1.1)
-#&gt;  cachem         1.0.6   2021-08-19 [1] CRAN (R 4.1.0)
-#&gt;  cli            3.1.0   2021-10-27 [1] CRAN (R 4.1.1)
-#&gt;  colorspace     2.0-2   2021-06-24 [1] CRAN (R 4.1.0)
-#&gt;  crayon         1.4.1   2021-02-08 [1] CRAN (R 4.1.0)
-#&gt;  data.table     1.14.2  2021-09-27 [1] CRAN (R 4.1.0)
-#&gt;  desc           1.4.0   2021-09-28 [1] CRAN (R 4.1.0)
-#&gt;  digest         0.6.28  2021-09-23 [1] CRAN (R 4.1.0)
-#&gt;  dplyr          1.0.7   2021-06-18 [1] CRAN (R 4.1.0)
-#&gt;  ellipsis       0.3.2   2021-04-29 [1] CRAN (R 4.1.0)
-#&gt;  eulerr         6.1.1   2021-09-06 [1] CRAN (R 4.1.0)
-#&gt;  evaluate       0.14    2019-05-28 [1] CRAN (R 4.1.0)
-#&gt;  fansi          0.5.0   2021-05-25 [1] CRAN (R 4.1.0)
-#&gt;  farver         2.1.0   2021-02-28 [1] CRAN (R 4.1.0)
-#&gt;  fastmap        1.1.0   2021-01-25 [1] CRAN (R 4.1.0)
-#&gt;  fs             1.5.0   2020-07-31 [1] CRAN (R 4.1.0)
-#&gt;  generics       0.1.1   2021-10-25 [1] CRAN (R 4.1.0)
-#&gt;  ggplot2        3.3.5   2021-06-25 [1] CRAN (R 4.1.0)
-#&gt;  ggrepel        0.9.1   2021-01-15 [1] CRAN (R 4.1.0)
-#&gt;  glue           1.4.2   2020-08-27 [1] CRAN (R 4.1.0)
-#&gt;  gtable         0.3.0   2019-03-25 [1] CRAN (R 4.1.0)
-#&gt;  gtools         3.9.2   2021-06-06 [1] CRAN (R 4.1.0)
-#&gt;  highr          0.9     2021-04-16 [1] CRAN (R 4.1.0)
-#&gt;  hms            1.1.1   2021-09-26 [1] CRAN (R 4.1.0)
-#&gt;  htmltools      0.5.2   2021-08-25 [1] CRAN (R 4.1.0)
-#&gt;  httr           1.4.2   2020-07-20 [1] CRAN (R 4.1.0)
-#&gt;  ISAnalytics  * 1.4.1   2021-10-28 [1] Bioconductor  
-#&gt;  jquerylib      0.1.4   2021-04-26 [1] CRAN (R 4.1.0)
-#&gt;  jsonlite       1.7.2   2020-12-09 [1] CRAN (R 4.1.0)
-#&gt;  knitr          1.36    2021-09-29 [1] CRAN (R 4.1.0)
-#&gt;  lifecycle      1.0.1   2021-09-24 [1] CRAN (R 4.1.0)
-#&gt;  lubridate      1.8.0   2021-10-07 [1] CRAN (R 4.1.0)
-#&gt;  magrittr     * 2.0.1   2020-11-17 [1] CRAN (R 4.1.0)
-#&gt;  memoise        2.0.0   2021-01-26 [1] CRAN (R 4.1.0)
-#&gt;  munsell        0.5.0   2018-06-12 [1] CRAN (R 4.1.0)
-#&gt;  pillar         1.6.4   2021-10-18 [1] CRAN (R 4.1.0)
-#&gt;  pkgconfig      2.0.3   2019-09-22 [1] CRAN (R 4.1.0)
-#&gt;  pkgdown        1.6.1   2020-09-12 [1] CRAN (R 4.1.0)
-#&gt;  plyr           1.8.6   2020-03-03 [1] CRAN (R 4.1.0)
-#&gt;  polyclip       1.10-0  2019-03-14 [1] CRAN (R 4.1.0)
-#&gt;  polylabelr     0.2.0   2020-04-19 [1] CRAN (R 4.1.0)
-#&gt;  purrr          0.3.4   2020-04-17 [1] CRAN (R 4.1.0)
-#&gt;  R6             2.5.1   2021-08-19 [1] CRAN (R 4.1.0)
-#&gt;  ragg           1.1.3   2021-06-09 [1] CRAN (R 4.1.0)
-#&gt;  Rcapture       1.4-3   2019-12-16 [1] CRAN (R 4.1.0)
-#&gt;  Rcpp           1.0.7   2021-07-07 [1] CRAN (R 4.1.0)
-#&gt;  readr          2.0.2   2021-09-27 [1] CRAN (R 4.1.0)
-#&gt;  RefManageR   * 1.3.0   2020-11-13 [1] CRAN (R 4.1.0)
-#&gt;  rlang          0.4.12  2021-10-18 [1] CRAN (R 4.1.0)
-#&gt;  rmarkdown      2.11    2021-09-14 [1] CRAN (R 4.1.0)
-#&gt;  rprojroot      2.0.2   2020-11-15 [1] CRAN (R 4.1.0)
-#&gt;  sass           0.4.0   2021-05-12 [1] CRAN (R 4.1.0)
-#&gt;  scales         1.1.1   2020-05-11 [1] CRAN (R 4.1.0)
-#&gt;  sessioninfo  * 1.1.1   2018-11-05 [1] CRAN (R 4.1.0)
-#&gt;  stringi        1.7.5   2021-10-04 [1] CRAN (R 4.1.1)
-#&gt;  stringr        1.4.0   2019-02-10 [1] CRAN (R 4.1.0)
-#&gt;  systemfonts    1.0.2   2021-05-11 [1] CRAN (R 4.1.0)
-#&gt;  textshaping    0.3.5   2021-06-09 [1] CRAN (R 4.1.0)
-#&gt;  tibble         3.1.5   2021-09-30 [1] CRAN (R 4.1.0)
-#&gt;  tidyr          1.1.4   2021-09-27 [1] CRAN (R 4.1.0)
-#&gt;  tidyselect     1.1.1   2021-04-30 [1] CRAN (R 4.1.0)
-#&gt;  tzdb           0.2.0   2021-10-27 [1] CRAN (R 4.1.1)
-#&gt;  utf8           1.2.2   2021-07-24 [1] CRAN (R 4.1.0)
-#&gt;  vctrs          0.3.8   2021-04-29 [1] CRAN (R 4.1.0)
-#&gt;  withr          2.4.2   2021-04-18 [1] CRAN (R 4.1.0)
-#&gt;  xfun           0.27    2021-10-18 [1] CRAN (R 4.1.0)
-#&gt;  xml2           1.3.2   2020-04-23 [1] CRAN (R 4.1.0)
-#&gt;  yaml           2.2.1   2020-02-01 [1] CRAN (R 4.1.0)
-#&gt;  zip            2.2.0   2021-05-31 [1] CRAN (R 4.1.0)
-#&gt; 
-#&gt; [1] /Users/runner/work/_temp/Library
-#&gt; [2] /Library/Frameworks/R.framework/Versions/4.1/Resources/library</code></pre>
+<pre><code><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span>
+<span class="co">#&gt;  version  R version 4.1.2 (2021-11-01)</span>
+<span class="co">#&gt;  os       macOS Catalina 10.15.7</span>
+<span class="co">#&gt;  system   x86_64, darwin17.0</span>
+<span class="co">#&gt;  ui       X11</span>
+<span class="co">#&gt;  language en</span>
+<span class="co">#&gt;  collate  en_US.UTF-8</span>
+<span class="co">#&gt;  ctype    en_US.UTF-8</span>
+<span class="co">#&gt;  tz       UTC</span>
+<span class="co">#&gt;  date     2021-12-09</span>
+<span class="co">#&gt;  pandoc   2.7.3 @ /usr/local/bin/ (via rmarkdown)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span class="co">#&gt;  <span style="color: #555555; font-style: italic;">package     </span> <span style="color: #555555; font-style: italic;">*</span> <span style="color: #555555; font-style: italic;">version</span> <span style="color: #555555; font-style: italic;">date (UTC)</span> <span style="color: #555555; font-style: italic;">lib</span> <span style="color: #555555; font-style: italic;">source</span></span>
+<span class="co">#&gt;  BiocManager    1.30.16 <span style="color: #555555;">2021-06-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  BiocParallel   1.28.2  <span style="color: #555555;">2021-11-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
+<span class="co">#&gt;  BiocStyle    * 2.22.0  <span style="color: #555555;">2021-10-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
+<span class="co">#&gt;  bookdown       0.24    <span style="color: #555555;">2021-09-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  bslib          0.3.1   <span style="color: #555555;">2021-10-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  cachem         1.0.6   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  cli            3.1.0   <span style="color: #555555;">2021-10-27</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  colorspace     2.0-2   <span style="color: #555555;">2021-06-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  crayon         1.4.2   <span style="color: #555555;">2021-10-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  data.table     1.14.2  <span style="color: #555555;">2021-09-27</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  desc           1.4.0   <span style="color: #555555;">2021-09-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  digest         0.6.29  <span style="color: #555555;">2021-12-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  dplyr          1.0.7   <span style="color: #555555;">2021-06-18</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  ellipsis       0.3.2   <span style="color: #555555;">2021-04-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  eulerr         6.1.1   <span style="color: #555555;">2021-09-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  evaluate       0.14    <span style="color: #555555;">2019-05-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  fansi          0.5.0   <span style="color: #555555;">2021-05-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  farver         2.1.0   <span style="color: #555555;">2021-02-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  fastmap        1.1.0   <span style="color: #555555;">2021-01-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  fs             1.5.2   <span style="color: #555555;">2021-12-08</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.2)</span></span>
+<span class="co">#&gt;  generics       0.1.1   <span style="color: #555555;">2021-10-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  ggplot2        3.3.5   <span style="color: #555555;">2021-06-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  ggrepel        0.9.1   <span style="color: #555555;">2021-01-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  glue           1.5.1   <span style="color: #555555;">2021-11-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  gtable         0.3.0   <span style="color: #555555;">2019-03-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  gtools         3.9.2   <span style="color: #555555;">2021-06-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  highr          0.9     <span style="color: #555555;">2021-04-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  hms            1.1.1   <span style="color: #555555;">2021-09-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  htmltools      0.5.2   <span style="color: #555555;">2021-08-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  httr           1.4.2   <span style="color: #555555;">2020-07-20</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  ISAnalytics  * 1.4.1   <span style="color: #555555;">2021-12-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
+<span class="co">#&gt;  jquerylib      0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  jsonlite       1.7.2   <span style="color: #555555;">2020-12-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  knitr          1.36    <span style="color: #555555;">2021-09-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  lifecycle      1.0.1   <span style="color: #555555;">2021-09-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  lubridate      1.8.0   <span style="color: #555555;">2021-10-07</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  magrittr     * 2.0.1   <span style="color: #555555;">2020-11-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  memoise        2.0.1   <span style="color: #555555;">2021-11-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  munsell        0.5.0   <span style="color: #555555;">2018-06-12</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  pillar         1.6.4   <span style="color: #555555;">2021-10-18</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  pkgconfig      2.0.3   <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  pkgdown        2.0.1   <span style="color: #555555;">2021-12-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  plyr           1.8.6   <span style="color: #555555;">2020-03-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  polyclip       1.10-0  <span style="color: #555555;">2019-03-14</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  polylabelr     0.2.0   <span style="color: #555555;">2020-04-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  purrr          0.3.4   <span style="color: #555555;">2020-04-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  R6             2.5.1   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  ragg           1.1.3   <span style="color: #555555;">2021-06-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  Rcapture       1.4-3   <span style="color: #555555;">2019-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  Rcpp           1.0.7   <span style="color: #555555;">2021-07-07</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  readr          2.1.1   <span style="color: #555555;">2021-11-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  RefManageR   * 1.3.0   <span style="color: #555555;">2020-11-13</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  rlang          0.4.12  <span style="color: #555555;">2021-10-18</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  rmarkdown      2.11    <span style="color: #555555;">2021-09-14</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  rprojroot      2.0.2   <span style="color: #555555;">2020-11-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  sass           0.4.0   <span style="color: #555555;">2021-05-12</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  scales         1.1.1   <span style="color: #555555;">2020-05-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  sessioninfo  * 1.2.2   <span style="color: #555555;">2021-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  stringi        1.7.6   <span style="color: #555555;">2021-11-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  stringr        1.4.0   <span style="color: #555555;">2019-02-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  systemfonts    1.0.2   <span style="color: #555555;">2021-05-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  textshaping    0.3.6   <span style="color: #555555;">2021-10-13</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  tibble         3.1.6   <span style="color: #555555;">2021-11-07</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  tidyr          1.1.4   <span style="color: #555555;">2021-09-27</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  tidyselect     1.1.1   <span style="color: #555555;">2021-04-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  tzdb           0.2.0   <span style="color: #555555;">2021-10-27</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  utf8           1.2.2   <span style="color: #555555;">2021-07-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  vctrs          0.3.8   <span style="color: #555555;">2021-04-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  xfun           0.28    <span style="color: #555555;">2021-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  xml2           1.3.3   <span style="color: #555555;">2021-11-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  yaml           2.2.1   <span style="color: #555555;">2020-02-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt;  zip            2.2.0   <span style="color: #555555;">2021-05-31</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #555555;"> [1] /Users/runner/work/_temp/Library</span></span>
+<span class="co">#&gt; <span style="color: #555555;"> [2] /Library/Frameworks/R.framework/Versions/4.1/Resources/library</span></span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></code></pre>
 </div>
-<div id="bibliography" class="section level1">
-<h1 class="hasAnchor">
-<a href="#bibliography" class="anchor"></a>Bibliography</h1>
-<p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.14/BiocStyle">BiocStyle</a></em> (Oleś, 2021) with <em><a href="https://CRAN.R-project.org/package=knitr">knitr</a></em> (Xie, 2021) and <em><a href="https://CRAN.R-project.org/package=rmarkdown">rmarkdown</a></em> (Allaire, Xie, McPherson, Luraschi, Ushey, Atkins, Wickham, Cheng, Chang, and Iannone, 2021) running behind the scenes.</p>
-<p>Citations made with <em><a href="https://CRAN.R-project.org/package=RefManageR">RefManageR</a></em> (McLean, 2017).</p>
+<div class="section level1">
+<h1 id="bibliography">Bibliography<a class="anchor" aria-label="anchor" href="#bibliography"></a>
+</h1>
+<p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.14/BiocStyle" class="external-link">BiocStyle</a></em> (Oleś, 2021) with <em><a href="https://CRAN.R-project.org/package=knitr" class="external-link">knitr</a></em> (Xie, 2021) and <em><a href="https://CRAN.R-project.org/package=rmarkdown" class="external-link">rmarkdown</a></em> (Allaire, Xie, McPherson, Luraschi, Ushey, Atkins, Wickham, Cheng, Chang, and Iannone, 2021) running behind the scenes.</p>
+<p>Citations made with <em><a href="https://CRAN.R-project.org/package=RefManageR" class="external-link">RefManageR</a></em> (McLean, 2017).</p>
 <p>
-<a id="bib-allaire2021rmarkdown"></a><a href="#cite-allaire2021rmarkdown">[1]</a><cite> J. Allaire, Y. Xie, J. McPherson, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.11. 2021. URL: <a href="https://github.com/rstudio/rmarkdown">https://github.com/rstudio/rmarkdown</a>.</cite>
+<a id="bib-allaire2021rmarkdown"></a><a href="#cite-allaire2021rmarkdown">[1]</a><cite> J. Allaire, Y. Xie, J. McPherson, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.11. 2021. URL: <a href="https://github.com/rstudio/rmarkdown" class="external-link">https://github.com/rstudio/rmarkdown</a>.</cite>
 </p>
 <p>
-<a id="bib-mclean2017refmanager"></a><a href="#cite-mclean2017refmanager">[2]</a><cite> M. W. McLean. “RefManageR: Import and Manage BibTeX and BibLaTeX References in R”. In: <em>The Journal of Open Source Software</em> (2017). DOI: <a href="https://doi.org/10.21105/joss.00338">10.21105/joss.00338</a>.</cite>
+<a id="bib-mclean2017refmanager"></a><a href="#cite-mclean2017refmanager">[2]</a><cite> M. W. McLean. “RefManageR: Import and Manage BibTeX and BibLaTeX References in R”. In: <em>The Journal of Open Source Software</em> (2017). DOI: <a href="https://doi.org/10.21105/joss.00338" class="external-link">10.21105/joss.00338</a>.</cite>
 </p>
 <p>
-<a id="bib-ole2021biocstyle"></a><a href="#cite-ole2021biocstyle">[3]</a><cite> A. Oleś. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.20.2. 2021. URL: <a href="https://github.com/Bioconductor/BiocStyle">https://github.com/Bioconductor/BiocStyle</a>.</cite>
+<a id="bib-ole2021biocstyle"></a><a href="#cite-ole2021biocstyle">[3]</a><cite> A. Oleś. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.22.0. 2021. URL: <a href="https://github.com/Bioconductor/BiocStyle" class="external-link">https://github.com/Bioconductor/BiocStyle</a>.</cite>
 </p>
 <p>
-<a id="bib-xie2021knitr"></a><a href="#cite-xie2021knitr">[4]</a><cite> Y. Xie. <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.36. 2021. URL: <a href="https://yihui.org/knitr/">https://yihui.org/knitr/</a>.</cite>
+<a id="bib-xie2021knitr"></a><a href="#cite-xie2021knitr">[4]</a><cite> Y. Xie. <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.36. 2021. URL: <a href="https://yihui.org/knitr/" class="external-link">https://yihui.org/knitr/</a>.</cite>
 </p>
 </div>
   </div>
@@ -1149,11 +1152,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p>
+<p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -1161,6 +1166,8 @@
 
   
 
+
+  
 
   </body>
 </html>
