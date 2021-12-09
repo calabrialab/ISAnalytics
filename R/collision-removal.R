@@ -30,6 +30,11 @@
 #' @param report_path The path where the report file should be saved.
 #' Can be a folder, a file or NULL if no report should be produced.
 #' Defaults to `{user_home}/ISAnalytics_reports`.
+#' @param max_workers Maximum number of parallel workers to distribute the
+#' workload. If `NULL` (default) produces the maximum amount of workers allowed,
+#' a numeric value is requested otherwise. WARNING: a higher number of workers
+#' speeds up computation at the cost of memory consumption! Tune this parameter
+#' accordingly.
 #'
 #' @family Collision removal
 #' @importFrom magrittr `%>%`

@@ -78,7 +78,7 @@ It is also possible to filter different data frames with different
 sets of conditions. Besides having the possibility of defining the
 other parameters as simple vector, which has the same results as
 operating on an unnamed list, the user can define the parameters as
-named lists containing vectors. For example:\if{html}{\out{<div class="r">}}\preformatted{example_df <- tibble::tibble(a = c(20, 30, 40),
+named lists containing vectors. For example:\if{html}{\out{<div class="sourceCode r">}}\preformatted{example_df <- tibble::tibble(a = c(20, 30, 40),
                              b = c(40, 50, 60),
                              c = c("a", "b", "c"),
                              d = c(3L, 4L, 5L))
@@ -109,7 +109,7 @@ print(example_list)
 ## 1    20    40 a         3
 ## 2    30    50 b         4
 ## 3    40    60 c         5
-}\if{html}{\out{<div class="r">}}\preformatted{filtered <- threshold_filter(example_list,
+}\if{html}{\out{<div class="sourceCode r">}}\preformatted{filtered <- threshold_filter(example_list,
 threshold = list(first = c(20, 60),
 third = c(25)),
 cols_to_compare = list(first = c("a", "b"),
@@ -151,7 +151,7 @@ are equal or bigger than 25.
 }
 
 It is also possible to use some parameters as vectors and some as
-lists: vectors will be recycled for every element filtered.\if{html}{\out{<div class="r">}}\preformatted{filtered <- threshold_filter(example_list,
+lists: vectors will be recycled for every element filtered.\if{html}{\out{<div class="sourceCode r">}}\preformatted{filtered <- threshold_filter(example_list,
 threshold = list(first = c(20, 60),
 third = c(25, 65)),
 cols_to_compare = c("a", "b"),

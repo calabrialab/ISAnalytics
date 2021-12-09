@@ -2332,14 +2332,14 @@
         p <- BiocParallel::SnowParam(
             stop.on.error = FALSE,
             progressbar = getOption("ISAnalytics.verbose", default = TRUE),
-            tasks = length(split_data),
+            tasks = nrow(nested),
             workers = max_workers
         )
     } else {
         p <- BiocParallel::MulticoreParam(
             stop.on.error = FALSE,
             progressbar = getOption("ISAnalytics.verbose", default = TRUE),
-            tasks = length(split_data),
+            tasks = nrow(nested),
             workers = max_workers
         )
     }
