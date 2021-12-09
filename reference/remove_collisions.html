@@ -111,7 +111,8 @@ For more details refer to the vignette "Collision removal functionality":
   date_col <span class="op">=</span> <span class="st">"SequencingDate"</span>,
   reads_ratio <span class="op">=</span> <span class="fl">10</span>,
   quant_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>seqCount <span class="op">=</span> <span class="st">"seqCount"</span>, fragmentEstimate <span class="op">=</span> <span class="st">"fragmentEstimate"</span><span class="op">)</span>,
-  report_path <span class="op">=</span> <span class="fu"><a href="default_report_path.html">default_report_path</a></span><span class="op">(</span><span class="op">)</span>
+  report_path <span class="op">=</span> <span class="fu"><a href="default_report_path.html">default_report_path</a></span><span class="op">(</span><span class="op">)</span>,
+  max_workers <span class="op">=</span> <span class="cn">NULL</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -138,6 +139,12 @@ values are the names of the corresponding columns. The quantification
 <dd><p>The path where the report file should be saved.
 Can be a folder, a file or NULL if no report should be produced.
 Defaults to <code>{user_home}/ISAnalytics_reports</code>.</p></dd>
+<dt>max_workers</dt>
+<dd><p>Maximum number of parallel workers to distribute the
+workload. If <code>NULL</code> (default) produces the maximum amount of workers allowed,
+a numeric value is requested otherwise. WARNING: a higher number of workers
+speeds up computation at the cost of memory consumption! Tune this parameter
+accordingly.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
