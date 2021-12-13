@@ -274,7 +274,7 @@
             function(x) {
                 el <- getElement(t_readr, x)
                 el <- if (is.null(el)) {
-                  "guess"
+                    "guess"
                 } else if (el == "c") {
                     "text"
                 } else if (el %in% c("i", "d")) {
@@ -357,11 +357,6 @@
 # @param df The imported association file (data.frame or tibble)
 # @param root_folder Path to the root folder
 # @keywords internal
-#' @importFrom dplyr select distinct mutate
-#' @importFrom fs dir_ls path dir_exists
-#' @importFrom purrr pmap_dfr is_empty
-#' @importFrom stringr str_replace_all
-#' @importFrom tibble tibble
 #' @importFrom rlang .data `:=`
 #
 # @return A data frame containing, for each ProjectID and
@@ -379,70 +374,90 @@
         ) %>%
         dplyr::distinct()
     path_cols <- .path_cols_names()
-    results_df <- purrr::pmap_dfr(
-        temp_df,
-        function(...) {
-            cur <- tibble::tibble(...)
-            if (is.na(cur$PathToFolderProjectID)) {
-                return(cur %>%
-                    dplyr::mutate(
-                        !!path_cols$project := NA_character_,
-                        !!path_cols$quant := NA_character_,
-                        !!path_cols$iss := NA_character_
-                    ))
-            }
-            project_folder <- fs::path(
-                fs::path(root_folder),
-                cur$PathToFolderProjectID
-            )
-            quant_folder <- paste0(fs::path(
+    proj_folders_exist <- temp_df %>%
+        dplyr::select(.data$PathToFolderProjectID) %>%
+        dplyr::distinct() %>%
+        dplyr::mutate(Found := !is.na(
+            .data$PathToFolderProjectID
+        ) &
+            unname(fs::dir_exists(
+                fs::path(
+                    fs::path(root_folder),
+                    .data$PathToFolderProjectID
+                )
+            )))
+    partial_check <- temp_df %>%
+        dplyr::left_join(proj_folders_exist, by = "PathToFolderProjectID")
+    temp_df <- partial_check %>%
+        dplyr::filter(Found == TRUE)
+    partial_check <- partial_check %>%
+        dplyr::filter(Found == FALSE) %>%
+        dplyr::mutate(
+            !!path_cols$project := NA_character_,
+            !!path_cols$quant := NA_character_,
+            !!path_cols$iss := NA_character_
+        )
+    FUN <- function(...) {
+        cur <- tibble::tibble(...)
+        project_folder <- fs::path(
+            fs::path(root_folder),
+            cur$PathToFolderProjectID
+        )
+        quant_folder <- if (!is.na(cur$concatenatePoolIDSeqRun)) {
+            paste0(fs::path(
                 "quantification",
                 fs::path(cur$concatenatePoolIDSeqRun)
             ), "$")
-            iss_folder <- paste0(fs::path(
+        } else {
+            if (getOption("ISAnalytics.verbose") == TRUE) {
+                rlang::inform(c(paste(
+                    "Warning: found NA",
+                    "concatenatePoolIDSeqRun field"
+                ),
+                i = "Check association file for possible issues"
+                ))
+            }
+            NA_character_
+        }
+        iss_folder <- if (!is.na(cur$concatenatePoolIDSeqRun)) {
+            paste0(fs::path(
                 "iss",
                 fs::path(cur$concatenatePoolIDSeqRun)
             ), "$")
-            dirExists <- fs::dir_exists(project_folder)
-            if (!dirExists) {
-                return(cur %>%
-                    dplyr::mutate(
-                        !!path_cols$project := NA_character_,
-                        !!path_cols$quant := NA_character_,
-                        !!path_cols$iss := NA_character_
-                    ))
-            }
-            quant_found <- fs::dir_ls(
-                path = project_folder, recurse = TRUE,
-                type = "directory", fail = FALSE,
-                regexp = quant_folder
-            )
-            if (length(quant_found) == 0) {
-                quant_found <- NA_character_
-            }
-            iss_found <- fs::dir_ls(
-                path = project_folder, recurse = TRUE,
-                type = "directory", fail = FALSE,
-                regexp = iss_folder
-            )
-            if (length(iss_found) == 0) {
-                iss_found <- NA_character_
-            }
-            return(
-                cur %>%
-                    dplyr::mutate(
-                        !!path_cols$project := project_folder,
-                        !!path_cols$quant := quant_found,
-                        !!path_cols$iss := iss_found
-                    )
-            )
+        } else {
+            NA_character_
         }
+        quant_found <- unique(fs::dir_ls(
+            path = project_folder, recurse = TRUE,
+            type = "directory", fail = FALSE,
+            regexp = quant_folder
+        ))
+        if (length(quant_found) == 0 || all(is.na(quant_found))) {
+            quant_found <- NA_character_
+        }
+        iss_found <- unique(fs::dir_ls(
+            path = project_folder, recurse = TRUE,
+            type = "directory", fail = FALSE,
+            regexp = iss_folder
+        ))
+        if (length(iss_found) == 0 || all(is.na(iss_found))) {
+            iss_found <- NA_character_
+        }
+        return(
+            cur %>%
+                dplyr::mutate(
+                    !!path_cols$project := project_folder,
+                    !!path_cols$quant := quant_found,
+                    !!path_cols$iss := iss_found
+                )
+        )
+    }
+    results_df <- purrr::pmap_dfr(
+        temp_df,
+        FUN
     )
     checker_df <- results_df %>%
-        dplyr::mutate(
-            Found = ifelse(!is.na(.data[[path_cols$project]]), TRUE, FALSE),
-            .before = .data[[path_cols$project]]
-        )
+        dplyr::bind_rows(partial_check)
     checker_df
 }
 
@@ -2313,19 +2328,20 @@
     exceeding <- nrow(nested) %% max_workers
     ampl <- trunc(nrow(nested) / max_workers)
     chunks <- unlist(lapply(seq_len(max_workers),
-                            FUN = rep_len,
-                            length.out = ampl))
+        FUN = rep_len,
+        length.out = ampl
+    ))
     if (exceeding > 0) {
-      chunks <- c(chunks, rep_len(
-        x = tail(max_workers, n = 1),
-        length.out = exceeding
-      ))
+        chunks <- c(chunks, rep_len(
+            x = tail(max_workers, n = 1),
+            length.out = exceeding
+        ))
     }
     chunks <- tibble::as_tibble_col(chunks, column_name = "chunk")
     nested <- nested %>% tibble::add_column(chunks)
     split_data <- nested %>%
-      dplyr::group_by(.data$chunk) %>%
-      dplyr::group_split(.keep = FALSE)
+        dplyr::group_by(.data$chunk) %>%
+        dplyr::group_split(.keep = FALSE)
 
     # Register backend according to platform
     if (.Platform$OS.type == "windows") {
