@@ -366,7 +366,7 @@ import_association_file <- function(path,
     import_stats_rep <- NULL
     missing_stats_rep <- NULL
     if (import_iss) {
-        dots <- rlang::dots_list(.named = TRUE)
+        dots <- rlang::dots_list(..., .named = TRUE)
         dots <- dots[!names(dots) %in% c(
             "association_file",
             "report_path",

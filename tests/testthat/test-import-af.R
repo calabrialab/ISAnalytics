@@ -97,6 +97,27 @@ test_that(paste(func_name[2], "finds missing projects for incorrect fs"), {
     )
 })
 
+test_that(paste(func_name[2], "no error for NA concat"), {
+    withr::with_dir(tempdir(), {
+        fake_pj <- fs::path("Project")
+        fs::dir_create(fake_pj)
+        fs::dir_create(fs::path(fake_pj, "fold_1_NA"))
+        fs::dir_create(fs::path(fake_pj, "fold_2_NA"))
+        fs::dir_create(fs::path(fake_pj, "fold_3_NA"))
+        test_df <- tibble::tribble(
+            ~ProjectID, ~PoolID, ~concatenatePoolIDSeqRun, ~PathToFolderProjectID,
+            "Project", "POOL1", NA_character_, "/Project",
+            "Project", "POOL2", NA_character_, "/Project",
+            "Project", "POOL3", NA_character_, "/Project",
+        )
+        expect_error(
+            {
+                checks <- .check_file_system_alignment(test_df, ".")
+            },
+            regexp = NA
+        )
+    })
+})
 
 #------------------------------------------------------------------------------#
 # Tests .update_af_after_alignment
