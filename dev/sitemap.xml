@@ -1,7 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/articles/aggregate_function_usage.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/articles/collision_removal.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/articles/how_to_import_functions.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/articles/sharing_analyses.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/authors.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/index.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/news/index.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/CIS_grubbs.html</loc>
@@ -29,6 +53,9 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/annotation_IS_vars.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/annotation_issues.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/as_sparse_matrix.html</loc>
@@ -109,6 +136,9 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/import_single_Vispa2Matrix.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/index.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/integration_alluvial_plot.html</loc>
   </url>
   <url>
@@ -182,17 +212,5 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/unzip_file_system.html</loc>
-  </url>
-  <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/articles/aggregate_function_usage.html</loc>
-  </url>
-  <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/articles/collision_removal.html</loc>
-  </url>
-  <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/articles/how_to_import_functions.html</loc>
-  </url>
-  <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/articles/sharing_analyses.html</loc>
   </url>
 </urlset>
