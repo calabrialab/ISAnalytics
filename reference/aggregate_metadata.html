@@ -21,7 +21,7 @@ vignette("aggregate_function_usage", package = "ISAnalytics")'><meta property="o
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.2</span>
       </span>
     </div>
 
@@ -138,7 +138,7 @@ see <a href="import_Vispa2_stats.html">import_Vispa2_stats</a>.</p></dd>
 <span class="r-in">    association_file <span class="op">=</span> <span class="va">association_file</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">aggreg_meta</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 16</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 19</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   SubjectID CellMarker Tissue TimePoint FusionPrimerPCRDate_min LinearPCRDate_m…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> PT001     MNC        BM     0030      2016-11-03              <span style="color: #BB0000;">NA</span>              </span>
@@ -147,10 +147,11 @@ see <a href="import_Vispa2_stats.html">import_Vispa2_stats</a>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> PT001     MNC        BM     0180      2016-11-03              <span style="color: #BB0000;">NA</span>              </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> PT001     MNC        BM     0360      2017-04-21              <span style="color: #BB0000;">NA</span>              </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> PT001     MNC        PB     0030      2016-11-03              <span style="color: #BB0000;">NA</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 10 more variables: VCN_avg &lt;dbl&gt;, ng DNA corrected_avg &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 13 more variables: VCN_avg &lt;dbl&gt;, ng DNA corrected_avg &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Kapa_avg &lt;dbl&gt;, ng DNA corrected_sum &lt;dbl&gt;, ulForPool_sum &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   BARCODE_MUX_sum &lt;int&gt;, TRIMMING_FINAL_LTRLC_sum &lt;int&gt;, LV_MAPPED_sum &lt;int&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   BWA_MAPPED_OVERALL_sum &lt;int&gt;, ISS_MAPPED_PP_sum &lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   BWA_MAPPED_OVERALL_sum &lt;int&gt;, ISS_MAPPED_PP_sum &lt;int&gt;, PCRMethod &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   NGSTechnology &lt;chr&gt;, DNAnumber &lt;chr&gt;</span></span>
 </code></pre></div>
     </div>
   </div>

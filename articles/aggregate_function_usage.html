@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ISAnalytics</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4.2</span>
       </span>
     </div>
 
@@ -114,7 +114,7 @@
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 data-toc-skip class="date">9 December 2021</h4>
+            <h4 data-toc-skip class="date">14 December 2021</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/vignettes/aggregate_function_usage.Rmd" class="external-link"><code>vignettes/aggregate_function_usage.Rmd</code></a></small>
       <div class="hidden name"><code>aggregate_function_usage.Rmd</code></div>
@@ -213,7 +213,7 @@
 </h1>
 <p>We refer to information contained in the association file as “metadata”: sometimes it’s useful to obtain collective information based on a certain group of variables we’re interested in. The function <code><a href="../reference/aggregate_metadata.html">aggregate_metadata()</a></code> does just that: according to the grouping variables, meaning the names of the columns in the association file to perform a <code>group_by</code> operation with,it creates a summary. You can fully customize the summary by providing a “function table” that tells the function which operation should be applied to which column and what name to give to the output column. A default is already supplied:</p>
 <pre><code><span class="co">#&gt; Loading required package: magrittr</span>
-<span class="co">#&gt; <span style="color: #949494;"># A tibble: 12 × 4</span></span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 15 × 4</span></span>
 <span class="co">#&gt;    Column               Function  Args  Output_colname</span>
 <span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span>
 <span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> FusionPrimerPCRDate  <span style="color: #949494;">&lt;formula&gt;</span> <span style="color: #BB0000;">NA</span>    {.col}_min    </span>
@@ -227,7 +227,10 @@
 <span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> TRIMMING_FINAL_LTRLC <span style="color: #949494;">&lt;formula&gt;</span> <span style="color: #BB0000;">NA</span>    {.col}_sum    </span>
 <span class="co">#&gt; <span style="color: #BCBCBC;">10</span> LV_MAPPED            <span style="color: #949494;">&lt;formula&gt;</span> <span style="color: #BB0000;">NA</span>    {.col}_sum    </span>
 <span class="co">#&gt; <span style="color: #BCBCBC;">11</span> BWA_MAPPED_OVERALL   <span style="color: #949494;">&lt;formula&gt;</span> <span style="color: #BB0000;">NA</span>    {.col}_sum    </span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">12</span> ISS_MAPPED_PP        <span style="color: #949494;">&lt;formula&gt;</span> <span style="color: #BB0000;">NA</span>    {.col}_sum</span></code></pre>
+<span class="co">#&gt; <span style="color: #BCBCBC;">12</span> ISS_MAPPED_PP        <span style="color: #949494;">&lt;formula&gt;</span> <span style="color: #BB0000;">NA</span>    {.col}_sum    </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">13</span> PCRMethod            <span style="color: #949494;">&lt;formula&gt;</span> <span style="color: #BB0000;">NA</span>    {.col}        </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">14</span> NGSTechnology        <span style="color: #949494;">&lt;formula&gt;</span> <span style="color: #BB0000;">NA</span>    {.col}        </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">15</span> DNAnumber            <span style="color: #949494;">&lt;formula&gt;</span> <span style="color: #BB0000;">NA</span>    {.col}</span></code></pre>
 <p>You can either provide purrr-style lambdas (as given in the example above), or simply specify the name of the function and additional parameters as a list in a separated column. If you choose to provide your own table you should maintain the column names for the function to work properly. For more details on this take a look at the function documentation <code><a href="../reference/default_meta_agg.html">?default_meta_agg</a></code>.</p>
 <div class="section level2">
 <h2 id="typical-workflow">Typical workflow<a class="anchor" aria-label="anchor" href="#typical-workflow"></a>
@@ -239,7 +242,7 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>
 <span class="va">aggregated_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_metadata.html">aggregate_metadata</a></span><span class="op">(</span>association_file <span class="op">=</span> <span class="va">association_file</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">#&gt; <span style="color: #949494;"># A tibble: 20 × 16</span></span>
+<pre><code><span class="co">#&gt; <span style="color: #949494;"># A tibble: 20 × 19</span></span>
 <span class="co">#&gt;    SubjectID CellMarker Tissue TimePoint FusionPrimerPCRDate_m… LinearPCRDate_m…</span>
 <span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>          </span>
 <span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001     MNC        BM     0030      2016-11-03             <span style="color: #BB0000;">NA</span>              </span>
@@ -262,10 +265,11 @@
 <span class="co">#&gt; <span style="color: #BCBCBC;">18</span> PT002     MNC        PB     0090      2017-05-05             <span style="color: #BB0000;">NA</span>              </span>
 <span class="co">#&gt; <span style="color: #BCBCBC;">19</span> PT002     MNC        PB     0180      2017-05-05             <span style="color: #BB0000;">NA</span>              </span>
 <span class="co">#&gt; <span style="color: #BCBCBC;">20</span> PT002     MNC        PB     0360      2018-03-12             <span style="color: #BB0000;">NA</span>              </span>
-<span class="co">#&gt; <span style="color: #949494;"># … with 10 more variables: VCN_avg &lt;dbl&gt;, ng DNA corrected_avg &lt;dbl&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 13 more variables: VCN_avg &lt;dbl&gt;, ng DNA corrected_avg &lt;dbl&gt;,</span></span>
 <span class="co">#&gt; <span style="color: #949494;">#   Kapa_avg &lt;dbl&gt;, ng DNA corrected_sum &lt;dbl&gt;, ulForPool_sum &lt;dbl&gt;,</span></span>
 <span class="co">#&gt; <span style="color: #949494;">#   BARCODE_MUX_sum &lt;int&gt;, TRIMMING_FINAL_LTRLC_sum &lt;int&gt;, LV_MAPPED_sum &lt;int&gt;,</span></span>
-<span class="co">#&gt; <span style="color: #949494;">#   BWA_MAPPED_OVERALL_sum &lt;int&gt;, ISS_MAPPED_PP_sum &lt;int&gt;</span></span></code></pre>
+<span class="co">#&gt; <span style="color: #949494;">#   BWA_MAPPED_OVERALL_sum &lt;int&gt;, ISS_MAPPED_PP_sum &lt;int&gt;, PCRMethod &lt;chr&gt;,</span></span>
+<span class="co">#&gt; <span style="color: #949494;">#   NGSTechnology &lt;chr&gt;, DNAnumber &lt;chr&gt;</span></span></code></pre>
 </div>
 </div>
 <div class="section level1">
@@ -529,13 +533,13 @@ The <code>group</code> parameter should contain all other variables to include i
 <span class="co">#&gt;  collate  en_US.UTF-8</span>
 <span class="co">#&gt;  ctype    en_US.UTF-8</span>
 <span class="co">#&gt;  tz       UTC</span>
-<span class="co">#&gt;  date     2021-12-09</span>
+<span class="co">#&gt;  date     2021-12-14</span>
 <span class="co">#&gt;  pandoc   2.7.3 @ /usr/local/bin/ (via rmarkdown)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span class="co">#&gt;  <span style="color: #555555; font-style: italic;">package     </span> <span style="color: #555555; font-style: italic;">*</span> <span style="color: #555555; font-style: italic;">version</span> <span style="color: #555555; font-style: italic;">date (UTC)</span> <span style="color: #555555; font-style: italic;">lib</span> <span style="color: #555555; font-style: italic;">source</span></span>
 <span class="co">#&gt;  BiocManager    1.30.16 <span style="color: #555555;">2021-06-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
-<span class="co">#&gt;  BiocParallel   1.28.2  <span style="color: #555555;">2021-11-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
+<span class="co">#&gt;  BiocParallel   1.28.3  <span style="color: #555555;">2021-12-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
 <span class="co">#&gt;  BiocStyle    * 2.22.0  <span style="color: #555555;">2021-10-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
 <span class="co">#&gt;  bookdown       0.24    <span style="color: #555555;">2021-09-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
 <span class="co">#&gt;  bslib          0.3.1   <span style="color: #555555;">2021-10-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
@@ -560,7 +564,7 @@ The <code>group</code> parameter should contain all other variables to include i
 <span class="co">#&gt;  hms            1.1.1   <span style="color: #555555;">2021-09-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
 <span class="co">#&gt;  htmltools      0.5.2   <span style="color: #555555;">2021-08-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
 <span class="co">#&gt;  httr           1.4.2   <span style="color: #555555;">2020-07-20</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
-<span class="co">#&gt;  ISAnalytics  * 1.4.1   <span style="color: #555555;">2021-12-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
+<span class="co">#&gt;  ISAnalytics  * 1.4.2   <span style="color: #555555;">2021-12-14</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
 <span class="co">#&gt;  jquerylib      0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
 <span class="co">#&gt;  jsonlite       1.7.2   <span style="color: #555555;">2020-12-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
 <span class="co">#&gt;  knitr          1.36    <span style="color: #555555;">2021-09-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.1.0)</span></span>
