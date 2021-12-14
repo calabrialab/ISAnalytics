@@ -2,7 +2,7 @@
 title: "NEWS"
 output: github_document
 ---
-# ISAnalytics 1.4.2 (2021-)
+# ISAnalytics 1.4.2 (2021-12-14)
 
 ## NEW (MINOR)
 * Added function to check for annotation problems in IS matrices

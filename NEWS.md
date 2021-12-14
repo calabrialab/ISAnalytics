@@ -1,7 +1,7 @@
 NEWS
 ================
 
-# ISAnalytics 1.4.2 (2021-)
+# ISAnalytics 1.4.2 (2021-12-14)
 
 ## NEW (MINOR)
 
