@@ -33,6 +33,7 @@ quant_types <- quantification_types()
 \code{\link{import_parallel_Vispa2Matrices_auto}}
 
 Other Import functions helpers: 
+\code{\link{annotation_issues}()},
 \code{\link{matching_options}()}
 }
 \concept{Import functions helpers}

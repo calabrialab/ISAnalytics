@@ -32,6 +32,7 @@ opts <- matching_options()
 \code{\link{import_parallel_Vispa2Matrices_auto}}
 
 Other Import functions helpers: 
+\code{\link{annotation_issues}()},
 \code{\link{quantification_types}()}
 }
 \concept{Import functions helpers}

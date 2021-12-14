@@ -264,15 +264,6 @@ remove_collisions <- function(x,
         )
         pre_summary <- .summary_input(pre_process, quant_cols)
         per_pool_stats_pre <- .per_pool_stats(joined, quant_cols)
-        sharing_pre <- is_sharing(joined,
-            group_key = c(
-                "ProjectID",
-                "SubjectID"
-            ), n_comp = 2,
-            is_count = FALSE,
-            minimal = FALSE,
-            include_self_comp = TRUE
-        )
         coll_info <- list(
             coll_n = splitted_df$collisions %>%
                 dplyr::distinct(
@@ -293,14 +284,44 @@ remove_collisions <- function(x,
             post_joined,
             quant_cols
         )
-        sharing_post <- is_sharing(post_joined,
-            group_key = c(
-                "ProjectID",
-                "SubjectID"
-            ), n_comp = 2,
-            is_count = FALSE,
-            minimal = FALSE,
-            include_self_comp = TRUE
+        sharing_pre <- sharing_post <- NULL
+        withCallingHandlers(
+            {
+                withRestarts(
+                    {
+                        sharing_pre <- is_sharing(joined,
+                            group_key = c(
+                                "ProjectID",
+                                "SubjectID"
+                            ), n_comp = 2,
+                            is_count = FALSE,
+                            minimal = FALSE,
+                            include_self_comp = TRUE
+                        )
+                        sharing_post <- is_sharing(post_joined,
+                            group_key = c(
+                                "ProjectID",
+                                "SubjectID"
+                            ), n_comp = 2,
+                            is_count = FALSE,
+                            minimal = FALSE,
+                            include_self_comp = TRUE
+                        )
+                    },
+                    sharing_err = function(e) {
+                        rlang::inform(c(paste(
+                            "Unable to compute sharing:",
+                            conditionMessage(e)
+                        ),
+                        i = "Skipping"
+                        ))
+                    }
+                )
+            },
+            error = function(cnd) {
+                rest <- findRestart("sharing_err")
+                invokeRestart(rest, cnd)
+            }
         )
         summary_tbl <- .summary_table(
             before = joined, after = post_joined,

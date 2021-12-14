@@ -62,11 +62,15 @@ df2 <- aggreg \%>\%
     dplyr::filter(.data$Tissue == "PB")
 source <- iss_source(df1, df2)
 source
-ggplot2::ggplot(source$PT001, ggplot2::aes(x = as.factor(g2_TimePoint),
-                                           y = sharing_perc, fill = g1)) +
+ggplot2::ggplot(source$PT001, ggplot2::aes(
+    x = as.factor(g2_TimePoint),
+    y = sharing_perc, fill = g1
+)) +
     ggplot2::geom_col() +
-    ggplot2::labs(x = "Time point", y = "Shared IS \% with MNC BM",
-                  title = "Source of is MNC BM vs MNC PB")
+    ggplot2::labs(
+        x = "Time point", y = "Shared IS \% with MNC BM",
+        title = "Source of is MNC BM vs MNC PB"
+    )
 }
 \seealso{
 Other Analysis functions: 
