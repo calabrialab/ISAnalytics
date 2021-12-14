@@ -16,8 +16,8 @@ knitr::opts_chunk$set(
 # ISAnalytics <a href='https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html'><img src='man/figures/logo.png' align="right" height="250" /></a>
 
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.com/calabrialab/isanalytics.svg?branch=master)](https://travis-ci.com/calabrialab/isanalytics)
-[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
+[![Build Status](https://app.travis-ci.com/calabrialab/ISAnalytics.svg?branch=RELEASE_3_14)](https://app.travis-ci.com/calabrialab/ISAnalytics)
+[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/RELEASE_3_14/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
 [![R build status - bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
 [![BioC status](http://www.bioconductor.org/shields/build/devel/bioc/ISAnalytics.svg)](http://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics/)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)

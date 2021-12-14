@@ -5,9 +5,9 @@
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.com/calabrialab/isanalytics.svg?branch=master)](https://travis-ci.com/calabrialab/isanalytics)
-[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
+[![Build
+Status](https://app.travis-ci.com/calabrialab/ISAnalytics.svg?branch=RELEASE_3_14)](https://app.travis-ci.com/calabrialab/ISAnalytics)
+[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/RELEASE_3_14/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
 [![R build status -
 bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
 [![BioC
@@ -136,6 +136,18 @@ options("ISAnalytics.reports" = TRUE)
 <summary>
 Show more
 </summary>
+
+# ISAnalytics 1.4.2 (2021-)
+
+## MINOR CHANGES
+
+-   Added argument `max_workers` in function `remove_collisions()`
+
+## FIXES
+
+-   Fixed minor issue in internals for file system alignment checks
+-   Fixed minor issue in internal call to `import_Vispa2_stats()` from
+    `import_association_file()`
 
 # ISAnalytics 1.4.1 (2021-10-28)
 

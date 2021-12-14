@@ -54,17 +54,18 @@ reference:
   - import_Vispa2_stats
   - import_single_Vispa2Matrix
   - import_parallel_Vispa2Matrices
-- title: "Aggregating functions"
-- contents:
-  - aggregate_metadata
-  - aggregate_values_by_key
 - title: "Data cleaning and pre-processing"
 - contents:
+  - annotation_issues
   - compute_near_integrations
   - remove_collisions
   - realign_after_collisions
   - outlier_filter
   - outliers_by_pool_fragments
+- title: "Aggregating functions"
+- contents:
+  - aggregate_metadata
+  - aggregate_values_by_key
 - title: "Analysis functions"
 - contents:
   - compute_abundance
