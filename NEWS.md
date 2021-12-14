@@ -1,6 +1,26 @@
 NEWS
 ================
 
+# ISAnalytics 1.5.2 (2021-12-14)
+
+## NEW (MINOR)
+
+-   Added function to check for annotation problems in IS matrices
+
+## MINOR CHANGES
+
+-   Added argument `max_workers` in function `remove_collisions()`
+-   Updated default functions for `aggregate_metadata()`
+-   Added annotation issues section in import matrices report
+
+## FIXES
+
+-   Fixed minor issue in internals for file system alignment checks
+-   Fixed minor issue in internal call to `import_Vispa2_stats()` from
+    `import_association_file()`
+-   Added safe computation of sharing in `remove_collisions()`: if
+    process fails function doesn’t stop
+
 # ISAnalytics 1.5.1 (2021-10-28)
 
 ## FIXES
