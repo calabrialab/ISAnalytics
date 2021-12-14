@@ -784,12 +784,24 @@ import_parallel_Vispa2Matrices <- function(association_file,
             !!!mult_args
         ))
     }
+    annotation_problems <- if (getOption("ISAnalytics.reports") == TRUE &
+        !is.null(report_path)) {
+        tmp <- if (!multi_quant_matrix) {
+            comparison_matrix(matrices)
+        } else {
+            matrices
+        }
+        annotation_issues(tmp)
+    } else {
+        NULL
+    }
     withCallingHandlers(
         {
             .produce_report("matrix_imp",
                 params = list(
                     files_found = files_found,
-                    files_imp = fimported
+                    files_imp = fimported,
+                    annot_prob = annotation_problems
                 ),
                 path = report_path
             )
@@ -893,6 +905,63 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
     )
 }
 
+
+#' Check for genomic annotation problems in IS matrices.
+#'
+#' \lifecycle{experimental}
+#' This helper function checks if each individual integration site,
+#' identified by the triplet (chr, integration locus, strand),
+#' has been annotated with two or more distinct gene symbols.
+#'
+#' @param matrix Either a single matrix or a list of matrices, ideally obtained
+#' via `import_parallel_Vispa2Matrices()` or `import_single_Vispa2Matrix()`
+#'
+#' @return Either `NULL` if no issues were detected or 1 or more data frames
+#' with genomic coordinates of the IS and the number of distinct
+#' genes associated
+#' @export
+#'
+#' @family Import functions helpers
+#'
+#' @examples
+#' data("integration_matrices", package = "ISAnalytics")
+#' annotation_issues(integration_matrices)
+annotation_issues <- function(matrix) {
+    stopifnot(is.list(matrix))
+    find_probs <- function(m) {
+        needed <- c(mandatory_IS_vars(), annotation_IS_vars())
+        if (!all(needed %in% colnames(m))) {
+            rlang::inform(.missing_needed_cols(needed[!needed %in% colnames(m)]))
+            return(NULL)
+        }
+        tmp <- m %>%
+            dplyr::select(dplyr::all_of(c(
+                mandatory_IS_vars(),
+                annotation_IS_vars()
+            ))) %>%
+            dplyr::distinct() %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
+            dplyr::summarise(distinct_genes = dplyr::n())
+        if (any(tmp$distinct_genes > 1)) {
+            tmp %>%
+                dplyr::filter(.data$distinct_genes > 1)
+        } else {
+            NULL
+        }
+    }
+    if (is.data.frame(matrix)) {
+        probs <- find_probs(matrix)
+        if (is.null(probs) & getOption("ISAnalytics.verbose") == TRUE) {
+            rlang::inform("No annotation issues found")
+        }
+        return(probs)
+    }
+    probs <- purrr::map(matrix, find_probs)
+    if (all(is.null(probs)) & getOption("ISAnalytics.verbose") == TRUE) {
+        rlang::inform("No annotation issues found")
+    }
+    return(probs)
+}
 
 
 #' Possible choices for the `quantification_type` parameter.

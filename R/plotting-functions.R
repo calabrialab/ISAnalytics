@@ -515,9 +515,9 @@ integration_alluvial_plot <- function(x,
 
     # Compute plots in parallel
     p <- BiocParallel::MulticoreParam(
-            stop.on.error = FALSE, progressbar = TRUE,
-            tasks = length(groups_to_plot), exportglobals = FALSE
-        )
+        stop.on.error = FALSE, progressbar = TRUE,
+        tasks = length(groups_to_plot), exportglobals = FALSE
+    )
 
     FUN <- function(group_df,
     plot_x,

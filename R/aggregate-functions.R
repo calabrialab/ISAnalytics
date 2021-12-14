@@ -134,7 +134,13 @@ default_meta_agg <- function() {
         "BWA_MAPPED_OVERALL", ~ sum(.x, na.rm = TRUE),
         NA, "{.col}_sum",
         "ISS_MAPPED_PP", ~ sum(.x, na.rm = TRUE),
-        NA, "{.col}_sum"
+        NA, "{.col}_sum",
+        "PCRMethod", ~ paste0(unique(.x), collapse = "|"),
+        NA, "{.col}",
+        "NGSTechnology", ~ paste0(unique(.x), collapse = "|"),
+        NA, "{.col}",
+        "DNAnumber", ~ paste0(unique(.x), collapse = "|"),
+        NA, "{.col}"
     )
 }
 

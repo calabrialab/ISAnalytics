@@ -13,6 +13,7 @@ output:
 params:
   files_found: null
   files_imp: null
+  annot_prob: null
 ---
 
 ```{r setup, include=FALSE}
@@ -70,8 +71,9 @@ datatable(
     columnDefs = list(
       list(targets = 3,
            render = found_render)
-      )
-    )
+      ),
+      scrollY = 350
+    ),
 ) %>% formatStyle(columns = 4, fontWeight = 'bold', textAlign = 'center')
 ```
 
@@ -81,7 +83,7 @@ datatable(
   files_details,
   rownames = FALSE, 
   colnames = stringr::str_replace_all(colnames(files_details), "_", " "), 
-  filter = 'top'
+  filter = 'top', options = list(scrollY = 350)
 )
 ```
 
@@ -116,7 +118,8 @@ datatable(
   rownames = FALSE,
   colnames = stringr::str_replace_all(colnames(files_imp), "_", " "),
   options = list(
-            order = list(list(4, 'asc'))
+            order = list(list(4, 'asc')),
+            scrollY = 350
           )
 ) %>% formatStyle(columns = "Imported", 
               color = styleEqual(
@@ -133,6 +136,31 @@ cat("*Nothing to report*")
 
 Summary of files chosen for import. If `Imported` is false, something may
 have gone wrong during the import phase (most likely I/O errors).
+
+Annotation issues {data-orientation=rows}
+===============================================================================
+
+Row1 {data-height=600 .tabset .tabset-fade}
+-------------------------------------------------------------------------------
+### Possible annotation problems
+```{r eval=!is.null(params$annot_prob)}
+datatable(
+  annot_prob,
+  rownames = FALSE, 
+  colnames = stringr::str_replace_all(colnames(files_details), "_", " "), 
+  filter = 'top', options = list(scrollY = 350)
+)
+```
+
+```{r eval=is.null(params$annot_prob), results='asis'}
+cat("*Nothing to report*")
+```
+
+### About
+
+Report on annotation issues. Here are reported, if found, integration sites that
+have been annotated with 2 or more different genes. If the table isn't empty,
+you might want to check your matrices or re-perform the annotation step.
 
 Reproducibility {data-orientation=rows}
 ===============================================================================

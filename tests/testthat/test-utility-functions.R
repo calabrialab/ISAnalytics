@@ -187,3 +187,46 @@ test_that("as_sparse_matrix works with list of matrices", {
         colnames(sparse[[2]])))
     expect_equal(nrow(sparse[[2]]), 3)
 })
+
+#------------------------------------------------------------------------------#
+# Tests annotation_issues
+#------------------------------------------------------------------------------#
+test_df_issues <- tibble::tribble(
+    ~chr, ~integration_locus, ~strand, ~GeneName, ~GeneStrand,
+    ~CompleteAmplificationID, ~Value,
+    "1", 123456, "+", "ABCDE", "+", "ID1", 56,
+    "1", 123456, "+", "ABCDE", "-", "ID2", 675,
+    "1", 123456, "+", "FGHIL", "-", "ID3", 67,
+    "2", 5674653, "-", "FGHIL", "-", "ID2", 873,
+    "1", 4578768, "-", "RSPQX", "-", "ID3", 983,
+)
+
+test_df_no_issues <- tibble::tribble(
+    ~chr, ~integration_locus, ~strand, ~GeneName, ~GeneStrand,
+    ~CompleteAmplificationID, ~Value,
+    "1", 123456, "+", "ABCDE", "+", "ID1", 56,
+    "1", 123456, "+", "ABCDE", "+", "ID2", 675,
+    "1", 123456, "+", "ABCDE", "+", "ID3", 67,
+    "2", 5674653, "-", "FGHIL", "-", "ID2", 873,
+    "1", 4578768, "-", "RSPQX", "-", "ID3", 983,
+)
+
+test_that("annotation_issues returns df if issues", {
+    res <- annotation_issues(test_df_issues)
+    expect_true(!is.null(res))
+    expect_true(nrow(res) == 1 & res$chr[1] == "1" &
+        res$integration_locus[1] == 123456 & res$strand == "+" &
+        res$distinct_genes == 3)
+})
+
+test_that("annotation_issues returns null if no issues", {
+    res <- annotation_issues(test_df_no_issues)
+    expect_null(res)
+})
+
+test_that("annotation_issues works with lists", {
+    res <- annotation_issues(list(a = test_df_issues, b = test_df_no_issues))
+    expect_true(!is.null(res))
+    expect_true(is.null(res[[2]]))
+    expect_true(nrow(res[[1]]) == 1)
+})
