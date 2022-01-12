@@ -4,7 +4,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="In gene therapy, stem cells are modified using viral vectors to deliver the therapeutic transgene and replace functional properties since the genetic modification is stable and inherited in all cell progeny. The retrieval and mapping of the sequences flanking the virus-host DNA junctions allows the identification of insertion sites (IS), essential for monitoring the evolution of genetically modified cells in vivo. A comprehensive toolkit for the analysis of IS is required to foster clonal trackign studies and supporting the assessment of safety and long term efficacy in vivo. This package is aimed at (1) supporting automation of IS workflow, (2) performing base and advance analysis for IS tracking (clonal abundance, clonal expansions and statistics for insertional mutagenesis, etc.), (3) providing basic biology insights of transduced stem cells in vivo.">
 <title>Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies • ISAnalytics</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -12,12 +13,11 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies">
+<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies">
 <meta property="og:description" content="In gene therapy, stem cells are modified using viral vectors to deliver the therapeutic transgene and replace functional properties since the genetic modification is stable and inherited in all cell progeny. The retrieval and mapping of the sequences flanking the virus-host DNA junctions allows the identification of insertion sites (IS), essential for monitoring the evolution of genetically modified cells in vivo. A comprehensive toolkit for the analysis of IS is required to foster clonal trackign studies and supporting the assessment of safety and long term efficacy in vivo. This package is aimed at (1) supporting automation of IS workflow, (2) performing base and advance analysis for IS tracking (clonal abundance, clonal expansions and statistics for insertional mutagenesis, etc.), (3) providing basic biology insights of transduced stem cells in vivo.">
 <meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png">
 <meta name="robots" content="noindex">
@@ -26,107 +26,79 @@
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <div class="container template-home">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">ISAnalytics</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.5.2</span>
-      </span>
-    </div>
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    
+    <a class="navbar-brand me-2" href="index.html">ISAnalytics</a>
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.5.2</small>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-2">
+      <ul class="navbar-nav me-auto">
+<li class="active nav-item">
+  <a class="nav-link" href="index.html">
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
-<li>
-  <a href="reference/index.html">Reference</a>
+<li class="nav-item">
+  <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="articles/aggregate_function_usage.html">Working with aggregate functions</a>
-    </li>
-    <li>
-      <a href="articles/collision_removal.html">Collision removal functionality</a>
-    </li>
-    <li>
-      <a href="articles/how_to_import_functions.html">How to use import functions</a>
-    </li>
-    <li>
-      <a href="articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
-    </li>
-  </ul>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/aggregate_function_usage.html">Working with aggregate functions</a>
+    <a class="dropdown-item" href="articles/collision_removal.html">Collision removal functionality</a>
+    <a class="dropdown-item" href="articles/how_to_import_functions.html">How to use import functions</a>
+    <a class="dropdown-item" href="articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
+  </div>
 </li>
-<li>
-  <a href="news/index.html">Changelog</a>
+<li class="nav-item">
+  <a class="nav-link" href="news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://calabrialab.github.io/ISAnalytics/">
-    <span class="fas fa-code-branch"></span>
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="nav-link" href="https://calabrialab.github.io/ISAnalytics/">
+    <span class="fas fa fas fa-code-branch"></span>
      
     RELEASE
   </a>
 </li>
-<li>
-  <a href="https://github.com/calabrialab/ISAnalytics/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/calabrialab/ISAnalytics/">
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+    
   </div>
-<!--/.container -->
+</nav><div class="container template-home">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="isanalytics-">ISAnalytics <a class="anchor" aria-label="anchor" href="#isanalytics-"></a>
+</h1>
 </div>
-<!--/.navbar -->
-
-      
-
-      </header><div class="row">
-  <div class="contents col-md-9">
-
-<div class="section level1">
-<div class="page-header"><h1 id="isanalytics-">ISAnalytics <a href="https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html" class="external-link"><img src="reference/figures/logo.png" align="right" height="250"></a>
-<a class="anchor" aria-label="anchor" href="#isanalytics-"></a>
-</h1></div>
 <!-- badges: start -->
 
 <p>ISAnalytics is an R package developed to analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies.</p>
 <p>In gene therapy, stem cells are modified using viral vectors to deliver the therapeutic transgene and replace functional properties since the genetic modification is stable and inherited in all cell progeny. The retrieval and mapping of the sequences flanking the virus-host DNA junctions allows the identification of insertion sites (IS), essential for monitoring the evolution of genetically modified cells in vivo. A comprehensive toolkit for the analysis of IS is required to foster clonal trackign studies and supporting the assessment of safety and long term efficacy in vivo. This package is aimed at (1) supporting automation of IS workflow, (2) performing base and advance analysis for IS tracking (clonal abundance, clonal expansions and statistics for insertional mutagenesis, etc.), (3) providing basic biology insights of transduced stem cells in vivo.</p>
-</div>
-<div class="section level1">
-<h1 id="visit-the-package-website">Visit the package website<a class="anchor" aria-label="anchor" href="#visit-the-package-website"></a>
-</h1>
-<p>You can visit the package website to view documentation, vignettes and more.</p>
-<ul>
-<li>For the release version: <a href="https://calabrialab.github.io/ISAnalytics/">ISAnalytics Website release</a>
-</li>
-<li>For the devel version: <a href="https://calabrialab.github.io/ISAnalytics/dev">ISAnalytics Website dev</a>
-</li>
-</ul>
 </div>
 <div class="section level1">
 <h1 id="installation-and-options">Installation and options<a class="anchor" aria-label="anchor" href="#installation-and-options"></a>
@@ -157,10 +129,8 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
     <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
-
 <span class="co"># The following initializes usage of Bioc devel</span>
 <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span>version<span class="op">=</span><span class="st">'devel'</span><span class="op">)</span>
-
 <span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
@@ -192,618 +162,15 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># DISABLE</span>
 <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
 <span class="co"># ENABLE</span>
 <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>Some functions also produce report in a user-friendly HTML format, to set this feature:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># DISABLE HTML REPORTS</span>
 <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
 <span class="co"># ENABLE HTML REPORTS</span>
 <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </div>
-</div>
-<div class="section level1">
-<h1 id="news">NEWS<a class="anchor" aria-label="anchor" href="#news"></a>
-</h1>
-<details><p><summary> Show more </summary></p>
-</details>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-152-2021-12-14">ISAnalytics 1.5.2 (2021-12-14)<a class="anchor" aria-label="anchor" href="#isanalytics-152-2021-12-14"></a>
-</h1>
-<div class="section level2">
-<h2 id="new-minor">NEW (MINOR)<a class="anchor" aria-label="anchor" href="#new-minor"></a>
-</h2>
-<ul>
-<li>Added function to check for annotation problems in IS matrices</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="minor-changes">MINOR CHANGES<a class="anchor" aria-label="anchor" href="#minor-changes"></a>
-</h2>
-<ul>
-<li>Added argument <code>max_workers</code> in function <code><a href="reference/remove_collisions.html">remove_collisions()</a></code>
-</li>
-<li>Updated default functions for <code><a href="reference/aggregate_metadata.html">aggregate_metadata()</a></code>
-</li>
-<li>Added annotation issues section in import matrices report</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="fixes">FIXES<a class="anchor" aria-label="anchor" href="#fixes"></a>
-</h2>
-<ul>
-<li>Fixed minor issue in internals for file system alignment checks</li>
-<li>Fixed minor issue in internal call to <code><a href="reference/import_Vispa2_stats.html">import_Vispa2_stats()</a></code> from <code><a href="reference/import_association_file.html">import_association_file()</a></code>
-</li>
-<li>Added safe computation of sharing in <code><a href="reference/remove_collisions.html">remove_collisions()</a></code>: if process fails function doesn’t stop</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-151-2021-10-28">ISAnalytics 1.5.1 (2021-10-28)<a class="anchor" aria-label="anchor" href="#isanalytics-151-2021-10-28"></a>
-</h1>
-<div class="section level2">
-<h2 id="fixes-1">FIXES<a class="anchor" aria-label="anchor" href="#fixes-1"></a>
-</h2>
-<ul>
-<li>Attempt to fix issues with parallel computation on Windows for some plotting functions</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-139-2021-10-25">ISAnalytics 1.3.9 (2021-10-25)<a class="anchor" aria-label="anchor" href="#isanalytics-139-2021-10-25"></a>
-</h1>
-<div class="section level2">
-<h2 id="fixes-2">FIXES<a class="anchor" aria-label="anchor" href="#fixes-2"></a>
-</h2>
-<ul>
-<li>Fixed issues with function that make use of BiocParallel that sometimes failed on Windows platform</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-137-2021-10-20">ISAnalytics 1.3.7 (2021-10-20)<a class="anchor" aria-label="anchor" href="#isanalytics-137-2021-10-20"></a>
-</h1>
-<div class="section level2">
-<h2 id="new">NEW<a class="anchor" aria-label="anchor" href="#new"></a>
-</h2>
-<ul>
-<li>Added new feature <code><a href="reference/iss_source.html">iss_source()</a></code>
-</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="fixes-3">FIXES<a class="anchor" aria-label="anchor" href="#fixes-3"></a>
-</h2>
-<ul>
-<li>Fixed minor issues in data files <code>refGenes_mm9</code> and function <code><a href="reference/compute_near_integrations.html">compute_near_integrations()</a></code>
-</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-136-2021-10-05">ISAnalytics 1.3.6 (2021-10-05)<a class="anchor" aria-label="anchor" href="#isanalytics-136-2021-10-05"></a>
-</h1>
-<div class="section level2">
-<h2 id="new-1">NEW<a class="anchor" aria-label="anchor" href="#new-1"></a>
-</h2>
-<ul>
-<li>Added new feature <code><a href="reference/purity_filter.html">purity_filter()</a></code>
-</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="fixes-4">FIXES<a class="anchor" aria-label="anchor" href="#fixes-4"></a>
-</h2>
-<ul>
-<li>Fixed small issue in printing information in reports</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-135-2021-09-21">ISAnalytics 1.3.5 (2021-09-21)<a class="anchor" aria-label="anchor" href="#isanalytics-135-2021-09-21"></a>
-</h1>
-<div class="section level2">
-<h2 id="major-changes">MAJOR CHANGES<a class="anchor" aria-label="anchor" href="#major-changes"></a>
-</h2>
-<ul>
-<li>Reworked <code><a href="reference/is_sharing.html">is_sharing()</a></code> function, detailed usage in vignette <code><a href="articles/sharing_analyses.html">vignette("sharing_analyses", package = "ISAnalytics")</a></code>
-</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="new-2">NEW<a class="anchor" aria-label="anchor" href="#new-2"></a>
-</h2>
-<ul>
-<li>New function <code><a href="reference/cumulative_is.html">cumulative_is()</a></code>
-</li>
-<li>New function for plotting sharing as venn/euler diagrams <code><a href="reference/sharing_venn.html">sharing_venn()</a></code>
-</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-134-2021-08--03">ISAnalytics 1.3.4 (2021-08 -03)<a class="anchor" aria-label="anchor" href="#isanalytics-134-2021-08--03"></a>
-</h1>
-<div class="section level2">
-<h2 id="fixesminor-updates">FIXES/MINOR UPDATES<a class="anchor" aria-label="anchor" href="#fixesminor-updates"></a>
-</h2>
-<ul>
-<li>Fixed issue in tests that lead to broken build</li>
-<li>Slightly modified included data set for better examples</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-133-2021-07-30">ISAnalytics 1.3.3 (2021-07-30)<a class="anchor" aria-label="anchor" href="#isanalytics-133-2021-07-30"></a>
-</h1>
-<div class="section level2">
-<h2 id="major-changes-1">MAJOR CHANGES<a class="anchor" aria-label="anchor" href="#major-changes-1"></a>
-</h2>
-<ul>
-<li>Completely reworked interactive HTML report system, for details take a look at the new vignette <code>vignette("report_system", package = "ISAnalytics")</code>
-</li>
-<li>Old <code>ISAnalytics.widgets</code> option has been replaced by <code>ISAnalytics.reports</code>
-</li>
-<li>In <code><a href="reference/remove_collisions.html">remove_collisions()</a></code>, removed arguments <code>seq_count_col</code>, <code>max_rows_reports</code> and <code>save_widget_path</code>, added arguments <code>quant_cols</code> and <code>report_path</code> (see documentation for details)</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="minor-changes-1">MINOR CHANGES<a class="anchor" aria-label="anchor" href="#minor-changes-1"></a>
-</h2>
-<ul>
-<li>
-<code><a href="reference/import_single_Vispa2Matrix.html">import_single_Vispa2Matrix()</a></code> now allows keeping additional non-standard columns</li>
-<li>
-<code><a href="reference/compute_near_integrations.html">compute_near_integrations()</a></code> is now faster on bigger data sets</li>
-<li>Changed default values for arguments <code>columns</code> and <code>key</code> in <code><a href="reference/compute_abundance.html">compute_abundance()</a></code>
-</li>
-<li>
-<code><a href="reference/compute_near_integrations.html">compute_near_integrations()</a></code> now produces only re-calibration map in *.tsv format</li>
-<li>
-<code><a href="reference/CIS_grubbs.html">CIS_grubbs()</a></code> now supports calculations for each group specified in argument <code>by</code>
-</li>
-<li>In <code><a href="reference/sample_statistics.html">sample_statistics()</a></code> now there is the option to include the calculation of distinct integration sites for each group (if mandatory vars are present)</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="new-functionality">NEW FUNCTIONALITY<a class="anchor" aria-label="anchor" href="#new-functionality"></a>
-</h2>
-<ul>
-<li>Added new plotting function <code><a href="reference/circos_genomic_density.html">circos_genomic_density()</a></code>
-</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="fixes-5">FIXES<a class="anchor" aria-label="anchor" href="#fixes-5"></a>
-</h2>
-<ul>
-<li>Fixed minor issue with NA values in alluvial plots</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="deprecations">DEPRECATIONS<a class="anchor" aria-label="anchor" href="#deprecations"></a>
-</h2>
-<ul>
-<li>
-<code><a href="reference/import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_interactive()</a></code> and <code><a href="reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto()</a></code> are officially deprecated in favor of <code><a href="reference/import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices()</a></code>
-</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="other">OTHER<a class="anchor" aria-label="anchor" href="#other"></a>
-</h2>
-<ul>
-<li>The package has now a more complete and functional example data set for executable examples</li>
-<li>Reworked documentation</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-132-2021-06-28">ISAnalytics 1.3.2 (2021-06-28)<a class="anchor" aria-label="anchor" href="#isanalytics-132-2021-06-28"></a>
-</h1>
-<div class="section level2">
-<h2 id="fixes-6">FIXES<a class="anchor" aria-label="anchor" href="#fixes-6"></a>
-</h2>
-<ul>
-<li>Corrected issues in man pages</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-131-2021-06-24">ISAnalytics 1.3.1 (2021-06-24)<a class="anchor" aria-label="anchor" href="#isanalytics-131-2021-06-24"></a>
-</h1>
-<div class="section level2">
-<h2 id="new-functionality-1">NEW FUNCTIONALITY<a class="anchor" aria-label="anchor" href="#new-functionality-1"></a>
-</h2>
-<ul>
-<li>
-<code>is_sharing</code> computes the sharing of IS between groups</li>
-<li>
-<code>sharing_heatmap</code> allows visualization of sharing data through heatmaps</li>
-<li>
-<code>integration_alluvial_plot</code> allows visualization of integration sites distribution in groups over time.</li>
-<li>
-<code>top_abund_tableGrob</code> can be used in combination with the previous function or by itself to obtain a summary of top abundant integrations as an R graphic (tableGrob) object that can be combined with plots.</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="minor-updates">MINOR UPDATES<a class="anchor" aria-label="anchor" href="#minor-updates"></a>
-</h2>
-<ul>
-<li>Added more default stats functions to <code>default_stats</code>
-</li>
-<li>Added optional automatic conversion of time points in months and years when importing association file</li>
-<li>Minor fixes in <code>generate_Vispa2_launch_AF</code>
-</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-1111-2021-05-11">ISAnalytics 1.1.11 (2021-05-11)<a class="anchor" aria-label="anchor" href="#isanalytics-1111-2021-05-11"></a>
-</h1>
-<div class="section level2">
-<h2 id="new-functionality-2">NEW FUNCTIONALITY<a class="anchor" aria-label="anchor" href="#new-functionality-2"></a>
-</h2>
-<ul>
-<li>
-<code>HSC_population_size_estimate</code> and <code>HSC_population_plot</code> allow estimates on hematopoietic stem cell population size</li>
-<li>Importing of Vispa2 stats per pool now has a dedicated function, <code>import_Vispa2_stats</code>
-</li>
-<li>
-<code>outlier_filter</code> and <code>outliers_by_pool_fragments</code> offer a mean to filter poorly represented samples based on custom outliers tests</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="visible-user-changes">VISIBLE USER CHANGES<a class="anchor" aria-label="anchor" href="#visible-user-changes"></a>
-</h2>
-<ul>
-<li>The argument <code>import_stats</code> of <code>aggregate_metadata</code> is officially deprecated in favor of <code>import_Vispa2_stats</code>
-</li>
-<li>
-<code>aggregate_metadata</code> is now a lot more flexible on what operations can be performed on columns via the new argument <code>aggregating_functions</code>
-</li>
-<li>
-<code>import_association_file</code> allows directly for the import of Vispa2 stats and converts time points to months and years where not already present</li>
-<li>File system alignment of <code>import_association_file</code> now produces 3 separate columns for paths</li>
-<li>
-<code>separate_quant_matrices</code> and <code>comparison_matrix</code> now do not require mandatory columns other than the quantifications - this allows for separation or joining also for aggregated matrices</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="fixes-7">FIXES<a class="anchor" aria-label="anchor" href="#fixes-7"></a>
-</h2>
-<ul>
-<li>Fixed a minor issue in <code>CIS_volcano_plot</code> that caused duplication of some labels if highlighted genes were provided in input</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-1110-2021-04-08">ISAnalytics 1.1.10 (2021-04-08)<a class="anchor" aria-label="anchor" href="#isanalytics-1110-2021-04-08"></a>
-</h1>
-<div class="section level2">
-<h2 id="fixes-8">FIXES<a class="anchor" aria-label="anchor" href="#fixes-8"></a>
-</h2>
-<ul>
-<li>Fixed issue in <code>compute_near_integrations</code>: when provided recalibration map export path as a folder now the function works correctly and produces an automatically generated file name</li>
-<li>Fixed issue in <code>aggregate_metadata</code>: now paths to folder that contains Vispa2 stats is looked up correctly. Also, VISPA2 stats columns are aggregated if found in the input data frame independently from the parameter <code>import_stats</code>.</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="improvements">IMPROVEMENTS<a class="anchor" aria-label="anchor" href="#improvements"></a>
-</h2>
-<ul>
-<li>
-<code>compute_abundance</code> can now take as input aggregated matrices and has additional parameters to offer more flexibility to the user. Major updates and improvements also on documentation and reproducible examples.</li>
-<li>Major improvements in function <code>import_single_Vispa2Matrix</code>: import is now preferentially carried out using <code><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html" class="external-link">data.table::fread</a></code> greatly speeding up the process - where not possible <code><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">readr::read_delim</a></code> is used instead</li>
-<li>Major improvements in function <code>import_association_file</code>: greatly improved parsing precision (each column has a dedicated type), import report now signals parsing problems and their location and signals also problems in parsing dates. Report also includes potential problems in column names and signals missing data in important columns. Added also the possibility to give various file formats in input including <code>*.xls(x)</code> formats.</li>
-<li>Function <code>top_integrations</code> can now take additional parameters to compute top n genes for each specified group</li>
-<li>Removed faceting parameters in <code>CIS_volcano_plot</code> due to poor precision (easier to add faceting manually) and added parameters to return the data frame that generated the plot as an additional result. Also, it is now possible to specify a vector of gene names to highlight even if they’re not above the annotation threshold.</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="minor">MINOR<a class="anchor" aria-label="anchor" href="#minor"></a>
-</h2>
-<ul>
-<li>ISAnalytics website has improved graphic theme and has an additional button on the right that leads to the devel (or release) version of the website</li>
-<li>Updated vignettes</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="for-devs-only">FOR DEVS ONLY<a class="anchor" aria-label="anchor" href="#for-devs-only"></a>
-</h2>
-<ul>
-<li>Complete rework of test suite to be compliant to testthat v.3</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-119-2021-02-17">ISAnalytics 1.1.9 (2021-02-17)<a class="anchor" aria-label="anchor" href="#isanalytics-119-2021-02-17"></a>
-</h1>
-<div class="section level2">
-<h2 id="fixes-9">FIXES<a class="anchor" aria-label="anchor" href="#fixes-9"></a>
-</h2>
-<ul>
-<li>Fixed minor issues in internal functions with absolute file paths &amp; corrected typos</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-118-2020-02-15">ISAnalytics 1.1.8 (2020-02-15)<a class="anchor" aria-label="anchor" href="#isanalytics-118-2020-02-15"></a>
-</h1>
-<div class="section level2">
-<h2 id="fixes-10">FIXES<a class="anchor" aria-label="anchor" href="#fixes-10"></a>
-</h2>
-<ul>
-<li>Fixed minor issues in internal functions to optimize file system alignment</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-117-2020-02-10">ISAnalytics 1.1.7 (2020-02-10)<a class="anchor" aria-label="anchor" href="#isanalytics-117-2020-02-10"></a>
-</h1>
-<div class="section level2">
-<h2 id="fixes-11">FIXES<a class="anchor" aria-label="anchor" href="#fixes-11"></a>
-</h2>
-<ul>
-<li>Fixed minor issues in import_association_file when checking parameters</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-116-2020-02-06">ISAnalytics 1.1.6 (2020-02-06)<a class="anchor" aria-label="anchor" href="#isanalytics-116-2020-02-06"></a>
-</h1>
-<div class="section level2">
-<h2 id="upgrades">UPGRADES<a class="anchor" aria-label="anchor" href="#upgrades"></a>
-</h2>
-<ul>
-<li>It is now possible to save html reports to file from import_parallel_Vispa2Matrices_auto and import_parallel_Vispa2Matrices_interactive, remove_collisions and compute_near_integrations</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="fixes-12">FIXES<a class="anchor" aria-label="anchor" href="#fixes-12"></a>
-</h2>
-<ul>
-<li>Fixed sample_statistics: now functions that have data frame output do not produce nested tables. Flat tables are ready to be saved to file or can be nested.</li>
-<li>Simplified association file check logic in remove_collisions: now function blocks only if the af doesn’t contain the needed columns</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-115-2020-02-03">ISAnalytics 1.1.5 (2020-02-03)<a class="anchor" aria-label="anchor" href="#isanalytics-115-2020-02-03"></a>
-</h1>
-<div class="section level2">
-<h2 id="upgrades-1">UPGRADES<a class="anchor" aria-label="anchor" href="#upgrades-1"></a>
-</h2>
-<ul>
-<li>Upgraded import_association_file function: now file alignment is not mandatory anymore and it is possible to save the html report to file</li>
-<li>Updated vignettes and documentation</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-114-2020-11-16">ISAnalytics 1.1.4 (2020-11-16)<a class="anchor" aria-label="anchor" href="#isanalytics-114-2020-11-16"></a>
-</h1>
-<div class="section level2">
-<h2 id="upgrades-2">UPGRADES<a class="anchor" aria-label="anchor" href="#upgrades-2"></a>
-</h2>
-<ul>
-<li>Greatly improved reports for collision removal function</li>
-<li>General improvements for all widget reports</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-113-2020-11-10">ISAnalytics 1.1.3 (2020-11-10)<a class="anchor" aria-label="anchor" href="#isanalytics-113-2020-11-10"></a>
-</h1>
-<div class="section level2">
-<h2 id="fixes-13">FIXES<a class="anchor" aria-label="anchor" href="#fixes-13"></a>
-</h2>
-<ul>
-<li>Further fixes for printing reports when widgets not available</li>
-<li>Added progress bar to collision processing in <code>remove_collisions</code>
-</li>
-<li>Updated vignettes</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="new-3">NEW<a class="anchor" aria-label="anchor" href="#new-3"></a>
-</h2>
-<ul>
-<li>Added vignette “Using ISAnalytics without RStudio support”</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-112-2020-11-05">ISAnalytics 1.1.2 (2020-11-05)<a class="anchor" aria-label="anchor" href="#isanalytics-112-2020-11-05"></a>
-</h1>
-<div class="section level2">
-<h2 id="fixes-14">FIXES<a class="anchor" aria-label="anchor" href="#fixes-14"></a>
-</h2>
-<ul>
-<li>Fixed missing restarts for non-blocking widgets</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-111-2020-11-04">ISAnalytics 1.1.1 (2020-11-04)<a class="anchor" aria-label="anchor" href="#isanalytics-111-2020-11-04"></a>
-</h1>
-<div class="section level2">
-<h2 id="fixes-15">FIXES<a class="anchor" aria-label="anchor" href="#fixes-15"></a>
-</h2>
-<ul>
-<li>Functions that make use of widgets do not interrupt execution anymore if errors are thrown while producing or printing the widgets</li>
-<li>Optimized widget printing for importing functions</li>
-<li>If widgets can’t be printed and verbose option is active, reports are now displayed on console instead (needed for usage in environments that do not have access to a browser)</li>
-<li>Other minor fixes (typos)</li>
-<li>Bug fixes: fixed a few bugs in importing and recalibration functions</li>
-<li>Minor fix in import_association_file file function: added multiple strings to be translated as NA</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="important-notes">IMPORTANT NOTES<a class="anchor" aria-label="anchor" href="#important-notes"></a>
-</h2>
-<ul>
-<li>Vignette building might fail due to the fact that package “knitcitations” is temporarily unavailable through CRAN</li>
-<li>ISAnalytics is finally in release on bioconductor!</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-09914-2020-10-21">ISAnalytics 0.99.14 (2020-10-21)<a class="anchor" aria-label="anchor" href="#isanalytics-09914-2020-10-21"></a>
-</h1>
-<ul>
-<li>Minor fixes in tests</li>
-</ul>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-09913-2020-10-19">ISAnalytics 0.99.13 (2020-10-19)<a class="anchor" aria-label="anchor" href="#isanalytics-09913-2020-10-19"></a>
-</h1>
-<div class="section level2">
-<h2 id="new-features">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features"></a>
-</h2>
-<ul>
-<li>Added analysis functions <code>CIS_grubbs</code> and <code>cumulative_count_union</code>
-</li>
-<li>Added plotting functions <code>CIS_volcano_plot</code>
-</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-09912-2020-10-04">ISAnalytics 0.99.12 (2020-10-04)<a class="anchor" aria-label="anchor" href="#isanalytics-09912-2020-10-04"></a>
-</h1>
-<div class="section level2">
-<h2 id="new-features-1">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-1"></a>
-</h2>
-<ul>
-<li>Added analysis function <code>sample_statistics</code>
-</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="significant-user-visible-changes">SIGNIFICANT USER-VISIBLE CHANGES<a class="anchor" aria-label="anchor" href="#significant-user-visible-changes"></a>
-</h2>
-<ul>
-<li>
-<code>aggregate_values_by_key</code> has a simplified interface and supports multi-quantification matrices</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="minor-changes-2">MINOR CHANGES<a class="anchor" aria-label="anchor" href="#minor-changes-2"></a>
-</h2>
-<ul>
-<li>Updated vignettes</li>
-<li>
-<code>import_parallel_Vispa2Matrices_interactive</code> and <code>import_parallel_Vispa2Matrices_auto</code> now have an option to return a multi-quantification matrix directly after import instead of a list</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-09911-2020-09-21">ISAnalytics 0.99.11 (2020-09-21)<a class="anchor" aria-label="anchor" href="#isanalytics-09911-2020-09-21"></a>
-</h1>
-<div class="section level2">
-<h2 id="new-features-2">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-2"></a>
-</h2>
-<ul>
-<li>Added analysis functions <code>threshold_filter</code>, <code>top_integrations</code>
-</li>
-<li>Added support for multi-quantification matrices in <code>compute_abundance</code>
-</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="minor-fixes">MINOR FIXES<a class="anchor" aria-label="anchor" href="#minor-fixes"></a>
-</h2>
-<ul>
-<li>Fixed bug in <code>comparison_matrix</code> that ignored custom column names</li>
-<li>Fixed issues in some documentation pages</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-09910-2020-09-14">ISAnalytics 0.99.10 (2020-09-14)<a class="anchor" aria-label="anchor" href="#isanalytics-09910-2020-09-14"></a>
-</h1>
-<p>ISanalytics is officially on bioconductor!</p>
-<div class="section level2">
-<h2 id="new-features-3">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-3"></a>
-</h2>
-<ul>
-<li>Added analysis functions <code>comparison_matrix</code> and <code>separate_quant_matrices</code>
-</li>
-<li>Added utility function <code>as_sparse_matrix</code>
-</li>
-<li>Added package logo</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="significant-user-visible-changes-1">SIGNIFICANT USER-VISIBLE CHANGES<a class="anchor" aria-label="anchor" href="#significant-user-visible-changes-1"></a>
-</h2>
-<ul>
-<li>Changed algorithm for <code>compute_near_integrations</code>
-</li>
-<li>Added support for multi-quantification matrices to <code>remove_collisions</code>
-</li>
-<li>Added usage of lifecycle badges in documentation: users can now see if a feature is experimental/maturing/stable etc</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="minor-fixes-1">MINOR FIXES<a class="anchor" aria-label="anchor" href="#minor-fixes-1"></a>
-</h2>
-<ul>
-<li>Added fix for <code>import_single_Vispa2Matrix</code> to remove non significant 0 values</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-0999-2020-09-01">ISAnalytics 0.99.9 (2020-09-01)<a class="anchor" aria-label="anchor" href="#isanalytics-0999-2020-09-01"></a>
-</h1>
-<div class="section level2">
-<h2 id="new-features-4">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-4"></a>
-</h2>
-<ul>
-<li>Added functionality: aggregate functions</li>
-<li>Added vignette on aggregate functions</li>
-<li>Added recalibration functions</li>
-<li>Added first analysis function (compute_abundance)</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="significant-user-visible-changes-2">SIGNIFICANT USER-VISIBLE CHANGES<a class="anchor" aria-label="anchor" href="#significant-user-visible-changes-2"></a>
-</h2>
-<ul>
-<li>Dropped structure <code>ISADataFrame</code>: now the package only uses standard tibbles</li>
-<li>Modified package documentation</li>
-</ul>
-</div>
-</div>
-<div class="section level1">
-<h1 id="isanalytics-0998-2020-08-12">ISAnalytics 0.99.8 (2020-08-12)<a class="anchor" aria-label="anchor" href="#isanalytics-0998-2020-08-12"></a>
-</h1>
-<ul>
-<li>Submitted to Bioconductor</li>
-</ul>
-</div>
-<div class="section level1">
-<h1 id="to-do-in-future-updates">TO DO in future updates<a class="anchor" aria-label="anchor" href="#to-do-in-future-updates"></a>
-</h1>
-<ul>
-<li>
-<input type="checkbox" disabled checked>
-Add further plot wrappers (ISAnalytics 1.3.1)</li>
-<li>
-<input type="checkbox" disabled checked>
-New functionality: raw reads flagging/filtering (ISAnalytics 1.1.11)</li>
-<li>
-<input type="checkbox" disabled checked>
-New functionality: HSCs population size estimate (ISAnalytics 1.1.11)</li>
-<li>
-<input type="checkbox" disabled>
-Obtain a system to visualize interactive reports based on shiny (possibly replacing self-contained HTML reports)</li>
-</ul>
 </div>
 <div class="section level1">
 <h1 id="getting-help">Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
@@ -811,10 +178,7 @@ Obtain a system to visualize interactive reports based on shiny (possibly replac
 <p>For help please contact the maintainer of the package or open an issue on GitHub.</p>
 </div>
 
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="links">
+  </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li><a href="https://www.bioconductor.org/packages/ISAnalytics" class="external-link">View on Bioconductor</a></li>
@@ -859,25 +223,24 @@ Obtain a system to visualize interactive reports based on shiny (possibly replac
 </ul>
 </div>
 
-  </div>
+  </aside>
 </div>
 
 
-      <footer><div class="copyright">
+    <footer><div class="pkgdown-footer-left">
   <p></p>
 <p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
 </div>
 
-<div class="pkgdown">
+<div class="pkgdown-footer-right">
   <p></p>
 <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
 
   
-
 
   
 
