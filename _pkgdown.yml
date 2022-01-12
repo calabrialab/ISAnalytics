@@ -3,8 +3,8 @@ url: https://calabrialab.github.io/ISAnalytics
 development:
   mode: release
 template:
-  params:
-    bootswatch: flatly
+  bootstrap: 5
+  bootswatch: flatly
 navbar:
   structure:
     left:
