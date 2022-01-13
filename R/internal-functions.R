@@ -3874,10 +3874,16 @@
 #' @importFrom tidyr pivot_wider
 .estimate_pop <- function(df,
     seqCount_column,
+    fragmentEstimate_column,
     timepoint_column,
     annotation_cols,
     stable_timepoints,
     subject) {
+    quant_cols <- if (is.null(fragmentEstimate_column)) {
+        seqCount_column
+    } else {
+        c(seqCount_column, fragmentEstimate_column)
+    }
     # --- STABLE TIMEPOINTS?
     found_stable <- purrr::map_lgl(
         stable_timepoints,
@@ -3897,7 +3903,7 @@
     # --- OBTAIN MATRIX (ALL TPs)
     matrix_desc <- df %>%
         dplyr::mutate(bin = 1) %>%
-        dplyr::select(-.data[[seqCount_column]]) %>%
+        dplyr::select(-dplyr::all_of(quant_cols)) %>%
         tidyr::pivot_wider(
             names_from = c(
                 "CellType",
@@ -3917,7 +3923,7 @@
             dplyr::filter(as.numeric(.data[[timepoint_column]]) >=
                 first_stable) %>%
             dplyr::mutate(bin = 1) %>%
-            dplyr::select(-.data[[seqCount_column]]) %>%
+            dplyr::select(-dplyr::all_of(quant_cols)) %>%
             tidyr::pivot_wider(
                 names_from = c(
                     "CellType",

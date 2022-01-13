@@ -26,6 +26,17 @@
 #' Also, to be included in the analysis, a group must have at least 2
 #' distinct non-zero time points.
 #'
+#' # Setting a threshold for fragment estimate
+#' If fragment estimate is present in the input matrix, the filtering logic
+#' changes slightly: rows in the original matrix are kept if the sequence
+#' count value is greater or equal than the `seqCount_threshold` AND
+#' the fragment estimate value is greater or equal to the
+#' `fragmentEstimate_threshold` IF PRESENT (non-zero value).
+#' This means that for rows that miss fragment estimate, the filtering logic
+#' will be applied only on sequence count. If the user wishes not to use
+#' the combined filtering with fragment estimate, simply set
+#' `fragmentEstimate_threshold = 0`.
+#'
 #' @param x An aggregated integration matrix. See details.
 #' @param metadata An aggregated association file. See details.
 #' @param stable_timepoints A numeric vector or NULL if there are no
@@ -38,11 +49,16 @@
 #' `CellType` are present.
 #' @param timepoint_column What is the name of the time point column to use?
 #' Note that this column must be present in the key.
-#' @param seqCount_column What is the name of the column in x holding the
+#' @param seqCount_column What is the name of the column in x containing the
 #' values of sequence count quantification?
+#' @param fragmentEstimate_column What is the name of the column in x
+#' containing the values of fragment estimate quantification? If fragment
+#' estimate is not present in the matrix, param should be set to `NULL`.
 #' @param seqCount_threshold A single numeric value. After re-aggregating `x`,
 #' rows with a value greater or equal will be kept, the others will be
 #' discarded.
+#' @param fragmentEstimate_threshold A single numeric value. Threshold
+#' value for fragment estimate, see details.
 #' @param nIS_threshold A single numeric value. If a group (row) in the
 #' metadata data frame has a count of distinct integration sites strictly
 #' greater than this number it will be kept, otherwise discarded.
@@ -72,6 +88,7 @@
 #' estimate <- HSC_population_size_estimate(
 #'     x = aggreg,
 #'     metadata = aggreg_meta,
+#'     fragmentEstimate_column = NULL,
 #'     stable_timepoints = c(90, 180, 360),
 #'     cell_type = "Other"
 #' )
@@ -82,7 +99,9 @@ HSC_population_size_estimate <- function(x,
     blood_lineages = blood_lineages_default(),
     timepoint_column = "TimePoint",
     seqCount_column = "seqCount_sum",
+    fragmentEstimate_column = "fragmentEstimate_sum",
     seqCount_threshold = 3,
+    fragmentEstimate_threshold = 3,
     nIS_threshold = 5,
     cell_type = "MYELOID",
     tissue_type = "PB") {
@@ -90,13 +109,20 @@ HSC_population_size_estimate <- function(x,
     ## Basic checks on types
     stopifnot(is.data.frame(x))
     stopifnot(is.data.frame(metadata))
-    stopifnot(is.null(stable_timepoints) | is.numeric(stable_timepoints))
+    stopifnot(is.null(stable_timepoints) || is.numeric(stable_timepoints))
     stopifnot(is.character(aggregation_key))
     stopifnot(is.data.frame(blood_lineages))
-    stopifnot(is.character(timepoint_column) & length(timepoint_column) == 1)
-    stopifnot(is.character(seqCount_column) & length(seqCount_column) == 1)
+    stopifnot(is.character(timepoint_column))
+    timepoint_column <- timepoint_column[1]
+    stopifnot(is.character(seqCount_column))
+    seqCount_column <- seqCount_column[1]
+    stopifnot(is.null(fragmentEstimate_column) ||
+        is.character(fragmentEstimate_column))
+    fragmentEstimate_column <- fragmentEstimate_column[1]
     stopifnot(is.numeric(seqCount_threshold))
     seqCount_threshold <- seqCount_threshold[1]
+    stopifnot(is.numeric(fragmentEstimate_threshold))
+    fragmentEstimate_threshold <- fragmentEstimate_threshold[1]
     stopifnot(is.numeric(nIS_threshold))
     nIS_threshold <- nIS_threshold[1]
     stopifnot(is.character(cell_type))
@@ -135,6 +161,11 @@ HSC_population_size_estimate <- function(x,
     ## Check seqCount col in x
     if (!seqCount_column %in% colnames(x)) {
         rlang::abort(c("Sequence count column not found in x"))
+    }
+    ## Check fragmentEstimate col in x
+    if (!is.null(fragmentEstimate_column) &&
+        !fragmentEstimate_column %in% colnames(x)) {
+        rlang::abort(c("Fragment estimate column not found in x"))
     }
     ## Reorder stable timepoints
     if (is.null(stable_timepoints)) {
@@ -194,10 +225,15 @@ HSC_population_size_estimate <- function(x,
     }
     FUN <- function(df, metadata) {
         # --- RE-AGGREGATION
+        val_cols <- if (!is.null(fragmentEstimate_column)) {
+            c(seqCount_column, fragmentEstimate_column)
+        } else {
+            seqCount_column
+        }
         re_agg <- aggregate_values_by_key(
             x = df,
             association_file = metadata,
-            value_cols = seqCount_column,
+            value_cols = val_cols,
             key = c("CellType", "Tissue", timepoint_column),
             join_af_by = aggregation_key
         )
@@ -207,18 +243,43 @@ HSC_population_size_estimate <- function(x,
             colnames(re_agg),
             seqCount_column
         )]
+        fragmentEstimate_column <- if (!is.null(fragmentEstimate_column)) {
+            colnames(re_agg)[stringr::str_detect(
+                colnames(re_agg),
+                fragmentEstimate_column
+            )]
+        } else {
+            NULL
+        }
         ### Keep only sequence count value greater or equal to
-        ### seqCount_threshold
+        ### seqCount_threshold (or put it in AND with fe filter)
         ### (for each is)
-        per_int_sums_low <- re_agg %>%
-            dplyr::group_by(dplyr::across(
-                dplyr::all_of(mandatory_IS_vars())
-            )) %>%
-            dplyr::summarise(
-                sum = sum(.data[[seqCount_column]]),
-                .groups = "drop"
-            ) %>%
-            dplyr::filter(.data$sum >= seqCount_threshold)
+        per_int_sums_low <- if (is.null(fragmentEstimate_column)) {
+            re_agg %>%
+                dplyr::group_by(dplyr::across(
+                    dplyr::all_of(mandatory_IS_vars())
+                )) %>%
+                dplyr::summarise(
+                    sum_sc = sum(.data[[seqCount_column]]),
+                    .groups = "drop"
+                ) %>%
+                dplyr::filter(.data$sum_sc >= seqCount_threshold)
+        } else {
+            re_agg %>%
+                dplyr::group_by(dplyr::across(
+                    dplyr::all_of(mandatory_IS_vars())
+                )) %>%
+                dplyr::summarise(
+                    sum_sc = sum(.data[[seqCount_column]]),
+                    sum_fe = sum(.data[[fragmentEstimate_column]]),
+                    .groups = "drop"
+                ) %>%
+                dplyr::filter(
+                    .data$sum_sc >= seqCount_threshold,
+                    .data$sum_fe >= fragmentEstimate_threshold |
+                        .data$sum_fe == 0
+                )
+        }
         re_agg <- re_agg %>%
             dplyr::filter(
                 .data$chr %in% per_int_sums_low$chr,
@@ -242,31 +303,42 @@ HSC_population_size_estimate <- function(x,
         estimate <- .estimate_pop(
             df = patient_slice,
             seqCount_column = seqCount_column,
+            fragmentEstimate_column = fragmentEstimate_column,
             timepoint_column = timepoint_column,
             annotation_cols = annotation_cols,
             subject = df$SubjectID[1],
             stable_timepoints = stable_timepoints
         )
     }
-
-    population_size <- BiocParallel::bplapply(x_subj_split,
-        FUN = FUN,
-        metadata = metadata,
-        BPPARAM = p
-    )
-    BiocParallel::bpstop(p)
-    population_size <- purrr::reduce(population_size, function(x, y) {
-        if (is.null(x) & is.null(y)) {
-            return(NULL)
-        } else {
-            return(dplyr::bind_rows(x, y))
-        }
+    population_size <- BiocParallel::bptry({
+        BiocParallel::bplapply(
+            x_subj_split,
+            FUN = FUN,
+            metadata = metadata,
+            BPPARAM = p
+        )
     })
-    if (!is.null(population_size)) {
-        population_size <- population_size %>%
-            dplyr::mutate(PopSize = round(.data$abundance - .data$stderr))
+
+    BiocParallel::bpstop(p)
+    if (all(BiocParallel::bpok(population_size))) {
+        population_size <- purrr::reduce(population_size, function(x, y) {
+            if (is.null(x) & is.null(y)) {
+                return(NULL)
+            } else {
+                return(dplyr::bind_rows(x, y))
+            }
+        })
+        if (!is.null(population_size)) {
+            population_size <- population_size %>%
+                dplyr::mutate(PopSize = round(.data$abundance - .data$stderr))
+        }
+        return(population_size)
+    } else {
+        rlang::inform(c("An error occurred",
+            i = paste0(population_size, collapse = "\n")
+        ))
+        return(NULL)
     }
-    population_size
 }
 
 

@@ -12,7 +12,9 @@ HSC_population_size_estimate(
   blood_lineages = blood_lineages_default(),
   timepoint_column = "TimePoint",
   seqCount_column = "seqCount_sum",
+  fragmentEstimate_column = "fragmentEstimate_sum",
   seqCount_threshold = 3,
+  fragmentEstimate_threshold = 3,
   nIS_threshold = 5,
   cell_type = "MYELOID",
   tissue_type = "PB"
@@ -37,12 +39,19 @@ lineages. Users can supply their own, provided the columns \code{CellMarker} and
 \item{timepoint_column}{What is the name of the time point column to use?
 Note that this column must be present in the key.}
 
-\item{seqCount_column}{What is the name of the column in x holding the
+\item{seqCount_column}{What is the name of the column in x containing the
 values of sequence count quantification?}
+
+\item{fragmentEstimate_column}{What is the name of the column in x
+containing the values of fragment estimate quantification? If fragment
+estimate is not present in the matrix, param should be set to \code{NULL}.}
 
 \item{seqCount_threshold}{A single numeric value. After re-aggregating \code{x},
 rows with a value greater or equal will be kept, the others will be
 discarded.}
+
+\item{fragmentEstimate_threshold}{A single numeric value. Threshold
+value for fragment estimate, see details.}
 
 \item{nIS_threshold}{A single numeric value. If a group (row) in the
 metadata data frame has a count of distinct integration sites strictly
@@ -81,6 +90,18 @@ Also, to be included in the analysis, a group must have at least 2
 distinct non-zero time points.
 }
 
+\section{Setting a threshold for fragment estimate}{
+If fragment estimate is present in the input matrix, the filtering logic
+changes slightly: rows in the original matrix are kept if the sequence
+count value is greater or equal than the \code{seqCount_threshold} AND
+the fragment estimate value is greater or equal to the
+\code{fragmentEstimate_threshold} IF PRESENT (non-zero value).
+This means that for rows that miss fragment estimate, the filtering logic
+will be applied only on sequence count. If the user wishes not to use
+the combined filtering with fragment estimate, simply set
+\code{fragmentEstimate_threshold = 0}.
+}
+
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
@@ -93,6 +114,7 @@ aggreg_meta <- aggregate_metadata(association_file = association_file)
 estimate <- HSC_population_size_estimate(
     x = aggreg,
     metadata = aggreg_meta,
+    fragmentEstimate_column = NULL,
     stable_timepoints = c(90, 180, 360),
     cell_type = "Other"
 )
