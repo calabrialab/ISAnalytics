@@ -22,6 +22,7 @@ test_that(paste(func_name[1], "produces expected output"), {
     popul <- HSC_population_size_estimate(
         x = test_data,
         metadata = test_meta,
+        fragmentEstimate_column = NULL,
         stable_timepoints = c(9, 12, 13, 18, 30)
     )
     expect_equal(popul, test_expected)
@@ -33,6 +34,7 @@ test_that(paste(func_name[1], "produces output missing NumIS"), {
     popul <- HSC_population_size_estimate(
         x = test_data,
         metadata = mod_meta,
+        fragmentEstimate_column = NULL,
         stable_timepoints = c(9, 12, 13, 18, 30)
     )
     expect_equal(popul, test_expected)
