@@ -16,7 +16,7 @@ models."><meta property="og:image" content="https://calabrialab.github.io/ISAnal
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,7 +90,9 @@ models.</p>
   blood_lineages <span class="op">=</span> <span class="fu"><a href="blood_lineages_default.html">blood_lineages_default</a></span><span class="op">(</span><span class="op">)</span>,
   timepoint_column <span class="op">=</span> <span class="st">"TimePoint"</span>,
   seqCount_column <span class="op">=</span> <span class="st">"seqCount_sum"</span>,
+  fragmentEstimate_column <span class="op">=</span> <span class="st">"fragmentEstimate_sum"</span>,
   seqCount_threshold <span class="op">=</span> <span class="fl">3</span>,
+  fragmentEstimate_threshold <span class="op">=</span> <span class="fl">3</span>,
   nIS_threshold <span class="op">=</span> <span class="fl">5</span>,
   cell_type <span class="op">=</span> <span class="st">"MYELOID"</span>,
   tissue_type <span class="op">=</span> <span class="st">"PB"</span>
@@ -118,12 +120,19 @@ lineages. Users can supply their own, provided the columns <code>CellMarker</cod
 <dd><p>What is the name of the time point column to use?
 Note that this column must be present in the key.</p></dd>
 <dt>seqCount_column</dt>
-<dd><p>What is the name of the column in x holding the
+<dd><p>What is the name of the column in x containing the
 values of sequence count quantification?</p></dd>
+<dt>fragmentEstimate_column</dt>
+<dd><p>What is the name of the column in x
+containing the values of fragment estimate quantification? If fragment
+estimate is not present in the matrix, param should be set to <code>NULL</code>.</p></dd>
 <dt>seqCount_threshold</dt>
 <dd><p>A single numeric value. After re-aggregating <code>x</code>,
 rows with a value greater or equal will be kept, the others will be
 discarded.</p></dd>
+<dt>fragmentEstimate_threshold</dt>
+<dd><p>A single numeric value. Threshold
+value for fragment estimate, see details.</p></dd>
 <dt>nIS_threshold</dt>
 <dd><p>A single numeric value. If a group (row) in the
 metadata data frame has a count of distinct integration sites strictly
@@ -158,6 +167,18 @@ stable time points available. Note that 0 time points are ALWAYS discarded.
 Also, to be included in the analysis, a group must have at least 2
 distinct non-zero time points.</p>
     </div>
+    <div class="section level2">
+    <h2 id="setting-a-threshold-for-fragment-estimate">Setting a threshold for fragment estimate<a class="anchor" aria-label="anchor" href="#setting-a-threshold-for-fragment-estimate"></a></h2>
+    <p>If fragment estimate is present in the input matrix, the filtering logic
+changes slightly: rows in the original matrix are kept if the sequence
+count value is greater or equal than the <code>seqCount_threshold</code> AND
+the fragment estimate value is greater or equal to the
+<code>fragmentEstimate_threshold</code> IF PRESENT (non-zero value).
+This means that for rows that miss fragment estimate, the filtering logic
+will be applied only on sequence count. If the user wishes not to use
+the combined filtering with fragment estimate, simply set
+<code>fragmentEstimate_threshold = 0</code>.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -172,6 +193,7 @@ distinct non-zero time points.</p>
 <span class="r-in"><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu">HSC_population_size_estimate</span><span class="op">(</span></span>
 <span class="r-in">    x <span class="op">=</span> <span class="va">aggreg</span>,</span>
 <span class="r-in">    metadata <span class="op">=</span> <span class="va">aggreg_meta</span>,</span>
+<span class="r-in">    fragmentEstimate_column <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span class="r-in">    stable_timepoints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">90</span>, <span class="fl">180</span>, <span class="fl">360</span><span class="op">)</span>,</span>
 <span class="r-in">    cell_type <span class="op">=</span> <span class="st">"Other"</span></span>
 <span class="r-in"><span class="op">)</span></span>
