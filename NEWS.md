@@ -1,6 +1,15 @@
 NEWS
 ================
 
+# ISAnalytics 1.4.3 (2022-01-13)
+
+## MINOR CHANGES
+
+-   Added arguments `fragmentEstimate_column` and
+    `fragmentEstimate_threshold` in `HSC_population_size_estimate()`.
+    Slightly revised filtering logic.
+-   Updated package logo and website
+
 # ISAnalytics 1.4.2 (2021-12-14)
 
 ## NEW (MINOR)

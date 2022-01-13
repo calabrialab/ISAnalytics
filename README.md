@@ -137,6 +137,15 @@ options("ISAnalytics.reports" = TRUE)
 Show more
 </summary>
 
+# ISAnalytics 1.4.3 (2022-01-13)
+
+## MINOR CHANGES
+
+-   Added arguments `fragmentEstimate_column` and
+    `fragmentEstimate_threshold` in `HSC_population_size_estimate()`.
+    Slightly revised filtering logic.
+-   Updated package logo and website
+
 # ISAnalytics 1.4.2 (2021-12-14)
 
 ## NEW (MINOR)
@@ -545,16 +554,6 @@ ISanalytics is officially on bioconductor!
 -   Submitted to Bioconductor
 
 </details>
-
-# TO DO in future updates
-
--   [x] Add further plot wrappers (ISAnalytics 1.3.1)
--   [x] New functionality: raw reads flagging/filtering (ISAnalytics
-    1.1.11)
--   [x] New functionality: HSCs population size estimate (ISAnalytics
-    1.1.11)
--   [ ] Obtain a system to visualize interactive reports based on shiny
-    (possibly replacing self-contained HTML reports)
 
 # Getting help
 
