@@ -1771,7 +1771,7 @@ purity_filter <- function(x,
 #' source
 #' ggplot2::ggplot(source$PT001, ggplot2::aes(
 #'     x = as.factor(g2_TimePoint),
-#'     y = sharing_perc, fill = g1
+#'     y = on_g1, fill = g1
 #' )) +
 #'     ggplot2::geom_col() +
 #'     ggplot2::labs(
@@ -1839,22 +1839,6 @@ iss_source <- function(reference,
             tp_col = timepoint_column,
             subj_col = subject_column
         )
-        shared <- purrr::map(
-            shared,
-            ~ .x %>%
-                dplyr::select(
-                    -.data$count_g1, -.data$count_g2,
-                    -.data$count_union
-                ) %>%
-                tidyr::unnest(.data$is_coord, keep_empty = TRUE) %>%
-                dplyr::mutate(sharing_perc = dplyr::if_else(
-                    shared == 0, 0, .data$on_g2 / .data$shared
-                )) %>%
-                dplyr::select(
-                    -.data$shared, -.data$on_g1, -.data$on_g2,
-                    -.data$on_union
-                )
-        )
     } else {
         shared <- .sharing_for_source(reference,
             selection,
@@ -1863,21 +1847,6 @@ iss_source <- function(reference,
             tp_col = timepoint_column,
             subj_col = subject_column
         )
-        shared <- shared %>%
-            dplyr::select(
-                -.data$count_g1, -.data$count_g2,
-                -.data$count_union
-            ) %>%
-            tidyr::unnest(.data$is_coord, keep_empty = TRUE) %>%
-            dplyr::mutate(sharing_perc = dplyr::if_else(shared == 0,
-                0,
-                .data$on_g2 /
-                    .data$shared
-            )) %>%
-            dplyr::select(
-                -.data$shared, -.data$on_g1, -.data$on_g2,
-                -.data$on_union
-            )
     }
 
     return(shared)

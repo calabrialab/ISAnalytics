@@ -1054,22 +1054,22 @@ test_df3 <- tibble::tibble(
     )
 )
 expected_res1 <- list(
-    PT01 = tibble::tibble(
+    PT01 = data.table::data.table(
         g1 = c(
+            "PT01_CD34_BM_1", "PT01_CD34_BM_1",
+            "PT01_CD34_BM_1", "PT01_CD34_BM_1",
+            "PT01_CD34_BM_1", "PT01_CD34_BM_1",
             "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-            "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-            "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-            "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-            "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-            "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-            "PT01_CD34_BM_1", "PT01_CD34_BM_2",
+            "PT01_CD34_BM_2", "PT01_CD34_BM_2",
+            "PT01_CD34_BM_2", "PT01_CD34_BM_2",
+            "PT01_CD34_BM_2", "PT01_CD34_BM_2",
+            "PT01_Whole_BM_1", "PT01_Whole_BM_1",
+            "PT01_Whole_BM_1", "PT01_Whole_BM_1",
+            "PT01_Whole_BM_1", "PT01_Whole_BM_1",
             "PT01_Whole_BM_1", "PT01_Whole_BM_2",
-            "PT01_Whole_BM_1", "PT01_Whole_BM_2",
-            "PT01_Whole_BM_1", "PT01_Whole_BM_2",
-            "PT01_Whole_BM_1", "PT01_Whole_BM_2",
-            "PT01_Whole_BM_1", "PT01_Whole_BM_2",
-            "PT01_Whole_BM_1", "PT01_Whole_BM_2",
-            "PT01_Whole_BM_1", "PT01_Whole_BM_2"
+            "PT01_Whole_BM_2", "PT01_Whole_BM_2",
+            "PT01_Whole_BM_2", "PT01_Whole_BM_2",
+            "PT01_Whole_BM_2", "PT01_Whole_BM_2"
         ),
         g1_SubjectID = c(
             "PT01", "PT01", "PT01", "PT01",
@@ -1097,25 +1097,25 @@ expected_res1 <- list(
             "BM", "BM", "BM", "BM"
         ),
         g1_TimePoint = c(
-            1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-            1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-            1, 2, 1, 2
+            1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
+            2, 2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2,
+            2, 2, 2, 2
         ),
         g2 = c(
-            "PT01_CD15_PB_01", "PT01_CD15_PB_01",
-            "PT01_CD14_PB_06", "PT01_CD14_PB_06",
-            "PT01_CD14_PB_01", "PT01_CD14_PB_01",
-            "PT01_CD14_PB_02", "PT01_CD14_PB_02",
-            "PT01_CD13_PB_08", "PT01_CD13_PB_08",
-            "PT01_CD14_PB_03", "PT01_CD14_PB_03",
-            "PT01_CD13_PB_01", "PT01_CD13_PB_01",
-            "PT01_CD15_PB_01", "PT01_CD15_PB_01",
-            "PT01_CD14_PB_06", "PT01_CD14_PB_06",
-            "PT01_CD14_PB_01", "PT01_CD14_PB_01",
-            "PT01_CD14_PB_02", "PT01_CD14_PB_02",
-            "PT01_CD13_PB_08", "PT01_CD13_PB_08",
-            "PT01_CD14_PB_03", "PT01_CD14_PB_03",
-            "PT01_CD13_PB_01", "PT01_CD13_PB_01"
+            "PT01_CD15_PB_01", "PT01_CD14_PB_06",
+            "PT01_CD14_PB_01", "PT01_CD14_PB_02",
+            "PT01_CD13_PB_08", "PT01_CD14_PB_03",
+            "PT01_CD13_PB_01", "PT01_CD15_PB_01",
+            "PT01_CD14_PB_06", "PT01_CD14_PB_01",
+            "PT01_CD14_PB_02", "PT01_CD13_PB_08",
+            "PT01_CD14_PB_03", "PT01_CD13_PB_01",
+            "PT01_CD15_PB_01", "PT01_CD14_PB_06",
+            "PT01_CD14_PB_01", "PT01_CD14_PB_02",
+            "PT01_CD13_PB_08", "PT01_CD14_PB_03",
+            "PT01_CD13_PB_01", "PT01_CD15_PB_01",
+            "PT01_CD14_PB_06", "PT01_CD14_PB_01",
+            "PT01_CD14_PB_02", "PT01_CD13_PB_08",
+            "PT01_CD14_PB_03", "PT01_CD13_PB_01"
         ),
         g2_SubjectID = c(
             "PT01", "PT01", "PT01", "PT01",
@@ -1127,13 +1127,13 @@ expected_res1 <- list(
             "PT01", "PT01", "PT01", "PT01"
         ),
         g2_CellMarker = c(
-            "CD15", "CD15", "CD14", "CD14",
-            "CD14", "CD14", "CD14", "CD14",
-            "CD13", "CD13", "CD14", "CD14",
-            "CD13", "CD13", "CD15", "CD15",
-            "CD14", "CD14", "CD14", "CD14",
-            "CD14", "CD14", "CD13", "CD13",
-            "CD14", "CD14", "CD13", "CD13"
+            "CD15", "CD14", "CD14", "CD14",
+            "CD13", "CD14", "CD13", "CD15",
+            "CD14", "CD14", "CD14", "CD13",
+            "CD14", "CD13", "CD15", "CD14",
+            "CD14", "CD14", "CD13", "CD14",
+            "CD13", "CD15", "CD14", "CD14",
+            "CD14", "CD13", "CD14", "CD13"
         ),
         g2_Tissue = c(
             "PB", "PB", "PB", "PB", "PB", "PB",
@@ -1143,376 +1143,380 @@ expected_res1 <- list(
             "PB", "PB", "PB", "PB"
         ),
         g2_TimePoint = c(
-            1, 1, 6, 6, 1, 1, 2, 2, 8, 8, 3, 3,
-            1, 1, 1, 1, 6, 6, 1, 1, 2, 2, 8, 8,
-            3, 3, 1, 1
+            1, 6, 1, 2, 8, 3, 1, 1, 6, 1, 2,
+            8, 3, 1, 1, 6, 1, 2, 8, 3, 1, 1,
+            6, 1, 2, 8, 3, 1
         ),
-        chr = c(
-            "1", NA, "1", NA, "2", NA, NA, "3",
-            NA, "3", "1", NA, NA, NA, "1", NA,
-            "1", NA, "2", NA, NA, "3", NA, "3",
-            "1", NA, NA, NA
+        shared = c(
+            1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0,
+            0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1,
+            0, 0
         ),
-        integration_locus = c(
-            12345, NA, 12345, NA, 54321,
-            NA, NA, 62135, NA, 62135, 12345,
-            NA, NA, NA, 12345, NA, 12345,
-            NA, 54321, NA, NA, 62135, NA,
-            62135, 12345, NA, NA, NA
+        count_g1 = c(
+            2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1,
+            1, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1,
+            1, 1
         ),
-        strand = c(
-            "+", NA, "+", NA, "-", NA, NA,
-            "+", NA, "+", "+", NA, NA, NA,
-            "+", NA, "+", NA, "-", NA, NA,
-            "+", NA, "+", "+", NA, NA, NA
+        count_g2 = c(
+            2, 2, 1, 1, 2, 1, 1, 2, 2, 1, 1, 2, 1,
+            1, 2, 2, 1, 1, 2, 1, 1, 2, 2, 1, 1, 2,
+            1, 1
         ),
-        sharing_perc = c(
-            50, 0, 50, 0, 100, 0, 0, 100, 0, 50,
-            100, 0, 0, 0, 50, 0, 50, 0, 100, 0,
-            0, 100, 0, 50, 100, 0, 0, 0
+        count_union = c(
+            3, 3, 2, 3, 4, 2, 3, 3, 3, 2, 1, 2,
+            2, 2, 3, 3, 2, 3, 4, 2, 3, 3, 3, 2,
+            1, 2, 2, 2
+        ),
+        on_g1 = c(
+            50, 50, 50, 0, 0, 50, 0, 0, 0, 0, 100, 100,
+            0, 0, 50, 50, 50, 0, 0, 50, 0, 0, 0, 0,
+            100, 100, 0, 0
+        ),
+        on_g2 = c(
+            50, 50, 100, 0, 0, 100, 0, 0, 0, 0, 100,
+            50, 0, 0, 50, 50, 100, 0, 0, 100, 0, 0, 0,
+            0, 100, 50, 0, 0
+        ),
+        on_union = c(
+            33.3333333333333, 33.3333333333333, 50,
+            0, 0, 50, 0, 0, 0, 0, 100, 50, 0, 0,
+            33.3333333333333, 33.3333333333333,
+            50, 0, 0, 50, 0, 0, 0, 0, 100, 50,
+            0, 0
         )
     ) %>%
         dplyr::arrange(.data$g1),
-    PT02 = tibble::tibble(
+    PT02 = data.table::data.table(
         g1 = c(
-            "PT02_CD34_BM_3", "PT02_CD34_BM_1",
-            "PT02_CD34_BM_3", "PT02_CD34_BM_1",
-            "PT02_CD34_BM_3", "PT02_CD34_BM_1",
-            "PT02_CD34_BM_3", "PT02_CD34_BM_1",
-            "PT02_CD34_BM_3", "PT02_CD34_BM_1",
-            "PT02_CD34_BM_3", "PT02_CD34_BM_1",
-            "PT02_Whole_BM_6", "PT02_Whole_BM_1",
-            "PT02_Whole_BM_6", "PT02_Whole_BM_1",
-            "PT02_Whole_BM_6", "PT02_Whole_BM_1",
-            "PT02_Whole_BM_6", "PT02_Whole_BM_1",
-            "PT02_Whole_BM_6", "PT02_Whole_BM_1",
-            "PT02_Whole_BM_6", "PT02_Whole_BM_1"
+            "PT02_CD34_BM_1", "PT02_CD34_BM_1", "PT02_CD34_BM_1",
+            "PT02_CD34_BM_1", "PT02_CD34_BM_1", "PT02_CD34_BM_1",
+            "PT02_CD34_BM_3", "PT02_CD34_BM_3", "PT02_CD34_BM_3",
+            "PT02_CD34_BM_3", "PT02_CD34_BM_3", "PT02_CD34_BM_3",
+            "PT02_Whole_BM_1", "PT02_Whole_BM_1", "PT02_Whole_BM_1",
+            "PT02_Whole_BM_1", "PT02_Whole_BM_1", "PT02_Whole_BM_1",
+            "PT02_Whole_BM_6", "PT02_Whole_BM_6", "PT02_Whole_BM_6",
+            "PT02_Whole_BM_6", "PT02_Whole_BM_6", "PT02_Whole_BM_6"
         ),
         g1_SubjectID = c(
-            "PT02", "PT02", "PT02", "PT02",
-            "PT02", "PT02", "PT02", "PT02",
-            "PT02", "PT02", "PT02", "PT02",
-            "PT02", "PT02", "PT02", "PT02",
-            "PT02", "PT02", "PT02", "PT02",
-            "PT02", "PT02", "PT02", "PT02"
+            "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+            "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+            "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+            "PT02", "PT02", "PT02", "PT02", "PT02", "PT02"
         ),
         g1_CellMarker = c(
-            "CD34", "CD34", "CD34", "CD34",
-            "CD34", "CD34", "CD34", "CD34",
-            "CD34", "CD34", "CD34", "CD34",
-            "Whole", "Whole", "Whole", "Whole",
-            "Whole", "Whole", "Whole", "Whole",
-            "Whole", "Whole", "Whole", "Whole"
+            "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
+            "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
+            "Whole", "Whole", "Whole", "Whole", "Whole",
+            "Whole", "Whole", "Whole", "Whole", "Whole",
+            "Whole", "Whole"
         ),
         g1_Tissue = c(
-            "BM", "BM", "BM", "BM", "BM", "BM",
-            "BM", "BM", "BM", "BM", "BM", "BM",
-            "BM", "BM", "BM", "BM", "BM", "BM",
+            "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+            "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
             "BM", "BM", "BM", "BM", "BM", "BM"
         ),
         g1_TimePoint = c(
-            3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
-            6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1
+            1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1,
+            6, 6, 6, 6, 6, 6
         ),
         g2 = c(
-            "PT02_CD14_PB_03", "PT02_CD14_PB_03",
-            "PT02_CD13_PB_03", "PT02_CD13_PB_03",
-            "PT02_CD13_PB_01", "PT02_CD13_PB_01",
-            "PT02_CD15_PB_01", "PT02_CD15_PB_01",
-            "PT02_CD15_PB_06", "PT02_CD15_PB_06",
-            "PT02_CD14_PB_02", "PT02_CD14_PB_02",
-            "PT02_CD14_PB_03", "PT02_CD14_PB_03",
-            "PT02_CD13_PB_03", "PT02_CD13_PB_03",
-            "PT02_CD13_PB_01", "PT02_CD13_PB_01",
-            "PT02_CD15_PB_01", "PT02_CD15_PB_01",
-            "PT02_CD15_PB_06", "PT02_CD15_PB_06",
-            "PT02_CD14_PB_02", "PT02_CD14_PB_02"
+            "PT02_CD14_PB_03", "PT02_CD13_PB_03", "PT02_CD13_PB_01",
+            "PT02_CD15_PB_01", "PT02_CD15_PB_06", "PT02_CD14_PB_02",
+            "PT02_CD14_PB_03", "PT02_CD13_PB_03", "PT02_CD13_PB_01",
+            "PT02_CD15_PB_01", "PT02_CD15_PB_06", "PT02_CD14_PB_02",
+            "PT02_CD14_PB_03", "PT02_CD13_PB_03", "PT02_CD13_PB_01",
+            "PT02_CD15_PB_01", "PT02_CD15_PB_06", "PT02_CD14_PB_02",
+            "PT02_CD14_PB_03", "PT02_CD13_PB_03", "PT02_CD13_PB_01",
+            "PT02_CD15_PB_01", "PT02_CD15_PB_06", "PT02_CD14_PB_02"
         ),
         g2_SubjectID = c(
-            "PT02", "PT02", "PT02", "PT02",
-            "PT02", "PT02", "PT02", "PT02",
-            "PT02", "PT02", "PT02", "PT02",
-            "PT02", "PT02", "PT02", "PT02",
-            "PT02", "PT02", "PT02", "PT02",
-            "PT02", "PT02", "PT02", "PT02"
+            "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+            "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+            "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+            "PT02", "PT02", "PT02", "PT02", "PT02", "PT02"
         ),
         g2_CellMarker = c(
-            "CD14", "CD14", "CD13", "CD13",
-            "CD13", "CD13", "CD15", "CD15",
-            "CD15", "CD15", "CD14", "CD14",
-            "CD14", "CD14", "CD13", "CD13",
-            "CD13", "CD13", "CD15", "CD15",
-            "CD15", "CD15", "CD14", "CD14"
+            "CD14", "CD13", "CD13", "CD15", "CD15", "CD14",
+            "CD14", "CD13", "CD13", "CD15", "CD15", "CD14",
+            "CD14", "CD13", "CD13", "CD15", "CD15", "CD14",
+            "CD14", "CD13", "CD13", "CD15", "CD15", "CD14"
         ),
         g2_Tissue = c(
-            "PB", "PB", "PB", "PB", "PB", "PB",
-            "PB", "PB", "PB", "PB", "PB", "PB",
-            "PB", "PB", "PB", "PB", "PB", "PB",
+            "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+            "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
             "PB", "PB", "PB", "PB", "PB", "PB"
         ),
         g2_TimePoint = c(
-            3, 3, 3, 3, 1, 1, 1, 1, 6, 6, 2, 2,
-            3, 3, 3, 3, 1, 1, 1, 1, 6, 6, 2, 2
+            3, 3, 1, 1, 6, 2, 3, 3, 1, 1, 6, 2, 3, 3, 1, 1, 6, 2,
+            3, 3, 1, 1, 6, 2
         ),
-        chr = c(
-            NA, NA, "1", NA, NA, "2", NA, NA,
-            NA, NA, NA, NA, NA, NA, NA,
-            NA, NA, NA, NA, 1, 1, NA, NA,
-            NA
+        shared = c(
+            0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+            0, 0, 1, 0
         ),
-        integration_locus = c(
-            NA, NA, 43524, NA, NA, 76835,
-            NA, NA, NA, NA, NA, NA, NA, NA,
-            NA, NA, NA, NA, NA, 56832,
-            12345, NA, NA, NA
+        count_g1 = c(
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1
         ),
-        strand = c(
-            NA, NA, "+", NA, NA, "-", NA,
-            NA, NA, NA, NA, NA, NA,
-            NA, NA, NA, NA, NA, NA,
-            "-", "+", NA, NA, NA
+        count_g2 = c(
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            1, 1, 1, 1
         ),
-        sharing_perc = c(
-            0, 0, 100, 0, 0, 100, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 100,
-            100, 0, 0, 0
+        count_union = c(
+            2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2,
+            2, 2, 2, 1, 2
+        ),
+        on_g1 = c(
+            0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0,
+            0, 0, 0, 100, 0
+        ),
+        on_g2 = c(
+            0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0,
+            0, 0, 0, 100, 0
+        ),
+        on_union = c(
+            0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0,
+            0, 0, 0, 0, 100, 0
         )
     ) %>%
         dplyr::arrange(.data$g1)
 )
 
-expected_res2 <- tibble::tibble(
-    g1 = c(
-        "PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-        "PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-        "PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-        "PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-        "PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-        "PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_CD34_BM_1", "PT01_CD34_BM_2",
-        "PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_Whole_BM_1",
-        "PT01_Whole_BM_2", "PT01_Whole_BM_1", "PT01_Whole_BM_2",
-        "PT01_Whole_BM_1", "PT01_Whole_BM_2", "PT01_Whole_BM_1",
-        "PT01_Whole_BM_2", "PT01_Whole_BM_1", "PT01_Whole_BM_2",
-        "PT01_Whole_BM_1", "PT01_Whole_BM_2", "PT01_Whole_BM_1",
-        "PT01_Whole_BM_2", "PT01_Whole_BM_1", "PT01_Whole_BM_2",
-        "PT01_Whole_BM_1", "PT01_Whole_BM_2", "PT01_Whole_BM_1",
-        "PT01_Whole_BM_2", "PT01_Whole_BM_1", "PT01_Whole_BM_2",
-        "PT01_Whole_BM_1", "PT01_Whole_BM_2", "PT01_Whole_BM_1",
-        "PT01_Whole_BM_2", "PT02_CD34_BM_3", "PT02_CD34_BM_1",
-        "PT02_CD34_BM_3", "PT02_CD34_BM_1", "PT02_CD34_BM_3",
-        "PT02_CD34_BM_1", "PT02_CD34_BM_3", "PT02_CD34_BM_1",
-        "PT02_CD34_BM_3", "PT02_CD34_BM_1", "PT02_CD34_BM_3",
-        "PT02_CD34_BM_1", "PT02_CD34_BM_3", "PT02_CD34_BM_1",
-        "PT02_CD34_BM_3", "PT02_CD34_BM_1", "PT02_CD34_BM_3",
-        "PT02_CD34_BM_1", "PT02_CD34_BM_3", "PT02_CD34_BM_1",
-        "PT02_CD34_BM_3", "PT02_CD34_BM_1", "PT02_CD34_BM_3",
-        "PT02_CD34_BM_1", "PT02_CD34_BM_3", "PT02_CD34_BM_1",
-        "PT02_Whole_BM_6", "PT02_Whole_BM_1", "PT02_Whole_BM_6",
-        "PT02_Whole_BM_1", "PT02_Whole_BM_6", "PT02_Whole_BM_1",
-        "PT02_Whole_BM_6", "PT02_Whole_BM_1", "PT02_Whole_BM_6",
-        "PT02_Whole_BM_1", "PT02_Whole_BM_6", "PT02_Whole_BM_1",
-        "PT02_Whole_BM_6", "PT02_Whole_BM_1", "PT02_Whole_BM_6",
-        "PT02_Whole_BM_1", "PT02_Whole_BM_6", "PT02_Whole_BM_1",
-        "PT02_Whole_BM_6", "PT02_Whole_BM_1", "PT02_Whole_BM_6",
-        "PT02_Whole_BM_1", "PT02_Whole_BM_6", "PT02_Whole_BM_1",
-        "PT02_Whole_BM_6", "PT02_Whole_BM_1"
-    ),
-    g1_SubjectID = c(
-        "PT01", "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
-        "PT01", "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
-        "PT01", "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
-        "PT01", "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
-        "PT01", "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
-        "PT01", "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
-        "PT01", "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
-        "PT01", "PT01", "PT01", "PT02", "PT02", "PT02", "PT02",
-        "PT02", "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
-        "PT02", "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
-        "PT02", "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
-        "PT02", "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
-        "PT02", "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
-        "PT02", "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
-        "PT02", "PT02", "PT02", "PT02", "PT02", "PT02"
-    ),
-    g1_CellMarker = c(
-        "CD34", "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
-        "CD34", "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
-        "CD34", "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
-        "CD34", "CD34", "CD34", "CD34", "CD34", "Whole", "Whole",
-        "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
-        "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
-        "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
-        "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
-        "CD34", "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
-        "CD34", "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
-        "CD34", "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
-        "CD34", "CD34", "CD34", "CD34", "CD34", "Whole", "Whole",
-        "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
-        "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
-        "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
-        "Whole", "Whole", "Whole", "Whole", "Whole", "Whole"
-    ),
-    g1_Tissue = c(
-        "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
-        "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
-        "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
-        "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
-        "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
-        "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
-        "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
-        "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
-        "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
-        "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
-        "BM", "BM", "BM", "BM"
-    ),
-    g1_TimePoint = c(
-        1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1,
-        2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
-        1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 3, 1, 3,
-        1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
-        3, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6,
-        1, 6, 1, 6, 1, 6, 1, 6, 1
-    ),
-    g2 = c(
-        "PT02_CD14_PB_03", "PT02_CD14_PB_03", "PT02_CD13_PB_03",
-        "PT02_CD13_PB_03", "PT01_CD15_PB_01", "PT01_CD15_PB_01",
-        "PT01_CD14_PB_06", "PT01_CD14_PB_06", "PT01_CD14_PB_01",
-        "PT01_CD14_PB_01", "PT02_CD13_PB_01", "PT02_CD13_PB_01",
-        "PT01_CD14_PB_02", "PT01_CD14_PB_02", "PT01_CD13_PB_08",
-        "PT01_CD13_PB_08", "PT01_CD14_PB_03", "PT01_CD14_PB_03",
-        "PT02_CD15_PB_01", "PT02_CD15_PB_01", "PT02_CD15_PB_06",
-        "PT02_CD15_PB_06", "PT01_CD13_PB_01", "PT01_CD13_PB_01",
-        "PT02_CD14_PB_02", "PT02_CD14_PB_02", "PT02_CD14_PB_03",
-        "PT02_CD14_PB_03", "PT02_CD13_PB_03", "PT02_CD13_PB_03",
-        "PT01_CD15_PB_01", "PT01_CD15_PB_01", "PT01_CD14_PB_06",
-        "PT01_CD14_PB_06", "PT01_CD14_PB_01", "PT01_CD14_PB_01",
-        "PT02_CD13_PB_01", "PT02_CD13_PB_01", "PT01_CD14_PB_02",
-        "PT01_CD14_PB_02", "PT01_CD13_PB_08", "PT01_CD13_PB_08",
-        "PT01_CD14_PB_03", "PT01_CD14_PB_03", "PT02_CD15_PB_01",
-        "PT02_CD15_PB_01", "PT02_CD15_PB_06", "PT02_CD15_PB_06",
-        "PT01_CD13_PB_01", "PT01_CD13_PB_01", "PT02_CD14_PB_02",
-        "PT02_CD14_PB_02", "PT02_CD14_PB_03", "PT02_CD14_PB_03",
-        "PT02_CD13_PB_03", "PT02_CD13_PB_03", "PT01_CD15_PB_01",
-        "PT01_CD15_PB_01", "PT01_CD14_PB_06", "PT01_CD14_PB_06",
-        "PT01_CD14_PB_01", "PT01_CD14_PB_01", "PT02_CD13_PB_01",
-        "PT02_CD13_PB_01", "PT01_CD14_PB_02", "PT01_CD14_PB_02",
-        "PT01_CD13_PB_08", "PT01_CD13_PB_08", "PT01_CD14_PB_03",
-        "PT01_CD14_PB_03", "PT02_CD15_PB_01", "PT02_CD15_PB_01",
-        "PT02_CD15_PB_06", "PT02_CD15_PB_06", "PT01_CD13_PB_01",
-        "PT01_CD13_PB_01", "PT02_CD14_PB_02", "PT02_CD14_PB_02",
-        "PT02_CD14_PB_03", "PT02_CD14_PB_03", "PT02_CD13_PB_03",
-        "PT02_CD13_PB_03", "PT01_CD15_PB_01", "PT01_CD15_PB_01",
-        "PT01_CD14_PB_06", "PT01_CD14_PB_06", "PT01_CD14_PB_01",
-        "PT01_CD14_PB_01", "PT02_CD13_PB_01", "PT02_CD13_PB_01",
-        "PT01_CD14_PB_02", "PT01_CD14_PB_02", "PT01_CD13_PB_08",
-        "PT01_CD13_PB_08", "PT01_CD14_PB_03", "PT01_CD14_PB_03",
-        "PT02_CD15_PB_01", "PT02_CD15_PB_01", "PT02_CD15_PB_06",
-        "PT02_CD15_PB_06", "PT01_CD13_PB_01", "PT01_CD13_PB_01",
-        "PT02_CD14_PB_02", "PT02_CD14_PB_02"
-    ),
-    g2_SubjectID = c(
-        "PT02", "PT02", "PT02", "PT02", "PT01", "PT01", "PT01",
-        "PT01", "PT01", "PT01", "PT02", "PT02", "PT01", "PT01",
-        "PT01", "PT01", "PT01", "PT01", "PT02", "PT02", "PT02",
-        "PT02", "PT01", "PT01", "PT02", "PT02", "PT02", "PT02",
-        "PT02", "PT02", "PT01", "PT01", "PT01", "PT01", "PT01",
-        "PT01", "PT02", "PT02", "PT01", "PT01", "PT01", "PT01",
-        "PT01", "PT01", "PT02", "PT02", "PT02", "PT02", "PT01",
-        "PT01", "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
-        "PT01", "PT01", "PT01", "PT01", "PT01", "PT01", "PT02",
-        "PT02", "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
-        "PT02", "PT02", "PT02", "PT02", "PT01", "PT01", "PT02",
-        "PT02", "PT02", "PT02", "PT02", "PT02", "PT01", "PT01",
-        "PT01", "PT01", "PT01", "PT01", "PT02", "PT02", "PT01",
-        "PT01", "PT01", "PT01", "PT01", "PT01", "PT02", "PT02",
-        "PT02", "PT02", "PT01", "PT01", "PT02", "PT02"
-    ),
-    g2_CellMarker = c(
-        "CD14", "CD14", "CD13", "CD13", "CD15", "CD15", "CD14",
-        "CD14", "CD14", "CD14", "CD13", "CD13", "CD14", "CD14",
-        "CD13", "CD13", "CD14", "CD14", "CD15", "CD15", "CD15",
-        "CD15", "CD13", "CD13", "CD14", "CD14", "CD14", "CD14",
-        "CD13", "CD13", "CD15", "CD15", "CD14", "CD14", "CD14",
-        "CD14", "CD13", "CD13", "CD14", "CD14", "CD13", "CD13",
-        "CD14", "CD14", "CD15", "CD15", "CD15", "CD15", "CD13",
-        "CD13", "CD14", "CD14", "CD14", "CD14", "CD13", "CD13",
-        "CD15", "CD15", "CD14", "CD14", "CD14", "CD14", "CD13",
-        "CD13", "CD14", "CD14", "CD13", "CD13", "CD14", "CD14",
-        "CD15", "CD15", "CD15", "CD15", "CD13", "CD13", "CD14",
-        "CD14", "CD14", "CD14", "CD13", "CD13", "CD15", "CD15",
-        "CD14", "CD14", "CD14", "CD14", "CD13", "CD13", "CD14",
-        "CD14", "CD13", "CD13", "CD14", "CD14", "CD15", "CD15",
-        "CD15", "CD15", "CD13", "CD13", "CD14", "CD14"
-    ),
-    g2_Tissue = c(
-        "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-        "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-        "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-        "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-        "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-        "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-        "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-        "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-        "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-        "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-        "PB", "PB", "PB", "PB"
-    ),
-    g2_TimePoint = c(
-        3, 3, 3, 3, 1, 1, 6, 6, 1, 1, 1, 1, 2, 2, 8, 8, 3, 3, 1,
-        1, 6, 6, 1, 1, 2, 2, 3, 3, 3, 3, 1, 1, 6, 6, 1, 1, 1, 1,
-        2, 2, 8, 8, 3, 3, 1, 1, 6, 6, 1, 1, 2, 2, 3, 3, 3, 3, 1,
-        1, 6, 6, 1, 1, 1, 1, 2, 2, 8, 8, 3, 3, 1, 1, 6, 6, 1, 1,
-        2, 2, 3, 3, 3, 3, 1, 1, 6, 6, 1, 1, 1, 1, 2, 2, 8, 8, 3,
-        3, 1, 1, 6, 6, 1, 1, 2, 2
-    ),
-    chr = c(
-        NA, NA, NA, NA, "1", NA, "1", NA, "2", NA, NA, NA, NA, "3", NA,
-        "3", "1", NA, NA, NA, "1", NA, NA, NA, NA, "3", NA, NA, NA, NA,
-        "1", NA, "1", NA, "2", NA, NA, NA, NA, "3", NA, "3", "1", NA, NA,
-        NA, "1", NA, NA, NA, NA, "3", NA, NA, "1", NA, NA, NA, NA, NA, NA,
-        NA, NA, "2", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-        NA, NA, NA, NA, NA, "1", NA, "1", NA, NA, NA, NA, NA, NA, NA, NA,
-        NA, "1", NA, NA, "1", "1", NA, NA, NA, NA, NA
-    ),
-    integration_locus = c(
-        NA, NA, NA, NA, 12345, NA, 12345, NA, 54321, NA, NA,
-        NA, NA, 62135, NA, 62135, 12345, NA, NA, NA, 12345,
-        NA, NA, NA, NA, 62135, NA, NA, NA, NA, 12345, NA,
-        12345, NA, 54321, NA, NA, NA, NA, 62135, NA, 62135,
-        12345, NA, NA, NA, 12345, NA, NA, NA, NA, 62135, NA,
-        NA, 43524, NA, NA, NA, NA, NA, NA, NA, NA, 76835, NA,
-        NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-        NA, NA, NA, NA, 12345, NA, 12345, NA, NA, NA, NA, NA,
-        NA, NA, NA, NA, 12345, NA, NA, 56832, 12345, NA, NA,
-        NA, NA, NA
-    ),
-    strand = c(
-        NA, NA, NA, NA, "+", NA, "+", NA, "-", NA, NA, NA, NA, "+", NA,
-        "+", "+", NA, NA, NA, "+", NA, NA, NA, NA, "+", NA, NA, NA, NA,
-        "+", NA, "+", NA, "-", NA, NA, NA, NA, "+", NA, "+", "+", NA,
-        NA, NA, "+", NA, NA, NA, NA, "+", NA, NA, "+", NA, NA, NA, NA,
-        NA, NA, NA, NA, "-", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-        NA, NA, NA, NA, NA, NA, NA, "+", NA, "+", NA, NA, NA, NA, NA, NA,
-        NA, NA, NA, "+", NA, NA, "-", "+", NA, NA, NA, NA, NA
-    ),
-    sharing_perc = c(
-        0, 0, 0, 0, 50, 0, 50, 0, 100, 0, 0, 0, 0, 100, 0, 50,
-        100, 0, 0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 50, 0, 50,
-        0, 100, 0, 0, 0, 0, 100, 0, 50, 100, 0, 0, 0, 100, 0, 0,
-        0, 0, 100, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 50,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 100, 100, 0, 0, 0,
-        0, 0
-    )
+expected_res2 <- data.table::data.table(
+    g1 = c("PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_CD34_BM_1",
+           "PT01_CD34_BM_2", "PT01_CD34_BM_1", "PT01_CD34_BM_2",
+           "PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_CD34_BM_1",
+           "PT01_CD34_BM_2", "PT01_CD34_BM_1", "PT01_CD34_BM_2",
+           "PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_CD34_BM_1",
+           "PT01_CD34_BM_2", "PT01_CD34_BM_1", "PT01_CD34_BM_2",
+           "PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_CD34_BM_1",
+           "PT01_CD34_BM_2", "PT01_CD34_BM_1", "PT01_CD34_BM_2",
+           "PT01_CD34_BM_1", "PT01_CD34_BM_2", "PT01_Whole_BM_1",
+           "PT01_Whole_BM_2", "PT01_Whole_BM_1", "PT01_Whole_BM_2",
+           "PT01_Whole_BM_1", "PT01_Whole_BM_2", "PT01_Whole_BM_1",
+           "PT01_Whole_BM_2", "PT01_Whole_BM_1", "PT01_Whole_BM_2",
+           "PT01_Whole_BM_1", "PT01_Whole_BM_2", "PT01_Whole_BM_1",
+           "PT01_Whole_BM_2", "PT01_Whole_BM_1", "PT01_Whole_BM_2",
+           "PT01_Whole_BM_1", "PT01_Whole_BM_2", "PT01_Whole_BM_1",
+           "PT01_Whole_BM_2", "PT01_Whole_BM_1", "PT01_Whole_BM_2",
+           "PT01_Whole_BM_1", "PT01_Whole_BM_2", "PT01_Whole_BM_1",
+           "PT01_Whole_BM_2", "PT02_CD34_BM_3", "PT02_CD34_BM_1",
+           "PT02_CD34_BM_3", "PT02_CD34_BM_1", "PT02_CD34_BM_3",
+           "PT02_CD34_BM_1", "PT02_CD34_BM_3", "PT02_CD34_BM_1",
+           "PT02_CD34_BM_3", "PT02_CD34_BM_1", "PT02_CD34_BM_3",
+           "PT02_CD34_BM_1", "PT02_CD34_BM_3", "PT02_CD34_BM_1",
+           "PT02_CD34_BM_3", "PT02_CD34_BM_1", "PT02_CD34_BM_3",
+           "PT02_CD34_BM_1", "PT02_CD34_BM_3", "PT02_CD34_BM_1",
+           "PT02_CD34_BM_3", "PT02_CD34_BM_1", "PT02_CD34_BM_3",
+           "PT02_CD34_BM_1", "PT02_CD34_BM_3", "PT02_CD34_BM_1",
+           "PT02_Whole_BM_6", "PT02_Whole_BM_1", "PT02_Whole_BM_6",
+           "PT02_Whole_BM_1", "PT02_Whole_BM_6", "PT02_Whole_BM_1",
+           "PT02_Whole_BM_6", "PT02_Whole_BM_1", "PT02_Whole_BM_6",
+           "PT02_Whole_BM_1", "PT02_Whole_BM_6", "PT02_Whole_BM_1",
+           "PT02_Whole_BM_6", "PT02_Whole_BM_1", "PT02_Whole_BM_6",
+           "PT02_Whole_BM_1", "PT02_Whole_BM_6", "PT02_Whole_BM_1",
+           "PT02_Whole_BM_6", "PT02_Whole_BM_1", "PT02_Whole_BM_6",
+           "PT02_Whole_BM_1", "PT02_Whole_BM_6", "PT02_Whole_BM_1",
+           "PT02_Whole_BM_6", "PT02_Whole_BM_1"),
+    g1_SubjectID = c("PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
+                     "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
+                     "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
+                     "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
+                     "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
+                     "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
+                     "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
+                     "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
+                     "PT01", "PT01", "PT01", "PT01", "PT02", "PT02",
+                     "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+                     "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+                     "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+                     "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+                     "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+                     "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+                     "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+                     "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+                     "PT02", "PT02"),
+    g1_CellMarker = c("CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
+                      "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
+                      "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
+                      "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
+                      "CD34", "CD34", "Whole", "Whole", "Whole", "Whole",
+                      "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
+                      "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
+                      "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
+                      "Whole", "Whole", "Whole", "Whole", "CD34", "CD34",
+                      "CD34", "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
+                      "CD34", "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
+                      "CD34", "CD34", "CD34", "CD34", "CD34", "CD34", "CD34",
+                      "CD34", "CD34", "CD34", "Whole", "Whole", "Whole",
+                      "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
+                      "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
+                      "Whole", "Whole", "Whole", "Whole", "Whole", "Whole",
+                      "Whole", "Whole", "Whole", "Whole", "Whole"),
+    g1_Tissue = c("BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+                  "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+                  "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+                  "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+                  "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+                  "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+                  "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+                  "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+                  "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+                  "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+                  "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM", "BM",
+                  "BM", "BM", "BM", "BM", "BM"),
+    g1_TimePoint = c(1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1,
+                     2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+                     1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1,
+                     2, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1,
+                     3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 6, 1, 6, 1, 6, 1, 6,
+                     1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1),
+    g2 = c("PT02_CD14_PB_03", "PT02_CD14_PB_03", "PT02_CD13_PB_03",
+           "PT02_CD13_PB_03", "PT01_CD15_PB_01", "PT01_CD15_PB_01",
+           "PT01_CD14_PB_06", "PT01_CD14_PB_06", "PT01_CD14_PB_01",
+           "PT01_CD14_PB_01", "PT02_CD13_PB_01", "PT02_CD13_PB_01",
+           "PT01_CD14_PB_02", "PT01_CD14_PB_02", "PT01_CD13_PB_08",
+           "PT01_CD13_PB_08", "PT01_CD14_PB_03", "PT01_CD14_PB_03",
+           "PT02_CD15_PB_01", "PT02_CD15_PB_01", "PT02_CD15_PB_06",
+           "PT02_CD15_PB_06", "PT01_CD13_PB_01", "PT01_CD13_PB_01",
+           "PT02_CD14_PB_02", "PT02_CD14_PB_02", "PT02_CD14_PB_03",
+           "PT02_CD14_PB_03", "PT02_CD13_PB_03", "PT02_CD13_PB_03",
+           "PT01_CD15_PB_01", "PT01_CD15_PB_01", "PT01_CD14_PB_06",
+           "PT01_CD14_PB_06", "PT01_CD14_PB_01", "PT01_CD14_PB_01",
+           "PT02_CD13_PB_01", "PT02_CD13_PB_01", "PT01_CD14_PB_02",
+           "PT01_CD14_PB_02", "PT01_CD13_PB_08", "PT01_CD13_PB_08",
+           "PT01_CD14_PB_03", "PT01_CD14_PB_03", "PT02_CD15_PB_01",
+           "PT02_CD15_PB_01", "PT02_CD15_PB_06", "PT02_CD15_PB_06",
+           "PT01_CD13_PB_01", "PT01_CD13_PB_01", "PT02_CD14_PB_02",
+           "PT02_CD14_PB_02", "PT02_CD14_PB_03", "PT02_CD14_PB_03",
+           "PT02_CD13_PB_03", "PT02_CD13_PB_03", "PT01_CD15_PB_01",
+           "PT01_CD15_PB_01", "PT01_CD14_PB_06", "PT01_CD14_PB_06",
+           "PT01_CD14_PB_01", "PT01_CD14_PB_01", "PT02_CD13_PB_01",
+           "PT02_CD13_PB_01", "PT01_CD14_PB_02", "PT01_CD14_PB_02",
+           "PT01_CD13_PB_08", "PT01_CD13_PB_08", "PT01_CD14_PB_03",
+           "PT01_CD14_PB_03", "PT02_CD15_PB_01", "PT02_CD15_PB_01",
+           "PT02_CD15_PB_06", "PT02_CD15_PB_06", "PT01_CD13_PB_01",
+           "PT01_CD13_PB_01", "PT02_CD14_PB_02", "PT02_CD14_PB_02",
+           "PT02_CD14_PB_03", "PT02_CD14_PB_03", "PT02_CD13_PB_03",
+           "PT02_CD13_PB_03", "PT01_CD15_PB_01", "PT01_CD15_PB_01",
+           "PT01_CD14_PB_06", "PT01_CD14_PB_06", "PT01_CD14_PB_01",
+           "PT01_CD14_PB_01", "PT02_CD13_PB_01", "PT02_CD13_PB_01",
+           "PT01_CD14_PB_02", "PT01_CD14_PB_02", "PT01_CD13_PB_08",
+           "PT01_CD13_PB_08", "PT01_CD14_PB_03", "PT01_CD14_PB_03",
+           "PT02_CD15_PB_01", "PT02_CD15_PB_01", "PT02_CD15_PB_06",
+           "PT02_CD15_PB_06", "PT01_CD13_PB_01", "PT01_CD13_PB_01",
+           "PT02_CD14_PB_02", "PT02_CD14_PB_02"),
+    g2_SubjectID = c("PT02", "PT02", "PT02", "PT02", "PT01", "PT01",
+                     "PT01", "PT01", "PT01", "PT01", "PT02", "PT02",
+                     "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
+                     "PT02", "PT02", "PT02", "PT02", "PT01", "PT01",
+                     "PT02", "PT02", "PT02", "PT02", "PT02", "PT02",
+                     "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
+                     "PT02", "PT02", "PT01", "PT01", "PT01", "PT01",
+                     "PT01", "PT01", "PT02", "PT02", "PT02", "PT02",
+                     "PT01", "PT01", "PT02", "PT02", "PT02", "PT02",
+                     "PT02", "PT02", "PT01", "PT01", "PT01", "PT01",
+                     "PT01", "PT01", "PT02", "PT02", "PT01", "PT01",
+                     "PT01", "PT01", "PT01", "PT01", "PT02", "PT02",
+                     "PT02", "PT02", "PT01", "PT01", "PT02", "PT02",
+                     "PT02", "PT02", "PT02", "PT02", "PT01", "PT01",
+                     "PT01", "PT01", "PT01", "PT01", "PT02", "PT02",
+                     "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
+                     "PT02", "PT02", "PT02", "PT02", "PT01", "PT01",
+                     "PT02", "PT02"),
+    g2_CellMarker = c("CD14", "CD14", "CD13", "CD13", "CD15", "CD15",
+                      "CD14", "CD14", "CD14", "CD14", "CD13", "CD13",
+                      "CD14", "CD14", "CD13", "CD13", "CD14", "CD14",
+                      "CD15", "CD15", "CD15", "CD15", "CD13", "CD13",
+                      "CD14", "CD14", "CD14", "CD14", "CD13", "CD13",
+                      "CD15", "CD15", "CD14", "CD14", "CD14", "CD14",
+                      "CD13", "CD13", "CD14", "CD14", "CD13", "CD13",
+                      "CD14", "CD14", "CD15", "CD15", "CD15", "CD15",
+                      "CD13", "CD13", "CD14", "CD14", "CD14", "CD14",
+                      "CD13", "CD13", "CD15", "CD15", "CD14", "CD14",
+                      "CD14", "CD14", "CD13", "CD13", "CD14", "CD14",
+                      "CD13", "CD13", "CD14", "CD14", "CD15", "CD15",
+                      "CD15", "CD15", "CD13", "CD13", "CD14", "CD14",
+                      "CD14", "CD14", "CD13", "CD13", "CD15", "CD15",
+                      "CD14", "CD14", "CD14", "CD14", "CD13", "CD13",
+                      "CD14", "CD14", "CD13", "CD13", "CD14", "CD14",
+                      "CD15", "CD15", "CD15", "CD15", "CD13", "CD13",
+                      "CD14", "CD14"),
+    g2_Tissue = c("PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+                  "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+                  "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+                  "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+                  "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+                  "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+                  "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+                  "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+                  "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+                  "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+                  "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
+                  "PB", "PB", "PB", "PB", "PB"),
+    g2_TimePoint = c(3, 3, 3, 3, 1, 1, 6, 6, 1, 1, 1, 1, 2, 2, 8, 8, 3, 3,
+                     1, 1, 6, 6, 1, 1, 2, 2, 3, 3, 3, 3, 1, 1, 6, 6, 1, 1,
+                     1, 1, 2, 2, 8, 8, 3, 3, 1, 1, 6, 6, 1, 1, 2, 2, 3, 3,
+                     3, 3, 1, 1, 6, 6, 1, 1, 1, 1, 2, 2, 8, 8, 3, 3, 1, 1,
+                     6, 6, 1, 1, 2, 2, 3, 3, 3, 3, 1, 1, 6, 6, 1, 1, 1, 1,
+                     2, 2, 8, 8, 3, 3, 1, 1, 6, 6, 1, 1, 2, 2),
+    shared = c(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0,
+               1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1,
+               0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
+               0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+               0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0,
+               0, 0, 0, 0),
+    count_g1 = c(2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+                 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1,
+                 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1,
+                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                 1, 1, 1, 1, 1, 1, 1, 1, 1),
+    count_g2 = c(1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1,
+                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1,
+                 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
+                 2, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1,
+                 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 1,
+                 1, 1, 1, 1, 1, 1, 1, 1, 1),
+    count_union = c(3, 2, 3, 2, 3, 3, 3, 3, 2, 2, 3, 2, 3, 1, 4, 2, 2, 2,
+                    3, 2, 2, 2, 3, 2, 3, 1, 3, 2, 3, 2, 3, 3, 3, 3, 2, 2,
+                    3, 2, 3, 1, 4, 2, 2, 2, 3, 2, 2, 2, 3, 2, 3, 1, 2, 2,
+                    1, 2, 3, 3, 3, 3, 2, 2, 2, 1, 2, 2, 3, 3, 2, 2, 2, 2,
+                    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 3, 2, 2, 2, 2,
+                    2, 2, 3, 3, 1, 2, 2, 1, 1, 2, 2, 2, 2, 2),
+    on_g1 = c(0, 0, 0, 0, 50, 0, 50, 0, 50, 0, 0, 0, 0, 100, 0, 100, 50, 0,
+              0, 0, 50, 0, 0, 0, 0, 100, 0, 0, 0, 0, 50, 0, 50, 0, 50, 0, 0,
+              0, 0, 100, 0, 100, 50, 0, 0, 0, 50, 0, 0, 0, 0, 100, 0, 0, 100,
+              0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 100, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              100, 0, 0, 100, 100, 0, 0, 0, 0, 0),
+    on_g2 = c(0, 0, 0, 0, 50, 0, 50, 0, 100, 0, 0, 0, 0, 100, 0, 50, 100,
+              0, 0, 0, 100, 0, 0, 0, 0, 100, 0, 0, 0, 0, 50, 0, 50, 0, 100,
+              0, 0, 0, 0, 100, 0, 50, 100, 0, 0, 0, 100, 0, 0, 0, 0, 100,
+              0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 50, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 100, 0, 0, 100, 100, 0, 0, 0, 0, 0),
+    on_union = c(0, 0, 0, 0, 33.3333333333333, 0, 33.3333333333333, 0, 50,
+                 0, 0, 0, 0, 100, 0, 50, 50, 0, 0, 0, 50, 0, 0, 0, 0, 100,
+                 0, 0, 0, 0, 33.3333333333333, 0, 33.3333333333333, 0, 50,
+                 0, 0, 0, 0, 100, 0, 50, 50, 0, 0, 0, 50, 0, 0, 0, 0, 100,
+                 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0,
+                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 0, 50, 0, 0, 0, 0,
+                 0, 0, 0, 0, 0, 100, 0, 0, 100, 100, 0, 0, 0, 0, 0)
 )
 
 test_that("iss_source produces expected output - per patient", {
     res <- iss_source(test_df2, test_df3) %>%
-        purrr::map(~ dplyr::arrange(.x, .data$g1))
+        purrr::map(~ {
+            .x %>%
+                dplyr::select(-.data$is_coord) %>%
+                dplyr::arrange(.data$g1)
+        })
     expect_equal(res, expected_res1)
 })
 
 test_that("iss_source produces expected output - NO per patient", {
-    res <- iss_source(test_df2, test_df3, by_subject = FALSE)
+    res <- iss_source(test_df2, test_df3, by_subject = FALSE) %>%
+      select(-is_coord)
     expect_equal(res, expected_res2)
 })

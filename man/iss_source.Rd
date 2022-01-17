@@ -64,7 +64,7 @@ source <- iss_source(df1, df2)
 source
 ggplot2::ggplot(source$PT001, ggplot2::aes(
     x = as.factor(g2_TimePoint),
-    y = sharing_perc, fill = g1
+    y = on_g1, fill = g1
 )) +
     ggplot2::geom_col() +
     ggplot2::labs(
