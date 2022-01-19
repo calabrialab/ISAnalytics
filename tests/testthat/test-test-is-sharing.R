@@ -44,7 +44,7 @@ test_that(".sh_obtain_lookup correct output", {
     lu <- .sh_obtain_lookup(key, test_sharing_input)
     expect_true(length(lu$group_id) == 3)
     counts <- purrr::map_int(lu$is, ~ nrow(.x))
-    expect_equal(counts, c(6, 9, 5)) # S2 has duplicated is that is removed --> 9
+    expect_equal(counts, c(6, 9, 5)) # S2 has duplicated is that is removed -> 9
 })
 
 #------------------------------------------------------------------------------#

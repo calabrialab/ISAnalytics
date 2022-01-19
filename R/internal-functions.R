@@ -4202,14 +4202,23 @@
 ## Dots are group names in sharing df (actually a data.table)
 .find_in_common <- function(..., lookup_tbl, keep_genomic_coord) {
     groups <- as.list(...)
-    in_common <- purrr::pmap(groups, function(...) {
-        grps <- list(...)
-        filt <- lookup_tbl[group_id %chin% grps, ]
-        common <- purrr::reduce(filt$is, function(l, r) {
-            l[r, on = mandatory_IS_vars(), nomatch = 0]
+    fn <- function(...) {
+      grps <- list(...)
+      if ("group_name" %in% colnames(lookup_tbl)) {
+        predicate <- purrr::map2_chr(grps, names(grps), ~ {
+          paste0("group_id == '", .x, "' & group_name == '", .y, "'")
         })
-        common
-    })
+        predicate <- rlang::parse_expr(paste0(predicate, collapse = " | "))
+        filt <- lookup_tbl[rlang::eval_tidy(predicate)]
+      } else {
+        filt <- lookup_tbl[group_id %chin% grps, ]
+      }
+      common <- purrr::reduce(filt$is, function(l, r) {
+        l[r, on = mandatory_IS_vars(), nomatch = 0]
+      })
+      common
+    }
+    in_common <- purrr::pmap(groups, fn)
     if (!keep_genomic_coord) {
         return(purrr::map(in_common, ~ nrow(.x)))
     }
@@ -4600,7 +4609,12 @@
         g_names <- paste0("g", seq_len(length(dfs)))
         names(dfs) <- g_names
     }
-    lookups <- purrr::map(dfs, ~ .sh_obtain_lookup(key, .x))
+    .sh_obtain_named_lookup <- function(key, df, group_name) {
+      lu <- .sh_obtain_lookup(key, df)
+      lu <- lu[, group_name := group_name]
+    }
+    lookups <- purrr::map2(dfs, names(dfs),
+                           ~ .sh_obtain_named_lookup(key, .x, .y))
     group_labels <- purrr::map(lookups, ~ .x$group_id)
     lookup <- data.table::rbindlist(lookups)
     ## Obtain combinations
@@ -4624,11 +4638,16 @@
     if (is_count || rel_sharing) {
         is_counts <- purrr::map2(lookups, names(lookups), function(x, y) {
             count_col_name <- paste0("count_", y)
+            cols_to_remove <- if ("group_name" %in% colnames(x)) {
+              c("is", "group_name")
+            } else {
+              "is"
+            }
             x %>%
                 dplyr::mutate(!!count_col_name := purrr::map_int(
                     is, ~ nrow(.x)
                 )) %>%
-                dplyr::select(-.data$is) %>%
+                dplyr::select(-dplyr::all_of(cols_to_remove)) %>%
                 dplyr::rename(!!y := .data$group_id)
         })
         ## Add counts -groups

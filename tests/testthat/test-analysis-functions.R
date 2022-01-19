@@ -1505,6 +1505,47 @@ expected_res2 <- data.table::data.table(
                  0, 0, 0, 0, 0, 100, 0, 0, 100, 100, 0, 0, 0, 0, 0)
 )
 
+expected_intra_marker <- list(
+  PT01 = data.table::data.table(
+    g1 = c('PT01_CD34_BM_1', 'PT01_CD34_BM_1', 'PT01_CD34_BM_1',
+           'PT01_CD34_BM_1', 'PT01_CD34_BM_1', 'PT01_CD34_BM_2',
+           'PT01_CD34_BM_2', 'PT01_CD34_BM_2', 'PT01_CD34_BM_2',
+           'PT01_CD34_BM_2', 'PT01_CD34_BM_3', 'PT01_CD34_BM_3',
+           'PT01_CD34_BM_3', 'PT01_CD34_BM_3', 'PT01_CD34_BM_3'),
+    g1_SubjectID = c('PT01', 'PT01', 'PT01', 'PT01', 'PT01', 'PT01',
+                     'PT01', 'PT01', 'PT01', 'PT01', 'PT01', 'PT01',
+                     'PT01', 'PT01', 'PT01'),
+    g1_CellMarker = c('CD34', 'CD34', 'CD34', 'CD34', 'CD34', 'CD34',
+                      'CD34', 'CD34', 'CD34', 'CD34', 'CD34', 'CD34',
+                      'CD34', 'CD34', 'CD34'),
+    g1_Tissue = c('BM', 'BM', 'BM', 'BM', 'BM', 'BM', 'BM', 'BM', 'BM',
+                  'BM', 'BM', 'BM', 'BM', 'BM', 'BM'),
+    g1_TimePoint = c(1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3),
+    g2 = c('PT01_CD34_BM_03', 'PT01_CD34_BM_01', 'PT01_CD34_BM_06',
+           'PT01_CD34_BM_02', 'PT01_CD34_BM_08', 'PT01_CD34_BM_03',
+           'PT01_CD34_BM_01', 'PT01_CD34_BM_06', 'PT01_CD34_BM_02',
+           'PT01_CD34_BM_08', 'PT01_CD34_BM_03', 'PT01_CD34_BM_01',
+           'PT01_CD34_BM_06', 'PT01_CD34_BM_02', 'PT01_CD34_BM_08'),
+    g2_SubjectID = c('PT01', 'PT01', 'PT01', 'PT01', 'PT01', 'PT01',
+                     'PT01', 'PT01', 'PT01', 'PT01', 'PT01', 'PT01',
+                     'PT01', 'PT01', 'PT01'),
+    g2_CellMarker = c('CD34', 'CD34', 'CD34', 'CD34', 'CD34', 'CD34',
+                      'CD34', 'CD34', 'CD34', 'CD34', 'CD34', 'CD34',
+                      'CD34', 'CD34', 'CD34'),
+    g2_Tissue = c('BM', 'BM', 'BM', 'BM', 'BM', 'BM', 'BM', 'BM', 'BM',
+                  'BM', 'BM', 'BM', 'BM', 'BM', 'BM'),
+    g2_TimePoint = c(3, 1, 6, 2, 8, 3, 1, 6, 2, 8, 3, 1, 6, 2, 8),
+    shared = c(1, 3, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0),
+    count_g1 = c(3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+    count_g2 = c(2, 3, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 1, 1),
+    count_union = c(4, 3, 3, 4, 4, 3, 4, 2, 1, 1, 2, 4, 2, 2, 2),
+    on_g1 = c(33.3333333333333, 100, 33.3333333333333, 0, 0, 0, 0, 0, 100,
+              100, 100, 0, 0, 0, 0),
+    on_g2 = c(50, 100, 100, 0, 0, 0, 0, 0, 100, 100, 50, 0, 0, 0, 0),
+    on_union = c(25, 100, 33.3333333333333, 0, 0, 0, 0, 0, 100, 100, 50, 0,
+                 0, 0, 0)
+))
+
 test_that("iss_source produces expected output - per patient", {
     res <- iss_source(test_df2, test_df3) %>%
         purrr::map(~ {
@@ -1513,6 +1554,19 @@ test_that("iss_source produces expected output - per patient", {
                 dplyr::arrange(.data$g1)
         })
     expect_equal(res, expected_res1)
+})
+
+test_that("iss_source behaves right with intra-marker", {
+  sub <- test_df2 %>%
+    dplyr::filter(.data$CellMarker == "CD34") %>%
+    dplyr::mutate(SubjectID = "PT01")
+  res <- iss_source(sub, sub) %>%
+    purrr::map(~ {
+      .x %>%
+        dplyr::select(-.data$is_coord) %>%
+        dplyr::arrange(.data$g1)
+    })
+  expect_equal(res, expected_intra_marker)
 })
 
 test_that("iss_source produces expected output - NO per patient", {
