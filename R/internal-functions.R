@@ -4203,20 +4203,20 @@
 .find_in_common <- function(..., lookup_tbl, keep_genomic_coord) {
     groups <- as.list(...)
     fn <- function(...) {
-      grps <- list(...)
-      if ("group_name" %in% colnames(lookup_tbl)) {
-        predicate <- purrr::map2_chr(grps, names(grps), ~ {
-          paste0("group_id == '", .x, "' & group_name == '", .y, "'")
+        grps <- list(...)
+        if ("group_name" %in% colnames(lookup_tbl)) {
+            predicate <- purrr::map2_chr(grps, names(grps), ~ {
+                paste0("group_id == '", .x, "' & group_name == '", .y, "'")
+            })
+            predicate <- rlang::parse_expr(paste0(predicate, collapse = " | "))
+            filt <- lookup_tbl[rlang::eval_tidy(predicate)]
+        } else {
+            filt <- lookup_tbl[group_id %chin% grps, ]
+        }
+        common <- purrr::reduce(filt$is, function(l, r) {
+            l[r, on = mandatory_IS_vars(), nomatch = 0]
         })
-        predicate <- rlang::parse_expr(paste0(predicate, collapse = " | "))
-        filt <- lookup_tbl[rlang::eval_tidy(predicate)]
-      } else {
-        filt <- lookup_tbl[group_id %chin% grps, ]
-      }
-      common <- purrr::reduce(filt$is, function(l, r) {
-        l[r, on = mandatory_IS_vars(), nomatch = 0]
-      })
-      common
+        common
     }
     in_common <- purrr::pmap(groups, fn)
     if (!keep_genomic_coord) {
@@ -4610,11 +4610,13 @@
         names(dfs) <- g_names
     }
     .sh_obtain_named_lookup <- function(key, df, group_name) {
-      lu <- .sh_obtain_lookup(key, df)
-      lu <- lu[, group_name := group_name]
+        lu <- .sh_obtain_lookup(key, df)
+        lu <- lu[, group_name := group_name]
     }
-    lookups <- purrr::map2(dfs, names(dfs),
-                           ~ .sh_obtain_named_lookup(key, .x, .y))
+    lookups <- purrr::map2(
+        dfs, names(dfs),
+        ~ .sh_obtain_named_lookup(key, .x, .y)
+    )
     group_labels <- purrr::map(lookups, ~ .x$group_id)
     lookup <- data.table::rbindlist(lookups)
     ## Obtain combinations
@@ -4639,9 +4641,9 @@
         is_counts <- purrr::map2(lookups, names(lookups), function(x, y) {
             count_col_name <- paste0("count_", y)
             cols_to_remove <- if ("group_name" %in% colnames(x)) {
-              c("is", "group_name")
+                c("is", "group_name")
             } else {
-              "is"
+                "is"
             }
             x %>%
                 dplyr::mutate(!!count_col_name := purrr::map_int(
@@ -4797,6 +4799,7 @@
     } else {
         mandatory_IS_vars()
     }
+    og_padding <- nchar(df[[timepoint_column]][1])
     return(df %>%
         dplyr::mutate(!!timepoint_column := as.numeric(
             .data[[timepoint_column]]
@@ -4810,7 +4813,11 @@
             return(.x %>%
                 dplyr::filter(.data[[timepoint_column]] == min_tp))
         }) %>%
-        dplyr::ungroup())
+        dplyr::ungroup() %>%
+        dplyr::mutate(!!timepoint_column := stringr::str_pad(
+            as.character(.data[[timepoint_column]]), og_padding,
+            side = "left", pad = "0"
+        )))
 }
 
 .sharing_for_source <- function(ref,
