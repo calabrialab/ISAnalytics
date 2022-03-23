@@ -7,7 +7,6 @@
 import_association_file(
   path,
   root = NULL,
-  tp_padding = 4,
   dates_format = "ymd",
   separator = "\\t",
   filter_for = NULL,
@@ -22,10 +21,6 @@ import_association_file(
 
 \item{root}{The path on disk of the root folder of Vispa2 output or NULL.
 See details.}
-
-\item{tp_padding}{Timepoint padding, indicates the number of digits of the
-"TimePoint" column once imported. Fills the content with 0s up to the length
-specified (ex: 1 becomes 0001 with a tp_padding of 4)}
 
 \item{dates_format}{A single string indicating how dates should be parsed.
 Must be a value in: \code{date_formats()}}
@@ -51,6 +46,10 @@ Defaults to \code{{user_home}/ISAnalytics_reports}.}
 
 \item{...}{Additional arguments to pass to
 \code{\link{import_Vispa2_stats}}}
+
+\item{tp_padding}{Timepoint padding, indicates the number of digits of the
+"TimePoint" column once imported. Fills the content with 0s up to the length
+specified (ex: 1 becomes 0001 with a tp_padding of 4)}
 }
 \value{
 The data frame holding metadata
@@ -71,7 +70,8 @@ For more details see the "How to use import functions" vignette:
 \examples{
 fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 fs <- unzip_file_system(fs_path, "fs")
-af_path <- system.file("extdata", "asso.file.tsv.gz", package = "ISAnalytics")
+af_path <- system.file("extdata", "asso.file.tsv.gz",
+package = "ISAnalytics")
 af <- import_association_file(af_path, root = fs, report_path = NULL)
 head(af)
 }

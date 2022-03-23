@@ -1,11 +1,20 @@
 ### Convenience functions for errors and warnings ###
 
+.missing_req_cols <- function(requested, missing) {
+  err_msg <- c("Some of the required columns were not found",
+               i = paste0("Requested: ",
+                          paste0(requested, collapse = ", ")),
+               x = paste0("Not found: ",
+                          paste0(missing, collapse = ", ")))
+  return(err_msg)
+}
+
 # Signals the user that file system alignment can't be performed because
-# 'PathToFolderProjectID' is missing.
+# column containing the path to project folder is missing.
 # USED IN:
 # - .check_file_system_alignment
-.af_missing_pathfolder_error <- function() {
-    c("Column 'PathToFolderProjectID' is missing",
+.af_missing_pathfolder_error <- function(folder_col) {
+    c(paste("Column", folder_col, "is missing"),
         x = "Can't proceed with file system alignment",
         i = paste(
             "To import metadata without performing file system aligment",
@@ -98,13 +107,16 @@
 # Produces a mini-report to print after file reading only if verbose is active
 # USED IN:
 # - import_single_Vispa2Matrix
-.summary_ism_import_msg <- function(df_type, annotated, dims, mode) {
+.summary_ism_import_msg <- function(annotated,
+                                    dims,
+                                    mode,
+                                    sample_count) {
     c(
         "*** File info *** ",
-        paste("--- Matrix type:", df_type),
         paste("--- Annotated:", annotated),
         paste("--- Dimensions:", paste0(dims, collapse = " x ")),
-        paste("--- Read mode: ", mode)
+        paste("--- Read mode:", mode),
+        paste("--- Sample count:", sample_count)
     )
 }
 

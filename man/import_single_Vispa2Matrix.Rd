@@ -14,11 +14,11 @@ import_single_Vispa2Matrix(
 \arguments{
 \item{path}{The path to the file on disk}
 
-\item{to_exclude}{Either NULL or a character vector of column names that
+\item{to_exclude}{Either \code{NULL} or a character vector of column names that
 should be ignored when importing}
 
 \item{keep_excluded}{Keep the columns in \code{to_exclude} as additional
-id columns?}
+columns?}
 
 \item{separator}{The column delimiter used, defaults to \verb{\\t}}
 }
@@ -28,13 +28,21 @@ A data.table object in tidy format
 \description{
 \lifecycle{stable}
 This function allows to read and import an integration matrix
-produced as the output of Vispa2 pipeline and converts it to a tidy
+(ideally produced by VISPA2) and converts it to a tidy
 format.
 }
 \details{
 For more details see the "How to use import functions" vignette:
 \code{vignette("import_functions_howto", package = "ISAnalytics")}
 }
+\section{Required vars and tags}{
+
+\subsection{Required vars}{
+
+TODO
+}
+}
+
 \examples{
 fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 fs <- unzip_file_system(fs_path, "fs")

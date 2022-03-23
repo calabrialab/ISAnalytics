@@ -11,6 +11,8 @@ output:
       - { title: "Website", href: "https://calabrialab.github.io/ISAnalytics/", align: right, icon: "fa-globe" }
       - { title: "GitHub", href: "https://github.com/calabrialab/ISAnalytics", align: right, icon: "fa-github" }
 params:
+  set_vars: null
+  launch_params: null
   files_found: null
   files_imp: null
   annot_prob: null
@@ -23,32 +25,101 @@ library(flexdashboard)
 library(DT)
 found_color <- "#77d983"
 not_found_color <- "#e36868"
+secondary_col <-  "#ff9470"
+proj_col <- params$set_vars$proj_col
+pool_col <- params$set_vars$pool_col
+launch_params <- if (is.null(params$launch_params) ||
+                     purrr::is_empty(params$launch_params)) {
+  NULL
+} else {
+    params$launch_params
+  }
 ```
 
-Files found {data-orientation=rows}
+Files report {data-orientation=rows}
 ===============================================================================
 
-Row1 {data-height=600 .tabset .tabset-fade}
+Row1
 -------------------------------------------------------------------------------
 ```{r}
-files_found <- params$files_found %>%
-  dplyr::mutate(ProjectID = as.factor(.data$ProjectID),
-                concatenatePoolIDSeqRun = as.factor(.data$concatenatePoolIDSeqRun))
-
-files_details <- files_found %>%
-  dplyr::select(-.data$Files_count, -.data$Anomalies) %>%
-  tidyr::unnest(.data$Files) %>%
-  dplyr::mutate(Quantification_type = as.factor(.data$Quantification_type)) %>%
-  dplyr::distinct()
-
-count_details <- files_found %>%
-  dplyr::select(-.data$Files, -.data$Anomalies) %>%
-  tidyr::unnest(.data$Files_count) %>%
-  dplyr::mutate(Quantification_type = as.factor(.data$Quantification_type)) %>%
-  dplyr::distinct()
+n_proj <- length(unique(params$files_found[[proj_col]]))
+n_pools <- length(unique(params$files_found[[pool_col]]))
+n_anomalies <- length(params$files_found$Anomalies[
+  params$files_found$Anomalies])
 ```
 
-### Files counts by quantification 
+### Projects
+```{r}
+valueBox(value = n_proj, icon = "glyphicon-inbox")
+```
+
+### Pools
+```{r}
+valueBox(value = n_pools, icon = "fa-folder")
+```
+
+### Anomalies detected
+```{r}
+valueBox(value = n_anomalies, icon = "glyphicon-warning-sign", color = secondary_col)
+```
+
+Row2 {data-height=100}
+-------------------------------------------------------------------------------
+### Set arguments
+```{r eval=!is.null(launch_params), results='asis'}
+content <- paste0(
+  c("<ul>", 
+    paste0("<li><b>Chosen file patterns</b>: ", 
+          paste0("'", launch_params$patterns, "'", collapse = ", "), 
+          "</li>"), 
+  paste0("<li><b>Matching option</b>: '", launch_params$matching_opt, "'</li>"),
+  "</ul>"))
+cat(content)
+```
+
+```{r eval=is.null(launch_params), results='asis'}
+content <- paste("No patterns were set for this automated import operation")
+cat(content)
+```
+
+
+Row3 {data-height=600 .tabset .tabset-fade}
+-------------------------------------------------------------------------------
+```{r}
+collapse_file_names <- function(names) {
+  if (all(is.na(names))) {
+    return(NA_character_)
+  }
+  return(
+    paste0(paste0(paste0("<b>", seq_len(length(names)), ")</b> "), 
+                  names), collapse = "<br/>")
+  )
+}
+formatted_files <- params$files_found$Files %>%
+  purrr::map(~ {
+    .x %>%
+      dplyr::group_by(.data$Quantification_type) %>%
+      dplyr::summarise(Files_found = collapse_file_names(.data$Files_found), 
+                       .groups = "drop")
+  })
+files_details <- purrr::map2(formatted_files, params$files_found$Files_count,
+                             ~ {
+                               .x %>%
+                                 dplyr::inner_join(.y, 
+                                                   by = "Quantification_type")
+                             })
+
+count_details <- params$files_found %>%
+  dplyr::mutate(files_details = files_details) %>%
+  dplyr::select(-.data$Files, -.data$Anomalies, -.data$Files_count)  %>%
+  tidyr::unnest(.data$files_details) %>%
+  dplyr::mutate(
+    !!proj_col := as.factor(.data[[proj_col]]),
+    !!pool_col := as.factor(.data[[pool_col]]),
+    Quantification_type = as.factor(.data$Quantification_type))
+```
+
+### Files details by quantification 
 ```{r}
 found_render <- JS("function(data, type, row) {",
                    "var icn = ",'"\u2713"', ";",
@@ -64,27 +135,18 @@ found_render <- JS("function(data, type, row) {",
                    "'</span>'",
                    "}")
 datatable(
-  count_details,rownames = FALSE, 
+  count_details, rownames = FALSE, 
   colnames = stringr::str_replace_all(colnames(count_details), "_", " "), 
   filter = 'top',
+  escape = FALSE,
   options = list(
     columnDefs = list(
-      list(targets = 3,
+      list(targets = 4,
            render = found_render)
       ),
       scrollY = 350
     ),
-) %>% formatStyle(columns = 4, fontWeight = 'bold', textAlign = 'center')
-```
-
-### Files found per project/pool 
-```{r}
-datatable(
-  files_details,
-  rownames = FALSE, 
-  colnames = stringr::str_replace_all(colnames(files_details), "_", " "), 
-  filter = 'top', options = list(scrollY = 350)
-)
+) %>% formatStyle(columns = 5, fontWeight = 'bold', textAlign = 'center')
 ```
 
 ### About
@@ -98,18 +160,36 @@ if no choice can be made, all files are discarded.
 If no files were found for the corresponding quantification you will see a
 'cross' symbol.
 
-In the second tab are reported all files detected during file system scan.
 
 Import summary {data-orientation=rows}
 ===============================================================================
 
-Row1 {data-height=600 .tabset .tabset-fade}
+Row1
+-------------------------------------------------------------------------------
+```{r}
+not_imported <- length(params$files_imp$Imported[
+  params$files_imp$Imported == FALSE])
+tot_samples <- sum(params$files_imp$Number_of_samples, na.rm = TRUE)
+```
+
+### Files not imported
+```{r}
+gauge(not_imported, min = 0, max = nrow(params$files_imp), 
+      sectors = gaugeSectors(danger = c(1, nrow(params$files_imp))))
+```
+
+### Total samples
+```{r}
+valueBox(value = tot_samples)
+```
+
+Row2 {data-height=600 .tabset .tabset-fade}
 -------------------------------------------------------------------------------
 ### Summary of files imported
 ```{r eval=!is.null(params$files_imp)}
 files_imp <- params$files_imp %>%
-  dplyr::mutate(dplyr::across(c(.data$ProjectID, 
-                              .data$concatenatePoolIDSeqRun, 
+  dplyr::mutate(dplyr::across(c(.data[[proj_col]], 
+                              .data[[pool_col]], 
                               .data$Quantification_type), .fns = as.factor))
 datatable(
   files_imp,
@@ -145,7 +225,7 @@ Row1 {data-height=600 .tabset .tabset-fade}
 ### Possible annotation problems
 ```{r eval=!is.null(params$annot_prob)}
 datatable(
-  annot_prob,
+  params$annot_prob,
   rownames = FALSE, 
   colnames = stringr::str_replace_all(colnames(files_details), "_", " "), 
   filter = 'top', options = list(scrollY = 350)

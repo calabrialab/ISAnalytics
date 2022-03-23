@@ -1,14 +1,22 @@
 library(ISAnalytics)
 func_name <- c(
-    ".interactive_select_projects_import", ".pool_number_IN",
-    ".pool_choices_IN", ".interactive_select_pools_import", ".trace_anomalies",
-    ".lookup_matrices", ".choose_duplicates_files_interactive",
-    ".manage_anomalies_interactive", ".import_type", ".parallel_import_merge",
+    ".interactive_select_projects_import",
+    ".pool_number_IN",
+    ".pool_choices_IN",
+    ".interactive_select_pools_import",
+    ".trace_anomalies",
+    ".lookup_matrices",
+    ".choose_duplicates_files_interactive",
+    ".manage_anomalies_interactive",
+    ".import_type",
+    ".parallel_import_merge",
     "import_parallel_Vispa2Matrices_interactive",
     ".pattern_matching",
     ".update_as_option",
-    ".lookup_matrices_auto", ".manage_anomalies_auto",
-    "import_parallel_Vispa2Matrices_auto",
+    ".lookup_matrices_auto",
+    ".manage_anomalies_auto",
+    ".base_param_check",
+    ".pre_manage_af",
     "import_parallel_Vispa2Matrices"
 )
 
@@ -20,41 +28,29 @@ withr::local_options(
     ISAnalytics.verbose = FALSE
 )
 
-# Path to example association file
-path_af <- system.file("testdata", "ex_association_file.tsv.gz",
-    package = "ISAnalytics"
-)
-
-# Path to correct file system example
-path_root_correct <- system.file("testdata", "fs.zip",
-    package = "ISAnalytics"
-)
-root_correct <- unzip_file_system(path_root_correct, "fs")
-
-# Path to incorrect file system example
-path_root_err <- system.file("testdata", "fserr.zip",
-    package = "ISAnalytics"
-)
-root_err <- unzip_file_system(path_root_err, "fserr")
-
-withr::with_options(list(
-    ISAnalytics.reports = FALSE,
-    ISAnalytics.verbose = FALSE
-), {
-    as_file_correct <- import_association_file(path_af, root_correct)
-})
-
-withr::with_options(list(
-    ISAnalytics.reports = FALSE,
-    ISAnalytics.verbose = FALSE
-), {
-    as_file_errors <- import_association_file(path_af, root_err)
-})
 all_proj_pools <- list(
-    ProjectID = c("CLOEXP", "PROJECT1100", "PROJECT1101"),
-    PoolID = c(
-        "POOL6-1", "ABX-LR-PL5-POOL14-1",
-        "ABX-LR-PL6-POOL15-1", "ABY-LR-PL4-POOL54-2"
+    ProjectID = unique(association_file$ProjectID),
+    PoolID = unique(association_file$PoolID)
+)
+
+copy_path <- fs::path(tempdir(), "fs_dupl")
+## Generate file system structure containing duplicates
+fs::dir_copy(fs_path$root_corr, copy_path)
+to_dupl <- fs::path(
+    copy_path, "PJ01", "quantification", "POOL01-1",
+    paste0(
+        "PJ01_POOL01-1_fragmentEstimate_",
+        "matrix.no0.annotated.tsv.gz"
+    )
+)
+fs::file_copy(
+    to_dupl,
+    fs::path(
+        copy_path, "PJ01", "quantification", "POOL01-1",
+        paste0(
+            "PJ01_POOL01-1_FOO_fragmentEstimate_",
+            "matrix.no0.annotated.tsv.gz"
+        )
     )
 )
 
@@ -106,7 +102,7 @@ test_that(paste(func_name[1], "stops if input 1 is 0"), {
     expect_error(
         {
             invisible(capture_output(capture_output({
-                .interactive_select_projects_import(as_file_correct)
+                .interactive_select_projects_import(local_af_corr, "ProjectID")
             })))
         },
         regexp = "Quitting"
@@ -127,7 +123,10 @@ test_that(paste(func_name[1], "selects all projects when inputs are '1, y'"), {
     write(input_value1, input1)
     write(input_value3, input3)
     invisible(capture_output(capture_output({
-        updated_af <- .interactive_select_projects_import(as_file_correct)
+        updated_af <- .interactive_select_projects_import(
+            local_af_corr,
+            "ProjectID"
+        )
     })))
     expect_true(all(all_proj_pools$ProjectID %in% updated_af$ProjectID))
 })
@@ -152,65 +151,15 @@ test_that(paste(
     write(input_value2, input2)
     write(input_value3, input3)
     project_list <- dplyr::distinct(
-        dplyr::select(as_file_correct, .data$ProjectID)
+        dplyr::select(local_af_corr, .data$ProjectID)
     )$ProjectID
     invisible(capture_output(capture_output({
-        updated_af <- .interactive_select_projects_import(as_file_correct)
+        updated_af <- .interactive_select_projects_import(
+            local_af_corr,
+            "ProjectID"
+        )
     })))
     selected_proj <- project_list[as.numeric(input_value2)]
-    expect_true(all(updated_af$ProjectID %in% selected_proj))
-
-    input_value1 <- "2"
-    input_value2 <- "2"
-    input_value3 <- "y"
-    write(input_value1, input1)
-    write(input_value2, input2)
-    write(input_value3, input3)
-    invisible(capture_output({
-        updated_af <- .interactive_select_projects_import(as_file_correct)
-    }))
-    selected_proj <- project_list[as.numeric(input_value2)]
-    expect_true(all(updated_af$ProjectID %in% selected_proj))
-
-    input_value1 <- "2"
-    input_value2 <- "3"
-    input_value3 <- "y"
-    write(input_value1, input1)
-    write(input_value2, input2)
-    write(input_value3, input3)
-    invisible(capture_output(capture_output({
-        updated_af <- .interactive_select_projects_import(as_file_correct)
-    })))
-    selected_proj <- project_list[as.numeric(input_value2)]
-    expect_true(all(updated_af$ProjectID %in% selected_proj))
-
-    # Multiple choice
-    input_value1 <- "2"
-    input_value2 <- "1,2"
-    input_value3 <- "y"
-    write(input_value1, input1)
-    write(input_value2, input2)
-    write(input_value3, input3)
-    invisible(capture_output(capture_output({
-        updated_af <- .interactive_select_projects_import(as_file_correct)
-    })))
-    indexes <- unlist(stringr::str_split(input_value2, ","))
-    indexes <- as.numeric(indexes)
-    selected_proj <- project_list[indexes]
-    expect_true(all(updated_af$ProjectID %in% selected_proj))
-
-    input_value1 <- "2"
-    input_value2 <- "2,3"
-    input_value3 <- "y"
-    write(input_value1, input1)
-    write(input_value2, input2)
-    write(input_value3, input3)
-    invisible(capture_output(capture_output({
-        updated_af <- .interactive_select_projects_import(as_file_correct)
-    })))
-    indexes <- unlist(stringr::str_split(input_value2, ","))
-    indexes <- as.numeric(indexes)
-    selected_proj <- project_list[indexes]
     expect_true(all(updated_af$ProjectID %in% selected_proj))
 })
 
@@ -225,7 +174,10 @@ test_that(paste(func_name[1], "stops if input 2 is 0"), {
     expect_error(
         {
             invisible(capture_output(capture_output({
-                .interactive_select_projects_import(as_file_correct)
+                .interactive_select_projects_import(
+                    local_af_corr,
+                    "ProjectID"
+                )
             })))
         },
         regexp = "Quitting"
@@ -361,9 +313,13 @@ test_that(paste(
     write(input_value4, input4)
     write(input_value6, input6)
     invisible(capture_output(capture_output({
-        updated_af <- .interactive_select_pools_import(as_file_correct)
+        updated_af <- .interactive_select_pools_import(
+            local_af_corr,
+            "ProjectID",
+            "concatenatePoolIDSeqRun"
+        )
     })))
-    expect_true(all(all_proj_pools$PoolID %in%
+    expect_true(all(all_proj_pools$concatenatePoolIDSeqRun %in%
         updated_af$concatenatePoolIDSeqRun))
 })
 
@@ -383,9 +339,13 @@ test_that(paste(func_name[4], "selects only the first pools
     write(input_value5, input5)
     write(input_value6, input6)
     invisible(capture_output(capture_output({
-        updated_af <- .interactive_select_pools_import(as_file_correct)
+        updated_af <- .interactive_select_pools_import(
+            local_af_corr,
+            "ProjectID",
+            "concatenatePoolIDSeqRun"
+        )
     })))
-    available <- as_file_correct %>%
+    available <- local_af_corr %>%
         dplyr::select(.data$ProjectID, .data$concatenatePoolIDSeqRun) %>%
         dplyr::distinct()
     pools_selected <- purrr::map(
@@ -417,20 +377,12 @@ test_that(paste(func_name[5], "updates tibble correctly"), {
 # Tests .lookup_matrices
 #------------------------------------------------------------------------------#
 test_that(paste(func_name[6], "finds all files for fs - no duplicates"), {
-    files_found <- .lookup_matrices(as_file_correct, quant_types, "annotated")
-    expect_true(all(c(
-        "ProjectID", "concatenatePoolIDSeqRun", "Anomalies",
-        "Files", "Files_count"
-    ) %in% colnames(files_found)))
-    expect_true(all(files_found$Anomalies == FALSE))
-    expect_true(all(files_found$Files_count[[1]]$Found == 1))
-    expect_true(all(files_found$Files_count[[2]]$Found == 1))
-    expect_true(all(files_found$Files_count[[3]]$Found == 1))
-    expect_true(all(files_found$Files_count[[4]]$Found == 1))
-
     files_found <- .lookup_matrices(
-        as_file_correct, quant_types,
-        "not_annotated"
+        local_af_corr,
+        quant_types,
+        "annotated",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
     expect_true(all(c(
         "ProjectID", "concatenatePoolIDSeqRun", "Anomalies",
@@ -444,94 +396,27 @@ test_that(paste(func_name[6], "finds all files for fs - no duplicates"), {
 })
 
 test_that(paste(func_name[6], "finds all files for fserr - duplicates"), {
-    # Annotated matrices
-    as_file_err <- as_file_errors %>% dplyr::filter(!is.na(.data$Path))
-    files_found <- .lookup_matrices(as_file_err, quant_types, "annotated")
-    expect_true(all(c(
-        "ProjectID", "concatenatePoolIDSeqRun", "Anomalies",
-        "Files", "Files_count"
-    ) %in% colnames(files_found)))
-    expect_false(all(files_found$Anomalies == FALSE))
+    aligned_af_mod <- local_af_corr %>%
+        dplyr::mutate(!!.path_cols_names()$quant :=
+            stringr::str_replace(
+                .data[[.path_cols_names()$quant]],
+                "/fs/", "/fs_dupl/"
+            ))
+    files_found <- .lookup_matrices(
+        aligned_af_mod,
+        quant_types,
+        "annotated",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
+    )
+    expect_true(files_found %>%
+        dplyr::filter(.data$concatenatePoolIDSeqRun == "POOL01-1") %>%
+        dplyr::pull(.data$Anomalies))
     expect_true((files_found %>%
-        dplyr::filter(
-            .data$ProjectID == "CLOEXP",
-            .data$concatenatePoolIDSeqRun == "POOL6-1"
-        )
-    )$Anomalies == TRUE)
-    cloexp_anomalies <- (files_found %>%
-        dplyr::filter(
-            .data$ProjectID == "CLOEXP",
-            .data$concatenatePoolIDSeqRun == "POOL6-1"
-        ))$Files_count[[1]]
-    expect_equal(dplyr::filter(
-        cloexp_anomalies, .data$Quantification_type == "fragmentEstimate"
-    )$Found, 2)
-    expect_equal(dplyr::filter(
-        cloexp_anomalies, .data$Quantification_type == "seqCount"
-    )$Found, 2)
-    proj1100_1_anomalies <- (files_found %>%
-        dplyr::filter(
-            .data$ProjectID == "PROJECT1100",
-            .data$concatenatePoolIDSeqRun == "ABX-LR-PL5-POOL14-1"
-        ))$Files_count[[1]]
-    expect_equal(dplyr::filter(
-        proj1100_1_anomalies,
-        .data$Quantification_type == "fragmentEstimate"
-    )$Found, 3)
-    expect_equal(dplyr::filter(
-        proj1100_1_anomalies, .data$Quantification_type == "seqCount"
-    )$Found, 1)
-    # Non annotated matrices
-    files_found <- .lookup_matrices(as_file_err, quant_types, "not_annotated")
-    expect_true(all(c(
-        "ProjectID", "concatenatePoolIDSeqRun", "Anomalies",
-        "Files", "Files_count"
-    ) %in% colnames(files_found)))
-    expect_false(all(files_found$Anomalies == FALSE))
-    expect_true((files_found %>%
-        dplyr::filter(
-            .data$ProjectID == "CLOEXP",
-            .data$concatenatePoolIDSeqRun == "POOL6-1"
-        )
-    )$Anomalies == FALSE)
-    expect_true((files_found %>%
-        dplyr::filter(
-            .data$ProjectID == "PROJECT1100",
-            .data$concatenatePoolIDSeqRun ==
-                "ABX-LR-PL5-POOL14-1"
-        )
-    )$Anomalies == TRUE)
-    expect_true((files_found %>%
-        dplyr::filter(
-            .data$ProjectID == "PROJECT1100",
-            .data$concatenatePoolIDSeqRun ==
-                "ABX-LR-PL6-POOL15-1"
-        )
-    )$Anomalies == TRUE)
-    proj1100_1_anomalies <- (files_found %>%
-        dplyr::filter(
-            .data$ProjectID == "PROJECT1100",
-            .data$concatenatePoolIDSeqRun == "ABX-LR-PL5-POOL14-1"
-        ))$Files_count[[1]]
-    expect_equal(dplyr::filter(
-        proj1100_1_anomalies,
-        .data$Quantification_type == "fragmentEstimate"
-    )$Found, 0)
-    expect_equal(dplyr::filter(
-        proj1100_1_anomalies, .data$Quantification_type == "seqCount"
-    )$Found, 0)
-    proj1100_2_anomalies <- (files_found %>%
-        dplyr::filter(
-            .data$ProjectID == "PROJECT1100",
-            .data$concatenatePoolIDSeqRun == "ABX-LR-PL6-POOL15-1"
-        ))$Files_count[[1]]
-    expect_equal(dplyr::filter(
-        proj1100_2_anomalies,
-        .data$Quantification_type == "fragmentEstimate"
-    )$Found, 0)
-    expect_equal(dplyr::filter(
-        proj1100_2_anomalies, .data$Quantification_type == "seqCount"
-    )$Found, 0)
+        dplyr::filter(.data$concatenatePoolIDSeqRun == "POOL01-1") %>%
+        dplyr::pull(.data$Files_count))[[1]] %>%
+        dplyr::filter(.data$Quantification_type == "fragmentEstimate") %>%
+        dplyr::pull(.data$Found) == 2)
 })
 
 #------------------------------------------------------------------------------#
@@ -588,56 +473,29 @@ test_that(paste(func_name[7], "stops if input is 0"), {
 # Tests .manage_anomalies_interactive
 #------------------------------------------------------------------------------#
 test_that(paste(func_name[8], "succeeds with no anomalies"), {
-    # Annotated matrices
-    as_file_err <- as_file_errors %>% dplyr::filter(!is.na(.data$Path))
     files_found_fs_ann <- .lookup_matrices(
-        as_file_correct,
-        quant_types, "annotated"
-    )
-    files_found_fs_notann <- .lookup_matrices(
-        as_file_correct,
-        quant_types, "not_annotated"
+        local_af_corr,
+        quant_types,
+        "annotated",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
     files_found_fs_err_ann <- .lookup_matrices(
-        as_file_err,
-        quant_types, "annotated"
+        local_af_inc %>%
+            dplyr::filter(!is.na(.data[[.path_cols_names()$quant]])),
+        quant_types,
+        "annotated",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
-    files_found_fs_err_notann <- .lookup_matrices(
-        as_file_err,
-        quant_types, "not_annotated"
-    )
-    expect_message(
-        {
-            invisible(capture_output(capture_output({
-                to_import <- .manage_anomalies_interactive(files_found_fs_ann)
-            })))
-        },
-        regexp = NA
-    )
-    expect_true(all(c("Files_chosen") %in% colnames(to_import)))
-    expect_true(all(!is.na(to_import$Files_chosen)))
-    expect_true(all(quant_types %in% to_import$Quantification_type))
-    present <- purrr::map2_lgl(
-        to_import$ProjectID,
-        to_import$concatenatePoolIDSeqRun,
-        function(x, y) {
-            temp <- to_import %>%
-                dplyr::filter(
-                    .data$ProjectID == x,
-                    .data$concatenatePoolIDSeqRun ==
-                        y
-                )
-            all(quant_types %in% temp$Quantification_type)
-        }
-    )
-    expect_true(all(present))
 
-    # Not annotated matrices
     expect_message(
         {
             invisible(capture_output(capture_output({
                 to_import <- .manage_anomalies_interactive(
-                    files_found_fs_notann
+                    files_found_fs_ann,
+                    "ProjectID",
+                    "concatenatePoolIDSeqRun"
                 )
             })))
         },
@@ -663,22 +521,18 @@ test_that(paste(func_name[8], "succeeds with no anomalies"), {
 })
 
 test_that(paste(func_name[8], "succeeds with anomalies"), {
-    as_file_err <- as_file_errors %>% dplyr::filter(!is.na(.data$Path))
-    files_found_fs_ann <- .lookup_matrices(
-        as_file_correct,
-        quant_types, "annotated"
-    )
-    files_found_fs_notann <- .lookup_matrices(
-        as_file_correct,
-        quant_types, "not_annotated"
-    )
-    files_found_fs_err_ann <- .lookup_matrices(
-        as_file_err,
-        quant_types, "annotated"
-    )
-    files_found_fs_err_notann <- .lookup_matrices(
-        as_file_err,
-        quant_types, "not_annotated"
+    aligned_af_mod <- local_af_corr %>%
+        dplyr::mutate(!!.path_cols_names()$quant :=
+            stringr::str_replace(
+                .data[[.path_cols_names()$quant]],
+                "/fs/", "/fs_dupl/"
+            ))
+    files_found <- .lookup_matrices(
+        aligned_af_mod,
+        quant_types,
+        "annotated",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
     input7 <- withr::local_tempfile()
     input8 <- withr::local_tempfile()
@@ -691,16 +545,15 @@ test_that(paste(func_name[8], "succeeds with anomalies"), {
     write(input_value7, input7)
     write(input_value8, input8)
     # Annotated matrices
-    expect_message(
-        {
-            invisible(capture_output(capture_output({
-                to_import <- .manage_anomalies_interactive(
-                    files_found_fs_err_ann
-                )
-            })))
-        },
-        regexp = "Duplicates found for some files"
-    )
+    expect_message({
+        invisible(capture_output(capture_output({
+            to_import <- .manage_anomalies_interactive(
+                files_found,
+                "ProjectID",
+                "concatenatePoolIDSeqRun"
+            )
+        })))
+    })
     expect_true(all(c("Files_chosen") %in% colnames(to_import)))
     expect_true(all(!is.na(to_import$Files_chosen)))
     expect_true(all(quant_types %in% to_import$Quantification_type))
@@ -718,95 +571,16 @@ test_that(paste(func_name[8], "succeeds with anomalies"), {
         }
     )
     expect_true(all(present))
-
-    # Not annotated matrices
-    expect_message(
-        {
-            invisible(capture_output(capture_output({
-                to_import <- .manage_anomalies_interactive(
-                    files_found_fs_err_notann
-                )
-            })))
-        },
-        regexp = "Some files are missing and will be ignored"
-    )
-    expect_true(all(c("Files_chosen") %in% colnames(to_import)))
-    expect_true(all(!is.na(to_import$Files_chosen)))
-    expect_true(all(
-        quant_types %in% (to_import %>%
-            dplyr::filter(
-                .data$ProjectID == "CLOEXP",
-                .data$concatenatePoolIDSeqRun ==
-                    "POOL6-1"
-            ))$Quantification_type
-    ))
-    expect_true(all( # Missing not annotated matrices from PROJECT1100
-        !quant_types %in% (to_import %>%
-            dplyr::filter(
-                .data$ProjectID == "PROJECT1100",
-                .data$concatenatePoolIDSeqRun ==
-                    "ABX-LR-PL5-POOL14-1"
-            )
-        )$Quantification_type
-    ))
-    expect_true(all(
-        !quant_types %in% (to_import %>%
-            dplyr::filter(
-                .data$ProjectID == "PROJECT1100",
-                .data$concatenatePoolIDSeqRun ==
-                    "ABX-LR-PL6-POOL15-1"
-            )
-        )$Quantification_type
-    ))
-})
-
-#------------------------------------------------------------------------------#
-# Tests .import_type
-#------------------------------------------------------------------------------#
-test_that(paste(func_name[9], "correctly imports all files"), {
-    as_file_err <- as_file_errors %>% dplyr::filter(!is.na(.data$Path))
-    files_found_fs_ann <- .lookup_matrices(
-        as_file_correct,
-        quant_types, "annotated"
-    )
-    invisible(capture_output(capture_output({
-        smpl_files_to_import <- .manage_anomalies_interactive(
-            files_found_fs_ann
-        )
-    })))
-    imports <- .import_type("fragmentEstimate", files = smpl_files_to_import, 2)
-    matrices <- imports[[1]]
-    report <- imports[[2]]
-    expect_true(all(report$Imported == TRUE))
-    expect_true(nrow(matrices) == 4 * 1476)
-
-    imports <- .import_type("seqCount", files = smpl_files_to_import, 2)
-    matrices <- imports[[1]]
-    report <- imports[[2]]
-    expect_true(all(report$Imported == TRUE))
-    expect_true(nrow(matrices) == 4 * 1476)
-})
-
-#------------------------------------------------------------------------------#
-# Tests .parallel_import_merge
-#------------------------------------------------------------------------------#
-test_that(paste(func_name[10], "correctly imports files for each q type"), {
-    as_file_err <- as_file_errors %>% dplyr::filter(!is.na(.data$Path))
-    files_found_fs_ann <- .lookup_matrices(
-        as_file_correct,
-        quant_types, "annotated"
-    )
-    invisible(capture_output(capture_output({
-        smpl_files_to_import <- .manage_anomalies_interactive(
-            files_found_fs_ann
-        )
-    })))
-    imported <- .parallel_import_merge(smpl_files_to_import, 2)
-    matrices <- imported[[1]]
-    report <- imported[[2]]
-    expect_true(all(report$Imported == TRUE))
-    expect_true(nrow(matrices$fragmentEstimate) == 4 * 1476)
-    expect_true(nrow(matrices$seqCount) == 4 * 1476)
+    expect_true(to_import %>%
+        dplyr::filter(
+            .data$concatenatePoolIDSeqRun == "POOL01-1",
+            .data$Quantification_type == "fragmentEstimate"
+        ) %>%
+        dplyr::pull(.data$Files_chosen) == ((files_found %>%
+        dplyr::filter(.data$concatenatePoolIDSeqRun ==
+            "POOL01-1"))$Files[[1]] %>%
+        dplyr::filter(.data$Quantification_type == "fragmentEstimate") %>%
+        dplyr::pull(.data$Files_found))[1])
 })
 
 #------------------------------------------------------------------------------#
@@ -844,132 +618,77 @@ test_that(".any_match provides correct output", {
 #------------------------------------------------------------------------------#
 # Tests .update_as_option
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[13], "works for fs err - single pattern"), {
-    as_file_err <- as_file_errors %>% dplyr::filter(!is.na(.data$Path))
-    files_found_fs_ann <- .lookup_matrices(
-        as_file_correct,
-        quant_types, "annotated"
+test_that(paste(func_name[13], "works as expected"), {
+    # ---- PREP
+    aligned_af_mod <- local_af_corr %>%
+        dplyr::mutate(!!.path_cols_names()$quant :=
+            stringr::str_replace(
+                .data[[.path_cols_names()$quant]],
+                "/fs/", "/fs_dupl/"
+            ))
+    files_found_fs_dupl <- .lookup_matrices(
+        aligned_af_mod,
+        quant_types, "annotated",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
-    files_found_fs_err_ann <- .lookup_matrices(
-        as_file_err,
-        quant_types, "annotated"
-    )
-    cloexp_pool6 <- (files_found_fs_err_ann %>%
-        dplyr::filter(
-            .data$ProjectID == "CLOEXP",
-            .data$concatenatePoolIDSeqRun == "POOL6-1"
-        ))$Files[[1]]
-    cloexp_matches <- .pattern_matching(cloexp_pool6$Files_found, "NoMate")
-    updated <- .update_as_option(cloexp_pool6, cloexp_matches, "ANY")
-    expect_true(nrow(updated) == 2)
-    expect_true(all(quant_types %in% updated$Quantification_type))
-    expect_true(all(!is.na(updated$Files_found)))
-    updated <- .update_as_option(cloexp_pool6, cloexp_matches, "ALL")
-    expect_true(nrow(updated) == 2)
-    expect_true(all(quant_types %in% updated$Quantification_type))
-    expect_true(all(!is.na(updated$Files_found)))
-    updated <- .update_as_option(cloexp_pool6, cloexp_matches, "OPTIONAL")
-    expect_true(nrow(updated) == 2)
-    expect_true(all(quant_types %in% updated$Quantification_type))
-    expect_true(all(!is.na(updated$Files_found)))
-})
+    pool_with_dupl <- (files_found_fs_dupl %>%
+        dplyr::filter(.data$concatenatePoolIDSeqRun == "POOL01-1") %>%
+        dplyr::pull(.data$Files))[[1]]
 
-test_that(paste(func_name[13], "works for fs err - multiple patterns"), {
-    as_file_err <- as_file_errors %>% dplyr::filter(!is.na(.data$Path))
-    files_found_fs_ann <- .lookup_matrices(
-        as_file_correct,
-        quant_types, "annotated"
-    )
-    files_found_fs_err_ann <- .lookup_matrices(
-        as_file_err,
-        quant_types, "annotated"
-    )
-    cloexp_pool6 <- (files_found_fs_err_ann %>%
-        dplyr::filter(
-            .data$ProjectID == "CLOEXP",
-            .data$concatenatePoolIDSeqRun == "POOL6-1"
-        )
-    )$Files[[1]]
-    cloexp_matches <- .pattern_matching(cloexp_pool6$Files_found, c(
-        "NoMate",
-        "test"
-    ))
-    updated <- .update_as_option(cloexp_pool6, cloexp_matches, "ANY")
+    # ---- TEST SINGLE PATTERN
+    pattern <- c("FOO")
+    pattern_match <- .pattern_matching(pool_with_dupl$Files_found, pattern)
+    expect_true(pattern_match$FOO[1] == TRUE &
+        all(pattern_match$FOO[c(2, 3)] == FALSE))
+    updated <- .update_as_option(pool_with_dupl, pattern_match, "ANY")
     expect_true(nrow(updated) == 2)
     expect_true(all(quant_types %in% updated$Quantification_type))
-    expect_true(all(!is.na(updated$Files_found)))
-    updated <- .update_as_option(cloexp_pool6, cloexp_matches, "ALL")
+    expect_true(is.na(updated %>%
+        dplyr::filter(.data$Quantification_type == "seqCount") %>%
+        dplyr::pull(.data$Files_found)))
+    updated <- .update_as_option(pool_with_dupl, pattern_match, "ALL")
     expect_true(nrow(updated) == 2)
-    expect_true(all(is.na(updated$Files_found)))
     expect_true(all(quant_types %in% updated$Quantification_type))
-    updated <- .update_as_option(cloexp_pool6, cloexp_matches, "OPTIONAL")
+    expect_true(is.na(updated %>%
+        dplyr::filter(.data$Quantification_type == "seqCount") %>%
+        dplyr::pull(.data$Files_found)))
+    updated <- .update_as_option(pool_with_dupl, pattern_match, "OPTIONAL")
     expect_true(nrow(updated) == 2)
     expect_true(all(quant_types %in% updated$Quantification_type))
     expect_true(all(!is.na(updated$Files_found)))
 
-    proj1100_pool1 <- (files_found_fs_err_ann %>%
-        dplyr::filter(
-            .data$ProjectID == "PROJECT1100",
-            .data$concatenatePoolIDSeqRun ==
-                "ABX-LR-PL5-POOL14-1"
-        )
-    )$Files[[1]]
-    proj1100_pool1_matches <- .pattern_matching(
-        proj1100_pool1$Files_found,
-        c("NoMate", "test")
-    )
-    updated <- .update_as_option(proj1100_pool1, proj1100_pool1_matches, "ANY")
-    expect_true(nrow(updated) == 3)
+    # ---- TEST MULTIPLE PATTERN
+    pattern <- c("FOO", "BAR", "X")
+    pattern_match <- .pattern_matching(pool_with_dupl$Files_found, pattern)
+    updated <- .update_as_option(pool_with_dupl, pattern_match, "ANY")
+    expect_true(nrow(updated) == 2)
     expect_true(all(quant_types %in% updated$Quantification_type))
-    expect_true(all(!is.na((updated %>%
-        dplyr::filter(
-            .data$Quantification_type == "fragmentEstimate"
-        )
-    )$Files_found)))
-    expect_true(all(is.na((updated %>%
-        dplyr::filter(
-            .data$Quantification_type == "seqCount"
-        )
-    )$Files_found)))
-    updated <- .update_as_option(proj1100_pool1, proj1100_pool1_matches, "ALL")
+    expect_true(is.na(updated %>%
+        dplyr::filter(.data$Quantification_type == "seqCount") %>%
+        dplyr::pull(.data$Files_found)))
+    updated <- .update_as_option(pool_with_dupl, pattern_match, "ALL")
     expect_true(nrow(updated) == 2)
     expect_true(all(quant_types %in% updated$Quantification_type))
     expect_true(all(is.na(updated$Files_found)))
-    proj1100_pool1_matches <- .pattern_matching(
-        proj1100_pool1$Files_found,
-        c("NoMate", "test")
-    )
-    updated <- .update_as_option(
-        proj1100_pool1, proj1100_pool1_matches,
-        "OPTIONAL"
-    )
-    expect_true(nrow(updated) == 3)
+    updated <- .update_as_option(pool_with_dupl, pattern_match, "OPTIONAL")
+    expect_true(nrow(updated) == 2)
     expect_true(all(quant_types %in% updated$Quantification_type))
     expect_true(all(!is.na(updated$Files_found)))
 
-    proj1100_pool2 <- (files_found_fs_err_ann %>%
-        dplyr::filter(
-            .data$ProjectID == "PROJECT1100",
-            .data$concatenatePoolIDSeqRun ==
-                "ABX-LR-PL6-POOL15-1"
-        )
-    )$Files[[1]]
-    proj1100_pool2_matches <- .pattern_matching(
-        proj1100_pool2$Files_found,
-        c("NoMate", "test")
-    )
-    updated <- .update_as_option(proj1100_pool2, proj1100_pool2_matches, "ANY")
+    # ---- TEST NEGATED PATTERNS
+    # * Keep all the files that DO NOT contain "FOO"
+    pattern <- c("^(?!.*FOO).*")
+    pattern_match <- .pattern_matching(pool_with_dupl$Files_found, pattern)
+    updated <- .update_as_option(pool_with_dupl, pattern_match, "ANY")
     expect_true(nrow(updated) == 2)
     expect_true(all(quant_types %in% updated$Quantification_type))
-    expect_true(all(is.na(updated$Files_found)))
-    updated <- .update_as_option(proj1100_pool2, proj1100_pool2_matches, "ALL")
+    expect_true(all(!is.na(updated$Files_found)))
+    updated <- .update_as_option(pool_with_dupl, pattern_match, "ALL")
     expect_true(nrow(updated) == 2)
     expect_true(all(quant_types %in% updated$Quantification_type))
-    expect_true(all(is.na(updated$Files_found)))
-    updated <- .update_as_option(
-        proj1100_pool2, proj1100_pool2_matches,
-        "OPTIONAL"
-    )
+    expect_true(all(!is.na(updated$Files_found)))
+    updated <- .update_as_option(pool_with_dupl, pattern_match, "OPTIONAL")
     expect_true(nrow(updated) == 2)
     expect_true(all(quant_types %in% updated$Quantification_type))
     expect_true(all(!is.na(updated$Files_found)))
@@ -979,184 +698,362 @@ test_that(paste(func_name[13], "works for fs err - multiple patterns"), {
 # Tests .lookup_matrices_auto
 #------------------------------------------------------------------------------#
 test_that(paste(func_name[14], "returns correctly with patterns null"), {
-    to_import <- .lookup_matrices_auto(as_file_correct, quant_types,
+    to_import <- .lookup_matrices_auto(local_af_corr,
+        quant_types,
         "annotated",
-        patterns = NULL, matching_opt = "ANY"
+        patterns = NULL, matching_opt = "ANY",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
     expect_true(all(to_import$Anomalies == FALSE))
-    to_import <- .lookup_matrices_auto(as_file_correct, quant_types,
+    to_import <- .lookup_matrices_auto(local_af_corr, quant_types,
         "annotated",
-        patterns = NULL, matching_opt = "ALL"
+        patterns = NULL, matching_opt = "ALL",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
     expect_true(all(to_import$Anomalies == FALSE))
-    to_import <- .lookup_matrices_auto(as_file_correct, quant_types,
+    to_import <- .lookup_matrices_auto(local_af_corr, quant_types,
         "annotated",
-        patterns = NULL, matching_opt = "OPTIONAL"
+        patterns = NULL, matching_opt = "OPTIONAL",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
     expect_true(all(to_import$Anomalies == FALSE))
 })
 
 test_that(paste(func_name[14], "returns correctly for fs"), {
-    to_import <- .lookup_matrices_auto(as_file_correct, quant_types,
+    to_import <- .lookup_matrices_auto(local_af_corr, quant_types,
         "annotated",
-        patterns = "NoMate", matching_opt = "ANY"
+        patterns = "FOO", matching_opt = "ANY",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
     expect_true(all(to_import$Anomalies == TRUE))
-    to_import <- .lookup_matrices_auto(as_file_correct, quant_types,
+    to_import <- .lookup_matrices_auto(local_af_corr, quant_types,
         "annotated",
-        patterns = "NoMate", matching_opt = "ALL"
+        patterns = "FOO", matching_opt = "ALL",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
     expect_true(all(to_import$Anomalies == TRUE))
-    to_import <- .lookup_matrices_auto(as_file_correct, quant_types,
+    to_import <- .lookup_matrices_auto(local_af_corr, quant_types,
         "annotated",
-        patterns = "NoMate",
-        matching_opt = "OPTIONAL"
+        patterns = "FOO",
+        matching_opt = "OPTIONAL",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
     expect_true(all(to_import$Anomalies == FALSE))
 })
 
 test_that(paste(func_name[14], "returns correctly for fserr"), {
-    as_file_err <- as_file_errors %>% dplyr::filter(!is.na(.data$Path))
-    to_import <- .lookup_matrices_auto(as_file_err, quant_types, "annotated",
-        patterns = "NoMate", matching_opt = "ANY"
+    aligned_af_mod <- local_af_corr %>%
+        dplyr::mutate(!!.path_cols_names()$quant :=
+            stringr::str_replace(
+                .data[[.path_cols_names()$quant]],
+                "/fs/", "/fs_dupl/"
+            ))
+    to_import <- .lookup_matrices_auto(aligned_af_mod,
+        quant_types, "annotated",
+        patterns = "FOO", matching_opt = "ANY",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
-    expect_true(all((to_import %>%
-        dplyr::filter(.data$ProjectID == "PROJECT1100")
-    )$Anomalies) == TRUE)
-    expect_true(all((to_import %>%
-        dplyr::filter(.data$ProjectID == "CLOEXP")
-    )$Anomalies) == FALSE)
-    to_import <- .lookup_matrices_auto(as_file_err, quant_types, "annotated",
-        patterns = "NoMate", matching_opt = "ALL"
+    expect_true(all(to_import$Anomalies == TRUE))
+    na_pools <- c(
+        "POOL02-1",
+        "POOL03-1",
+        "POOL04-1"
     )
-    expect_true(all((to_import %>%
-        dplyr::filter(.data$ProjectID == "PROJECT1100")
-    )$Anomalies) == TRUE)
-    expect_true(all((to_import %>%
-        dplyr::filter(.data$ProjectID == "CLOEXP")
-    )$Anomalies) == FALSE)
-    to_import <- .lookup_matrices_auto(as_file_err, quant_types, "annotated",
-        patterns = "NoMate",
-        matching_opt = "OPTIONAL"
-    )
-    expect_true(all((to_import %>%
-        dplyr::filter(
-            .data$ProjectID == "PROJECT1100",
-            .data$concatenatePoolIDSeqRun ==
-                "ABX-LR-PL5-POOL14-1"
+    na_files <- purrr::map_lgl(na_pools, ~ {
+        all(
+            is.na((to_import %>%
+                dplyr::filter(
+                    .data$concatenatePoolIDSeqRun == .x
+                )
+            )$Files[[1]]$Files_found)
         )
-    )$Anomalies) == TRUE)
+    })
+    expect_true(all(na_files))
+    non_na_files <- !is.na((to_import %>%
+        dplyr::filter(
+            .data$concatenatePoolIDSeqRun == "POOL01-1"
+        ))$Files[[1]] %>%
+        dplyr::filter(.data$Quantification_type == "fragmentEstimate") %>%
+        dplyr::pull(.data$Files_found))
+    expect_true(non_na_files)
+
+    to_import <- .lookup_matrices_auto(aligned_af_mod,
+        quant_types, "annotated",
+        patterns = "FOO", matching_opt = "ALL",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
+    )
+    expect_true(all(to_import$Anomalies == TRUE))
+    na_files <- purrr::map_lgl(na_pools, ~ {
+        all(
+            is.na((to_import %>%
+                dplyr::filter(
+                    .data$concatenatePoolIDSeqRun == .x
+                )
+            )$Files[[1]]$Files_found)
+        )
+    })
+    expect_true(all(na_files))
+    non_na_files <- !is.na((to_import %>%
+        dplyr::filter(
+            .data$concatenatePoolIDSeqRun == "POOL01-1"
+        ))$Files[[1]] %>%
+        dplyr::filter(.data$Quantification_type == "fragmentEstimate") %>%
+        dplyr::pull(.data$Files_found))
+    expect_true(non_na_files)
+
+    to_import <- .lookup_matrices_auto(aligned_af_mod,
+        quant_types, "annotated",
+        patterns = "FOO", matching_opt = "OPTIONAL",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
+    )
+    expect_true(all(to_import$Anomalies == FALSE))
 })
 
 #------------------------------------------------------------------------------#
 # Tests .manage_anomalies_auto
 #------------------------------------------------------------------------------#
 test_that(paste(func_name[15], "correctly manages for fs"), {
-    files_found <- .lookup_matrices_auto(as_file_correct,
+    files_found <- .lookup_matrices_auto(local_af_corr,
         quant_types, "annotated",
-        patterns = NULL, matching_opt = "ANY"
+        patterns = NULL, matching_opt = "ANY",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
-    expect_message(
-        {
-            files_to_import <- .manage_anomalies_auto(files_found)
-        },
-        regexp = NA
-    )
-    expect_true(nrow(files_to_import) == 4 * length(quant_types))
-    files_found <- .lookup_matrices_auto(as_file_correct,
-        quant_types, "annotated",
-        patterns = "NoMate",
-        matching_opt = "ANY"
-    )
-    expect_message(
-        {
-            files_to_import <- .manage_anomalies_auto(files_found)
-        },
-        regexp = "Some files are missing and will be ignored"
-    )
-    expect_true(nrow(files_to_import) == 0)
-    files_found <- .lookup_matrices_auto(as_file_correct,
-        quant_types, "annotated",
-        patterns = "NoMate",
-        matching_opt = "ALL"
-    )
-    expect_message(
-        {
-            files_to_import <- .manage_anomalies_auto(files_found)
-        },
-        regexp = "Some files are missing and will be ignored"
-    )
-    expect_true(nrow(files_to_import) == 0)
-    files_found <- .lookup_matrices_auto(as_file_correct,
-        quant_types, "annotated",
-        patterns = "NoMate",
-        matching_opt = "OPTIONAL"
-    )
-    expect_message(
-        {
-            files_to_import <- .manage_anomalies_auto(files_found)
-        },
-        regexp = NA
-    )
+    files_to_import <- .manage_anomalies_auto(files_found,
+                                              "ProjectID",
+                                              "concatenatePoolIDSeqRun")
     expect_true(nrow(files_to_import) == 4 * length(quant_types))
 })
 
 test_that(paste(func_name[15], "correctly manages for fserr"), {
-    as_file_err <- as_file_errors %>% dplyr::filter(!is.na(.data$Path))
-    dupl_message <- paste(
-        "Duplicates found for some files: in automatic mode",
-        "duplicates are not preserved - use interactive mode",
-        "for more accurate",
-        "file selection"
-    )
-    missing_message <- "Some files are missing and will be ignored"
-    files_found <- .lookup_matrices_auto(as_file_err,
+  withr::local_options(list(ISAnalytics.verbose = TRUE))
+  aligned_af_mod <- local_af_corr %>%
+    dplyr::mutate(!!.path_cols_names()$quant :=
+                    stringr::str_replace(
+                      .data[[.path_cols_names()$quant]],
+                      "/fs/", "/fs_dupl/"
+                    ))
+    files_found <- .lookup_matrices_auto(aligned_af_mod,
         quant_types, "annotated",
-        patterns = NULL, matching_opt = "ANY"
+        patterns = NULL, matching_opt = "ANY",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
+    )
+    expect_message({
+      files_to_import <- .manage_anomalies_auto(files_found,
+                                                "ProjectID",
+                                                "concatenatePoolIDSeqRun")
+    }, class = "auto_mode_dupl")
+    expect_true(nrow(files_to_import) == 7)
+    files_found <- .lookup_matrices_auto(aligned_af_mod,
+        quant_types, "annotated",
+        patterns = "FOO",
+        matching_opt = "ANY",
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
     )
     expect_message(
         {
-            files_to_import <- .manage_anomalies_auto(files_found)
-        },
-        regexp = dupl_message
+            files_to_import <- .manage_anomalies_auto(files_found,
+                                                      "ProjectID",
+                                                      "concatenatePoolIDSeqRun")
+        }, class = "auto_mode_miss"
     )
-    expect_true(nrow(files_to_import) == 3)
-    files_found <- .lookup_matrices_auto(as_file_err,
-        quant_types, "annotated",
-        patterns = "NoMate",
-        matching_opt = "ANY"
+    expect_true(nrow(files_to_import) == 1)
+})
+
+#------------------------------------------------------------------------------#
+# Tests .import_type
+#------------------------------------------------------------------------------#
+test_that(paste(func_name[9], "reports errors silently"), {
+  # Expecting errors when mand vars do not mach
+  sample_df <- tibble::tribble(
+    ~IS_GenomicID, ~GeneName, ~GeneStrand, ~id1, ~id2,
+    ~id3, ~id4,
+    "1_140546_+", "GENE1", "-", 4, NA, NA, 1,
+    "14_43567_-", "GENE2", "+", 231, NA, 2, NA,
+    "5_214676_-", "GENE3", "-", NA, NA, NA, NA,
+    "7_66778_-", "GENE4", "-", NA, 355, NA, NA,
+    "1_75687_+", "GENE5", "+", NA, NA, NA, 65,
+    "5_64576_+", "GENE6", "-", 1, 667, NA, NA,
+    "20_57587_-", "GENE7", "-", NA, 13, 1, NA,
+    "X_457658_+", "GENE8", "+", NA, NA, NA, 768
+  )
+  temp_path <- withr::local_tempfile(fileext = "tsv.gz")
+  readr::write_tsv(sample_df, file = temp_path, na = "")
+  sample_file_to_import <- tibble::tribble(
+    ~ ProjectID, ~ concatenatePoolIDSeqRun, ~ Quantification_type,
+    ~ Files_chosen,
+    "P1", "POOL1", "seqCount", temp_path
+  )
+  p <- if (.Platform$OS.type == "windows") {
+    BiocParallel::SnowParam(
+      workers = 2,
+      stop.on.error = FALSE
     )
-    expect_message(
+  } else {
+    BiocParallel::MulticoreParam(
+      workers = 2,
+      stop.on.error = FALSE
+    )
+  }
+  import_result <- .import_type(q_type = "seqCount",
+                                files = sample_file_to_import,
+                                cluster = p, import_matrix_args =  list())
+  expect_true(is.null(import_result$matrix))
+  expect_true(import_result$imported_files$Imported[1] == FALSE)
+  new_mand <- tibble::tribble(
+    ~ names, ~ types, ~ transform, ~ flag, ~ tag,
+    "IS_GenomicID", "char", NULL, "required", NA_character_
+  )
+  withr::with_options(list(ISAnalytics.mandatory_is_vars = new_mand), {
+    import_result <- .import_type(q_type = "seqCount",
+                                  files = sample_file_to_import,
+                                  cluster = p, import_matrix_args =  list())
+    expect_true(!is.null(import_result$matrix))
+    expect_true(nrow(import_result$matrix) == 11 &
+                  ncol(import_result$matrix) == 5)
+    expect_true(import_result$imported_files$Imported[1] == TRUE)
+    expect_true(import_result$imported_files$Number_of_samples[1] == 4)
+    expect_true(import_result$imported_files$Distinct_is[1] == 7)
+  })
+  BiocParallel::bpstop(p)
+})
+
+#------------------------------------------------------------------------------#
+# Tests .parallel_import_merge
+#------------------------------------------------------------------------------#
+test_that(paste(func_name[10], "works as expected"), {
+  sample_df <- tibble::tribble(
+    ~IS_GenomicID, ~GeneName, ~GeneStrand, ~id1, ~id2,
+    ~id3, ~id4,
+    "1_140546_+", "GENE1", "-", 4, NA, NA, 1,
+    "14_43567_-", "GENE2", "+", 231, NA, 2, NA,
+    "5_214676_-", "GENE3", "-", NA, NA, NA, NA,
+    "7_66778_-", "GENE4", "-", NA, 355, NA, NA,
+    "1_75687_+", "GENE5", "+", NA, NA, NA, 65,
+    "5_64576_+", "GENE6", "-", 1, 667, NA, NA,
+    "20_57587_-", "GENE7", "-", NA, 13, 1, NA,
+    "X_457658_+", "GENE8", "+", NA, NA, NA, 768
+  )
+  temp_path <- withr::local_tempfile(fileext = "tsv.gz")
+  readr::write_tsv(sample_df, file = temp_path, na = "")
+  sample_df_corr <- sample_df %>%
+    tidyr::separate(.data$IS_GenomicID,
+                    into = c("chr", "integration_locus", "strand"),
+                    sep = "_", remove = TRUE, convert = TRUE)
+  temp_path_corr <- withr::local_tempfile(fileext = "tsv.gz")
+  readr::write_tsv(sample_df_corr, file = temp_path_corr, na = "")
+  sample_file_to_import <- tibble::tribble(
+    ~ ProjectID, ~ concatenatePoolIDSeqRun, ~ Quantification_type,
+    ~ Files_chosen,
+    "P1", "POOL1", "seqCount", temp_path,
+    "P1", "POOL1", "fragmentEstimate", temp_path_corr
+  )
+  results <- .parallel_import_merge(sample_file_to_import, workers = 2,
+                                    import_matrix_args = list())
+  expect_true(is.null(results$matrix$seqCount) &
+                !is.null(results$matrix$fragmentEstimate))
+  expect_equal(results$summary$Imported, c(FALSE, TRUE))
+})
+
+#------------------------------------------------------------------------------#
+# Tests .base_param_check
+#------------------------------------------------------------------------------#
+test_that(paste(func_name[16], "executes correctly"), {
+    expect_error(
         {
-            files_to_import <- .manage_anomalies_auto(files_found)
+            .base_param_check(
+                local_af_corr, c("seqCount", "fragmentEstimate"),
+                "annotated", 2, TRUE
+            )
         },
-        regexp = c(missing_message)
+        regexp = NA
     )
-    expect_true(nrow(files_to_import) == 2)
-    files_found <- .lookup_matrices_auto(as_file_err,
-        quant_types, "annotated",
-        patterns = "NoMate",
-        matching_opt = "ALL"
-    )
-    expect_message(
+    expect_error(
         {
-            files_to_import <- .manage_anomalies_auto(files_found)
+            .base_param_check(
+                "abc", c("seqCount", "fragmentEstimate"),
+                "annotated", 2, TRUE
+            )
         },
-        regexp = c(missing_message)
+        regexp = NA
     )
-    expect_true(nrow(files_to_import) == 2)
-    files_found <- .lookup_matrices_auto(as_file_err,
-        quant_types, "annotated",
-        patterns = "NoMate",
-        matching_opt = "OPTIONAL"
-    )
-    expect_message(
+    expect_error({
+        .base_param_check(
+            local_af_corr, c("a", "b"),
+            "annotated", 2, TRUE
+        )
+    })
+    expect_error(
         {
-            files_to_import <- .manage_anomalies_auto(files_found)
+            .base_param_check(
+                local_af_corr, c("seqCount", "fragmentEstimate"),
+                "a", 2, TRUE
+            )
         },
-        regexp = c(dupl_message)
+        regexp = NA
     )
-    expect_true(nrow(files_to_import) == 5)
+    expect_error({
+        .base_param_check(
+            local_af_corr, c("seqCount", "fragmentEstimate"),
+            "annotated", "blabla", TRUE
+        )
+    })
+    expect_error({
+        .base_param_check(
+            local_af_corr, c("seqCount", "fragmentEstimate"),
+            "annotated", 2, "TRUE"
+        )
+    })
+})
+
+#------------------------------------------------------------------------------#
+# Tests .pre_manage_af
+#------------------------------------------------------------------------------#
+test_that(paste(func_name[17], "executes correctly"), {
+    # Already imported af
+    checked_af <- .pre_manage_af(local_af_corr, list(), report_path = NULL)
+    expect_equal(local_af_corr, checked_af)
+
+    # To import
+    checked_af <- .pre_manage_af(fs_path$af, list(root = fs_path$root_corr),
+        report_path = NULL
+    )
+    expect_equal(local_af_corr, checked_af)
+})
+
+test_that(paste(func_name[17], "produces report in right location"), {
+    withr::local_options(list(ISAnalytics.reports = TRUE))
+    # When provided only a folder
+    temp_fold <- tempdir()
+    complete_filename <- .clean_file_path(temp_fold, "asso_file")
+    expect_message({
+        checked_af <- .pre_manage_af(fs_path$af, list(root = fs_path$root_corr),
+            report_path = temp_fold
+        )
+    })
+    expect_equal(local_af_corr, checked_af)
+    expect_true(fs::file_exists(complete_filename))
+
+    # When provided folder and file for matrix import
+    matrix_report_filname <- fs::path(temp_fold, "matrix_report.html")
+    expect_message({
+        checked_af <- .pre_manage_af(fs_path$af, list(root = fs_path$root_corr),
+            report_path = matrix_report_filname
+        )
+    })
+    expect_equal(local_af_corr, checked_af)
+    expect_true(fs::file_exists(complete_filename))
 })
 
 #------------------------------------------------------------------------------#
@@ -1164,7 +1061,7 @@ test_that(paste(func_name[15], "correctly manages for fserr"), {
 #------------------------------------------------------------------------------#
 test_that(paste(func_name[17], "executes correctly"), {
     matrices <- import_parallel_Vispa2Matrices(
-        association_file = as_file_correct,
+        association_file = local_af_corr,
         quantification_type = c("seqCount", "fragmentEstimate"),
         mode = "AUTO", report_path = NULL
     )
