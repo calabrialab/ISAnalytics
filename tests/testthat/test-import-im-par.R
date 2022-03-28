@@ -1059,12 +1059,12 @@ test_that(paste(func_name[17], "produces report in right location"), {
 #------------------------------------------------------------------------------#
 # Tests import_parallel_Vispa2Matrices
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[17], "executes correctly"), {
+test_that(paste(func_name[18], "executes correctly"), {
     matrices <- import_parallel_Vispa2Matrices(
         association_file = local_af_corr,
         quantification_type = c("seqCount", "fragmentEstimate"),
         mode = "AUTO", report_path = NULL
     )
-    expect_true(nrow(matrices) == 5904 & ncol(matrices) == 8)
+    expect_true(nrow(matrices) == 1689 & ncol(matrices) == 8)
     expect_true(all(c("seqCount", "fragmentEstimate") %in% colnames(matrices)))
 })

@@ -71,121 +71,189 @@
 #' head(rec)
 compute_near_integrations <- function(x,
     threshold = 4,
-    keep_criteria = "max_value",
-    strand_specific = TRUE,
+    is_identity_tags = c("chromosome", "is_strand"),
+    keep_criteria = c("max_value", "keep_first"),
     value_columns = c("seqCount", "fragmentEstimate"),
     max_value_column = "seqCount",
+    sample_id_column = pcr_id_column(),
+    additional_agg_lambda = list(.default = default_rec_agg_lambdas()),
+    max_workers = 4,
     map_as_file = TRUE,
-    file_path = default_report_path()) {
-    # Check parameters
+    file_path = default_report_path(),
+    strand_specific = lifecycle::deprecated()) {
+    ## --- Check parameters
     stopifnot(is.data.frame(x))
-    ## Check tibble is an integration matrix
-    if (!.check_mandatory_vars(x)) {
-        rlang::abort(.missing_mand_vars())
-    }
-    ## Check it contains CompleteAmplificationID column
-    if (!.check_complAmpID(x)) {
-        rlang::abort(.missing_cAmp_sub_msg())
-    }
-    ## Check numeric columns
+    stopifnot(is.numeric(threshold) || is.integer(threshold))
+    threshold <- threshold[1]
     stopifnot(is.character(value_columns))
     stopifnot(is.character(max_value_column))
     num_cols <- unique(c(value_columns, max_value_column[1]))
     if (!all(num_cols %in% colnames(x))) {
-        rlang::abort(.missing_user_cols_error(
-            num_cols[!num_cols %in% colnames(x)]
-        ))
+      rlang::abort(.missing_needed_cols(
+        num_cols[!num_cols %in% colnames(x)]
+      ))
     }
-    stopifnot(is.numeric(threshold) || is.integer(threshold))
-    threshold <- threshold[1]
-    criteria <- rlang::arg_match(keep_criteria, values = c(
-        "max_value",
-        "keep_first"
-    ))
-    stopifnot(is.logical(strand_specific))
-    strand_specific <- strand_specific[1]
+    criteria <- rlang::arg_match(keep_criteria)
+    stopifnot(is.character(sample_id_column))
+    sample_id_column <- sample_id_column[1]
     stopifnot(is.logical(map_as_file))
     map_as_file <- map_as_file[1]
     if (map_as_file == TRUE) {
-        stopifnot(is.character(file_path))
-        file_path <- file_path[1]
+      stopifnot(is.character(file_path))
+      file_path <- file_path[1]
+    }
+    if (lifecycle::is_present(strand_specific)) {
+      lifecycle::deprecate_warn(
+        when = "1.5.4",
+        what = "compute_near_integrations(strand_specific)",
+        with = "compute_near_integrations(is_identity_tags)",
+        details = paste("See the documentation for details,",
+                        "the argument will be likely dropped in the next",
+                        "release cycle.")
+      )
+      stopifnot(is.logical(strand_specific))
+      strand_specific <- strand_specific[1]
+      if (!"is_strand" %in% is_identity_tags) {
+        is_identity_tags <- c(is_identity_tags, "is_strand")
+      }
+    }
+    ## --- Check tags
+    stopifnot(is.null(is_identity_tags) || is.character(is_identity_tags))
+    required_tags <- list("locus" = c("int", "numeric"))
+    if (!is.null(is_identity_tags)) {
+      is_identity_tags <- is_identity_tags[is_identity_tags != "locus"]
+      id_tags_types <- purrr::map(is_identity_tags, ~ NULL) %>%
+        purrr::set_names(is_identity_tags)
+      required_tags <- append(required_tags, id_tags_types)
+    }
+    required_tag_cols <- .check_required_cols(
+      required_tags = required_tags,
+      vars_df = mandatory_IS_vars(TRUE),
+      duplicate_politic = "error")
+    if (!all(required_tag_cols$names %in% colnames(x))) {
+      rlang::abort(.missing_needed_cols(required_tag_cols$names[
+        !required_tag_cols$names %in% colnames(x)
+      ]))
+    }
+    if (!sample_id_column %in% colnames(x)) {
+      rlang::abort(.missing_needed_cols(sample_id_column))
     }
     ## Is x annotated?
     annotated <- .is_annotated(x)
-    # Split data for parallel execution
-    split <- if (strand_specific == TRUE) {
-        x %>%
-            dplyr::group_by(.data$chr, .data$strand) %>%
-            dplyr::group_split()
-    } else {
-        x %>%
-            dplyr::group_by(.data$chr) %>%
-            dplyr::group_split()
+    ## Any additional columns present?
+    additional_cols <- colnames(x)[!colnames(x) %in% c(
+      required_tag_cols$names, sample_id_column, value_columns,
+      annotation_IS_vars()
+    )]
+    find_lambda <- function(.x) {
+      if (.x %in% names(additional_agg_lambda)) {
+        return(additional_agg_lambda[[.x]])
+      }
+      defaults <- additional_agg_lambda[[".defaults"]]
+      if (is.null(defaults)) {
+        return(NULL)
+      }
+      col_type <- typeof(x[[.x]])
+      return(defaults[[col_type]])
     }
-    ## Select only groups with 2 or more rows
-    split_to_process <- split[purrr::map_lgl(split, ~ nrow(.x) > 1)]
-    # # Set up parallel workers
-    if (.Platform$OS.type == "windows") {
+    add_cols_lambdas <- purrr::map(additional_cols, find_lambda) %>%
+      purrr::set_names(additional_cols)
+    add_cols_lambdas <- add_cols_lambdas[purrr::map_lgl(add_cols_lambdas,
+                                                        ~ !is.null(.x))]
+    # Process
+    if (is.null(is_identity_tags) || purrr::is_empty(is_identity_tags)) {
+      result <- .sliding_window(
+        x = x,
+        threshold = threshold,
+        keep_criteria = criteria,
+        annotated = annotated,
+        num_cols = num_cols,
+        max_val_col = max_value_column,
+        sample_col = sample_id_column,
+        req_tags = required_tag_cols,
+        add_col_lambdas = add_cols_lambdas,
+        produce_map = map_as_file
+      )
+      recalibr_m <- result$recalibrated_matrix
+      maps <- result$map
+
+    } else {
+      stopifnot(is.numeric(max_workers))
+      max_workers <- max_workers[1]
+      is_identity_names <- required_tag_cols %>%
+        dplyr::filter(.data$tag != "locus") %>%
+        dplyr::pull(.data$names)
+      # Split data for parallel execution
+      split <- x %>%
+          dplyr::group_by(dplyr::across(dplyr::all_of(is_identity_names))) %>%
+          dplyr::group_split()
+      ## Select only groups with 2 or more rows
+      split_to_process <- split[purrr::map_lgl(split, ~ nrow(.x) > 1)]
+      # Set up parallel workers
+      if (.Platform$OS.type == "windows") {
         p <- BiocParallel::SnowParam(
-            stop.on.error = FALSE,
-            progressbar = TRUE,
-            tasks = length(split_to_process),
-            exportglobals = TRUE
+          workers = max_workers,
+          progressbar = getOption("ISAnalytics.verbose"),
+          tasks = length(split_to_process),
+          exportglobals = TRUE
         )
-    } else {
+      } else {
         p <- BiocParallel::MulticoreParam(
-            stop.on.error = FALSE,
-            progressbar = TRUE,
-            tasks = length(split_to_process),
-            exportglobals = FALSE
+          workers = max_workers,
+          progressbar = getOption("ISAnalytics.verbose"),
+          tasks = length(split_to_process),
+          exportglobals = FALSE
         )
-    }
-    FUN <- function(x) {
-        .sliding_window(x,
-            threshold = threshold,
-            keep_criteria = criteria,
-            num_cols = num_cols,
-            annotated = annotated,
-            max_val_col = max_value_column,
-            produce_map = map_as_file
-        )
-    }
-    ## Obtain result: list of lists
-    result <- BiocParallel::bptry(
-        BiocParallel::bplapply(
-            split_to_process,
-            FUN = FUN,
-            BPPARAM = p
-        )
-    )
-    BiocParallel::bpstop(p)
-    ## Obtain single list
-    recalibr_m <- purrr::map(result, ~ .x$recalibrated_matrix)
-    recalibr_m <- data.table::rbindlist(recalibr_m)
-    maps <- purrr::map(result, ~ .x$map)
-    maps <- data.table::rbindlist(maps)
-    ## Add all rows that were not part of recalibration
-    split_fine <- split[purrr::map_lgl(split, ~ !nrow(.x) > 1)]
-    if (length(split_fine) > 0) {
+      }
+      ## Obtain result: list of lists
+      result <- BiocParallel::bplapply(
+        split_to_process,
+        FUN = .sliding_window,
+        threshold = threshold,
+        keep_criteria = criteria,
+        annotated = annotated,
+        num_cols = num_cols,
+        max_val_col = max_value_column,
+        sample_col = sample_id_column,
+        req_tags = required_tag_cols,
+        add_col_lambdas = add_cols_lambdas,
+        produce_map = map_as_file,
+        BPPARAM = p
+      )
+      BiocParallel::bpstop(p)
+      ## Obtain single list
+      recalibr_m <- purrr::map(result, ~ .x$recalibrated_matrix)
+      recalibr_m <- data.table::rbindlist(recalibr_m)
+      maps <- purrr::map(result, ~ .x$map)
+      maps <- data.table::rbindlist(maps)
+      ## Add all rows that were not part of recalibration
+      split_fine <- split[purrr::map_lgl(split, ~ !nrow(.x) > 1)]
+      if (length(split_fine) > 0) {
         split_fine <- purrr::reduce(
-            split_fine,
-            function(g1, g2) {
-                g1 <- data.table::setDT(g1)
-                g2 <- data.table::setDT(g2)
-                data.table::rbindlist(list(g1, g2))
-            }
-        ) %>% data.table::setDT()
-        mand_vars <- mandatory_IS_vars()
-        map_fine <- unique(split_fine[, ..mand_vars])
-        data.table::setnames(
-            x = map_fine,
-            old = mandatory_IS_vars(),
-            new = paste0(mandatory_IS_vars(), "_before")
+          split_fine,
+          function(g1, g2) {
+            g1 <- data.table::setDT(g1)
+            g2 <- data.table::setDT(g2)
+            data.table::rbindlist(list(g1, g2))
+          }
         )
-        map_fine[, c("chr_after", "integration_locus_after", "strand_after") :=
-            list(chr_before, integration_locus_before, strand_before)]
+        split_fine <- data.table::setDT(split_fine)
+        map_fine <- unique(split_fine[, mget(required_tag_cols$names)])
+        data.table::setnames(
+          x = map_fine,
+          old = mget(required_tag_cols$names),
+          new = paste0(mget(required_tag_cols$names), "_before")
+        )
+        map_fine[, c(
+          paste0(required_tag_cols$names, "_after")
+        ) :=
+          purrr::map(
+            required_tag_cols$names,
+            ~ eval(sym(paste0(.x, "_before")))
+          )]
         recalibr_m <- data.table::rbindlist(list(recalibr_m, split_fine))
         maps <- data.table::rbindlist(list(maps, map_fine))
+      }
     }
     if (map_as_file) {
         ### Manage file
@@ -203,4 +271,13 @@ compute_near_integrations <- function(x,
         )
     }
     return(recalibr_m)
+}
+
+default_rec_agg_lambdas <- function() {
+  list(
+    character = ~ paste0(.x, collapse = ";"),
+    integer = ~ sum(.x, na.rm = TRUE),
+    double = ~ sum(.x, na.rm = TRUE),
+    logical = ~ all(.x)
+  )
 }

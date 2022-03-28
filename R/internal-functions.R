@@ -695,6 +695,9 @@
         dplyr::group_split()
     single_type_eval <- function(sub_df) {
         tag_type <- types[[sub_df$tag[1]]]
+        if (is.null(tag_type) || purrr::is_empty(tag_type)) {
+          return(list(type = "DF", result = sub_df))
+        }
         out <- sub_df %>%
             dplyr::filter(.data$types %in% tag_type)
         if (nrow(out) == 0) {
@@ -3613,15 +3616,6 @@
 # **NOTE: this function is meant to be called on a SINGLE GROUP,
 # meaning a subset of an integration matrix in which all rows
 # share the same chr (and optionally same strand).**
-#
-# @param x An integration matrix subset (see description)
-# @param threshold The numeric value representing an absolute number
-# of bases for which two integrations are considered distinct
-# @param keep_criteria The string with selecting criteria
-# @param annotated Is `x` annotated? Logical value
-# @param num_cols A character vector with the names of the numeric columns
-# @param max_val_col The column to consider if criteria is max_value
-# @param produce_map Produce recalibration map?
 #' @importFrom dplyr arrange
 #' @importFrom purrr is_empty map_dfr
 #' @importFrom rlang expr eval_tidy .data
@@ -3635,20 +3629,30 @@
     annotated,
     num_cols,
     max_val_col,
+    sample_col,
+    req_tags,
+    add_col_lambdas,
     produce_map) {
+    locus_col <- req_tags %>%
+      dplyr::filter(.data$tag == "locus") %>%
+      dplyr::pull(.data$names)
     ## Order by integration_locus
-    x <- x %>% dplyr::arrange(.data$integration_locus)
+    x <- x %>% dplyr::arrange(.data[[locus_col]])
     x <- data.table::setDT(x)
     map_recalibr <- if (produce_map == TRUE) {
-        mand_vars <- mandatory_IS_vars()
-        rec_map <- unique(x[, ..mand_vars])
+        req_vars <- req_tags$names
+        rec_map <- unique(x[, mget(req_vars)])
         data.table::setnames(
             x = rec_map,
-            old = mandatory_IS_vars(),
-            new = paste0(mandatory_IS_vars(), "_before")
+            old = req_vars,
+            new = paste0(req_vars, "_before")
         )
-        rec_map[, c("chr_after", "integration_locus_after", "strand_after") :=
-            list(NA_character_, NA_real_, NA_character_)]
+        na_type <- purrr::map(req_vars, ~ {
+          col_type <- typeof(x[, get(.x)])
+          fun_name <- paste0("as.", col_type)
+          return(do.call(what = fun_name, args = list(NA)))
+        })
+        rec_map[, c(paste(req_vars, "after", sep = "_")) := na_type]
     } else {
         NULL
     }
@@ -3657,27 +3661,27 @@
         # If index is the last row in the data frame return
         if (index == nrow(x)) {
             if (produce_map == TRUE) {
+              is_predicate <- purrr::map(req_vars, ~ {
+                var_before <- sym(paste0(.x, "_before"))
+                value <- x[index, get(.x)]
+                rlang::expr(!!var_before == !!value)
+              }) %>%
+                purrr::reduce(~ rlang::expr(!!.x & !!.y))
                 map_recalibr[
-                    chr_before == x[index, ]$chr &
-                        integration_locus_before ==
-                            x[index, ]$integration_locus &
-                        strand_before == x[index, ]$strand,
+                    eval(is_predicate),
                     c(
-                        "chr_after",
-                        "integration_locus_after",
-                        "strand_after"
+                      paste0(req_vars, "_after")
                     ) :=
-                        list(
-                            chr_before,
-                            integration_locus_before,
-                            strand_before
+                        purrr::map(
+                          req_vars,
+                          ~ eval(sym(paste0(.x, "_before")))
                         )
                 ]
             }
             return(list(recalibrated_matrix = x, map = map_recalibr))
         }
         ## Compute interval for row
-        interval <- x[index, ]$integration_locus + 1 + threshold
+        interval <- x[index, ][[locus_col]] + 1 + threshold
         ## Look ahead for every integration that falls in the interval
         near <- numeric()
         k <- index
@@ -3686,7 +3690,7 @@
                 break
             }
             k <- k + 1
-            if (x[k, ]$integration_locus < interval) {
+            if (x[k, ][[locus_col]] < interval) {
                 # Saves the indexes of the rows that are in the interval
                 near <- append(near, k)
             } else {
@@ -3694,10 +3698,10 @@
             }
         }
         window <- c(index, near)
+        row_to_keep <- index
         if (!purrr::is_empty(near)) {
             ## Change loci according to criteria
             ######## CRITERIA PROCESSING
-            row_to_keep <- index
             if (keep_criteria == "max_value") {
                 expr <- rlang::expr(`$`(x[window, ], !!max_val_col))
                 to_check <- rlang::eval_tidy(expr)
@@ -3709,54 +3713,68 @@
             }
             # Fill map if needed
             if (produce_map == TRUE) {
-                map_recalibr[
-                    chr_before %chin% x[window, ]$chr &
-                        integration_locus_before %in%
-                            x[window, ]$integration_locus &
-                        strand_before %chin% x[window, ]$strand,
-                    c(
-                        "chr_after",
-                        "integration_locus_after",
-                        "strand_after"
-                    ) :=
-                        list(
-                            x[row_to_keep, ]$chr,
-                            x[row_to_keep, ]$integration_locus,
-                            x[row_to_keep, ]$strand
-                        )
-                ]
+              is_predicate <- purrr::map(req_vars, ~ {
+                var_before <- sym(paste0(.x, "_before"))
+                value <- x[window, get(.x)]
+                if (!is.character(value)) {
+                  return(rlang::expr(!!var_before %in% !!value))
+                }
+                rlang::expr(!!var_before %chin% !!value)
+              }) %>%
+                purrr::reduce(~ rlang::expr(!!.x & !!.y))
+              map_recalibr[
+                eval(is_predicate),
+                c(
+                  paste0(req_vars, "_after")
+                ) :=
+                  purrr::map(
+                    req_vars,
+                    ~ x[row_to_keep][[.x]]
+                  )
+              ]
             }
-            # Change loci and strand of near integrations
+            # Change loci and other ids of near integrations
+            fields_to_change <- req_tags$names
             if (annotated) {
-                x[near, c(
-                    "integration_locus",
-                    "strand",
-                    annotation_IS_vars()
-                ) := list(
-                    x[row_to_keep, ]$integration_locus,
-                    x[row_to_keep, ]$strand,
-                    x[row_to_keep, ]$GeneName,
-                    x[row_to_keep, ]$GeneStrand
-                )]
+              fields_to_change <- c(fields_to_change, annotation_IS_vars())
+              x[near, c(
+                req_tags$names,
+                annotation_IS_vars()
+              ) := x[row_to_keep,
+                     mget(fields_to_change)]]
             } else {
-                x[near, c("integration_locus", "strand") := list(
-                    x[row_to_keep, ]$integration_locus,
-                    x[row_to_keep, ]$strand
-                )]
+              x[near, c(
+                req_tags$names
+              ) := x[row_to_keep,
+                     mget(fields_to_change)]]
             }
             ## Aggregate same IDs
             starting_rows <- nrow(x)
             repeat {
-                t <- x$CompleteAmplificationID[window]
+                t <- x[[sample_col]][window]
                 d <- unique(t[duplicated(t)])
                 if (purrr::is_empty(d)) {
                     break
                 }
                 dupl_indexes <- which(t == d[1])
-                values_sum <- colSums(x[window[dupl_indexes], ..num_cols],
+                values_sum <- colSums(x[window[dupl_indexes], mget(num_cols)],
                     na.rm = TRUE
                 )
                 x[window[dupl_indexes[1]], c(num_cols) := as.list(values_sum)]
+                ### Aggregate additional cols
+                if (!is.null(add_col_lambdas) &&
+                    !purrr::is_empty(add_col_lambdas)) {
+                  agg_cols <- purrr::map(names(add_col_lambdas), ~ {
+                    if (is.null(add_col_lambdas[[.x]])) {
+                      return(x[window[dupl_indexes[1]], ][[.x]])
+                    }
+                    values <- x[window[dupl_indexes], ][[.x]]
+                    return(rlang::as_function(add_col_lambdas[[.x]])(values))
+                  })
+                  x[window[dupl_indexes[1]], c(names(add_col_lambdas)) :=
+                      agg_cols]
+                }
+
                 x <- x[-window[dupl_indexes[-1]], ]
                 to_drop <- seq(
                     from = length(window),
@@ -3773,22 +3791,25 @@
             }
         } else {
             if (produce_map == TRUE) {
-                map_recalibr[
-                    chr_before == x[index, ]$chr &
-                        integration_locus_before ==
-                            x[index, ]$integration_locus &
-                        strand_before == x[index, ]$strand,
-                    c(
-                        "chr_after",
-                        "integration_locus_after",
-                        "strand_after"
-                    ) :=
-                        list(
-                            chr_before,
-                            integration_locus_before,
-                            strand_before
-                        )
-                ]
+              is_predicate <- purrr::map(req_vars, ~ {
+                var_before <- sym(paste0(.x, "_before"))
+                value <- x[window, get(.x)]
+                if (!is.character(value)) {
+                  return(rlang::expr(!!var_before %in% !!value))
+                }
+                rlang::expr(!!var_before %chin% !!value)
+              }) %>%
+                purrr::reduce(~ rlang::expr(!!.x & !!.y))
+              map_recalibr[
+                eval(is_predicate),
+                c(
+                  paste0(req_vars, "_after")
+                ) :=
+                  purrr::map(
+                    req_vars,
+                    ~ x[row_to_keep][[.x]]
+                  )
+              ]
             }
             index <- index + 1
         }
@@ -3820,23 +3841,43 @@
 #
 # @return Nothing
 .write_recalibr_map <- function(map, file_path) {
-    if (fs::is_dir(file_path)) {
-        if (!fs::dir_exists(file_path)) {
-            fs::dir_create(file_path)
-        }
-        gen_filename <- .generate_rec_map_filename()
-        file_path <- fs::path(file_path, gen_filename)
+  if (!fs::file_exists(file_path)) {
+    ext <- fs::path_ext(file_path)
+    ## if ext is empty assume it's a folder
+    if (ext == "") {
+      fs::dir_create(file_path)
+      gen_filename <- .generate_rec_map_filename()
+      tmp_filename <- fs::path(file_path, gen_filename)
     } else {
-        if (fs::path_ext(file_path) == "") {
-            file_path <- fs::path_ext_set(file_path, "tsv.gz")
+      tmp_filename <- fs::path_ext_remove(file_path)
+      if (ext %in% .compressed_formats()) {
+        ext <- paste(fs::path_ext(tmp_filename), ext, sep = ".")
+        tmp_filename <- fs::path_ext_remove(tmp_filename)
+      }
+      if (!ext %in% c("tsv", paste("tsv", .compressed_formats(), sep = "."),
+                      "csv", paste("csv", .compressed_formats(), sep = "."),
+                      "txt", paste("txt", .compressed_formats(), sep = ".")
+      )) {
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+          warn <- c("Recalibration file format unsupported",
+                    i = "Writing file in 'tsv.gz' format")
+          rlang::inform(warn, class = "rec_unsupp_ext")
         }
+        tmp_filename <- paste0(tmp_filename, ".tsv.gz")
+      } else {
+        tmp_filename <- paste0(tmp_filename, ".", ext)
+      }
     }
+  } else if (fs::is_dir(file_path)) {
+    gen_filename <- .generate_rec_map_filename()
+    tmp_filename <- fs::path(file_path, gen_filename)
+  }
     withRestarts(
         {
-            data.table::fwrite(map, file = file_path, sep = "\t", na = "")
+            data.table::fwrite(map, file = tmp_filename, sep = "\t", na = "")
             saved_msg <- paste(
                 "Recalibration map saved to: ",
-                file_path
+                tmp_filename
             )
             if (getOption("ISAnalytics.verbose") == TRUE) {
                 rlang::inform(saved_msg)
