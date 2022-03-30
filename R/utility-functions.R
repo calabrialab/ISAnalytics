@@ -646,7 +646,7 @@ as_sparse_matrix <- function(x, fragmentEstimate = "fragmentEstimate",
         if (.check_mandatory_vars(x) == FALSE) {
             stop(.non_ISM_error())
         }
-        if (.check_complAmpID(x) == FALSE) {
+        if (.check_sample_col(x) == FALSE) {
             stop(.missing_complAmpID_error())
         }
         num_cols <- .find_exp_cols(x, c(
@@ -697,7 +697,7 @@ as_sparse_matrix <- function(x, fragmentEstimate = "fragmentEstimate",
         ## LIST
         purrr::walk(x, function(m) {
             mand <- .check_mandatory_vars(m)
-            amp <- .check_complAmpID(m)
+            amp <- .check_sample_col(m)
             val <- .check_value_col(m)
             if (any(c(mand, amp, val) == FALSE)) {
                 stop(.non_ISM_error())

@@ -172,10 +172,9 @@
 
 # USED IN:
 # - remove_collisions
-# - compute_near_integrations
 .missing_cAmp_sub_msg <- function() {
     paste0(
-        "The `CompleteAmplificationID` column is missing",
+        "The `", pcr_id_column(), "` column is missing",
         " and it is needed for this functionality"
     )
 }

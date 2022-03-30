@@ -775,18 +775,16 @@
     }
 }
 
-# Internal helper function for checking `CompleteAmplifcationID`
+# Internal helper function for checking that the pcr replicate
 # column presence in x.
-#
-# Checks if the column `CompleteAmplifcationID` is present in the data frame.
 #
 # @param x A data.frame object (or any extending class)
 # @keywords internal
 #
 # @return FALSE if not found, TRUE otherwise
-.check_complAmpID <- function(x) {
+.check_sample_col <- function(x) {
     stopifnot(is.data.frame(x))
-    if ("CompleteAmplificationID" %in% colnames(x)) {
+    if (pcr_id_column() %in% colnames(x)) {
         return(TRUE)
     } else {
         return(FALSE)
@@ -2913,6 +2911,126 @@
 
 #---- USED IN : remove_collisions ----
 
+# Used as a wrapper for basic correctness check on collisions input
+# - Returns the mode (LIST or MULTI)
+.collisions_check_input_matrices <- function(x, quant_cols) {
+  stopifnot(is.list(x) & !is.null(names(x)))
+  stopifnot(is.character(quant_cols) && all(!is.na(names(quant_cols))))
+  if (!all(names(quant_cols) %in% quantification_types())) {
+    rlang::abort(
+      .quantifications_names_err(
+        quant_cols[!names(quant_cols) %in% quantification_types()]
+      )
+    )
+  }
+  mode <- NULL
+  if (!is.data.frame(x)) {
+    #---- If input x is provided as list of data frames
+    if (!all(names(x) %in% quantification_types())) {
+      rlang::abort(.quantifications_names_err(
+        names(x)[!names(x) %in% quantification_types()]
+      ))
+    }
+    ## remove_collisions requires seqCount matrix, check if the list
+    ## contains one
+    if ((!"seqCount" %in% names(x)) ||
+        nrow(x$seqCount) == 0) {
+      rlang::abort(.seqCount_df_err())
+    }
+    all_correct <- purrr::map2(x, names(x), function(m, quant) {
+      mand_cols <- .check_mandatory_vars(m)
+      cAmp_col <- .check_sample_col(m)
+      if (mand_cols & cAmp_col) {
+        return(NA_character_)
+      } else {
+        msgs <- c()
+        if (!mand_cols) {
+          msgs <- .missing_mand_vars()
+        }
+        if (!cAmp_col) {
+          msgs <- c(msgs, .missing_cAmp_sub_msg())
+        }
+        msgs <- paste0(quant, " - ", paste0(msgs, collapse = ";\n"))
+        return(msgs)
+      }
+    })
+    if (!all(is.na(all_correct))) {
+      message <- unlist(all_correct[!is.na(all_correct)])
+      names(message) <- NULL
+      rlang::abort(c("Matrices miss required info, aborting", message),
+                   class = "coll_matrix_issues")
+    }
+    ## Transform the list in a multi-quant matrix
+    mode <- "LIST"
+    quant_cols_lst <- as.list(quant_cols)
+    args <- append(list(x = x), quant_cols_lst)
+    x <- rlang::exec(comparison_matrix, !!!args)
+    rlang::env_poke(env = rlang::caller_env(), nm = "x", value = x)
+  } else {
+    #---- If input x is provided as data frame
+    if (.check_mandatory_vars(x) == FALSE) {
+      rlang::abort(.missing_mand_vars())
+    }
+    if (.check_sample_col(x) == FALSE) {
+      rlang::abort(.missing_cAmp_sub_msg())
+    }
+    if (!all(quant_cols %in% colnames(x))) {
+      rlang::abort(.missing_user_cols_error(
+        quant_cols[!quant_cols %in% colnames(x)]
+      ))
+    }
+    if (!"seqCount" %in% names(quant_cols)) {
+      rlang::abort(.seqCount_col_err())
+    }
+    mode <- "MULTI"
+  }
+  return(mode)
+}
+
+# Used as a wrapper for basic correctness check on collisions input -
+# for association file. Checks if all columns provided in input are present
+# and in correct format and checks if required tags are present
+# - Returns the selected and found tags if no errors are raised
+.collisions_check_input_af <- function(association_file,
+                                       date_col,
+                                       independent_sample_id) {
+  stopifnot(is.data.frame(association_file))
+  stopifnot(is.character(independent_sample_id) &&
+              !purrr::is_empty(independent_sample_id))
+  af_specs <- association_file_columns(TRUE)
+  ## Check if input columns are present actual af
+  user_input_cols <- unique(c(independent_sample_id, date_col))
+  if (!all(user_input_cols %in%
+           colnames(association_file))) {
+    missing_cols <- user_input_cols[!user_input_cols %in%
+                                      colnames(association_file)]
+    rlang::abort(.missing_af_needed_cols(missing_cols))
+  }
+  ## Check tags
+  required_tags <- list(
+    project_id = "char",
+    pool_id = "char",
+    pcr_replicate = c("int", "numeric"),
+    pcr_repl_id = "char"
+  )
+  req_tag_cols <- .check_required_cols(required_tags, af_specs, "error")
+  if (!all(req_tag_cols$names %in% colnames(association_file))) {
+    rlang::abort(.missing_af_needed_cols(req_tag_cols$names[
+      !req_tag_cols$names %in% colnames(association_file)
+    ]))
+  }
+  ## Check date_col
+  if (!lubridate::is.Date(association_file[[date_col]])) {
+    not_date_err <- c(paste0("'", date_col, "'", " is not a date vector"))
+    rlang::abort(not_date_err, class = "not_date_coll_err")
+  }
+  if (any(is.na(association_file[[date_col]]))) {
+    rlang::abort(.na_in_date_col())
+  }
+  return(req_tag_cols)
+}
+
+
 # Checks if association file contains more information than the matrix.
 #
 # Used to notify the user that wants to know if for the projects contained in
@@ -2920,435 +3038,267 @@
 # in the association file that weren't included in the integration matrix (for
 # example failed runs).
 #' @importFrom rlang .data
-.check_same_info <- function(association_file, df) {
-    joined <- association_file %>%
-        dplyr::left_join(df, by = "CompleteAmplificationID")
-    projects <- joined %>%
-        dplyr::filter(!is.na(.data$chr)) %>%
-        dplyr::distinct(.data$ProjectID) %>%
-        dplyr::pull(.data$ProjectID)
-    af_cols <- colnames(association_file)
-    wanted <- c(
-        "ProjectID", "PoolID", "CompleteAmplificationID",
-        "SubjectID", "Tissue", "CellMarker"
-    )
-    cols <- wanted[wanted %in% af_cols]
-    missing_in_df <- joined %>%
-        dplyr::filter(is.na(.data$chr), .data$ProjectID %in% projects) %>%
-        dplyr::select(dplyr::all_of(cols)) %>%
-        dplyr::distinct()
-    reduced_af <- association_file %>%
-        dplyr::filter(.data$ProjectID %in% projects)
-    list(miss = missing_in_df, reduced_af = reduced_af)
+.check_same_info <- function(association_file, df, req_tag_cols,
+                             indep_sample_id) {
+  association_file <- data.table::setDT(association_file)
+  df <- data.table::setDT(df)
+  req_tag_cols <- data.table::setDT(req_tag_cols)
+  joined <- df[association_file, on = pcr_id_column()]
+  predicate <- purrr::map(mandatory_IS_vars(), ~ {
+    rlang::expr(!is.na(!!sym(.x)))
+  }) %>% purrr::reduce(~ rlang::expr(!!.x & !!.y))
+  proj_col_name <- req_tag_cols[eval(rlang::expr(
+    !!sym("tag") == "project_id"))][["names"]]
+  projects <- unique(joined[eval(predicate), ][[proj_col_name]])
+  wanted_tags <- c(
+    "subject", "tissue", "cell_marker", "tp_days"
+  )
+  wanted <- data.table::setDT(.check_required_cols(required_tags = wanted_tags,
+                       vars_df = association_file_columns(TRUE),
+                       duplicate_politic = "keep") %>%
+    dplyr::filter(.data$names %in% colnames(association_file)))
+  wanted <- data.table::rbindlist(list(req_tag_cols, wanted))
+  predicate <- purrr::map(mandatory_IS_vars(), ~ {
+    rlang::expr(is.na(!!sym(.x)))
+  }) %>% purrr::reduce(~ rlang::expr(!!.x & !!.y))
+  predicate <- rlang::expr(!!predicate & !!sym(proj_col_name) %in% projects)
+  missing_in_df <- unique(joined[eval(predicate),
+                                 mget(unique(c(wanted$names, indep_sample_id)))
+                                 ])
+  reduced_af <- association_file[eval(sym(proj_col_name)) %in% projects]
+  list(miss = missing_in_df, reduced_af = reduced_af)
 }
 
-# Produces a joined tibble between the sequence count matrix and the
-# association file
-#
-# @param seq_count_df The sequence count tibble
-# @param association_file The association file tibble
-# @param date_col The date column chosen
-# @keywords internal
-#' @importFrom rlang .data
-#
-# @return A tibble
-.join_matrix_af <- function(df, association_file, date_col) {
-    joined <- df %>%
-        dplyr::left_join(association_file, by = "CompleteAmplificationID") %>%
-        dplyr::select(
-            dplyr::all_of(colnames(df)), all_of(date_col),
-            .data$ProjectID, .data$PoolID, .data$SubjectID,
-            .data$ReplicateNumber
-        )
-    joined
-}
 
 # Identifies independent samples and separates the joined_df in
 # collisions and non-collisions
-#
-# @param joined_df The joined tibble obtained via `.join_matrix_af`
-#' @importFrom rlang .data
-# @keywords internal
-#
+#' @importFrom data.table .SD .N
 # @return A named list containing the splitted joined_df for collisions and
 # non-collisions
-.identify_independent_samples <- function(joined_df) {
-    temp <- joined_df %>%
-        dplyr::select(
-            dplyr::all_of(mandatory_IS_vars()),
-            .data$ProjectID, .data$SubjectID
-        ) %>%
-        dplyr::group_by(dplyr::across(mandatory_IS_vars())) %>%
-        dplyr::distinct(.data$ProjectID, .data$SubjectID, .keep_all = TRUE) %>%
-        dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
-        dplyr::filter(.data$n > 1) %>%
-        dplyr::select(-c(.data$n))
-
-    non_collisions <- joined_df %>%
-        dplyr::anti_join(temp, by = mandatory_IS_vars())
-    collisions <- joined_df %>%
-        dplyr::right_join(temp, by = mandatory_IS_vars())
-    list(collisions = collisions, non_collisions = non_collisions)
+.identify_independent_samples <- function(joined, indep_sample_id) {
+  temp <- joined[, mget(c(mandatory_IS_vars(), indep_sample_id))]
+  temp <- temp[, unique(.SD, by = indep_sample_id),
+               by = eval(mandatory_IS_vars())]
+  temp <- temp[, .N, by = eval(mandatory_IS_vars())]
+  temp <- temp[eval(sym("N")) > 1, mget(mandatory_IS_vars())]
+  non_collisions <- joined[!temp, on = mandatory_IS_vars()]
+  collisions <- joined[temp, on = mandatory_IS_vars()]
+  list(collisions = collisions, non_collisions = non_collisions)
 }
-
-# Returns a polished version of collisions table for analysis.
-#
-# Polishing consists in nesting all information relative to a single
-# integration, in other words, obtaining a linked data frame for each
-# integration.
-#
-# @param collisions The collisions table obtained via
-# `.identify_independent_samples`
-# @keywords internal
-#' @importFrom dplyr group_by across
-#' @importFrom rlang .data
-#' @importFrom tidyr nest
-#
-# @return A nested tibble
-.obtain_nested <- function(collisions) {
-    collisions %>%
-        dplyr::group_by(dplyr::across(mandatory_IS_vars())) %>%
-        tidyr::nest()
-}
-
 
 # Internal for date discrimination in collision removal.
 #
 # It's the first of 4 steps in the algorithm for collision removal: it tries to
 # find a single sample who has an associated date which is earlier than any
 # other. If comparison is not possible the analysis fails and returns the
-# orginal input data.
+# original input data.
 #
-# @details NOTE: this function is meant to be used inside a mapping function
-# such as `purrr::pmap`. The function only works on data regarding a SINGLE
-# integration (triplet chr, integration_locus, strand).
-#
-# @param nest The nested table associated with a single integration
-# @param date_col The name of the date column chosen for collision removal,
-# one in \code{date_columns_coll()}
-#' @importFrom rlang expr eval_tidy .data
-#' @importFrom dplyr filter arrange
-# @keywords internal
-#
+# @param x - All metadata associated with a single collision event in
+#            a data.table format (does not contain mandatory IS vars)
+# @param date_col - The name of the date column chosen for collision removal
+# @param ind_sample_key - character vector containing the columns that identify
+#                       independent samples
 # @return A named list with:
-# * $data: a tibble, containing the data (unmodified or modified)
+# * $data: a data.table, containing the data (unmodified or modified)
 # * $check: a logical value indicating whether the analysis was successful or
 # not (and therefore there is the need to perform the next step)
-.discriminate_by_date <- function(nest, date_col) {
-    dates <- rlang::expr(`$`(nest, !!date_col))
-    dates <- rlang::eval_tidy(dates)
-    # Test for all dates equality
-    all_equal_dates <- length(unique(dates)) == 1
+.discriminate_by_date <- function(x, date_col, ind_sample_key) {
+  # Test for all dates equality
+  all_equal_dates <- length(unique(x[[date_col]])) == 1
     if (all_equal_dates == TRUE) {
-        return(list(data = nest, check = FALSE))
+        return(list(data = x, check = FALSE))
     }
     # If not all are equal sort them asc
-    nest <- nest %>% dplyr::arrange(`$`(.data, !!date_col))
+  x <- dplyr::arrange(x, .data[[date_col]])
     # Test if first date is unique
-    dates <- rlang::expr(`$`(nest, !!date_col))
-    dates <- rlang::eval_tidy(dates)
+  dates <- x[[date_col]]
     if (length(dates[dates %in% dates[1]]) > 1) {
-        return(list(data = nest, check = FALSE))
+        return(list(data = x, check = FALSE))
     }
-    winning_subj <- nest$SubjectID[1]
+    winning_sample <- x[1, mget(ind_sample_key)]
     # Filter the winning rows
-    nest <- nest %>% dplyr::filter(.data$SubjectID == winning_subj)
-    return(list(data = nest, check = TRUE))
+    x <- x[winning_sample, on = ind_sample_key]
+    return(list(data = x, check = TRUE))
 }
 
 # Internal for replicate discrimination in collision removal.
 #
 # It's the second of 4 steps in the algorithm for collision removal:
-# grouping by independent sample (ProjectID, SubjectID) it counts the number of
+# grouping by independent sample it counts the number of
 # rows (replicates) found for each group, orders them from biggest to smallest
 # and, if a single group has more rows than any other group the integration is
 # assigned to that sample, otherwise the analysis fails and returns the
 # original input to be submitted to the next step.
 #
-# @details NOTE: this function is meant to be used inside a mapping function
-# such as `purrr::pmap`. The function only works on data regarding a SINGLE
-# integration (triplet chr, integration_locus, strand).
-#
-# @param nest The nested table associated with a single integration
-#' @importFrom rlang .data
-# @keywords internal
-#
+# @param x - All metadata associated with a single collision event in
+#            a data.table format (does not contain mandatory IS vars)
+# @param repl_col - The name of the column containing the replicate number
+# @param ind_sample_key - character vector containing the columns that identify
+#                       independent samples
+#' @importFrom data.table .N
 # @return A named list with:
-# * $data: a tibble, containing the data (unmodified or modified)
+# * $data: a data.table, containing the data (unmodified or modified)
 # * $check: a logical value indicating whether the analysis was successful or
 # not (and therefore there is the need to perform the next step)
-.discriminate_by_replicate <- function(nest) {
-    temp <- nest %>%
-        dplyr::group_by(.data$ProjectID, .data$SubjectID) %>%
-        dplyr::summarise(n_rows = dplyr::n(), .groups = "keep") %>%
-        dplyr::arrange(dplyr::desc(.data$n_rows))
-    if (length(temp$n_rows) != 1 & !temp$n_rows[1] > temp$n_rows[2]) {
-        return(list(data = nest, check = FALSE))
+.discriminate_by_replicate <- function(x, repl_col, ind_sample_key) {
+  temp <- x[, .N, by = eval(ind_sample_key)]
+  temp <- dplyr::arrange(temp, dplyr::desc(.data$N))
+
+    if (length(temp$N) != 1 & !temp$N[1] > temp$N[2]) {
+        return(list(data = x, check = FALSE))
     }
-    nest <- nest %>%
-        dplyr::filter(
-            .data$ProjectID == temp$ProjectID[1],
-            .data$SubjectID == temp$SubjectID[1]
-        )
-    return(list(data = nest, check = TRUE))
+  temp <- temp[1, mget(ind_sample_key)]
+  x <- x[temp, on = ind_sample_key]
+    return(list(data = x, check = TRUE))
 }
 
 # Internal for sequence count discrimination in collision removal.
 #
 # It's the third of 4 steps in the algorithm for collision removal:
-# grouping by independent sample (ProjectID, SubjectID), it sums the value of
+# grouping by independent sample, it sums the value of
 # the sequence count for each group, sorts the groups from highest to lowest
 # cumulative value and then checks the ratio between the first element and the
 # second: if the ratio is > `reads_ratio` the integration is assigned to
 # the first group, otherwise the analysis fails and returns the original input.
 #
-# @details NOTE: this function is meant to be used inside a mapping function
-# such as `purrr::pmap`. The function only works on data regarding a SINGLE
-# integration (triplet chr, integration_locus, strand).
-#
-# @param nest The nested table associated with a single integration
+# @param x - All metadata associated with a single collision event in
+#            a data.table format (does not contain mandatory IS vars)
 # @param reads_ratio The value of the ratio between sequence count values to
 # check
 # @param seqCount_col The name of the sequence count column (support
 # for multi quantification matrix)
-#' @importFrom rlang .data eval_tidy expr
-# @keywords internal
-#
+# @param ind_sample_key - character vector containing the columns that identify
+#                       independent samples
 # @return A named list with:
 # * $data: a tibble, containing the data (unmodified or modified)
 # * $check: a logical value indicating whether the analysis was successful or
 # not (and therefore there is the need to perform the next step)
-.discriminate_by_seqCount <- function(nest, reads_ratio, seqCount_col) {
-    temp <- nest %>%
-        dplyr::group_by(.data$ProjectID, .data$SubjectID) %>%
-        dplyr::summarise(sum_seqCount = sum(
-            rlang::eval_tidy(rlang::expr(`$`(.data, !!seqCount_col)))
-        ), .groups = "keep") %>%
-        dplyr::arrange(dplyr::desc(.data$sum_seqCount))
-
-    ratio <- temp$sum_seqCount[1] / temp$sum_seqCount[2]
+.discriminate_by_seqCount <- function(x,
+                                      reads_ratio,
+                                      seqCount_col,
+                                      ind_sample_key) {
+  temp <- x[, list(sum = sum(.SD[[seqCount_col]])), by = eval(ind_sample_key)]
+  temp <- dplyr::arrange(temp, dplyr::desc(.data$sum))
+    ratio <- temp$sum[1] / temp$sum[2]
     if (!ratio > reads_ratio) {
-        return(list(data = nest, check = FALSE))
+        return(list(data = x, check = FALSE))
     }
-    nest <- nest %>%
-        dplyr::filter(
-            .data$ProjectID == temp$ProjectID[1],
-            .data$SubjectID == temp$SubjectID[1]
-        )
-    return(list(data = nest, check = TRUE))
+    temp <- temp[1, mget(ind_sample_key)]
+    x <- x[temp, on = ind_sample_key]
+    return(list(data = x, check = TRUE))
 }
 
 # Internal function that performs four-step-check of collisions for
 # a single integration.
 #
-# @details NOTE: this function is meant to be used inside a mapping function
-# such as `purrr::pmap`. The function only works on data regarding a SINGLE
-# integration (triplet chr, integration_locus, strand).
-#
-# @param ... Represents a single row of a tibble obtained via
-# `obtain_nested`. One row contains 4 variables: chr, integration_locus,
-# strand and data, where data is a nested table that contains all rows
-# that share that integration (collisions).
+# @param x - Represents the sub-table (data.table) containing coordinates
+#            and metadata about a SINGLE collision event (same values for
+#            mandatory IS vars)
 # @param date_col The date column to consider
+# @param repl_col - The name of the column containing the replicate number
 # @param reads_ratio The value of the ratio between sequence count values to
 # check
 # @param seqCount_col The name of the sequence count column (support
 # for multi quantification matrix)
-# @keywords internal
-#
-#' @importFrom tibble as_tibble tibble
-#' @importFrom purrr flatten
-#' @importFrom tidyr unnest
-#' @importFrom rlang .data env_bind
+# @param ind_sample_key - character vector containing the columns that identify
+#                         independent samples
 # @return A list with:
 # * $data: an updated tibble with processed collisions or NULL if no
 # criteria was sufficient
 # * $reassigned: 1 if the integration was successfully reassigned, 0 otherwise
 # * $removed: 1 if the integration is removed entirely because no criteria was
 # met, 0 otherwise
-.four_step_check <- function(..., date_col, reads_ratio, seqCount_col) {
-    l <- list(...)
-    current <- tibble::as_tibble(l[mandatory_IS_vars()])
-    current_data <- tibble::as_tibble(purrr::flatten(l["data"]))
+.four_step_check <- function(x,
+                             date_col,
+                             repl_col,
+                             reads_ratio,
+                             seqCount_col,
+                             ind_sample_key) {
+    current_data <- x[, !mandatory_IS_vars()]
     # Try to discriminate by date
-    result <- .discriminate_by_date(current_data, date_col)
-    if (result$check == TRUE) {
-        current_data <- result$data
-        res <- tibble::tibble(
-            chr = current$chr,
-            integration_locus = current$integration_locus,
-            strand = current$strand,
-            data = list(current_data)
-        )
-        res <- res %>% tidyr::unnest(.data$data)
-        return(list(data = res, reassigned = 1, removed = 0))
-    }
+    result <- .discriminate_by_date(current_data, date_col, ind_sample_key)
     current_data <- result$data
+    if (result$check == TRUE) {
+      coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
+      res <- cbind(coordinates, current_data)
+      return(list(data = res, reassigned = 1, removed = 0))
+    }
     # If first check fails try to discriminate by replicate
-    result <- .discriminate_by_replicate(current_data)
-    if (result$check == TRUE) {
-        current_data <- result$data
-        res <- tibble::tibble(
-            chr = current$chr,
-            integration_locus = current$integration_locus,
-            strand = current$strand,
-            data = list(current_data)
-        )
-        res <- res %>% tidyr::unnest(.data$data)
-        return(list(data = res, reassigned = 1, removed = 0))
-    }
+    result <- .discriminate_by_replicate(current_data, repl_col, ind_sample_key)
     current_data <- result$data
-    # If second check fails try to discriminate by seqCount
-    result <- .discriminate_by_seqCount(current_data, reads_ratio, seqCount_col)
     if (result$check == TRUE) {
-        current_data <- result$data
-        res <- tibble::tibble(
-            chr = current$chr,
-            integration_locus = current$integration_locus,
-            strand = current$strand,
-            data = list(current_data)
-        )
-        res <- res %>% tidyr::unnest(.data$data)
-        return(list(data = res, reassigned = 1, removed = 0))
+      coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
+      res <- cbind(coordinates, current_data)
+      return(list(data = res, reassigned = 1, removed = 0))
+    }
+    # If second check fails try to discriminate by seqCount
+    result <- .discriminate_by_seqCount(current_data, reads_ratio, seqCount_col,
+                                        ind_sample_key)
+    current_data <- result$data
+    if (result$check == TRUE) {
+      coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
+      res <- cbind(coordinates, current_data)
+      return(list(data = res, reassigned = 1, removed = 0))
     }
     # If all check fails remove the integration from all subjects
     return(list(data = NULL, reassigned = 0, removed = 1))
 }
 
-# Internal function to process collisions on multiple integrations.
-#
-# @param x The nested collision data frame (or chunks for parallel execution)
-# @param date_col The date column to consider
-# @param reads_ratio The value of the ratio between sequence count values to
-# check
-# @param seqCount_col The name of the sequence count column (support
-# for multi quantification matrix)
-# @keywords internal
-#' @importFrom purrr pmap reduce
-#' @importFrom dplyr bind_rows
-# @return A list containing the updated collisions, a numeric value
-# representing the number of integrations removed and a numeric value
-# representing the number of integrations reassigned
-.coll_mapping <- function(x, date_col, reads_ratio, seqCount_col) {
-    result <- purrr::pmap(x,
-        .f = .four_step_check,
-        date_col = date_col,
-        reads_ratio = reads_ratio,
-        seqCount_col = seqCount_col
-    )
-    proc_collisions <- purrr::map(result, function(x) {
-        x$data
-    })
-    proc_collisions <- purrr::reduce(proc_collisions, dplyr::bind_rows)
-    removed_tot <- purrr::map(result, function(x) {
-        x$removed
-    })
-    removed_tot <- purrr::reduce(removed_tot, sum)
-    reassigned_tot <- purrr::map(result, function(x) {
-        x$reassigned
-    })
-    reassigned_tot <- purrr::reduce(reassigned_tot, sum)
-    list(
-        coll = proc_collisions,
-        removed = removed_tot,
-        reassigned = reassigned_tot
-    )
-}
 
 # Internal function to process collisions on multiple integrations,
 # parallelized.
-#
-# @param collisions The collision data frame
-# @param date_col The date column to consider
-# @param reads_ratio The value of the ratio between sequence count values to
-# check
-# @param seqCount_col The name of the sequence count column (support
-# for multi quantification matrix)
-# @keywords internal
-#' @importFrom purrr map reduce
-#' @importFrom tibble as_tibble_col add_column
-#' @importFrom dplyr group_by group_split
 # @return A list containing the updated collisions, a numeric value
 # representing the number of integrations removed and a numeric value
 # representing the number of integrations reassigned
-.process_collisions <- function(collisions, date_col, reads_ratio,
-    seqCount_col, max_workers) {
-    # Obtain nested version of collisions
-    nested <- .obtain_nested(collisions)
-    # Manage workers
-    if (.Platform$OS.type == "windows" & is.null(max_workers)) {
-        max_workers <- BiocParallel::snowWorkers()
-    } else if (.Platform$OS.type != "windows" & is.null(max_workers)) {
-        max_workers <- BiocParallel::multicoreWorkers()
-    }
-    # Split the data frame in chunks according to number of workers
-    exceeding <- nrow(nested) %% max_workers
-    ampl <- trunc(nrow(nested) / max_workers)
-    chunks <- unlist(lapply(seq_len(max_workers),
-        FUN = rep_len,
-        length.out = ampl
-    ))
-    if (exceeding > 0) {
-        chunks <- c(chunks, rep_len(
-            x = tail(max_workers, n = 1),
-            length.out = exceeding
-        ))
-    }
-    chunks <- tibble::as_tibble_col(chunks, column_name = "chunk")
-    nested <- nested %>% tibble::add_column(chunks)
-    split_data <- nested %>%
-        dplyr::group_by(.data$chunk) %>%
-        dplyr::group_split(.keep = FALSE)
-
-    # Register backend according to platform
-    if (.Platform$OS.type == "windows") {
-        p <- BiocParallel::SnowParam(
-            stop.on.error = FALSE,
-            progressbar = getOption("ISAnalytics.verbose", default = TRUE),
-            tasks = nrow(nested),
-            workers = max_workers
-        )
-    } else {
-        p <- BiocParallel::MulticoreParam(
-            stop.on.error = FALSE,
-            progressbar = getOption("ISAnalytics.verbose", default = TRUE),
-            tasks = nrow(nested),
-            workers = max_workers
-        )
-    }
-
-    # For each chunk process collisions in parallel
-    suppressMessages(suppressWarnings({
-        ### result is a list with n elements, each element is a list of 3,
-        ### containing processed collisions, number of removed collisions and
-        ### number of reassigned collisions
-        result <- BiocParallel::bptry(
-            BiocParallel::bplapply(split_data,
-                FUN = .coll_mapping,
-                date_col = date_col,
-                reads_ratio = reads_ratio,
-                seqCount_col = seqCount_col,
-                BPPARAM = p
-            )
-        )
-    }))
+.process_collisions <- function(collisions,
+                                date_col,
+                                repl_col,
+                                reads_ratio,
+                                seqCount_col,
+                                ind_sample_key,
+                                max_workers) {
+  # Split by IS
+  split_data <- split(collisions, by = mandatory_IS_vars())
+  # Manage workers
+  if (.Platform$OS.type == "windows" & is.null(max_workers)) {
+    max_workers <- BiocParallel::snowWorkers()
+  } else if (.Platform$OS.type != "windows" & is.null(max_workers)) {
+    max_workers <- BiocParallel::multicoreWorkers()
+  }
+  # Register backend according to platform
+  if (.Platform$OS.type == "windows") {
+      p <- BiocParallel::SnowParam(
+          stop.on.error = TRUE,
+          progressbar = getOption("ISAnalytics.verbose"),
+          tasks = length(split_data),
+          workers = max_workers
+      )
+  } else {
+      p <- BiocParallel::MulticoreParam(
+          stop.on.error = TRUE,
+          progressbar = getOption("ISAnalytics.verbose"),
+          tasks = length(split_data),
+          workers = max_workers
+      )
+  }
+  # For each chunk process collisions in parallel
+  result <- BiocParallel::bplapply(split_data,
+                                   FUN = .four_step_check,
+                                   date_col = date_col,
+                                   repl_col = repl_col,
+                                   reads_ratio = reads_ratio,
+                                   seqCount_col = seqCount_col,
+                                   ind_sample_key = ind_sample_key,
+                                   BPPARAM = p
+  )
     BiocParallel::bpstop(p)
     # For each element of result extract and bind the 3 components
-    processed_collisions_df <- purrr::map(result, function(x) {
-        x$coll
-    })
-    processed_collisions_df <- purrr::reduce(
-        processed_collisions_df,
-        dplyr::bind_rows
-    )
-    removed_total <- purrr::map(result, function(x) {
-        x$removed
-    })
-    removed_total <- purrr::reduce(removed_total, sum)
-    reassigned_total <- purrr::map(result, function(x) {
-        x$reassigned
-    })
-    reassigned_total <- purrr::reduce(reassigned_total, sum)
+    processed_collisions_df <- purrr::map(result, ~ .x$data) %>%
+      purrr::reduce(~ data.table::rbindlist(list(.x, .y)))
+    removed_total <- purrr::map(result, ~ .x$removed) %>%
+      purrr::reduce(sum)
+    reassigned_total <- purrr::map(result, ~ .x$reassigned) %>%
+      purrr::reduce(sum)
     # Return the summary
     list(
         coll = processed_collisions_df, removed = removed_total,
@@ -3436,10 +3386,10 @@
     list(total_iss = n_IS, quant_totals = quant_totals)
 }
 
-.per_pool_stats <- function(joined, quant_cols) {
+.per_pool_stats <- function(joined, quant_cols, pool_col) {
     ## Joined is the matrix already joined with metadata
     df_by_pool <- joined %>%
-        dplyr::group_by(.data$PoolID) %>%
+        dplyr::group_by(.data[[pool_col]]) %>%
         dplyr::summarise(dplyr::across(
             .cols = dplyr::all_of(quant_cols),
             .fns = list(
@@ -3465,6 +3415,177 @@
         }
     }
     df_by_pool
+}
+
+.collisions_obtain_report_summaries <- function(x,
+                                                association_file,
+                                                quant_cols, missing_ind,
+                                                pcr_col, pre_process,
+                                                collisions,
+                                                removed, reassigned,
+                                                joined, post_joined, pool_col,
+                                                final_matr,
+                                                replicate_n_col,
+                                                independent_sample_id,
+                                                seq_count_col) {
+  input_summary <- .summary_input(x, quant_cols)
+  missing_smpl <- if (!is.null(missing_ind)) {
+    x[missing_ind, ] %>%
+      dplyr::group_by(.data[[pcr_col]]) %>%
+      dplyr::summarise(
+        n_IS = dplyr::n(),
+        dplyr::across(
+          dplyr::all_of(quant_cols),
+          .fns = ~ sum(.x, na.rm = TRUE),
+          .names = "{.col}_tot"
+        )
+      )
+  } else {
+    NULL
+  }
+  samples_info <- list(
+    MATRIX = unique(x[[pcr_col]]),
+    AF = unique(association_file[[pcr_col]])
+  )
+  pre_summary <- .summary_input(pre_process, quant_cols)
+  per_pool_stats_pre <- .per_pool_stats(joined, quant_cols, pool_col)
+  coll_info <- list(
+    coll_n = collisions %>%
+      dplyr::distinct(
+        dplyr::across(dplyr::all_of(mandatory_IS_vars()))
+      ) %>%
+      nrow(),
+    removed = removed,
+    reassigned = reassigned
+  )
+  post_info <- .summary_input(final_matr, quant_cols)
+  post_per_pool_stats <- .per_pool_stats(
+    post_joined,
+    quant_cols,
+    pool_col
+  )
+  summary_tbl <- .summary_table(
+    before = joined, after = post_joined,
+    seqCount_col = seq_count_col
+  )
+  return(
+    list(
+      input_info = input_summary,
+      missing_info = missing_smpl,
+      samples_info = samples_info,
+      pre_info = pre_summary,
+      pre_stats = per_pool_stats_pre,
+      coll_info = coll_info,
+      post_info = post_info,
+      post_stats = post_per_pool_stats,
+      summary_post = summary_tbl
+    )
+  )
+}
+
+.collisions_obtain_sharing_heatmaps <- function(joined,
+                                                independent_sample_id,
+                                                post_joined,
+                                                report_path) {
+  sharing_heatmaps_pre <- sharing_heatmaps_post <- NULL
+  withCallingHandlers(
+    {
+      withRestarts(
+        {
+          sharing_pre <- is_sharing(joined,
+                                    group_key = independent_sample_id,
+                                    n_comp = 2,
+                                    is_count = FALSE,
+                                    minimal = FALSE,
+                                    include_self_comp = TRUE
+          )
+          sharing_post <- is_sharing(post_joined,
+                                     group_key = independent_sample_id,
+                                     n_comp = 2,
+                                     is_count = FALSE,
+                                     minimal = FALSE,
+                                     include_self_comp = TRUE
+          )
+          too_many_samples <- nrow(dplyr::distinct(
+            joined,
+            dplyr::across(
+              dplyr::all_of(independent_sample_id)
+            )
+          )) > 25
+          sharing_heatmaps_pre <- if (too_many_samples) {
+            sharing_heatmap(sharing_pre, interactive = FALSE)
+          } else {
+            sharing_heatmap(sharing_pre, interactive = TRUE)
+          }
+          sharing_heatmaps_post <- if (too_many_samples) {
+            sharing_heatmap(sharing_post, interactive = FALSE)
+          } else {
+            sharing_heatmap(sharing_post, interactive = TRUE)
+          }
+          if (too_many_samples) {
+            skip_sharing_msg <- c(
+              "Too many independent samples",
+              i = paste(
+                "To avoid issues with report size,",
+                "sharing heatmaps will be saved",
+                "as separate files in the same",
+                "folder"
+              )
+            )
+            rlang::inform(skip_sharing_msg)
+            fs::dir_create(report_path)
+            prefix_filename <- paste(lubridate::today(),
+                                     "ISAnalytics_collision_removal",
+                                     sep = "_"
+            )
+            for (map_type in names(sharing_heatmaps_pre)) {
+              filename <- paste0(paste(prefix_filename,
+                                       "pre-processing-sharing",
+                                       map_type, sep = "_"), ".pdf")
+              ggplot2::ggsave(
+                plot = sharing_heatmaps_pre[[map_type]],
+                filename = filename,
+                path = report_path,
+                width = 15, height = 15
+              )
+            }
+            for (map_type in names(sharing_heatmaps_post)) {
+              filename <- paste0(paste(prefix_filename,
+                                       "post-processing-sharing",
+                                       map_type, sep = "_"),
+                                 ".pdf")
+              ggplot2::ggsave(
+                plot = sharing_heatmaps_post[[map_type]],
+                filename = filename,
+                path = report_path,
+                width = 15, height = 15
+              )
+            }
+            sharing_heatmaps_pre <- NULL
+            sharing_heatmaps_post <- NULL
+          }
+        },
+        sharing_err = function(e) {
+          rlang::inform(c(paste(
+            "Unable to compute sharing:",
+            conditionMessage(e)
+          ),
+          i = "Skipping"
+          ))
+        }
+      )
+    },
+    error = function(cnd) {
+      rest <- findRestart("sharing_err")
+      invokeRestart(rest, cnd)
+    }
+  )
+  return(
+    list(
+      sharing_pre = sharing_heatmaps_pre,
+      sharing_post = sharing_heatmaps_post
+    )
+  )
 }
 
 #### ---- Internals for aggregate functions ----####

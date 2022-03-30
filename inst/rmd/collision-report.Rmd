@@ -11,6 +11,8 @@ output:
       - { title: "Website", href: "https://calabrialab.github.io/ISAnalytics/", align: right, icon: "fa-globe" }
       - { title: "GitHub", href: "https://github.com/calabrialab/ISAnalytics", align: right, icon: "fa-github" }
 params:
+  sample_key: null
+  dynamic_cols: null
   input_info: null
   additional_info: null
   missing_info: null
@@ -40,6 +42,8 @@ post_info <- params$post_info
 post_stats <- params$post_stats
 post_sharing <- params$sharing_post
 post_summary <- params$summary_post
+sample_key <- params$sample_key
+dynamic_cols <- params$dynamic_cols
 secondary_col <-  "#ff9470"
 ```
 
@@ -74,6 +78,10 @@ Row2
 
 This page contains summary information regarding the input matrix as is 
 (no pre-processing steps applied)
+
+### Independent sample key
+
+`r sample_key`
 
 <!-- Page 2: info on missing samples and additional samples  -->
 Additional info {data-orientation=rows}
@@ -110,7 +118,7 @@ cat("*Nothing to report*")
 
 ```{r echo=FALSE, eval=!is.null(params$missing_info)}
 mi_df <- params$missing_info 
-num_cols <- colnames(mi_df)[colnames(mi_df) != "CompleteAmplificationID"]
+num_cols <- colnames(mi_df)[colnames(mi_df) != dynamic_cols$pcr_id]
 mi_df <- mi_df %>%
   dplyr::mutate(dplyr::across(
     dplyr::all_of(num_cols),
@@ -120,7 +128,8 @@ datatable(mi_df,
               class = "stripe",
               colnames = stringr::str_replace_all(colnames(params$missing_info),
                                                   "_", " "),
-              filter = "top")
+              filter = "top",
+          options = list(scrollY = 350))
 ```
 
 ### Additional samples 
@@ -135,7 +144,8 @@ DT::datatable(ai_df,
               class = "stripe",
               colnames = stringr::str_replace_all(colnames(ai_df),
                                                   "_", " "),
-              filter = "top")
+              filter = "top",
+              options = list(scrollY = 350))
 ```
 
 Pre-processing {data-orientation=rows}
@@ -196,30 +206,39 @@ datatable(pre_stats, class = "stripe",
                                                   "_", " "),
               filter = "top", rownames = FALSE,
               options = list(scrollY = 350)) %>%
-formatRound(columns = colnames(pre_stats)[colnames(pre_stats) != "PoolID"], digits = 2)
+formatRound(columns = colnames(pre_stats)[colnames(pre_stats) !=
+                                            dynamic_cols$pool], digits = 2)
 ```
 
 Row4 {data-height=800 .tabset .tabset-fade}
 -------------------------------------------------------------------------------
 <!-- Sharing heatmaps -->
-```{r echo=FALSE}
-heatmaps <- ISAnalytics::sharing_heatmap(pre_sharing, interactive = TRUE)
+### IS sharing: absolute values
+```{r echo=FALSE, eval=is.null(pre_sharing), results='asis'}
+cat("*Heatmaps saved as separate files for size issues*")
 ```
 
-### IS sharing: absolute values
-```{r echo=FALSE}
-heatmaps$absolute
+```{r echo=FALSE, eval=!is.null(pre_sharing)}
+pre_sharing$absolute
 ```
 
 ### IS sharing: relative values on x
-```{r echo=FALSE}
-heatmaps$on_g1 %>%
+```{r echo=FALSE, eval=is.null(pre_sharing), results='asis'}
+cat("*Heatmaps saved as separate files for size issues*")
+```
+
+```{r echo=FALSE, eval=!is.null(pre_sharing)}
+pre_sharing$on_g1 %>%
   plotly::layout(title = list(text = "IS sharing - percentages on x"))
 ```
 
 ### IS sharing: relative values on union
-```{r echo=FALSE}
-heatmaps$on_union %>%
+```{r echo=FALSE, eval=is.null(pre_sharing), results='asis'}
+cat("*Heatmaps saved as separate files for size issues*")
+```
+
+```{r echo=FALSE, eval=!is.null(pre_sharing)}
+pre_sharing$on_union %>%
   plotly::layout(title = list(text = "IS sharing - percentages on union"))
 ```
 
@@ -347,7 +366,8 @@ datatable(post_stats, class = "stripe",
                                                   "_", " "),
               filter = "top", rownames = FALSE,
               options = list(scrollY = 350)) %>%
-formatRound(columns = colnames(post_stats)[colnames(post_stats) != "PoolID"], digits = 2)
+formatRound(columns = colnames(post_stats)[colnames(post_stats) !=
+                                             dynamic_cols$pool], digits = 2)
 ```
 
 Row4
@@ -365,24 +385,32 @@ datatable(post_summary, class = "stripe",
 Row5 {data-height=800 .tabset .tabset-fade}
 -------------------------------------------------------------------------------
 <!-- Sharing heatmaps -->
-```{r echo=FALSE}
-heatmaps_post <- ISAnalytics::sharing_heatmap(post_sharing, interactive = TRUE)
+### IS sharing: absolute values
+```{r echo=FALSE, eval=is.null(post_sharing), results='asis'}
+cat("*Heatmaps saved as separate files for size issues*")
 ```
 
-### IS sharing: absolute values
-```{r echo=FALSE}
-heatmaps_post$absolute
+```{r echo=FALSE, eval=!is.null(post_sharing)}
+post_sharing$absolute
 ```
 
 ### IS sharing: relative values on x
-```{r echo=FALSE}
-heatmaps_post$on_g1 %>%
+```{r echo=FALSE, eval=is.null(post_sharing), results='asis'}
+cat("*Heatmaps saved as separate files for size issues*")
+```
+
+```{r echo=FALSE, eval=!is.null(post_sharing)}
+post_sharing$on_g1 %>%
   plotly::layout(title = list(text = "IS sharing - percentages on x"))
 ```
 
 ### IS sharing: relative values on union
-```{r echo=FALSE}
-heatmaps_post$on_union %>%
+```{r echo=FALSE, eval=is.null(post_sharing), results='asis'}
+cat("*Heatmaps saved as separate files for size issues*")
+```
+
+```{r echo=FALSE, eval=!is.null(post_sharing)}
+post_sharing$on_union %>%
   plotly::layout(title = list(text = "IS sharing - percentages on union"))
 ```
 
