@@ -71,7 +71,11 @@ Suggests:
     circlize,
     plotly,
     gtools,
-    eulerr
+    eulerr,
+    shiny,
+    shinyWidgets,
+    datamods,
+    bslib
 VignetteBuilder: knitr
 RdMacros: 
     lifecycle

@@ -250,3 +250,26 @@ unzip_file_system <- function(zipfile, name) {
     root_folder <- gsub('"', "", gsub("\\\\", "/", root_folder))
     root_folder
 }
+
+
+#' Launch the shiny application NGSdataExplorer.
+#'
+#' @return Nothing
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' NGSdataExplorer()
+#' }
+NGSdataExplorer <- function() {
+    required_pkgs <- c("shiny", "shinyWidgets", "datamods", "DT", "bslib")
+    installed <- purrr::map_lgl(
+        required_pkgs,
+        ~ requireNamespace(.x, quietly = TRUE)
+    )
+    if (any(installed == FALSE)) {
+        rlang::abort(.missing_pkg_error(required_pkgs[!installed]))
+    }
+    app <- shiny::shinyApp(ui = ui, server = server)
+    shiny::runApp(app)
+}
