@@ -17,10 +17,6 @@ library(ggplot2)
     )
 }
 
-.save_plot_alert <- function() {
-
-}
-
 server <- shinyServer(function(input, output, session) {
     values <- reactiveValues(
         loaded_data = NULL,
@@ -302,7 +298,8 @@ server <- shinyServer(function(input, output, session) {
             fluidRow(
                 column(
                     width = 12,
-                    dropdownButton(
+                    dropdown(
+                      up = TRUE,
                         pickerInput("device", "Device",
                             choices = c(
                                 "pdf", "jpeg", "tiff", "png",
