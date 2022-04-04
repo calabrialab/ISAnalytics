@@ -45,6 +45,7 @@ Imports:
     tools,
     Rcapture,
     grDevices, 
+    shiny,
     zip
 Encoding: UTF-8
 LazyData: false
@@ -72,7 +73,6 @@ Suggests:
     plotly,
     gtools,
     eulerr,
-    shiny,
     shinyWidgets,
     datamods,
     bslib
