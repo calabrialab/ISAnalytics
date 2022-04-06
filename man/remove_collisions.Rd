@@ -7,6 +7,7 @@
 remove_collisions(
   x,
   association_file,
+  independent_sample_id = c("ProjectID", "SubjectID"),
   date_col = "SequencingDate",
   reads_ratio = 10,
   quant_cols = c(seqCount = "seqCount", fragmentEstimate = "fragmentEstimate"),

@@ -7,12 +7,16 @@
 compute_near_integrations(
   x,
   threshold = 4,
-  keep_criteria = "max_value",
-  strand_specific = TRUE,
+  is_identity_tags = c("chromosome", "is_strand"),
+  keep_criteria = c("max_value", "keep_first"),
   value_columns = c("seqCount", "fragmentEstimate"),
   max_value_column = "seqCount",
+  sample_id_column = pcr_id_column(),
+  additional_agg_lambda = list(.default = default_rec_agg_lambdas()),
+  max_workers = 4,
   map_as_file = TRUE,
-  file_path = default_report_path()
+  file_path = default_report_path(),
+  strand_specific = lifecycle::deprecated()
 )
 }
 \arguments{
@@ -34,12 +38,6 @@ The 2 possible choices for this parameter are:
 \item "keep_first": keeps the first integration
 }}
 
-\item{strand_specific}{Should strand be considered? If yes,
-for example these two integration sites
-\verb{(chr = "1", strand = "+", integration_locus = 14568)} and
-\verb{(chr = "1", strand = "-", integration_locus = 14568)} are considered
-different and not grouped together.}
-
 \item{value_columns}{Character vector, contains the names of the numeric
 experimental columns}
 
@@ -51,6 +49,12 @@ searching the maximum value}
 \item{file_path}{String representing the path were the file will be
 saved. Can be either a folder or a file. Relevant only if \code{map_as_file} is
 \code{TRUE}.}
+
+\item{strand_specific}{Should strand be considered? If yes,
+for example these two integration sites
+\verb{(chr = "1", strand = "+", integration_locus = 14568)} and
+\verb{(chr = "1", strand = "-", integration_locus = 14568)} are considered
+different and not grouped together.}
 }
 \value{
 An integration matrix with same or less number of rows

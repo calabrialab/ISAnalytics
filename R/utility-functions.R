@@ -448,9 +448,9 @@ reset_matrix_file_suffixes <- function() {
 
 pcr_id_column <- function() {
   af_cols_specs <- association_file_columns(TRUE)
-  af_cols_specs %>%
-    dplyr::filter(.data$tag == "pcr_repl_id") %>%
-    dplyr::pull(.data$names)
+  selected_tags <- .check_required_cols(list("pcr_repl_id" = "char"),
+                                        af_cols_specs, "error")
+  return(selected_tags$names)
 }
 
 # Function used to apply arbitrary transformations on columns.

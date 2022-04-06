@@ -1,13 +1,3 @@
-library(ISAnalytics)
-func_name <- c(
-    ".tests_pool_frag",
-    ".flag_cond_outliers_pool_frag",
-    ".apply_flag_logic",
-    ".process_pool_frag",
-    ".pool_frag_calc",
-    "outliers_by_pool_fragments",
-    "outlier_filter"
-)
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
@@ -22,7 +12,7 @@ normal_vect <- extraDistr::rtnorm(
     a = 1, b = 5000
 )
 
-min_example <- tibble::tibble(
+min_example <- data.table::data.table(
     CompleteAmplificationID = paste0(
         "ID",
         seq_len(1000)
@@ -48,9 +38,41 @@ min_example <- tibble::tibble(
 )
 
 #------------------------------------------------------------------------------#
+# .outlier_test_verify_logiop
+#------------------------------------------------------------------------------#
+test_that(".outlier_test_verify_logiop warns when flag_logic too long", {
+  withr::local_options(list(ISAnalytics.verbose = TRUE))
+  key <- c("A", "B")
+  flag_logic <- c("AND", "OR")
+  expect_message({
+    .outlier_test_verify_logiop(key, flag_logic, "flag_logic")
+  }, class = "flag_logic_long")
+  expect_true(length(flag_logic) == 1)
+})
+
+test_that(".outlier_test_verify_logiop warns flags short but not 1", {
+  withr::local_options(list(ISAnalytics.verbose = TRUE))
+  key <- c("A", "B", "C", "D")
+  flag_logic <- c("AND", "OR")
+  expect_message({
+    .outlier_test_verify_logiop(key, flag_logic, "flag_logic")
+  }, class = "flag_logic_short")
+  expect_true(length(flag_logic) == 1)
+})
+
+test_that(".outlier_test_verify_logiop errors if unsupported ops", {
+  withr::local_options(list(ISAnalytics.verbose = TRUE))
+  key <- c("A", "B", "C", "D")
+  flag_logic <- c("AND", "OR", "X")
+  expect_error({
+    .outlier_test_verify_logiop(key, flag_logic, "flag_logic")
+  }, class = "unsupp_logi_op")
+})
+
+#------------------------------------------------------------------------------#
 # .tests_pool_frag
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[1], "- normal dist with normality test"), {
+test_that(".tests_pool_frag - normal dist with normality test", {
     calc <- .tests_pool_frag(normal_vect,
         suffix = "test",
         normality_test = TRUE, normality_threshold = 0.05,
@@ -64,7 +86,7 @@ test_that(paste(func_name[1], "- normal dist with normality test"), {
     expect_true(all(!is.na(calc$tdist_test)))
 })
 
-test_that(paste(func_name[1], "- skips normality test with no error"), {
+test_that(".tests_pool_frag - skips normality test with no error", {
     set.seed(125)
     x <- extraDistr::rtnorm(
         n = 6000, mean = 3000, sd = 1,
@@ -82,7 +104,7 @@ test_that(paste(func_name[1], "- skips normality test with no error"), {
     expect_true(all(is.na(calc)))
 })
 
-test_that(paste(func_name[1], "- performs log2 no norm test"), {
+test_that(".tests_pool_frag - performs log2 no norm test", {
     set.seed(125)
     x <- extraDistr::rtnorm(
         n = 6000, mean = 3000, sd = 1,
@@ -97,7 +119,7 @@ test_that(paste(func_name[1], "- performs log2 no norm test"), {
     expect_true(all(!is.na(calc$log2_test)))
 })
 
-test_that(paste(func_name[1], "- performs log2 with normality test"), {
+test_that(".tests_pool_frag - performs log2 with normality test", {
     calc <- .tests_pool_frag(normal_vect,
         suffix = "test",
         normality_test = TRUE,
@@ -116,7 +138,7 @@ test_that(paste(func_name[1], "- performs log2 with normality test"), {
 #------------------------------------------------------------------------------#
 # .flag_cond_outliers_pool_frag
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[2], "flags false ok"), {
+test_that(".flag_cond_outliers_pool_frag flags false ok", {
     ## If processed is false flag must be false in any case
     flag <- .flag_cond_outliers_pool_frag(FALSE, 0, 0, 0)
     expect_false(flag)
@@ -152,7 +174,7 @@ test_that(paste(func_name[2], "flags false ok"), {
     expect_false(flag)
 })
 
-test_that(paste(func_name[2], "flags true ok"), {
+test_that(".flag_cond_outliers_pool_frag flags true ok", {
     flag <- .flag_cond_outliers_pool_frag(
         proc = TRUE,
         tdist = 0.01,
@@ -165,7 +187,7 @@ test_that(paste(func_name[2], "flags true ok"), {
 #------------------------------------------------------------------------------#
 # .apply_flag_logic
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[3], "correct AND logic"), {
+test_that(".apply_flag_logic correct AND logic", {
     flag <- .apply_flag_logic(x = TRUE, y = FALSE, logic = "AND")
     expect_false(flag)
     flag <- .apply_flag_logic(x = FALSE, y = FALSE, logic = "AND")
@@ -174,7 +196,7 @@ test_that(paste(func_name[3], "correct AND logic"), {
     expect_true(flag)
 })
 
-test_that(paste(func_name[3], "correct OR logic"), {
+test_that(".apply_flag_logic correct OR logic", {
     flag <- .apply_flag_logic(x = TRUE, y = FALSE, logic = "OR")
     expect_true(flag)
     flag <- .apply_flag_logic(x = FALSE, y = FALSE, logic = "OR")
@@ -183,7 +205,7 @@ test_that(paste(func_name[3], "correct OR logic"), {
     expect_true(flag)
 })
 
-test_that(paste(func_name[3], "correct NOR logic"), {
+test_that(".apply_flag_logic correct NOR logic", {
     flag <- .apply_flag_logic(x = TRUE, y = FALSE, logic = "NOR")
     expect_false(flag)
     flag <- .apply_flag_logic(x = FALSE, y = FALSE, logic = "NOR")
@@ -192,7 +214,7 @@ test_that(paste(func_name[3], "correct NOR logic"), {
     expect_false(flag)
 })
 
-test_that(paste(func_name[3], "correct XOR logic"), {
+test_that(".apply_flag_logic correct XOR logic", {
     flag <- .apply_flag_logic(x = TRUE, y = FALSE, logic = "XOR")
     expect_true(flag)
     flag <- .apply_flag_logic(x = FALSE, y = FALSE, logic = "XOR")
@@ -201,7 +223,7 @@ test_that(paste(func_name[3], "correct XOR logic"), {
     expect_false(flag)
 })
 
-test_that(paste(func_name[3], "correct XNOR logic"), {
+test_that(".apply_flag_logic correct XNOR logic", {
     flag <- .apply_flag_logic(x = TRUE, y = FALSE, logic = "XNOR")
     expect_false(flag)
     flag <- .apply_flag_logic(x = FALSE, y = FALSE, logic = "XNOR")
@@ -210,7 +232,7 @@ test_that(paste(func_name[3], "correct XNOR logic"), {
     expect_true(flag)
 })
 
-test_that(paste(func_name[3], "correct NAND logic"), {
+test_that(".apply_flag_logic correct NAND logic", {
     flag <- .apply_flag_logic(x = TRUE, y = FALSE, logic = "NAND")
     expect_true(flag)
     flag <- .apply_flag_logic(x = FALSE, y = FALSE, logic = "NAND")
@@ -219,7 +241,7 @@ test_that(paste(func_name[3], "correct NAND logic"), {
     expect_false(flag)
 })
 
-test_that(paste(func_name[3], "correct combined logic AND cross"), {
+test_that(".apply_flag_logic correct combined logic AND cross", {
     flag <- .apply_flag_logic(
         x = TRUE, y = FALSE,
         k = FALSE, logic = c("AND", "OR")
@@ -247,7 +269,7 @@ test_that(paste(func_name[3], "correct combined logic AND cross"), {
     expect_true(flag)
 })
 
-test_that(paste(func_name[3], "correct combined logic OR cross"), {
+test_that(".apply_flag_logic correct combined logic OR cross", {
     flag <- .apply_flag_logic(
         x = TRUE, y = FALSE,
         k = FALSE, logic = c("OR", "AND")
@@ -275,7 +297,7 @@ test_that(paste(func_name[3], "correct combined logic OR cross"), {
     expect_false(flag)
 })
 
-test_that(paste(func_name[3], "correct combined logic XOR cross"), {
+test_that(".apply_flag_logic correct combined logic XOR cross", {
     flag <- .apply_flag_logic(
         x = TRUE, y = FALSE,
         k = FALSE, logic = c("XOR", "AND")
@@ -303,7 +325,7 @@ test_that(paste(func_name[3], "correct combined logic XOR cross"), {
     expect_false(flag)
 })
 
-test_that(paste(func_name[3], "correct combined logic NOR cross"), {
+test_that(".apply_flag_logic correct combined logic NOR cross", {
     flag <- .apply_flag_logic(
         x = TRUE, y = FALSE,
         k = FALSE, logic = c("NOR", "AND")
@@ -331,7 +353,7 @@ test_that(paste(func_name[3], "correct combined logic NOR cross"), {
     expect_true(flag)
 })
 
-test_that(paste(func_name[3], "correct combined logic NAND cross"), {
+test_that(".apply_flag_logic correct combined logic NAND cross", {
     flag <- .apply_flag_logic(
         x = TRUE, y = FALSE,
         k = FALSE, logic = c("NAND", "AND")
@@ -359,7 +381,7 @@ test_that(paste(func_name[3], "correct combined logic NAND cross"), {
     expect_false(flag)
 })
 
-test_that(paste(func_name[3], "correct combined logic XNOR cross"), {
+test_that(".apply_flag_logic correct combined logic XNOR cross", {
     flag <- .apply_flag_logic(
         x = TRUE, y = FALSE,
         k = FALSE, logic = c("XNOR", "AND")
@@ -390,7 +412,7 @@ test_that(paste(func_name[3], "correct combined logic XNOR cross"), {
 #------------------------------------------------------------------------------#
 # .process_pool_frag
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[4], "- single key norm test"), {
+test_that(".process_pool_frag - single key norm test", {
     res <- .process_pool_frag(min_example,
         key = "X", normality_test = TRUE,
         normality_threshold = 0.05, log2 = FALSE
@@ -418,7 +440,7 @@ test_that(paste(func_name[4], "- single key norm test"), {
 #------------------------------------------------------------------------------#
 # .pool_frag_calc
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[5], "- single key"), {
+test_that(".pool_frag_calc - single key", {
     samples_per_pool <- 5
     samples_in_pools <- min_example %>%
         dplyr::group_by(.data$PoolID) %>%
@@ -430,7 +452,8 @@ test_that(paste(func_name[5], "- single key"), {
         pool_col = "PoolID",
         normality_test = FALSE,
         normality_threshold = 0.05,
-        log2 = FALSE
+        log2 = FALSE,
+        pcr_id_col = "CompleteAmplificationID"
     )
     processed_pools <- purrr::pmap_lgl(samples_in_pools, function(...) {
         pool <- tibble::tibble(...)
@@ -459,7 +482,7 @@ test_that(paste(func_name[5], "- single key"), {
         pool_col = "PoolID",
         normality_test = FALSE,
         normality_threshold = 0.05,
-        log2 = FALSE
+        log2 = FALSE, pcr_id_col = "CompleteAmplificationID"
     )
     non_na_if_proc <- purrr::pmap_lgl(res$metadata, function(...) {
         row <- tibble::tibble(...)
@@ -480,7 +503,7 @@ test_that(paste(func_name[5], "- single key"), {
         pool_col = "PoolID",
         normality_test = FALSE,
         normality_threshold = 0.05,
-        log2 = TRUE
+        log2 = TRUE, pcr_id_col = "CompleteAmplificationID"
     )
     samples_in_pools <- min_example %>%
         dplyr::filter(!.data$CompleteAmplificationID %in%
@@ -523,7 +546,7 @@ test_that(paste(func_name[5], "- single key"), {
 #------------------------------------------------------------------------------#
 # outliers_by_pool_fragments
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[6], "- processes with nas"), {
+test_that("outliers_by_pool_fragments - processes with nas", {
     nas <- min_example %>%
         dplyr::filter(is.na(.data$Z))
     res <- outliers_by_pool_fragments(min_example,
@@ -538,12 +561,24 @@ test_that(paste(func_name[6], "- processes with nas"), {
         dplyr::filter(.data$CompleteAmplificationID %in%
             nas$CompleteAmplificationID) %>%
         dplyr::pull(.data$to_remove) == FALSE))
+    res <- outliers_by_pool_fragments(min_example,
+                                      key = c("X","Z"),
+                                      keep_calc_cols = TRUE
+    )
+    expect_true(all(res %>%
+                      dplyr::filter(.data$CompleteAmplificationID %in%
+                                      nas$CompleteAmplificationID) %>%
+                      dplyr::pull(.data$processed) == FALSE))
+    expect_true(all(res %>%
+                      dplyr::filter(.data$CompleteAmplificationID %in%
+                                      nas$CompleteAmplificationID) %>%
+                      dplyr::pull(.data$to_remove) == FALSE))
 })
 
 #------------------------------------------------------------------------------#
 # outlier_filter
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[7], "- filters ok"), {
+test_that("outlier_filter - works with calls to functions", {
     example <- tibble::tribble(
         ~CompleteAmplificationID,
         ~PoolID, ~X, ~Y, ~Z,
@@ -573,9 +608,135 @@ test_that(paste(func_name[7], "- filters ok"), {
         keep_calc_cols = TRUE,
         outlier_p_value_threshold = 0.05
     )
-    expect_true(all(res %>%
-        dplyr::filter(.data$PoolID == "POOL2") %>%
-        dplyr::pull(.data$processed) == FALSE))
     expected_flagged <- c("ID20")
     expect_true(all(!expected_flagged %in% res$CompleteAmplificationID))
+
+    ## With custom function
+    foo <- function(metadata) {
+      processed <- data.table::copy(metadata)
+      processed[eval(sym("X")) < 10000, c("to_remove") := TRUE]
+      processed[eval(sym("X")) >= 10000, c("to_remove") := FALSE]
+      return(processed[, mget(c("CompleteAmplificationID", "to_remove"))])
+    }
+    res <- outlier_filter(metadata = example,
+                          outlier_test = c(outliers_by_pool_fragments, foo),
+                          key = "Z",
+                          outlier_p_value_threshold = 0.05
+    )
+    expected_flagged <- c("ID20")
+    expect_true(all(!expected_flagged %in% res$CompleteAmplificationID))
+    res <- outlier_filter(metadata = example,
+                          outlier_test = c(outliers_by_pool_fragments, foo),
+                          key = "Z",
+                          outlier_p_value_threshold = 0.05,
+                          combination_logic = c("OR")
+    )
+    expected_flagged <- c("ID20", "ID6", "ID13", "ID9", "ID16", "ID18", "ID8",
+                          "ID10")
+    expect_true(all(!expected_flagged %in% res$CompleteAmplificationID))
 })
+
+test_that("outlier_filter - works with tests outputs", {
+  example <- tibble::tribble(
+    ~CompleteAmplificationID,
+    ~PoolID, ~X, ~Y, ~Z,
+    "ID1", "POOL2", 10000.143, 160.42487, NA,
+    "ID2", "POOL1", 10000.257, 214.61753, 363,
+    "ID3", "POOL3", 10000.716, 931.20962, 956,
+    "ID4", "POOL2", 10001.609, 211.75091, NA,
+    "ID5", "POOL1", 10000.667, 413.37500, 541,
+    "ID6", "POOL1", 9999.257, 33.85144, 398,
+    "ID7", "POOL1", 10000.065, 247.01316, 1549,
+    "ID8", "POOL2", 9999.991, -610.04281, 578,
+    "ID9", "POOL3", 9999.359, 385.85765, 2520,
+    "ID10", "POOL2", 9999.490, 955.12338, 2032)
+  test_result_1 <- tibble::tribble(
+    ~CompleteAmplificationID, ~ to_remove,
+    "ID1", TRUE,
+    "ID2", FALSE,
+    "ID3", FALSE,
+    "ID4", FALSE,
+    "ID5", TRUE,
+    "ID6", TRUE,
+    "ID7", FALSE,
+    "ID8", FALSE,
+    "ID9", FALSE,
+    "ID10", FALSE
+  )
+  test_result_2 <- tibble::tribble(
+    ~CompleteAmplificationID, ~ to_remove,
+    "ID1", TRUE,
+    "ID2", FALSE,
+    "ID3", TRUE,
+    "ID4", FALSE,
+    "ID5", FALSE,
+    "ID6", TRUE,
+    "ID7", FALSE,
+    "ID8", FALSE,
+    "ID9", FALSE,
+    "ID10", TRUE
+  )
+  res <- outlier_filter(metadata = example,
+                        outlier_test_outputs = test_result_1)
+  expected_flagged <- c("ID1", "ID5", "ID6")
+  expect_true(all(!expected_flagged %in% res$CompleteAmplificationID))
+
+  res <- outlier_filter(metadata = example,
+                        outlier_test_outputs = list(test_result_1,
+                                                    test_result_2),
+                        combination_logic = c("AND"))
+  expected_flagged <- c("ID1", "ID6")
+  expect_true(all(!expected_flagged %in% res$CompleteAmplificationID))
+})
+
+test_that("outlier_filter - fails with wrong output format", {
+  example <- tibble::tribble(
+    ~CompleteAmplificationID,
+    ~PoolID, ~X, ~Y, ~Z,
+    "ID1", "POOL2", 10000.143, 160.42487, NA,
+    "ID2", "POOL1", 10000.257, 214.61753, 363,
+    "ID3", "POOL3", 10000.716, 931.20962, 956,
+    "ID4", "POOL2", 10001.609, 211.75091, NA)
+  ## Missing IDs
+  test_result_1 <- tibble::tribble(
+    ~CompleteAmplificationID, ~ to_remove,
+    "ID1", TRUE,
+    "ID3", FALSE,
+    "ID4", FALSE
+    )
+  ## Missing columns
+  test_result_2 <- tibble::tribble(
+    ~SampleID, ~ remove,
+    "ID1", TRUE,
+    "ID2", FALSE,
+    "ID3", FALSE,
+    "ID4", FALSE
+  )
+  expect_error({
+    res <- outlier_filter(metadata = example,
+                          outlier_test_outputs = test_result_1)
+  }, class = "outlier_format_err")
+  expect_error({
+    res <- outlier_filter(metadata = example,
+                          outlier_test_outputs = test_result_2)
+  }, class = "outlier_format_err")
+  ## Additional IDs should not raise errors but should not appear in final
+  ## output
+  test_result_3 <- tibble::tribble(
+    ~CompleteAmplificationID, ~ to_remove,
+    "ID1", TRUE,
+    "ID2", FALSE,
+    "ID3", FALSE,
+    "ID4", FALSE,
+    "ID5", FALSE
+  )
+  res <- outlier_filter(metadata = example,
+                        outlier_test_outputs = test_result_3)
+  expect_true(all(c("ID2", "ID3", "ID4") %in%
+                    res$CompleteAmplificationID))
+  expect_true(all(!c("ID1", "ID5") %in% res$CompleteAmplificationID))
+})
+
+
+
+

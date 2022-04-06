@@ -173,20 +173,20 @@ test_that("transform_columns applies transform as expected", {
   expect_equal(result$B, c(4, 7, 10))
 })
 
-test_that("transform_columns warns and skips if error is raised", {
-  test_df <- tibble::tribble(
-    ~ A, ~B, ~C,
-    1, 2, 3,
-    4, 5, 6,
-    7, 8, 9
-  )
-  to_apply <- list(D = ~ .x + 3)
-  expect_message({
-    result <- transform_columns(test_df, to_apply)
-  }, class = "skip_col_transform")
-  expect_equal(result, test_df)
+#------------------------------------------------------------------------------#
+# Tests pcr_id_column
+#------------------------------------------------------------------------------#
+test_that("pcr_id_column errors if no pcr_repl_id in vars", {
+  withr::local_options(list(ISAnalytics.af_specs = "default"))
+  af_specs <- association_file_columns(TRUE)
+  af_specs_mod <- af_specs %>%
+    dplyr::filter(!.data$tag %in% c("pcr_repl_id"))
+  withr::with_options(list(ISAnalytics.af_specs = af_specs_mod), {
+    expect_error({
+      col <- pcr_id_column()
+    })
+  })
 })
-
 
 #------------------------------------------------------------------------------#
 # Tests generate_blank_association_file
@@ -288,117 +288,117 @@ test_that("transform_columns warns and skips if error is raised", {
 #------------------------------------------------------------------------------#
 # Tests as_sparse_matrix
 #------------------------------------------------------------------------------#
-smpl <- tibble::tibble(
-    chr = c(1, 2, 3), integration_locus = c(1354, 5634, 4765),
-    strand = c("+", "+", "+"),
-    GeneName = c("GENE1", "GENE2", "GENE3"),
-    GeneStrand = c("+", "+", "+"),
-    CompleteAmplificationID = c("ID1", "ID2", "ID3"),
-    Value = c(46, 546, 587)
-)
-
-smpl_multi <- tibble::tibble(
-    chr = c(1, 2, 3),
-    integration_locus = c(1354, 5634, 4765),
-    strand = c("+", "+", "+"),
-    GeneName = c("GENE1", "GENE2", "GENE3"),
-    GeneStrand = c("+", "+", "+"),
-    CompleteAmplificationID = c("ID1", "ID2", "ID3"),
-    seqCount = c(46, 546, 587),
-    fragmentEstimate = c(4234.5, 533.45, 5431.43),
-    barcodeCount = c(46, 6456, 456)
-)
-test_that("as_sparse_matrix works with single matrix", {
-    sparse <- as_sparse_matrix(smpl)
-    expect_true(tibble::is_tibble(sparse))
-    expect_true(all(c(
-        "chr", "integration_locus", "strand",
-        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
-    ) %in%
-        colnames(sparse)))
-    expect_equal(nrow(sparse), 3)
-})
-
-test_that("as_sparse_matrix works with multi-quant matrix", {
-    sparse <- as_sparse_matrix(smpl_multi)
-    expect_true(!tibble::is_tibble(sparse) & is.list(sparse))
-    expect_equal(names(sparse), c(
-        "fragmentEstimate",
-        "seqCount",
-        "barcodeCount"
-    ))
-    expect_true(all(c(
-        "chr", "integration_locus", "strand",
-        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
-    ) %in%
-        colnames(sparse$seqCount)))
-    expect_equal(nrow(sparse$seqCount), 3)
-    expect_true(all(c(
-        "chr", "integration_locus", "strand",
-        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
-    ) %in%
-        colnames(sparse$fragmentEstimate)))
-    expect_equal(nrow(sparse$fragmentEstimate), 3)
-})
-
-test_that("as_sparse_matrix works with list of matrices", {
-    sparse <- as_sparse_matrix(list(smpl, smpl))
-    expect_true(!tibble::is_tibble(sparse) & is.list(sparse))
-    expect_true(all(c(
-        "chr", "integration_locus", "strand",
-        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
-    ) %in%
-        colnames(sparse[[1]])))
-    expect_equal(nrow(sparse[[1]]), 3)
-    expect_true(all(c(
-        "chr", "integration_locus", "strand",
-        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
-    ) %in%
-        colnames(sparse[[2]])))
-    expect_equal(nrow(sparse[[2]]), 3)
-})
-
-#------------------------------------------------------------------------------#
-# Tests annotation_issues
-#------------------------------------------------------------------------------#
-test_df_issues <- tibble::tribble(
-    ~chr, ~integration_locus, ~strand, ~GeneName, ~GeneStrand,
-    ~CompleteAmplificationID, ~Value,
-    "1", 123456, "+", "ABCDE", "+", "ID1", 56,
-    "1", 123456, "+", "ABCDE", "-", "ID2", 675,
-    "1", 123456, "+", "FGHIL", "-", "ID3", 67,
-    "2", 5674653, "-", "FGHIL", "-", "ID2", 873,
-    "1", 4578768, "-", "RSPQX", "-", "ID3", 983,
-)
-
-test_df_no_issues <- tibble::tribble(
-    ~chr, ~integration_locus, ~strand, ~GeneName, ~GeneStrand,
-    ~CompleteAmplificationID, ~Value,
-    "1", 123456, "+", "ABCDE", "+", "ID1", 56,
-    "1", 123456, "+", "ABCDE", "+", "ID2", 675,
-    "1", 123456, "+", "ABCDE", "+", "ID3", 67,
-    "2", 5674653, "-", "FGHIL", "-", "ID2", 873,
-    "1", 4578768, "-", "RSPQX", "-", "ID3", 983,
-)
-
-test_that("annotation_issues returns df if issues", {
-    res <- annotation_issues(test_df_issues)
-    expect_true(!is.null(res))
-    expect_true(nrow(res) == 1 & res$chr[1] == "1" &
-        res$integration_locus[1] == 123456 & res$strand == "+" &
-        res$distinct_genes == 3)
-})
-
-test_that("annotation_issues returns null if no issues", {
-  expect_message({
-    res <- annotation_issues(test_df_no_issues)
-  })
-  expect_null(res)
-})
-
-test_that("annotation_issues works with lists", {
-    res <- annotation_issues(list(a = test_df_issues, b = test_df_no_issues))
-    expect_true(!is.null(res))
-    expect_true(is.null(res[[2]]))
-    expect_true(nrow(res[[1]]) == 1)
-})
+# smpl <- tibble::tibble(
+#     chr = c(1, 2, 3), integration_locus = c(1354, 5634, 4765),
+#     strand = c("+", "+", "+"),
+#     GeneName = c("GENE1", "GENE2", "GENE3"),
+#     GeneStrand = c("+", "+", "+"),
+#     CompleteAmplificationID = c("ID1", "ID2", "ID3"),
+#     Value = c(46, 546, 587)
+# )
+#
+# smpl_multi <- tibble::tibble(
+#     chr = c(1, 2, 3),
+#     integration_locus = c(1354, 5634, 4765),
+#     strand = c("+", "+", "+"),
+#     GeneName = c("GENE1", "GENE2", "GENE3"),
+#     GeneStrand = c("+", "+", "+"),
+#     CompleteAmplificationID = c("ID1", "ID2", "ID3"),
+#     seqCount = c(46, 546, 587),
+#     fragmentEstimate = c(4234.5, 533.45, 5431.43),
+#     barcodeCount = c(46, 6456, 456)
+# )
+# test_that("as_sparse_matrix works with single matrix", {
+#     sparse <- as_sparse_matrix(smpl)
+#     expect_true(tibble::is_tibble(sparse))
+#     expect_true(all(c(
+#         "chr", "integration_locus", "strand",
+#         "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+#     ) %in%
+#         colnames(sparse)))
+#     expect_equal(nrow(sparse), 3)
+# })
+#
+# test_that("as_sparse_matrix works with multi-quant matrix", {
+#     sparse <- as_sparse_matrix(smpl_multi)
+#     expect_true(!tibble::is_tibble(sparse) & is.list(sparse))
+#     expect_equal(names(sparse), c(
+#         "fragmentEstimate",
+#         "seqCount",
+#         "barcodeCount"
+#     ))
+#     expect_true(all(c(
+#         "chr", "integration_locus", "strand",
+#         "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+#     ) %in%
+#         colnames(sparse$seqCount)))
+#     expect_equal(nrow(sparse$seqCount), 3)
+#     expect_true(all(c(
+#         "chr", "integration_locus", "strand",
+#         "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+#     ) %in%
+#         colnames(sparse$fragmentEstimate)))
+#     expect_equal(nrow(sparse$fragmentEstimate), 3)
+# })
+#
+# test_that("as_sparse_matrix works with list of matrices", {
+#     sparse <- as_sparse_matrix(list(smpl, smpl))
+#     expect_true(!tibble::is_tibble(sparse) & is.list(sparse))
+#     expect_true(all(c(
+#         "chr", "integration_locus", "strand",
+#         "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+#     ) %in%
+#         colnames(sparse[[1]])))
+#     expect_equal(nrow(sparse[[1]]), 3)
+#     expect_true(all(c(
+#         "chr", "integration_locus", "strand",
+#         "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+#     ) %in%
+#         colnames(sparse[[2]])))
+#     expect_equal(nrow(sparse[[2]]), 3)
+# })
+#
+# #------------------------------------------------------------------------------#
+# # Tests annotation_issues
+# #------------------------------------------------------------------------------#
+# test_df_issues <- tibble::tribble(
+#     ~chr, ~integration_locus, ~strand, ~GeneName, ~GeneStrand,
+#     ~CompleteAmplificationID, ~Value,
+#     "1", 123456, "+", "ABCDE", "+", "ID1", 56,
+#     "1", 123456, "+", "ABCDE", "-", "ID2", 675,
+#     "1", 123456, "+", "FGHIL", "-", "ID3", 67,
+#     "2", 5674653, "-", "FGHIL", "-", "ID2", 873,
+#     "1", 4578768, "-", "RSPQX", "-", "ID3", 983,
+# )
+#
+# test_df_no_issues <- tibble::tribble(
+#     ~chr, ~integration_locus, ~strand, ~GeneName, ~GeneStrand,
+#     ~CompleteAmplificationID, ~Value,
+#     "1", 123456, "+", "ABCDE", "+", "ID1", 56,
+#     "1", 123456, "+", "ABCDE", "+", "ID2", 675,
+#     "1", 123456, "+", "ABCDE", "+", "ID3", 67,
+#     "2", 5674653, "-", "FGHIL", "-", "ID2", 873,
+#     "1", 4578768, "-", "RSPQX", "-", "ID3", 983,
+# )
+#
+# test_that("annotation_issues returns df if issues", {
+#     res <- annotation_issues(test_df_issues)
+#     expect_true(!is.null(res))
+#     expect_true(nrow(res) == 1 & res$chr[1] == "1" &
+#         res$integration_locus[1] == 123456 & res$strand == "+" &
+#         res$distinct_genes == 3)
+# })
+#
+# test_that("annotation_issues returns null if no issues", {
+#   expect_message({
+#     res <- annotation_issues(test_df_no_issues)
+#   })
+#   expect_null(res)
+# })
+#
+# test_that("annotation_issues works with lists", {
+#     res <- annotation_issues(list(a = test_df_issues, b = test_df_no_issues))
+#     expect_true(!is.null(res))
+#     expect_true(is.null(res[[2]]))
+#     expect_true(nrow(res[[1]]) == 1)
+# })

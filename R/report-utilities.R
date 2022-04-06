@@ -31,7 +31,12 @@
         outlier_flag = list(
             template_name = "outlier-report.Rmd",
             required_pkgs = c("flexdashboard", "DT"),
-            def_filename = "raw_reads_outliers_report.html"
+            def_filename = "outlier_test_pool_fragments_report.html"
+        ),
+        outlier_filter = list(
+          template_name = "outlier-filter-report.Rmd",
+          required_pkgs = c("flexdashboard", "DT"),
+          def_filename = "outlier_filter_report.html"
         )
     )
 }

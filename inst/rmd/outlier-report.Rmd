@@ -11,6 +11,7 @@ output:
       - { title: "Website", href: "https://calabrialab.github.io/ISAnalytics/", align: right, icon: "fa-globe" }
       - { title: "GitHub", href: "https://github.com/calabrialab/ISAnalytics", align: right, icon: "fa-github" }
 params:
+  dyn_vars: null
   by_pool: null
   pool_col: null
   norm_test: null
@@ -155,7 +156,7 @@ cat("#### Parameters and options chosen\n\n", choice_msg)
 na_df <- params$removed_nas %>%
             dplyr::select(
                 dplyr::all_of(params$pool_col),
-                .data$CompleteAmplificationID,
+                .data[[params$dyn_vars$pcr_id]],
                 dplyr::all_of(params$key)
             )
 datatable(
@@ -222,9 +223,10 @@ Row2
 ### Flagged samples details
 
 ```{r}
+cols_to_factor <- c(params$pool_col, params$dyn_vars$project_id)
 datatable(
   params$flag_df %>%
-    dplyr::mutate(dplyr::across(c(.data$ProjectID, .data[[params$pool_col]]),
+    dplyr::mutate(dplyr::across(cols_to_factor,
                                 as.factor)),
   rownames = FALSE,
   filter = 'top',

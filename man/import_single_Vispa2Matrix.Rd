@@ -6,21 +6,25 @@
 \usage{
 import_single_Vispa2Matrix(
   path,
-  to_exclude = NULL,
-  keep_excluded = FALSE,
-  separator = "\\t"
+  separator = "\\t",
+  additional_cols = NULL,
+  transformations = NULL,
+  sample_names_to = pcr_id_column(),
+  values_to = "Value",
+  to_exclude = lifecycle::deprecated(),
+  keep_excluded = lifecycle::deprecated()
 )
 }
 \arguments{
 \item{path}{The path to the file on disk}
 
+\item{separator}{The column delimiter used, defaults to \verb{\\t}}
+
 \item{to_exclude}{Either \code{NULL} or a character vector of column names that
 should be ignored when importing}
 
 \item{keep_excluded}{Keep the columns in \code{to_exclude} as additional
-columns?}
-
-\item{separator}{The column delimiter used, defaults to \verb{\\t}}
+columns? (also as a vector)}
 }
 \value{
 A data.table object in tidy format

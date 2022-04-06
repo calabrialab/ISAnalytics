@@ -6,8 +6,8 @@
 \usage{
 import_parallel_Vispa2Matrices(
   association_file,
-  quantification_type,
-  matrix_type = "annotated",
+  quantification_type = c("seqCount", "fragmentEstimate"),
+  matrix_type = c("annotated", "not_annotated"),
   workers = 2,
   multi_quant_matrix = TRUE,
   report_path = default_report_path(),
@@ -52,7 +52,8 @@ INTERACTIVE, the function will ask for input from the user on console,
 otherwise the process is fully automated (with limitations, see vignette).}
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Additional named arguments
-to pass to \code{ìmport_association_file} and \code{comparison_matrix}}
+to pass to \code{ìmport_association_file}, \code{comparison_matrix} and
+\code{import_single_Vispa2_matrix}}
 }
 \value{
 Either a multi-quantification matrix or a list of integration

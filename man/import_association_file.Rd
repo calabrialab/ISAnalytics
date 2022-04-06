@@ -13,6 +13,8 @@ import_association_file(
   import_iss = FALSE,
   convert_tp = TRUE,
   report_path = default_report_path(),
+  transformations = default_af_transform(convert_tp),
+  tp_padding = lifecycle::deprecated(),
   ...
 )
 }
@@ -44,12 +46,12 @@ years?}
 Can be a folder, a file or NULL if no report should be produced.
 Defaults to \code{{user_home}/ISAnalytics_reports}.}
 
-\item{...}{Additional arguments to pass to
-\code{\link{import_Vispa2_stats}}}
-
 \item{tp_padding}{Timepoint padding, indicates the number of digits of the
 "TimePoint" column once imported. Fills the content with 0s up to the length
 specified (ex: 1 becomes 0001 with a tp_padding of 4)}
+
+\item{...}{Additional arguments to pass to
+\code{\link{import_Vispa2_stats}}}
 }
 \value{
 The data frame holding metadata
@@ -71,7 +73,8 @@ For more details see the "How to use import functions" vignette:
 fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 fs <- unzip_file_system(fs_path, "fs")
 af_path <- system.file("extdata", "asso.file.tsv.gz",
-package = "ISAnalytics")
+    package = "ISAnalytics"
+)
 af <- import_association_file(af_path, root = fs, report_path = NULL)
 head(af)
 }

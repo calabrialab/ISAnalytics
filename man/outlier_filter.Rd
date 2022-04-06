@@ -6,7 +6,9 @@
 \usage{
 outlier_filter(
   metadata,
-  outlier_test = "outliers_by_pool_fragments",
+  outlier_test = c(outliers_by_pool_fragments),
+  outlier_test_outputs = NULL,
+  combination_logic = c("AND"),
   negate = FALSE,
   ...
 )

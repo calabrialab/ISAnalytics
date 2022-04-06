@@ -14,10 +14,10 @@ Resets the association file columns definitions to the default value.
 }
 \examples{
 temp_af_cols <- tibble::tribble(
-  ~ names, ~ types, ~ transform,
-  "ProjectID", "char", NULL,
-  "SubjectID", "char", NULL,
-  "TimePoint", "int", NULL
+    ~names, ~types, ~transform,
+    "ProjectID", "char", NULL,
+    "SubjectID", "char", NULL,
+    "TimePoint", "int", NULL
 )
 set_af_columns_def(temp_af_cols)
 print(association_file_columns(TRUE))

@@ -1,0 +1,176 @@
+---
+title: "ISAnalytics - Outliers filtering"
+date: "`r Sys.Date()`"
+output: 
+  flexdashboard::flex_dashboard:
+    vertical_layout: fill
+    theme:
+      bootswatch: cosmo
+      primary: "#23687A"
+    navbar:
+      - { title: "Website", href: "https://calabrialab.github.io/ISAnalytics/", align: right, icon: "fa-globe" }
+      - { title: "GitHub", href: "https://github.com/calabrialab/ISAnalytics", align: right, icon: "fa-github" }
+params:
+  dyn_vars: null
+  input_stats: null
+  test_results: null
+  call_args: null
+  mode: null
+  joint: null
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+options(DT.warn.size = FALSE)
+library(flexdashboard)
+library(DT)
+ok_color <- "#77d983"
+ko_color <- "#e36868"
+secondary_col <- "#ff9470"
+input_stats <- params$input_stats
+test_results <- params$test_results
+joint <- params$joint
+dyn_vars <- params$dyn_vars
+mode <- params$mode
+call_args <- params$call_args
+```
+
+Input info {data-orientation=rows}
+===============================================================================
+
+Row1
+-------------------------------------------------------------------------------
+### Rows in input metadata
+```{r}
+valueBox(value = input_stats$nrow, icon = "fa-table")
+```
+
+### Distinct samples in input metadata
+```{r}
+valueBox(value = input_stats$n_samples, icon = "fa-vial")
+```
+
+Row2
+-------------------------------------------------------------------------------
+### Number of tests performed
+```{r}
+valueBox(value = length(test_results), icon = "fa-list", color = secondary_col)
+```
+
+```{r echo=FALSE, eval=TRUE}
+out <- purrr::map2_chr(test_results, names(test_results), ~ {
+  heading <- paste("### Flagged in ", .y)
+  flagged_reads <- nrow(.x[eval(sym("to_remove")) == TRUE, ])
+  color <- ifelse(test = flagged_reads == 0, ok_color, ko_color)
+  a1 <- knitr::knit_expand(text = heading)
+  a2 <- knitr::knit_expand(text = paste0(
+    "`r valueBox(value = ", flagged_reads, ", color = '", color, "')`"))
+  paste(c(a1, a2), collapse = "\n")
+})
+```
+
+`r paste(knitr::knit(text = paste(out, collapse = '\n\n')))`
+
+### Removed in total
+```{r}
+tot_removed <- nrow(joint[eval(sym("to_remove")) == TRUE, ])
+valueBox(value = tot_removed, icon = "fa-trash")
+```
+
+
+Row3 {.tabset .tabset-fade}
+-------------------------------------------------------------------------------
+
+### Parameter values
+```{r echo=FALSE, results='asis'}
+cat(paste("**Join operations on column**:", dyn_vars$pcr_id))
+```
+
+```{r echo=FALSE, eval=length(test_results) > 1, results='asis'}
+comb_logic <- rbind(names(test_results), c(dyn_vars$operators, ""))
+comb_logic <- paste0(comb_logic, collapse = " ")
+first_line <- paste("**Combining logic used**:", comb_logic)
+cat(first_line)
+```
+
+```{r echo=FALSE, eval=mode == "CALL", results='asis'}
+params_as_string <- purrr::map2(call_args, names(call_args), ~ {
+  test <- .x
+  name <- .y
+  single_param_lines <- if (!purrr::is_empty(test)) {
+    purrr::map2_chr(names(test), test,~ paste("\t", "*", .x, "=", .y)) %>%
+      purrr::reduce(~ paste(.x, .y, sep = "\n"))
+  } else {
+    "\t * No args passed to the function\n"
+  }
+  per_test_params <- paste0("* ", name, "\n", single_param_lines)
+  return(per_test_params)
+})
+params_as_string <- paste0(params_as_string, collapse = "\n")
+cat(paste0("**Tests called with args**:\n\n", params_as_string))
+```
+
+```{r echo=FALSE, results='asis'}
+cat(paste("*Individual test reports might be available as separate files*"))
+```
+
+```{r echo=FALSE, eval=TRUE}
+test_tables <- purrr::map(test_results, ~ {
+  to_rem_index <- which(colnames(.x) == "to_remove") - 1
+  datatable(.x,
+    rownames = FALSE,
+    filter = "top",
+    options = list(
+      order = list(list(to_rem_index, "desc"))
+      )
+  ) %>%
+  formatStyle(columns = "to_remove", 
+              color = styleEqual(
+                levels = c(TRUE, FALSE),
+                values = c(ko_color, "black")
+              ), fontWeight = "bold", textTransform = "uppercase")
+})
+out_2 <- purrr::map_chr(names(test_tables), ~ {
+  heading <- paste("### Output of ", .x)
+  a1 <- knitr::knit_expand(text = heading)
+  a2 <- knitr::knit_expand(text = paste0(
+    "`r test_tables[['", .x, "']]`"))
+  paste(c(a1, a2), collapse = "\n")
+})
+```
+
+`r paste(knitr::knit(text = paste(out_2, collapse = '\n\n')))`
+
+Final output {data-orientation=rows}
+===============================================================================
+
+Row1
+-------------------------------------------------------------------------------
+### Combined flagging
+```{r}
+to_rem_index_joint <- which(colnames(joint) == "to_remove") - 1
+datatable(
+  joint,
+  rownames = FALSE,
+    filter = "top",
+    options = list(
+      order = list(list(to_rem_index_joint, "desc"))
+      )
+) %>%
+  formatStyle(columns = colnames(joint)[colnames(joint) != dyn_vars$pcr_id], 
+              color = styleEqual(
+                levels = c(TRUE, FALSE),
+                values = c(ko_color, "black")
+              ), fontWeight = "bold", textTransform = "uppercase")
+```
+
+Reproducibility {data-orientation=rows}
+===============================================================================
+
+Row1 {data-height=600}
+-------------------------------------------------------------------------------
+
+### Session info {style="width: 95% !important"}
+```{r attr.output='style="max-height: 580px;"'}
+sessionInfo()
+```
+

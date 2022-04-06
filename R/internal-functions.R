@@ -4667,12 +4667,107 @@
 
 
 #---- USED IN : outliers_by_pool_fragments ----
+.outlier_pool_frag_base_checks <- function(metadata,
+                                           key,
+                                           outlier_p_value_threshold,
+                                           normality_test,
+                                           normality_p_value_threshold,
+                                           transform_log2,
+                                           min_samples_per_pool,
+                                           per_pool_test,
+                                           pool_col, pcr_id_col) {
+  stopifnot(is.data.frame(metadata))
+  stopifnot(is.character(key))
+  if (!all(key %in% colnames(metadata))) {
+    rlang::abort(.missing_user_cols_error(key[!key %in%
+                                                colnames(metadata)]),
+                 class = "missing_cols_key"
+    )
+  }
+  stopifnot(is.numeric(outlier_p_value_threshold))
+  stopifnot(is.logical(normality_test))
+  if (normality_test) {
+    stopifnot(is.numeric(normality_p_value_threshold))
+  }
+  stopifnot(is.logical(transform_log2))
+  stopifnot(is.logical(per_pool_test))
+  if (per_pool_test) {
+    stopifnot(is.character(pool_col))
+    stopifnot(is.numeric(min_samples_per_pool) &&
+                length(min_samples_per_pool) == 1)
+    if (!all(pool_col %in% colnames(metadata))) {
+      rlang::abort(.missing_user_cols_error(
+        pool_col[!pool_col %in% colnames(metadata)]
+      ),
+      class = "missing_cols_pool"
+      )
+    }
+  }
+  if (!pcr_id_col %in% colnames(metadata)) {
+    rlang::abort(.missing_user_cols_error(pcr_id_col))
+  }
+}
+
+.outlier_test_verify_logiop <- function(key, flag_logic, symbol_name) {
+  if (length(key) > 1) {
+    ## Verify logic
+    stopifnot(is.character(flag_logic))
+    if (length(flag_logic) > length(key) - 1) {
+      flag_logic_new <- flag_logic[seq_len(length(key) - 1)]
+      rlang::env_poke(env = rlang::caller_env(), nm = symbol_name,
+                      value = flag_logic_new)
+      if (getOption("ISAnalytics.verbose") == TRUE) {
+        flag_msg <- c(paste0("'", symbol_name,
+                             "' has more elements than expected"),
+                      i = paste(
+                        "The vector will be trimmed to consider",
+                        "the first", length(key) - 1, "elements",
+                        "only."
+                      )
+        )
+        rlang::inform(flag_msg, class = "flag_logic_long")
+      }
+    } else if (length(flag_logic) != length(key) - 1 &
+               length(flag_logic) != 1) {
+      flag_logic_new <- flag_logic[1]
+      rlang::env_poke(env = rlang::caller_env(), nm = symbol_name,
+                      value = flag_logic_new)
+      if (getOption("ISAnalytics.verbose") == TRUE) {
+        flag_logic_err <- c(paste(
+          "'", symbol_name, "' has an incorrect",
+          "amount of elements"
+        ),
+        paste(
+          "You should provide 1 or",
+          length(key) - 1,
+          "logical operators"
+        ),
+        i = "Only the first parameter will be considered"
+        )
+        rlang::inform(flag_logic_err,
+                      class = "flag_logic_short"
+        )
+      }
+    } else {
+      flag_logic_new <- flag_logic
+    }
+    flag_logic_new <- toupper(flag_logic_new)
+    rlang::env_poke(env = rlang::caller_env(), nm = symbol_name,
+                    value = flag_logic_new)
+    if (!all(flag_logic_new %in% flag_logics())) {
+      unknown_logi_op_err <- c(paste(
+        "Unknown or unsupported logical operators:",
+        paste0(flag_logic_new[!flag_logic_new %in% flag_logics()],
+               collapse = ", "
+        )
+      ))
+      rlang::abort(unknown_logi_op_err, class = "unsupp_logi_op")
+    }
+  }
+}
+
 # Actual computation of statistical test on pre-filtered metadata (no NA values)
-#' @importFrom rlang inform
-#' @importFrom BiocParallel MulticoreParam SnowParam bplapply bpstop
-#' @importFrom tibble add_column
-#' @importFrom purrr reduce
-#' @importFrom magrittr `%>%`
+#' @importFrom data.table .N
 .pool_frag_calc <- function(meta,
     key,
     by_pool,
@@ -4680,7 +4775,8 @@
     normality_threshold,
     pool_col,
     min_samples_per_pool,
-    log2) {
+    log2,
+    pcr_id_col) {
     log2_removed_report <- NULL
     if (log2) {
         ## discard values < = 0 and report removed
@@ -4688,86 +4784,60 @@
             rlang::inform("Log2 transformation, removing values <= 0")
         }
         old_meta <- meta
-        meta <- meta %>%
-            dplyr::filter(dplyr::across(dplyr::all_of(key), ~ .x > 0))
-        log2_removed_report <- old_meta %>%
-            dplyr::anti_join(meta, by = "CompleteAmplificationID") %>%
-            dplyr::select(
-                dplyr::all_of(pool_col),
-                .data$CompleteAmplificationID,
-                dplyr::all_of(key)
-            ) %>%
-            dplyr::distinct()
+        predicate_g0 <- purrr::map(key, ~ {
+          rlang::expr(!!sym(.x) > 0)
+        }) %>% purrr::reduce(~ rlang::expr(!!.x & !!.y))
+        meta <- meta[eval(predicate_g0), ]
+        log2_removed_report <- old_meta[!meta, on = pcr_id_col]
+        log2_removed_report <- unique(
+          log2_removed_report[, mget(c(pool_col, pcr_id_col, key))]
+          )
     }
     if (by_pool) {
-        # Group by pool
-        grouped <- meta %>%
-            dplyr::group_by(dplyr::across({{ pool_col }})) %>%
-            dplyr::add_tally(name = "sample_count")
-        split <- grouped %>%
-            dplyr::filter(.data$sample_count >= min_samples_per_pool) %>%
-            dplyr::select(-.data$sample_count) %>%
-            dplyr::group_split()
-        p <- if (.Platform$OS.type == "windows") {
-            BiocParallel::SnowParam(
-                tasks = length(split),
-                progressbar = getOption("ISAnalytics.verbose"),
-                exportglobals = FALSE
-            )
-        } else {
-            BiocParallel::MulticoreParam(
-                tasks = length(split),
-                progressbar = getOption("ISAnalytics.verbose"),
-                exportglobals = FALSE
-            )
-        }
-        test_res <- BiocParallel::bplapply(
-            X = split,
-            FUN = .process_pool_frag,
-            key = key,
-            normality_test = normality_test,
-            normality_threshold = normality_threshold,
-            log2 = log2
-        )
-        BiocParallel::bpstop(p)
-        test_res <- purrr::reduce(test_res, dplyr::bind_rows)
-        test_res <- test_res %>% tibble::add_column(processed = TRUE)
+      # Group by pool
+      pool_sample_count <- meta[, .N, by = eval(pool_col)]
+      to_process <- pool_sample_count[eval(sym("N")) >= min_samples_per_pool,
+                                      get(pool_col)]
+      pools_to_process <- meta[eval(sym(pool_col)) %in% to_process, ]
+      split <- split(pools_to_process, by = pool_col)
+      test_res <- purrr::map(split,
+                             ~ .process_pool_frag(.x, key, normality_test,
+                                                  normality_threshold, log2))
+        test_res <- purrr::reduce(test_res,
+                                  ~ data.table::rbindlist(list(.x, .y)))
+        test_res <- test_res[, c("processed") := TRUE]
         # Groups not processed because not enough samples
-        non_proc <- grouped %>%
-            dplyr::ungroup() %>%
-            dplyr::filter(.data$sample_count < min_samples_per_pool) %>%
-            dplyr::select(-.data$sample_count) %>%
-            dplyr::mutate(processed = FALSE)
-        final <- test_res %>% dplyr::bind_rows(non_proc)
+        not_to_process <- pool_sample_count[
+          eval(sym("N")) < min_samples_per_pool, get(pool_col)]
+        non_proc <- meta[eval(sym(pool_col)) %in% not_to_process, ]
+        non_proc <- non_proc[, c("processed") := FALSE]
+        final <- data.table::rbindlist(list(test_res, non_proc), fill = TRUE)
         # Rows not processed because log2 requested and value <= 0
         if (exists("old_meta")) {
-            log2_removed <- old_meta %>%
-                dplyr::anti_join(meta, by = "CompleteAmplificationID") %>%
-                dplyr::mutate(processed = FALSE)
-            final <- final %>% dplyr::bind_rows(log2_removed)
+          log2_removed <- old_meta[!meta, on = pcr_id_col]
+          log2_removed <- log2_removed[, c("processed") := FALSE]
+          final <- data.table::rbindlist(list(final, log2_removed), fill = TRUE)
         }
         return(list(
             metadata = final,
             removed_zeros = log2_removed_report,
-            non_proc_samples = grouped %>%
-                dplyr::ungroup() %>%
-                dplyr::filter(.data$sample_count < min_samples_per_pool)
+            non_proc_samples = non_proc
         ))
     } else {
         test_res <- .process_pool_frag(
-            chunk = meta,
+            chunk = data.table::copy(meta),
             key = key,
             normality_test = normality_test,
             normality_threshold = normality_threshold,
             log2 = log2
         )
-        final <- test_res %>% dplyr::mutate(processed = TRUE)
+        final <- test_res[, c("processed") := TRUE]
         # Rows not processed because log2 requested and value <= 0
         if (exists("old_meta")) {
-            log2_removed <- old_meta %>%
-                dplyr::filter(dplyr::across(dplyr::all_of(key), ~ .x <= 0)) %>%
-                dplyr::mutate(processed = FALSE)
-            final <- final %>% dplyr::bind_rows(log2_removed)
+          negate_predicate_g0 <- rlang::expr(!(!!predicate_g0))
+          log2_removed <- old_meta[eval(negate_predicate_g0), ]
+          log2_removed <- log2_removed[, c("processed") := FALSE]
+          final <- data.table::rbindlist(list(final, log2_removed), fill = TRUE)
         }
         return(list(
             metadata = final,
@@ -4791,8 +4861,8 @@
         log2 = log2
     ))
     res <- purrr::reduce(
-        list(og = chunk, purrr::flatten(res)),
-        dplyr::bind_cols
+        list(og = chunk, data.table::as.data.table(purrr::flatten(res))),
+        cbind
     )
     res
 }
@@ -4808,9 +4878,18 @@
         x <- log2(x)
     }
     norm <- NA
-    zscore <- NA
-    tstudent <- NA
-    tdist <- NA
+    res <- list(NA_real_, NA_real_, NA_real_)
+    z_statistic <- function() {
+      zscore <- scale(x)
+      zscore <- zscore[, 1]
+      count <- length(x)
+      tstudent <- sqrt(
+        ((count * (count - 2) * (zscore)^2) /
+           ((count - 1)^2 - count * (zscore)^2))
+      )
+      tdist <- stats::dt(tstudent, df = count - 2)
+      return(list(zscore = zscore, tstudent = tstudent, tdist = tdist))
+    }
     if (normality_test) {
         withCallingHandlers(
             {
@@ -4819,14 +4898,7 @@
                         shapiro_test <- stats::shapiro.test(x)
                         norm <- shapiro_test$p.value >= normality_threshold
                         if (norm) {
-                            zscore <- scale(x)
-                            zscore <- zscore[, 1]
-                            count <- length(x)
-                            tstudent <- sqrt(
-                                ((count * (count - 2) * (zscore)^2) /
-                                    ((count - 1)^2 - count * (zscore)^2))
-                            )
-                            tdist <- stats::dt(tstudent, df = count - 2)
+                            res <- z_statistic()
                         }
                     },
                     test_err = function() {
@@ -4842,30 +4914,20 @@
             }
         )
     } else {
-        zscore <- scale(x)
-        zscore <- zscore[, 1]
-        count <- length(x)
-        tstudent <- sqrt(
-            ((count * (count - 2) * (zscore)^2) /
-                ((count - 1)^2 - count * (zscore)^2))
-        )
-        tdist <- stats::dt(tstudent, df = count - 2)
+      res <- z_statistic()
     }
     results <- if (log2) {
-        tibble::tibble(
-            "log2_{suffix}" := x,
-            "normality_{suffix}" := norm,
-            "zscore_{suffix}" := zscore,
-            "tstudent_{suffix}" := tstudent,
-            "tdist_{suffix}" := tdist
-        )
+      res_colnames <- c("log2", "normality", "zscore", "tstudent", "tdist")
+      res_colnames <- paste(res_colnames, suffix, sep = "_")
+      res <- setNames(res, res_colnames[seq(3, 5)])
+      res <- append(setNames(list(x, norm), res_colnames[c(1,2)]), res)
+      data.table::as.data.table(res)
     } else {
-        tibble::tibble(
-            "normality_{suffix}" := norm,
-            "zscore_{suffix}" := zscore,
-            "tstudent_{suffix}" := tstudent,
-            "tdist_{suffix}" := tdist
-        )
+      res_colnames <- c("normality", "zscore", "tstudent", "tdist")
+      res_colnames <- paste(res_colnames, suffix, sep = "_")
+      res <- setNames(res, res_colnames[seq(2, 4)])
+      res <- append(setNames(list(norm), res_colnames[1]), res)
+      data.table::as.data.table(res)
     }
     return(results)
 }
@@ -4893,7 +4955,7 @@
 # key logic
 #' @importFrom tibble tibble
 .apply_flag_logic <- function(..., logic) {
-    all_flags <- tibble::tibble(...)
+    all_flags <- rlang::list2(...)
     partial <- NULL
     index <- 1
     for (op in logic) {
@@ -4955,6 +5017,19 @@
         )
     }
     return(partial)
+}
+
+.validate_outlier_output_format <- function(out, meta_rows, pcr_id_col) {
+  format_err <- c("Wrong outlier test result format",
+                  x = paste("Test results should follow the format",
+                            "described in the documentation"),
+                  i = "See `?outlier_filter`")
+  if (any(!c("to_remove", pcr_id_col) %in% colnames(out))) {
+    rlang::abort(format_err, class = "outlier_format_err")
+  }
+  if (!all(meta_rows %in% out[[pcr_id_col]])) {
+    rlang::abort(format_err, class = "outlier_format_err")
+  }
 }
 
 #---- USED IN : HSC_population_size_estimate ----
