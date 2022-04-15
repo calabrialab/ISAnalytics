@@ -35,7 +35,7 @@ all_proj_pools <- list(
 
 copy_path <- fs::path(tempdir(), "fs_dupl")
 ## Generate file system structure containing duplicates
-fs::dir_copy(fs_path$root_corr, copy_path)
+fs::dir_copy(fs_path$root_corr, copy_path, overwrite = TRUE)
 to_dupl <- fs::path(
     copy_path, "PJ01", "quantification", "POOL01-1",
     paste0(
@@ -51,7 +51,7 @@ fs::file_copy(
             "PJ01_POOL01-1_FOO_fragmentEstimate_",
             "matrix.no0.annotated.tsv.gz"
         )
-    )
+    ), overwrite = TRUE
 )
 
 smpl_ff <- function() {
@@ -1067,4 +1067,64 @@ test_that(paste(func_name[18], "executes correctly"), {
     )
     expect_true(nrow(matrices) == 1689 & ncol(matrices) == 8)
     expect_true(all(c("seqCount", "fragmentEstimate") %in% colnames(matrices)))
+})
+
+test_that("deprecation of old functions gets signaled - AUTO", {
+  expect_deprecated({
+    matrices <- import_parallel_Vispa2Matrices_auto(
+      local_af_corr, quantification_type = c("seqCount", "fragmentEstimate"))
+  })
+  matrices_new_fun <- import_parallel_Vispa2Matrices(
+    association_file = local_af_corr,
+    quantification_type = c("seqCount", "fragmentEstimate"),
+    mode = "AUTO", report_path = NULL
+  )
+  expect_equal(matrices %>%
+                 dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+               matrices_new_fun %>%
+                 dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+               ignore_attr = TRUE)
+})
+
+test_that("deprecation of old functions gets signaled - INTERACTIVE", {
+  input1 <- withr::local_tempfile()
+  input2 <- withr::local_tempfile()
+  input3 <- withr::local_tempfile()
+  input4 <- withr::local_tempfile()
+  input5 <- withr::local_tempfile()
+  input6 <- withr::local_tempfile()
+  input_value1 <- "1"
+  input_value3 <- "y"
+  input_value4 <- "1"
+  input_value6 <- "y"
+  op <- withr::local_options(ISAnalytics.connection = c(
+    input1,
+    input2,
+    input3,
+    input4,
+    input5,
+    input6
+  ))
+  write(input_value1, input1)
+  write(input_value3, input3)
+  write(input_value4, input4)
+  write(input_value6, input6)
+  expect_deprecated({
+    invisible(capture.output({
+      matrices <- import_parallel_Vispa2Matrices_interactive(
+        local_af_corr, quantification_type = c("seqCount", "fragmentEstimate"))
+    }))
+  })
+  invisible(capture.output({
+    matrices_new_fun <- import_parallel_Vispa2Matrices(
+      association_file = local_af_corr,
+      quantification_type = c("seqCount", "fragmentEstimate"),
+      mode = "INTERACTIVE", report_path = NULL
+    )
+  }))
+  expect_equal(matrices %>%
+                 dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+               matrices_new_fun %>%
+                 dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+               ignore_attr = TRUE)
 })

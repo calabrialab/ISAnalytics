@@ -5,7 +5,11 @@
 \title{Re-aligns matrices of other quantification types based on the processed
 sequence count matrix.}
 \usage{
-realign_after_collisions(sc_matrix, other_matrices)
+realign_after_collisions(
+  sc_matrix,
+  other_matrices,
+  sample_column = pcr_id_column()
+)
 }
 \arguments{
 \item{sc_matrix}{The sequence count matrix already processed for collisions

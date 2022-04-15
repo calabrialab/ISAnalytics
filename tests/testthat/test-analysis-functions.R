@@ -1,226 +1,51 @@
-library(ISAnalytics)
-
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
-op <- withr::local_options(
+withr::local_options(
     ISAnalytics.verbose = FALSE,
     ISAnalytics.reports = FALSE
 )
 
-path_AF <- system.file("testdata", "ex_association_file.tsv.gz",
-    package = "ISAnalytics"
+minimal_agg_example <- tibble::tibble(
+    chr = c("1", "2", "2", "5", "5", "3", "3", "10", "11"),
+    integration_locus = c(
+        14505,
+        1005,
+        15513,
+        4561,
+        10167,
+        5247,
+        10951,
+        23403,
+        25611
+    ),
+    strand = c(
+        "+", "-", "+", "+", "-", "-",
+        "+", "-", "-"
+    ),
+    SubjectID = c(
+        rep_len("S1", 5),
+        rep_len("S2", 4)
+    ),
+    CellMarker = c(
+        rep_len("CM1", 5),
+        rep_len("CM2", 4)
+    ),
+    Tissue = c(
+        rep_len("T1", 5),
+        rep_len("T2", 4)
+    ),
+    TimePoint = c(
+        rep_len("0001", 3),
+        "0010", "0015",
+        rep_len("0001", 2),
+        rep_len("0020", 2)
+    ),
+    Value_sum = c(
+        50, 80, 650, 46, 79, 633,
+        875, 99, 123
+    )
 )
-root_correct <- system.file("testdata", "fs.zip",
-    package = "ISAnalytics"
-)
-root_correct <- unzip_file_system(root_correct, "fs")
-root_error <- system.file("testdata", "fserr.zip",
-    package = "ISAnalytics"
-)
-
-root_error <- unzip_file_system(root_error, "fserr")
-
-matrices_correct <- import_parallel_Vispa2Matrices(
-    association_file = path_AF, root = root_correct,
-    quantification_type = c("seqCount", "fragmentEstimate"),
-    matrix_type = "annotated", workers = 2, patterns = NULL,
-    matching_opt = "ANY", dates_format = "dmy", multi_quant_matrix = FALSE,
-    mode = "AUTO"
-)
-
-matrices_incorr <- suppressWarnings({
-    import_parallel_Vispa2Matrices(
-        association_file = path_AF, root = root_error,
-        quantification_type = c("fragmentEstimate", "seqCount"),
-        matrix_type = "annotated", workers = 2, patterns = NULL,
-        matching_opt = "ANY", dates_format = "dmy", multi_quant_matrix = FALSE,
-        mode = "AUTO"
-    )
-})
-
-#------------------------------------------------------------------------------#
-# Test comparison_matrix
-#------------------------------------------------------------------------------#
-test_that("comparison_matrix throws error if input is incorrect", {
-    # Input must be a named list, not single data frame
-    expect_error({
-        comp <- comparison_matrix(matrices_correct$seqCount)
-    })
-    # List names must be quantification types
-    og_names <- names(matrices_correct)
-    names(matrices_correct) <- c("a", "b")
-    expect_error({
-        comp <- comparison_matrix(matrices_correct)
-    })
-    # Every element of the list must be an integration matrix
-    names(matrices_correct) <- og_names
-    expect_error({
-        comp <- comparison_matrix(list(seqCount = "a"))
-    })
-})
-
-test_that("comparison_matrix notifies NA introduction", {
-    withr::local_options(list(ISAnalytics.verbose = TRUE))
-    expect_message({
-        comp <- comparison_matrix(matrices_incorr)
-    })
-})
-
-test_that("comparison_matrix produces correct output", {
-    comp <- comparison_matrix(matrices_correct)
-    expect_true(all(c("fragmentEstimate", "seqCount") %in% colnames(comp)))
-    expect_true(nrow(comp) == nrow(matrices_correct$seqCount))
-})
-
-test_that("comparison_matrix supports custom names", {
-    comp <- comparison_matrix(matrices_correct,
-        seqCount = "sc",
-        fragmentEstimate = "fe"
-    )
-    expect_true(all(c("fe", "sc") %in% colnames(comp)))
-    expect_true(nrow(comp) == nrow(matrices_correct$seqCount))
-    expect_true(is.numeric(comp$sc))
-    expect_true(is.numeric(comp$fe))
-})
-
-#------------------------------------------------------------------------------#
-# Test separate_quant_matrices
-#------------------------------------------------------------------------------#
-smpl <- tibble::tibble(
-    chr = c("1", "2", "3"),
-    integration_locus = c(1263, 1264, 1265),
-    strand = c("+", "+", "+"),
-    CompleteAmplificationID = c("ID1", "ID2", "ID3"),
-    fragmentEstimate = c(432.43, 532.43, 23.43),
-    seqCount = c(34, 435, 65),
-    random_col = c(6483, 486, 873)
-)
-
-test_that("separate_quant_matrices stops if param incorrect", {
-    # Must be single data frame
-    expect_error({
-        sep <- separate_quant_matrices(list(a = smpl, b = smpl))
-    })
-    # Must be an integration matrix
-    expect_error({
-        sep <- separate_quant_matrices(tibble::tibble(a = c(1, 2, 3)))
-    })
-    # Must contain at least one quantification
-    expect_error(
-        {
-            sep <- separate_quant_matrices(tibble::tibble(
-                chr = c("1", "2", "3"),
-                integration_locus = c(1263, 1264, 1265),
-                strand = c("+", "+", "+"),
-                CompleteAmplificationID = c("ID1", "ID2", "ID3"),
-                random_col = c(6483, 486, 873)
-            ), key = c(mandatory_IS_vars(), "CompleteAmplificationID"))
-        },
-        regexp = .non_quant_cols_error()
-    )
-})
-
-test_that("separate_quant_matrices warns if additional columns", {
-    withr::local_options(list(ISAnalytics.verbose = TRUE))
-    expect_message({
-        sep <- separate_quant_matrices(smpl,
-            key = c(
-                mandatory_IS_vars(),
-                "CompleteAmplificationID"
-            )
-        )
-    })
-    expected_output <- list(
-        fragmentEstimate =
-            tibble::tibble(
-                chr = c("1", "2", "3"),
-                integration_locus = c(
-                    1263,
-                    1264,
-                    1265
-                ),
-                strand = c("+", "+", "+"),
-                CompleteAmplificationID = c(
-                    "ID1",
-                    "ID2",
-                    "ID3"
-                ),
-                random_col = c(6483, 486, 873),
-                Value = c(
-                    432.43, 532.43,
-                    23.43
-                )
-            ),
-        seqCount =
-            tibble::tibble(
-                chr = c("1", "2", "3"),
-                integration_locus = c(
-                    1263,
-                    1264,
-                    1265
-                ),
-                strand = c("+", "+", "+"),
-                CompleteAmplificationID = c(
-                    "ID1",
-                    "ID2",
-                    "ID3"
-                ),
-                random_col = c(6483, 486, 873),
-                Value = c(34, 435, 65)
-            )
-    )
-    expect_equal(sep, expected_output)
-})
-
-test_that("separate_quant_matrices supports custom names", {
-    colnames(smpl)[c(5, 6)] <- c("fe", "sc")
-    sep <- separate_quant_matrices(smpl,
-        fragmentEstimate = "fe",
-        seqCount = "sc",
-        key = c(mandatory_IS_vars(), "CompleteAmplificationID")
-    )
-    expected_output <- list(
-        fragmentEstimate =
-            tibble::tibble(
-                chr = c("1", "2", "3"),
-                integration_locus = c(
-                    1263,
-                    1264,
-                    1265
-                ),
-                strand = c("+", "+", "+"),
-                CompleteAmplificationID = c(
-                    "ID1",
-                    "ID2",
-                    "ID3"
-                ),
-                random_col = c(6483, 486, 873),
-                Value = c(
-                    432.43, 532.43,
-                    23.43
-                )
-            ),
-        seqCount =
-            tibble::tibble(
-                chr = c("1", "2", "3"),
-                integration_locus = c(
-                    1263,
-                    1264,
-                    1265
-                ),
-                strand = c("+", "+", "+"),
-                CompleteAmplificationID = c(
-                    "ID1",
-                    "ID2",
-                    "ID3"
-                ),
-                random_col = c(6483, 486, 873),
-                Value = c(34, 435, 65)
-            )
-    )
-    expect_equal(sep, expected_output)
-})
 
 #------------------------------------------------------------------------------#
 # Test threshold_filter
@@ -256,7 +81,8 @@ test_that("threshold_filter gives errors with df - params wrong", {
     )
     expect_error(
         {
-            threshold_filter(example_df, threshold = 1, cols_to_compare = c(1, 2))
+            threshold_filter(example_df, threshold = 1,
+                             cols_to_compare = c(1, 2))
         },
         regexp = paste("`cols_to_compare` must be character"),
         fixed = TRUE
@@ -727,225 +553,104 @@ test_that("threshold_filter gives result with list", {
 #------------------------------------------------------------------------------#
 # Test sample_statistics
 #------------------------------------------------------------------------------#
-association_file <- import_association_file(path_AF, root_correct,
-    dates_format = "dmy"
-)
-## Test input
-test_that("sample_statistics stops if param incorrect", {
-    # x must be df
-    expect_error({
-        stats <- sample_statistics(matrices_correct,
-            metadata = association_file
-        )
-    })
-    # metadata must be df
-    expect_error({
-        stats <- sample_statistics(matrices_correct$seqCount,
-            metadata = 1
-        )
-    })
-    # Sample key
-    expect_error({
-        stats <- sample_statistics(matrices_correct$seqCount,
-            metadata = association_file,
-            sample_key = 1
-        )
-    })
-    expect_error({
-        stats <- sample_statistics(matrices_correct$seqCount,
-            metadata = association_file,
-            sample_key = c("sdgfs", "fwre")
-        )
-    })
-    # Value cols
-    expect_error({
-        stats <- sample_statistics(matrices_correct$seqCount,
-            metadata = association_file,
-            value_columns = c("x", "y")
-        )
-    })
-    expect_error({
-        stats <- sample_statistics(matrices_correct$seqCount,
-            metadata = association_file,
-            value_columns = "chr"
-        )
-    })
-    # Functions
-    expect_error({
-        stats <- sample_statistics(matrices_correct$seqCount,
-            metadata = association_file,
-            functions = c("sum")
-        )
-    })
-    expect_error({
-        stats <- sample_statistics(matrices_correct$seqCount,
-            metadata = association_file,
-            functions = list(sum = "sum")
-        )
-    })
-})
-
-## Test values
-test_that("sample_statistics returns correctly", {
-    res <- sample_statistics(matrices_correct$seqCount,
-        metadata = association_file,
-        functions = list(sum = sum)
-    )
-    expect_true(is.list(res))
-    expect_true(all(c("CompleteAmplificationID", "Value_sum") %in%
-        colnames(res$x)))
-    expect_true("Value_sum" %in% colnames(res$metadata))
+test_that("sample_statistics works as expected with default functions", {
+  val_cols <- c("seqCount", "fragmentEstimate")
+  stats <- sample_statistics(
+    x = integration_matrices,
+    metadata = association_file,
+    value_columns = val_cols
+  )
+  fun_names <- names(default_stats())
+  fun_names <- fun_names[fun_names != "describe"]
+  desc_fun_names <- paste("describe", c("vars", "n", "mean", "sd",
+                                        "median", "trimmed", "mad",
+                                        "min", "max", "range", "skew",
+                                        "kurtosis", "se"), sep = "_")
+  fun_names <- c(fun_names, desc_fun_names)
+  expected_name_cols <- unlist(purrr::map(val_cols,
+                                          ~ paste(.x, fun_names, sep = "_")))
+  expect_true(all(c(expected_name_cols, "nIS") %in% colnames(stats$x)))
+  expect_true(all(c(expected_name_cols, "nIS") %in% colnames(stats$metadata)))
 })
 
 #------------------------------------------------------------------------------#
-# Test CIS_grubbs
+# Test top_integrations
 #------------------------------------------------------------------------------#
-test_that("CIS_grubbs fails if x is not standard matrix", {
-    wrong <- tibble::tibble(a = c(1, 2, 3), b = c(4, 5, 6))
-    expect_error({
-        CIS_grubbs(wrong)
-    })
-    expect_error({
-        CIS_grubbs(smpl)
-    })
-})
-
-test_that("CIS_grubbs fails if file doesn't exist", {
-    expect_error({
-        CIS_grubbs(matrices_correct$seqCount,
-            genomic_annotation_file = "myfile.tsv"
-        )
-    })
-})
-
-test_that("CIS_grubbs produces correct df", {
-    output_cols <- c(
-        "GeneName", "GeneStrand", "chr", "n_IS_perGene",
-        "min_bp_integration_locus", "max_bp_integration_locus",
-        "IS_span_bp", "avg_bp_integration_locus",
-        "median_bp_integration_locus", "distinct_orientations",
-        "vars", "n", "mean", "sd",
-        "median", "trimmed", "mad",
-        "min", "max", "range",
-        "skew", "kurtosis", "se",
-        "average_TxLen", "geneIS_frequency_byHitIS",
-        "raw_gene_integration_frequency",
-        "integration_frequency_withtolerance",
-        "minus_log2_integration_freq_withtolerance",
-        "zscore_minus_log2_int_freq_tolerance",
-        "neg_zscore_minus_log2_int_freq_tolerance", "t_z_mlif",
-        "tdist2t", "tdist_pt", "tdist_bonferroni_default",
-        "tdist_bonferroni", "tdist_fdr", "tdist_benjamini",
-        "tdist_positive_and_corrected", "tdist_positive",
-        "tdist_positive_and_correctedEM"
-    )
-    result <- CIS_grubbs(matrices_correct$seqCount)
-    expect_true(ncol(result) == 40)
-    expect_true(all(output_cols %in% colnames(result)))
-})
-
-#------------------------------------------------------------------------------#
-# Test cumulative_count_union
-#------------------------------------------------------------------------------#
-minimal_agg_example <- tibble::tibble(
-    chr = c(1, 2, 2, 5, 5, 3, 3, 10, 11),
-    integration_locus = c(
-        14505,
-        1005,
-        15513,
-        4561,
-        10167,
-        5247,
-        10951,
-        23403,
-        25611
-    ),
-    strand = c(
-        "+", "-", "+", "+", "-", "-",
-        "+", "-", "-"
-    ),
-    SubjectID = c(
-        rep_len("S1", 5),
-        rep_len("S2", 4)
-    ),
-    CellMarker = c(
-        rep_len("CM1", 5),
-        rep_len("CM2", 4)
-    ),
-    Tissue = c(
-        rep_len("T1", 5),
-        rep_len("T2", 4)
-    ),
-    TimePoint = c(
-        rep_len("0001", 3),
-        "0010", "0015",
-        rep_len("0001", 2),
-        rep_len("0020", 2)
-    ),
-    Value_sum = c(
-        50, 80, 650, 46, 79, 633,
-        875, 99, 123
-    )
-)
-
-test_that("cumulative_count_union stops if tp not in key", {
-    expect_error(
-        {
-            cumulative_count_union(minimal_agg_example, key = c(
-                "SubjectID",
-                "CellMarker",
-                "Tissue"
-            ))
-        },
-        regexp = .key_without_tp_err()
-    )
-})
-
-test_that("cumulative_count_union produces correct output", {
-    cum_count <- cumulative_count_union(minimal_agg_example)
-    expected <- tibble::tibble(
-        SubjectID = c(
-            rep_len("S1", 3),
-            rep_len("S2", 2)
-        ),
-        CellMarker = c(
-            rep_len("CM1", 3),
-            rep_len("CM2", 2)
-        ),
-        Tissue = c(
-            rep_len("T1", 3),
-            rep_len("T2", 2)
-        ),
-        TimePoint = c(
-            "0001", "0010", "0015",
-            "0001", "0020"
-        ),
-        count = c(3, 4, 5, 2, 4)
-    )
-    expect_equal(cum_count, expected)
+test_that("top_integrations works as expected", {
+  example <- tibble::tribble(
+    ~ chr, ~ integration_locus, ~ strand, ~ SubjectID, ~ Tissue, ~ abundance,
+    "1", 34254, "+", "S1", "T1", 0.27,
+    "1", 56423, "+", "S1", "T1", 0.02,
+    "2", 85834, "-", "S1", "T1", 0.12,
+    "5", 12334, "-", "S1", "T1", 0.05,
+    "6", 64721, "+", "S1", "T1", 0.16,
+    "1", 96473, "-", "S1", "T1", 0.29,
+    "7", 31434, "+", "S1", "T1", 0.09,
+    "1", 34254, "+", "S2", "T1", 0.56,
+    "X", 31246, "+", "S2", "T1", 0.01,
+    "8", 12354, "-", "S2", "T1", 0.08,
+    "9", 13468, "+", "S2", "T1", 0.15,
+    "5", 86534, "-", "S2", "T1", 0.19,
+    "1", 74567, "+", "S2", "T1", 0.01
+  )
+  top_3 <- top_integrations(example, n = 3,
+                            columns = "abundance")
+  expected_top_3 <- tibble::tribble(
+    ~ chr, ~ integration_locus, ~ strand, ~ abundance, ~ SubjectID, ~ Tissue,
+    "1", 34254, "+", 0.56, "S2", "T1",
+    "1", 96473, "-", 0.29, "S1", "T1",
+    "1", 34254, "+", 0.27, "S1", "T1"
+  )
+  expect_equal(top_3, expected_top_3)
+  top_3 <- top_integrations(example, n = 3,
+                            columns = "abundance",
+                            key = c("SubjectID", "Tissue"))
+  expected_top_3 <- tibble::tribble(
+    ~ SubjectID, ~ Tissue, ~ chr, ~ integration_locus, ~ strand, ~ abundance,
+    "S1", "T1", "1", 96473, "-", 0.29,
+    "S1", "T1", "1", 34254, "+", 0.27,
+    "S1", "T1", "6", 64721, "+", 0.16,
+    "S2", "T1", "1", 34254, "+", 0.56,
+    "S2", "T1", "5", 86534, "-", 0.19,
+    "S2", "T1", "9", 13468, "+", 0.15,
+  )
+  expect_equal(top_3, expected_top_3)
 })
 
 #------------------------------------------------------------------------------#
 # Test cumulative_is
 #------------------------------------------------------------------------------#
-
 test_that("cumulative_is produces correct output", {
-    c_is <- cumulative_is(minimal_agg_example)
-    expect_true(nrow(c_is) == 5)
-    expect_true(all(c("is", "cumulative_is") %in% colnames(c_is)))
-    counts <- purrr::map_int(c_is$cumulative_is, ~ nrow(.x))
-    expect_equal(counts, c(3, 4, 5, 2, 4))
-    c_is <- cumulative_is(minimal_agg_example, keep_og_is = FALSE)
-    expect_true(nrow(c_is) == 5)
-    expect_true(all(c("cumulative_is") %in% colnames(c_is)))
-    counts <- purrr::map_int(c_is$cumulative_is, ~ nrow(.x))
-    expect_equal(counts, c(3, 4, 5, 2, 4))
+    c_is <- cumulative_is(minimal_agg_example, expand = FALSE,
+                          keep_og_is = TRUE)
+    expect_true(nrow(c_is$coordinates) == 5)
+    expect_true(all(c("is", "cumulative_is") %in% colnames(c_is$coordinates)))
+    expect_equal(c_is$counts$is_n_cumulative, c(3, 4, 5, 2, 4))
+    c_is <- cumulative_is(minimal_agg_example, keep_og_is = FALSE,
+                          expand = FALSE)
+    expect_true(nrow(c_is$coordinates) == 5)
+    expect_true(all(c("cumulative_is") %in% colnames(c_is$coordinates)))
+    expect_equal(c_is$counts$is_n_cumulative, c(3, 4, 5, 2, 4))
     c_is <- cumulative_is(minimal_agg_example,
         keep_og_is = FALSE,
         expand = TRUE
     )
-    expect_true(all(mandatory_IS_vars() %in% colnames(c_is)))
-    expect_true(nrow(c_is) == sum(counts))
+    expect_true(all(mandatory_IS_vars() %in% colnames(c_is$coordinates)))
+})
+
+test_that("cumulative_is works as expected with tp 0", {
+  all_zeros <- minimal_agg_example %>%
+    dplyr::mutate(TimePoint = "0000")
+  expect_message({
+    c_is <- cumulative_is(all_zeros)
+  }, class = "only_zero_tps")
+  expect_null(c_is)
+
+  some_zeros <- minimal_agg_example
+  some_zeros[c(1,2,3), ]$TimePoint <- "0000"
+  c_is <- cumulative_is(some_zeros, expand = FALSE)
+  expect_true(c_is$counts[1, ]$TimePoint == 10 &
+                c_is$counts[1, ]$is_n_cumulative == 1)
 })
 
 #------------------------------------------------------------------------------#
@@ -1515,4 +1220,103 @@ test_that("iss_source produces expected output - per patient", {
 test_that("iss_source produces expected output - NO per patient", {
     res <- iss_source(test_df2, test_df3, by_subject = FALSE)
     expect_equal(res, expected_res2)
+})
+
+
+#------------------------------------------------------------------------------#
+# Test gene_frequency_fisher
+#------------------------------------------------------------------------------#
+test_that("gene_frequency_fisher produces expected output", {
+  withr::local_options(list(ISAnalytics.verbose = TRUE))
+  test_cis <- readRDS(system.file("testdata", "test_cis_for_fisher.Rds",
+                      package = "ISAnalytics"
+  ))
+  ## -- Testing intersection
+  fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
+                                     min_is_per_gene = 1,
+                                     gene_set_method = "intersection")
+  common_genes <- intersect(test_cis$PT001$GeneName, test_cis$PT002$GeneName)
+  expect_true(all(fisher_df$GeneName %in% common_genes) &
+                all(common_genes %in% fisher_df$GeneName))
+  ## -- Testing union
+  fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
+                                     min_is_per_gene = 1,
+                                     gene_set_method = "union",
+                                     remove_unbalanced_0 = FALSE)
+  union_genes <- union(test_cis$PT001$GeneName, test_cis$PT002$GeneName)
+  expect_true(all(fisher_df$GeneName %in% union_genes) &
+                all(union_genes %in% fisher_df$GeneName))
+  ## -- Testing default filtering
+  expect_message({
+    fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
+                                       min_is_per_gene = 3,
+                                       gene_set_method = "intersection")
+  }, class = "empty_df_gene_freq")
+  expect_null(fisher_df)
+  fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
+                                     min_is_per_gene = 3,
+                                    gene_set_method = "union")
+  expect_true(nrow(fisher_df) == 2)
+})
+
+#------------------------------------------------------------------------------#
+# Test top_targeted_genes
+#------------------------------------------------------------------------------#
+test_that("top_targeted_genes produces expected output", {
+  annot_ex <- minimal_agg_example %>%
+    dplyr::mutate(
+      GeneName = c(
+      "GENE1", "GENE1", "GENE1", "GENE2", "GENE2", "GENE3", "GENE4",
+      "GENE4", "GENE4"
+    ),
+    GeneStrand = c("+", "+", "+", "-", "-", "-", "+", "+", "+"),
+    .after = "strand")
+
+  # --- top genes overall
+  top_5 <- top_targeted_genes(annot_ex, n = 5, key = NULL)
+  expected <- data.table::data.table(
+    GeneName = c("GENE1", "GENE2", "GENE1", "GENE3", "GENE4"),
+    GeneStrand = c("+", "-", "+", "-", "+"),
+    chr = c("2", "5", "1", "3", "3"),
+    n_IS = c(2, 2, 1, 1, 1)
+  )
+  expect_equal(top_5, expected)
+  top_5 <- top_targeted_genes(annot_ex, n = 5, key = NULL,
+                              consider_chr = FALSE)
+  expected <- data.table::data.table(
+    GeneName = c("GENE1", "GENE4", "GENE2", "GENE3"),
+    GeneStrand = c("+", "+", "-", "-"),
+    n_IS = c(3, 3, 2, 1)
+  )
+  expect_equal(top_5, expected)
+  top_5 <- top_targeted_genes(annot_ex, n = 5, key = NULL,
+                              consider_chr = FALSE,
+                              consider_gene_strand = FALSE)
+  expected <- data.table::data.table(
+    GeneName = c("GENE1", "GENE4", "GENE2", "GENE3"),
+    n_IS = c(3, 3, 2, 1)
+  )
+  expect_equal(top_5, expected)
+
+  # --- top genes per group
+  top_5 <- top_targeted_genes(annot_ex, n = 5,
+                              key = c("SubjectID", "CellMarker"))
+  expected <- data.table::data.table(
+    SubjectID = c("S1", "S1", "S1", "S2", "S2", "S2", "S2"),
+    CellMarker = c("CM1", "CM1", "CM1", "CM2", "CM2", "CM2", "CM2"),
+    GeneName = c("GENE1", "GENE2", "GENE1", "GENE3", "GENE4", "GENE4", "GENE4"),
+    GeneStrand = c("+", "-", "+", "-", "+", "+", "+"),
+    chr = c("2", "5", "1", "3", "3", "10", "11"),
+    n_IS = c(2, 2, 1, 1, 1, 1, 1)
+  )
+  top_5 <- top_targeted_genes(annot_ex, n = 5,
+                              key = c("SubjectID", "CellMarker"),
+                              consider_chr = FALSE)
+  expected <- data.table::data.table(
+    SubjectID = c("S1", "S1", "S2", "S2"),
+    CellMarker = c("CM1", "CM1", "CM2", "CM2"),
+    GeneName = c("GENE1", "GENE2", "GENE4", "GENE3"),
+    GeneStrand = c("+", "-", "+", "-"),
+    n_IS = c(3, 2, 3, 1)
+  )
 })

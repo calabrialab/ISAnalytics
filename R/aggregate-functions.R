@@ -240,115 +240,51 @@ aggregate_values_by_key <- function(x,
     ),
     join_af_by = "CompleteAmplificationID") {
     stopifnot(is.data.frame(x) || is.list(x))
-    if (!is.data.frame(x)) {
-        purrr::walk(x, function(df) {
-            stopifnot(is.data.frame(df))
-            if (.check_mandatory_vars(df) == FALSE) {
-                rlang::abort(.missing_mand_vars())
-            }
-            if (!all(join_af_by %in% colnames(df))) {
-                rlang::abort(c(
-                    x = paste(
-                        "Missing common columns",
-                        "to join metadata"
-                    ),
-                    i = paste(
-                        "Missing: ",
-                        paste0(join_af_by[!join_af_by %in%
-                            colnames(df)],
-                        collapse = ", "
-                        )
-                    )
-                ))
-            }
-            if (!all(value_cols %in% colnames(df))) {
-                rlang::abort(.missing_user_cols_error(
-                    value_cols[!value_cols %in% colnames(df)]
-                ))
-            }
-            is_numeric_col <- purrr::map_lgl(value_cols, function(col) {
-                if (!is.double(df[[col]]) &&
-                    !is.integer(df[[col]])) {
-                    FALSE
-                } else {
-                    TRUE
-                }
-            }) %>% purrr::set_names(value_cols)
-            if (any(!is_numeric_col)) {
-                rlang::abort(.non_num_user_cols_error(
-                    names(is_numeric_col)[!is_numeric_col]
-                ))
-            }
-        })
-    } else {
-        if (.check_mandatory_vars(x) == FALSE) {
-            rlang::abort(.missing_mand_vars())
-        }
-        if (!all(join_af_by %in% colnames(x))) {
-            rlang::abort(c(
-                x = paste(
-                    "Missing common columns",
-                    "to join metadata"
-                ),
-                i = paste(
-                    "Missing: ",
-                    paste0(join_af_by[!join_af_by %in%
-                        colnames(x)],
-                    collapse = ", "
-                    )
-                )
-            ))
-        }
-        if (!all(value_cols %in% colnames(x))) {
-            rlang::abort(.missing_user_cols_error(
-                value_cols[!value_cols %in% colnames(x)]
-            ))
-        }
-        is_numeric_col <- purrr::map_lgl(value_cols, function(col) {
-            if (!is.double(x[[col]]) &&
-                !is.integer(x[[col]])) {
-                FALSE
-            } else {
-                TRUE
-            }
-        }) %>% purrr::set_names(value_cols)
-        if (any(!is_numeric_col)) {
-            rlang::abort(.non_num_user_cols_error(
-                names(is_numeric_col)[!is_numeric_col]
-            ))
-        }
-    }
-    # Check association file
-    stopifnot(is.data.frame(association_file))
-    # Check key
+    stopifnot(is.character(value_cols))
     stopifnot(is.character(key))
-    if (!all(key %in% colnames(association_file))) {
-        rlang::abort(c(x = "Key fields are missing from association file"))
+    stopifnot(is.null(group) || is.character(group))
+    stopifnot(is.character(join_af_by))
+    stopifnot(is.data.frame(association_file))
+    data.table::setDT(association_file)
+    stopifnot(is.list(lambda) && !is.null(names(lambda)))
+    join_key_err <- c("Join key not present in in both data frames",
+                      x = paste("Fields specified in the argument",
+                                "`join_af_by` must appear in both",
+                                "the association file and the matrix(es)"))
+    check_single_matrix <- function(df) {
+      stopifnot(is.data.frame(df))
+      is_numeric_col <- purrr::map_lgl(
+        value_cols,
+        ~ is.numeric(df[[.x]]) ||
+          is.double(df[[.x]]) ||
+          is.integer(df[[.x]])
+      ) %>% purrr::set_names(value_cols)
+      if (any(!is_numeric_col)) {
+        rlang::abort(.non_num_user_cols_error(
+          names(is_numeric_col)[!is_numeric_col]
+        ))
+      }
+      if (!all(join_af_by %in% colnames(df))) {
+        rlang::abort(join_key_err, class = "join_key_err_agg")
+      }
     }
-    # Check lambda
-    stopifnot(is.list(lambda))
-    # Check group
-    stopifnot(is.character(group) | is.null(group))
-    if (is.data.frame(x)) {
-        if (!all(group %in% c(colnames(association_file), colnames(x)))) {
-            rlang::abort(paste("Grouping variables not found"))
-        }
+    if (!is.data.frame(x)) {
+      purrr::walk(x, check_single_matrix)
     } else {
-        purrr::walk(x, function(df) {
-            if (!all(group %in% c(colnames(association_file), colnames(df)))) {
-                rlang::abort(paste("Grouping variables not found"))
-            }
-        })
+      check_single_matrix(x)
     }
-    if (is.data.frame(x)) {
-        x <- list(x)
-        agg_matrix <- .aggregate_lambda(
+    join_key_in_af  <- all(join_af_by %in% colnames(association_file))
+    if (!join_key_in_af) {
+      rlang::abort(join_key_err, class = "join_key_err_agg")
+    }
+    agg_matrix <- if (is.data.frame(x)) {
+        .aggregate_lambda(
             x, association_file, key, value_cols, lambda, group, join_af_by
         )
-        return(agg_matrix[[1]])
+    } else {
+      agg_matrix <- purrr::map(x, ~ .aggregate_lambda(
+        .x, association_file, key, value_cols, lambda, group, join_af_by
+      ))
     }
-    agg_matrix <- .aggregate_lambda(
-        x, association_file, key, value_cols, lambda, group, join_af_by
-    )
-    agg_matrix
+    return(agg_matrix)
 }

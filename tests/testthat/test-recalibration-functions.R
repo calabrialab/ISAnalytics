@@ -649,6 +649,26 @@ test_that("compute_near_integrations produces correct output for total", {
     expect_equal(res, expected_mult,
         ignore_attr = TRUE
     )
+
+    res <- compute_near_integrations(
+      x = total_mult,
+      keep_criteria = "keep_first",
+      max_value_column = "seqCount",
+      value_columns = c("seqCount", "fragmentEstimate"),
+      is_identity_tags = NULL,
+      map_as_file = FALSE
+    )
+    expected <- data.table::data.table(
+      chr = c('1', '1', '1', '1', '1', '1', '3', '3', '3', '3', '3'),
+      integration_locus = c(14571, 14571, 14571, 14571, 14577, 14577,
+                            16378, 16387, 16395, 16395, 16402),
+      strand = c('+', '+', '+', '+', '+', '+', '+', '+', '+', '+', '+'),
+      CompleteAmplificationID = c('ID4', 'ID1', 'ID2', 'ID3', 'ID5', 'ID6',
+                                  'ID1', 'ID1', 'ID4', 'ID3', 'ID5'),
+      seqCount = c(1400, 70, 150, 120, 36, 15, 1969, 48, 153, 886, 543),
+      fragmentEstimate = c(64.545, 83.4, 125.9, 1.656, 6.4, 564.69, 989.04,
+                           1.36, 5521.1, 453.6, 12.55))
+    expect_equal(res, expected)
 })
 
 test_that("compute_near_integrations warns deprecation", {
@@ -662,4 +682,19 @@ test_that("compute_near_integrations warns deprecation", {
       map_as_file = FALSE
     )
   })
+})
+
+test_that("compute_near_integrations works for package examples", {
+  tmp_dir <- withr::local_tempdir()
+  test_with_fine <- sample_group_mult1 %>%
+    dplyr::bind_rows(sample_group_mult2) %>%
+    tibble::add_case(chr = "5", integration_locus = 45213, strand = "-",
+                     CompleteAmplificationID = "ID1",
+                     seqCount = 45, fragmentEstimate = 56.45)
+
+  recalibr <- compute_near_integrations(test_with_fine,
+                                        map_as_file = TRUE,
+                                        file_path = tmp_dir)
+  expect_true(nrow(recalibr) == 12 & ncol(recalibr) == 6)
+  expect_true(fs::file_exists(fs::path(tmp_dir, .generate_rec_map_filename())))
 })

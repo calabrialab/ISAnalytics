@@ -2,6 +2,34 @@
 # Utility functions
 #------------------------------------------------------------------------------#
 
+#' Title
+#'
+#' @param tags
+#'
+#' @return
+#' @export
+#'
+#' @examples
+inspect_tags <- function(tags) {
+  all_tags <- available_tags()
+  desc_msg <- purrr::map(tags, ~ {
+    tag_desc <- all_tags[eval(sym("tag")) == .x][["description"]]
+    if (purrr::is_empty(tag_desc)) {
+      return(
+        c(paste("* TAG:", .x),
+          x = "Tag not found in available tags")
+      )
+    }
+    functions <- all_tags[eval(sym("tag")) == .x][["needed_in"]][[1]]
+    functions <- paste0(functions, collapse = ", ")
+    c(paste("* TAG:", .x),
+      i = paste("Description:", tag_desc),
+      i = paste("Functions that use it:", functions))
+  })
+  purrr::walk(desc_msg, ~ rlang::inform(.x, class = "tag_inspect"))
+}
+
+
 #' Define custom mandatory IS vars.
 #'
 #' This function lets the user specify the name and types of the mandatory
@@ -88,7 +116,7 @@ set_mandatory_IS_vars <- function(specs) {
             "for details"
         )
     )
-    new_vars <- .new_IS_vars_checks(specs, err)
+    new_vars <- .new_IS_vars_checks(specs, err, "mand_vars")
     options(ISAnalytics.mandatory_is_vars = new_vars)
     if (getOption("ISAnalytics.verbose")) {
         rlang::inform("Mandatory IS vars successfully changed")
@@ -180,7 +208,7 @@ set_annotation_IS_vars <- function(specs) {
             "for details"
         )
     )
-    new_vars <- .new_IS_vars_checks(specs, err)
+    new_vars <- .new_IS_vars_checks(specs, err, "annot_vars")
     options(ISAnalytics.genomic_annotation_vars = new_vars)
     if (getOption("ISAnalytics.verbose")) {
         rlang::inform("Annotation IS vars successfully changed")
@@ -276,7 +304,7 @@ set_af_columns_def <- function(specs) {
             "for details"
         )
     )
-    new_vars <- .new_IS_vars_checks(specs, err)
+    new_vars <- .new_IS_vars_checks(specs, err, "af_vars")
     options(ISAnalytics.af_specs = new_vars)
     if (getOption("ISAnalytics.verbose")) {
         rlang::inform("Association file columns specs successfully changed")
@@ -339,6 +367,14 @@ association_file_columns <- function(include_types = FALSE) {
     return(opt)
 }
 
+#' Title
+#'
+#' @param specs
+#'
+#' @return
+#' @export
+#'
+#' @examples
 set_iss_stats_specs <- function(specs) {
     # Check structure
     err <- c("Input format error",
@@ -348,13 +384,19 @@ set_iss_stats_specs <- function(specs) {
             "for details"
         )
     )
-    new_vars <- .new_IS_vars_checks(specs, err)
+    new_vars <- .new_IS_vars_checks(specs, err, "iss_vars")
     options(ISAnalytics.iss_stats_specs = new_vars)
     if (getOption("ISAnalytics.verbose")) {
         rlang::inform("ISS stats specs successfully changed")
     }
 }
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 reset_iss_stats_specs <- function() {
     options(ISAnalytics.iss_stats_specs = "default")
     if (getOption("ISAnalytics.verbose")) {
@@ -362,6 +404,14 @@ reset_iss_stats_specs <- function() {
     }
 }
 
+#' Title
+#'
+#' @param include_types
+#'
+#' @return
+#' @export
+#'
+#' @examples
 iss_stats_specs <- function(include_types = FALSE) {
     opt <- getOption("ISAnalytics.iss_stats_specs")
     if (!include_types) {
@@ -379,6 +429,12 @@ iss_stats_specs <- function(include_types = FALSE) {
 }
 
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 matrix_file_suffixes <- function() {
   opt <- getOption("ISAnalytics.matrix_file_suffix")
 
@@ -391,6 +447,17 @@ matrix_file_suffixes <- function() {
   return(opt)
 }
 
+#' Title
+#'
+#' @param quantification_suffix
+#' @param annotation_suffix
+#' @param file_ext
+#' @param glue_file_spec
+#'
+#' @return
+#' @export
+#'
+#' @examples
 set_matrix_file_suffixes <- function(
   quantification_suffix = list(seqCount = "seqCount",
                                fragmentEstimate = "fragmentEstimate",
@@ -439,6 +506,12 @@ set_matrix_file_suffixes <- function(
   }
 }
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 reset_matrix_file_suffixes <- function() {
   options(ISAnalytics.matrix_file_suffix = "default")
   if (getOption("ISAnalytics.verbose")) {
@@ -446,6 +519,12 @@ reset_matrix_file_suffixes <- function() {
   }
 }
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 pcr_id_column <- function() {
   af_cols_specs <- association_file_columns(TRUE)
   selected_tags <- .check_required_cols(list("pcr_repl_id" = "char"),
@@ -456,6 +535,15 @@ pcr_id_column <- function() {
 # Function used to apply arbitrary transformations on columns.
 # Expects a named list where names are names of columns and values are
 # purrr style lambdas
+#' Title
+#'
+#' @param df
+#' @param transf_list
+#'
+#' @return
+#' @export
+#'
+#' @examples
 transform_columns <- function(df, transf_list) {
   transf_list <- transf_list[names(transf_list) %in% colnames(df)]
   if (purrr::is_empty(transf_list)) {
@@ -486,6 +574,183 @@ transform_columns <- function(df, transf_list) {
     res <- findRestart("skip_transform")
     invokeRestart(res)
   })
+}
+
+
+#' obtain a single integration matrix from individual quantification
+#' matrices.
+#'
+#' \lifecycle{stable}
+#' Takes a list of integration matrices referring to different quantification
+#' types and merges them in a single data frame that has multiple
+#' value columns, each renamed according to their quantification type
+#' of reference.
+#'
+#' @param x A named list of integration matrices, ideally obtained via
+#' \link{import_parallel_Vispa2Matrices_interactive} or
+#' \link{import_parallel_Vispa2Matrices_auto}. Names must be
+#' quantification types.
+#' @param fragmentEstimate The name of the output column for fragment
+#' estimate values
+#' @param seqCount The name of the output column for sequence
+#' count values
+#' @param barcodeCount The name of the output column for barcode count
+#' values
+#' @param cellCount The name of the output column for cell count values
+#' @param ShsCount The name of the output column for Shs count values
+#'
+#' @importFrom purrr walk map2 reduce
+#' @importFrom dplyr rename full_join intersect
+#' @importFrom magrittr `%>%`
+#' @importFrom rlang .data `:=`
+#'
+#' @family Analysis functions
+#'
+#' @seealso \link{quantification_types}
+#'
+#' @return A tibble
+#' @export
+#'
+#' @examples
+#' fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
+#' fs <- unzip_file_system(fs_path, "fs")
+#' af_path <- system.file("extdata", "asso.file.tsv.gz",
+#'     package = "ISAnalytics"
+#' )
+#' af <- import_association_file(af_path,
+#'     root = fs,
+#'     import_iss = FALSE,
+#'     report_path = NULL
+#' )
+#' matrices <- import_parallel_Vispa2Matrices(af,
+#'     c("seqCount", "fragmentEstimate"),
+#'     mode = "AUTO", report_path = NULL, multi_quant_matrix = FALSE
+#' )
+#' multi_quant <- comparison_matrix(matrices)
+#' head(multi_quant)
+comparison_matrix <- function(x,
+                              fragmentEstimate = "fragmentEstimate",
+                              seqCount = "seqCount",
+                              barcodeCount = "barcodeCount",
+                              cellCount = "cellCount",
+                              ShsCount = "ShsCount",
+                              value_col_name = "Value") {
+  stopifnot(is.list(x) & !is.data.frame(x))
+  stopifnot(all(names(x) %in% quantification_types()))
+  stopifnot(is.character(fragmentEstimate) & length(fragmentEstimate) == 1)
+  stopifnot(is.character(seqCount) & length(seqCount) == 1)
+  stopifnot(is.character(barcodeCount) & length(barcodeCount) == 1)
+  stopifnot(is.character(cellCount) & length(cellCount) == 1)
+  stopifnot(is.character(ShsCount) & length(ShsCount) == 1)
+  stopifnot(is.character(value_col_name) & length(value_col_name) == 1)
+  param_names <- c(
+    fragmentEstimate = fragmentEstimate,
+    seqCount = seqCount, barcodeCount = barcodeCount,
+    cellCount = cellCount, ShsCount = ShsCount
+  )
+  x <- purrr::map2(x, names(x), function(matrix, quant_type) {
+    quant_name <- param_names[names(param_names) %in% quant_type]
+    matrix %>% dplyr::rename(!!quant_name := .data[[value_col_name]])
+  })
+  result <- purrr::reduce(x, function(matrix1, matrix2) {
+    commoncols <- dplyr::intersect(colnames(matrix1), colnames(matrix2))
+    matrix1 %>%
+      dplyr::full_join(matrix2, by = commoncols)
+  })
+  na_introduced <- purrr::map_lgl(param_names, function(p) {
+    any(is.na(result[[p]]))
+  })
+  if (any(na_introduced) & getOption("ISAnalytics.verbose") == TRUE) {
+    rlang::inform(.nas_introduced_msg(), class = "comp_nas")
+  }
+  result
+}
+
+
+#' Separate a multiple-quantification matrix into single quantification
+#' matrices.
+#'
+#' \lifecycle{stable}
+#' The function separates a single multi-quantification integration
+#' matrix, obtained via \link{comparison_matrix}, into single
+#' quantification matrices as a named list of tibbles.
+#'
+#' @param x Single integration matrix with multiple quantification
+#' value columns, obtained via \link{comparison_matrix}.
+#' @param fragmentEstimate Name of the fragment estimate values column
+#' in input
+#' @param seqCount Name of the sequence count values column
+#' in input
+#' @param barcodeCount Name of the barcode count values column
+#' in input
+#' @param cellCount Name of the cell count values column
+#' in input
+#' @param ShsCount Name of the shs count values column
+#' in input
+#' @param key Key columns to perform the joining operation
+#'
+#' @importFrom purrr is_empty map set_names
+#' @importFrom dplyr rename
+#' @importFrom magrittr `%>%`
+#'
+#' @family Analysis functions
+#'
+#' @return A named list of tibbles, where names are quantification types
+#' @seealso \link{quantification_types}
+#' @export
+#'
+#' @examples
+#' data("integration_matrices", package = "ISAnalytics")
+#' separated <- separate_quant_matrices(
+#'     integration_matrices
+#' )
+#' separated
+separate_quant_matrices <- function(x,
+                                    fragmentEstimate = "fragmentEstimate",
+                                    seqCount = "seqCount",
+                                    barcodeCount = "barcodeCount",
+                                    cellCount = "cellCount",
+                                    ShsCount = "ShsCount",
+                                    key = c(
+                                      mandatory_IS_vars(),
+                                      annotation_IS_vars(),
+                                      "CompleteAmplificationID"
+                                    )) {
+  stopifnot(is.data.frame(x))
+  if (!all(key %in% colnames(x))) {
+    rlang::abort(.missing_user_cols_error(key[!key %in% colnames(x)]))
+  }
+  num_cols <- .find_exp_cols(x, key)
+  if (purrr::is_empty(num_cols)) {
+    rlang::abort(.missing_num_cols_error())
+  }
+  stopifnot(is.character(fragmentEstimate) & length(fragmentEstimate) == 1)
+  stopifnot(is.character(seqCount) & length(seqCount) == 1)
+  stopifnot(is.character(barcodeCount) & length(barcodeCount) == 1)
+  stopifnot(is.character(cellCount) & length(cellCount) == 1)
+  stopifnot(is.character(ShsCount) & length(ShsCount) == 1)
+  param_col <- c(
+    fragmentEstimate = fragmentEstimate,
+    seqCount = seqCount, barcodeCount = barcodeCount,
+    cellCount = cellCount,
+    ShsCount = ShsCount
+  )
+  to_copy <- if (any(!num_cols %in% param_col)) {
+    if (all(!num_cols %in% param_col)) {
+      rlang::abort(.non_quant_cols_error())
+    }
+    num_cols[!num_cols %in% param_col]
+  }
+  num_cols <- param_col[param_col %in% num_cols]
+  if (!purrr::is_empty(to_copy) & getOption("ISAnalytics.verbose") == TRUE) {
+    rlang::inform(.non_quant_cols_msg(to_copy))
+  }
+  separated <- purrr::map(num_cols, function(quant) {
+    x %>%
+      dplyr::select(dplyr::all_of(c(key, to_copy, quant))) %>%
+      dplyr::rename(Value = .data[[quant]])
+  }) %>% purrr::set_names(names(num_cols))
+  separated
 }
 
 
@@ -561,38 +826,64 @@ generate_blank_association_file <- function(path) {
 #' temp <- tempdir()
 #' data("association_file", package = "ISAnalytics")
 #' generate_Vispa2_launch_AF(association_file, "PJ01", "POOL01", temp)
-generate_Vispa2_launch_AF <- function(association_file, project, pool, path) {
+generate_Vispa2_launch_AF <- function(association_file,
+                                      project,
+                                      pool,
+                                      path) {
     stopifnot(is.data.frame(association_file))
     stopifnot(is.character(project))
     stopifnot(is.character(pool))
     stopifnot(length(project) == length(pool))
-    stopifnot(all(reduced_AF_columns() %in% colnames(association_file)))
     stopifnot(is.character(path) & length(path) == 1)
     path <- fs::as_fs_path(path)
     if (!fs::file_exists(path)) {
         fs::dir_create(path)
     }
-    files <- purrr::map2(project, pool, function(x, y) {
-        selected_cols <- association_file %>%
-            dplyr::select(
-                dplyr::all_of(reduced_AF_columns()),
-                .data$concatenatePoolIDSeqRun
-            ) %>%
-            dplyr::filter(.data$ProjectID == x, .data$PoolID == y) %>%
-            dplyr::mutate(TagID2 = .data$TagID, .before = .data$TagID) %>%
-            dplyr::mutate(PoolName = dplyr::if_else(
-                !is.na(.data$concatenatePoolIDSeqRun),
-                .data$concatenatePoolIDSeqRun,
-                .data$PoolID
-            )) %>%
-            dplyr::select(-.data$PoolID, -.data$concatenatePoolIDSeqRun)
-    }) %>% purrr::set_names(paste0(project, "-", pool, "_AF.tsv"))
+    af_min_cols <- reduced_AF_columns()
+    concat_col <- .check_required_cols("vispa_concatenate",
+                                       vars_df = association_file_columns(TRUE),
+                                       duplicate_politic = "error")
+    concat_col <- concat_col$names
+    to_check <- c(af_min_cols$names, concat_col)
+    if (!all(to_check %in% colnames(association_file))) {
+        rlang::abort(.missing_af_needed_cols(to_check[!to_check %in%
+            association_file_columns(TRUE)]))
+    }
+    proj_col <- af_min_cols[eval(sym("tag")) == "project_id", ][["names"]]
+    pool_col <- af_min_cols[eval(sym("tag")) == "pool_id", ][["names"]]
+    tag_id_col <- af_min_cols[eval(sym("tag")) == "tag_id", ][["names"]]
+    tissue_col <- af_min_cols[eval(sym("tag")) == "tissue", ][["names"]]
+    tp_col <- af_min_cols[eval(sym("tag")) == "tp_days", ][["names"]]
+    fusion_col <- af_min_cols[eval(sym("tag")) == "fusion_id", ][["names"]]
+    pcr_id_col <- af_min_cols[eval(sym("tag")) == "pcr_repl_id", ][["names"]]
+    cm_col <- af_min_cols[eval(sym("tag")) == "cell_marker", ][["names"]]
+    vec_id_col <- af_min_cols[eval(sym("tag")) == "vector_id", ][["names"]]
+    process_proj_pool <- function(x, y) {
+      selected_cols <- association_file %>%
+        dplyr::select(dplyr::all_of(to_check)) %>%
+        dplyr::filter(.data[[proj_col]] == x,
+                      .data[[pool_col]] == y) %>%
+        dplyr::mutate(TagID2 = .data[[tag_id_col]]) %>%
+        dplyr::mutate(PoolName = dplyr::if_else(
+          !is.na(.data[[concat_col]]),
+          .data[[concat_col]],
+          .data[[pool_col]]
+        )) %>%
+        dplyr::select(.data[[tag_id_col]], .data$TagID2, .data[[tissue_col]],
+                      .data[[tp_col]], .data[[fusion_col]], .data[[pcr_id_col]],
+                      .data[[cm_col]], .data[[proj_col]], .data[[vec_id_col]],
+                      .data[[pool_col]], .data$PoolName
+                      )
+    }
+    files <- purrr::map2(project, pool, process_proj_pool) %>%
+      purrr::set_names(paste0(project, "-", pool, "_AF.tsv"))
     purrr::walk2(files, names(files), function(x, y) {
         complete_path <- fs::path(path, y)
         if (nrow(x) > 0) {
             readr::write_tsv(x, complete_path, col_names = FALSE)
         } else {
-            message(paste("Nothing to write for ", y, ", skipping."))
+          msg <- c(paste("Nothing to write for ", y, ", skipping."))
+          rlang::inform(msg, class = "launch_af_empty")
         }
     })
 }
@@ -626,89 +917,77 @@ generate_Vispa2_launch_AF <- function(association_file, project, pool, path) {
 #' @family Utility functions
 #'
 #' @return Depending on input, 2 possible outputs:
-#' * A single sparce matrix (tibble) if input is a single quantification
+#' * A single sparse matrix (tibble) if input is a single quantification
 #' matrix
-#' * A list of sparce matrices divided by quantification if input
+#' * A list of sparse matrices divided by quantification if input
 #' is a single multi-quantification matrix or a list of matrices
 #' @export
 #'
 #' @examples
 #' data("integration_matrices", package = "ISAnalytics")
 #' sparse <- as_sparse_matrix(integration_matrices)
-as_sparse_matrix <- function(x, fragmentEstimate = "fragmentEstimate",
+as_sparse_matrix <- function(x,
+    single_value_col = "Value",
+    fragmentEstimate = "fragmentEstimate",
     seqCount = "seqCount",
     barcodeCount = "barcodeCount",
     cellCount = "cellCount",
-    ShsCount = "ShsCount") {
+    ShsCount = "ShsCount",
+    key = pcr_id_column()) {
     stopifnot(is.list(x))
+    stopifnot(is.character(fragmentEstimate))
+    stopifnot(is.character(seqCount))
+    stopifnot(is.character(barcodeCount))
+    stopifnot(is.character(cellCount))
+    stopifnot(is.character(ShsCount))
+    stopifnot(is.character(key))
+    param_cols <- c(
+      fragmentEstimate, seqCount, barcodeCount, cellCount,
+      ShsCount, single_value_col
+    )
+    ## -- Internal for processing single df
+    process_single_df <- function(df) {
+      if (.check_mandatory_vars(df) == FALSE) {
+        rlang::abort(.non_ISM_error())
+      }
+      if (!all(key %in% colnames(df))) {
+        rlang::abort(.missing_needed_cols(key[!key %in% colnames(df)]))
+      }
+      id_cols <- c(mandatory_IS_vars())
+      if (.is_annotated(df)) {
+        id_cols <- c(id_cols, annotation_IS_vars())
+      }
+      id_cols <- c(id_cols, key)
+      num_cols <- .find_exp_cols(df, id_cols)
+      if (purrr::is_empty(num_cols)) {
+        rlang::abort(.missing_num_cols_error())
+      }
+      pivot_dfs <- purrr::map(num_cols, ~ {
+        if (.x %in% param_cols) {
+          pivoted <- df %>%
+            dplyr::select(dplyr::all_of(
+              c(id_cols, .x)
+            )) %>%
+            tidyr::pivot_wider(
+              names_from = .data[[key]],
+              values_from = .data[[.x]]
+            )
+          return(pivoted)
+        }
+        return(NULL)
+      }) %>%
+        purrr::set_names(num_cols)
+      pivot_dfs <- pivot_dfs[purrr::map_lgl(pivot_dfs, ~ !is.null(.x))]
+      if (length(pivot_dfs) == 1) {
+        pivot_dfs <- pivot_dfs[[1]]
+      }
+      return(pivot_dfs)
+    }
     if (is.data.frame(x)) {
-        ## SINGLE DATA FRAME
-        if (.check_mandatory_vars(x) == FALSE) {
-            stop(.non_ISM_error())
-        }
-        if (.check_sample_col(x) == FALSE) {
-            stop(.missing_complAmpID_error())
-        }
-        num_cols <- .find_exp_cols(x, c(
-            mandatory_IS_vars(),
-            annotation_IS_vars(),
-            "CompleteAmplificationID"
-        ))
-        if (purrr::is_empty(num_cols)) {
-            stop(.missing_num_cols_error())
-        }
-        ### SINGLE QUANT
-        if (all(num_cols == "Value")) {
-            sparse_m <- tidyr::pivot_wider(x,
-                names_from =
-                    .data$CompleteAmplificationID,
-                values_from =
-                    .data$Value
-            )
-            return(sparse_m)
-        }
-        ### MULTI QUANT
-        param_cols <- c(
-            fragmentEstimate, seqCount, barcodeCount, cellCount,
-            ShsCount
-        )
-        found <- param_cols[param_cols %in% num_cols]
-        if (purrr::is_empty(found)) {
-            stop(.non_quant_cols_error())
-        }
-        annot <- if (.is_annotated(x)) {
-            annotation_IS_vars()
-        } else {
-            character(0)
-        }
-        sparse_m <- purrr::map(found, function(quant) {
-            temp <- x %>% dplyr::select(
-                mandatory_IS_vars(),
-                .data$CompleteAmplificationID,
-                annot, quant
-            )
-            tidyr::pivot_wider(temp,
-                names_from = .data$CompleteAmplificationID,
-                values_from = quant
-            )
-        }) %>% purrr::set_names(found)
-        return(sparse_m)
+      return(process_single_df(x))
     } else {
         ## LIST
-        purrr::walk(x, function(m) {
-            mand <- .check_mandatory_vars(m)
-            amp <- .check_sample_col(m)
-            val <- .check_value_col(m)
-            if (any(c(mand, amp, val) == FALSE)) {
-                stop(.non_ISM_error())
-            }
-        })
-        sparse_m <- purrr::map(x, function(data) {
-            tidyr::pivot_wider(data,
-                names_from = .data$CompleteAmplificationID,
-                values_from = .data$Value
-            )
-        })
+        sparse_m <- purrr::map(x, process_single_df)
         return(sparse_m)
     }
 }
@@ -732,15 +1011,27 @@ as_sparse_matrix <- function(x, fragmentEstimate = "fragmentEstimate",
 #' root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
 #' root <- unzip_file_system(root_pth, "fs")
 unzip_file_system <- function(zipfile, name) {
-    root_folder <- tempdir()
-    zip::unzip(zipfile, exdir = root_folder)
-    root_folder <- file.path(root_folder, name, fsep = "\\")
-    root_folder <- gsub('"', "", gsub("\\\\", "/", root_folder))
-    root_folder
+  lifecycle::deprecate_stop(
+    when = "1.5.4",
+    what = "unzip_file_system()",
+    with = "generate_default_folder_structure()",
+    details = "Function will be removed in the next release cycle."
+  )
 }
 
 # TODO - add the incorrect version for testing (and both) +
 # add possibility of supplying custom af and matrices (for tests)
+#' Title
+#'
+#' @param type
+#' @param dir
+#' @param af
+#' @param matrices
+#'
+#' @return
+#' @export
+#'
+#' @examples
 generate_default_folder_structure <- function(type = "correct",
     dir = tempdir(),
     af = "default",

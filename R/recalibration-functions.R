@@ -237,12 +237,12 @@ compute_near_integrations <- function(x,
             data.table::rbindlist(list(g1, g2))
           }
         )
-        split_fine <- data.table::setDT(split_fine)
+        data.table::setDT(split_fine)
         map_fine <- unique(split_fine[, mget(required_tag_cols$names)])
         data.table::setnames(
           x = map_fine,
-          old = mget(required_tag_cols$names),
-          new = paste0(mget(required_tag_cols$names), "_before")
+          old = required_tag_cols$names,
+          new = paste0(required_tag_cols$names, "_before")
         )
         map_fine[, c(
           paste0(required_tag_cols$names, "_after")

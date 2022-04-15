@@ -860,29 +860,40 @@ test_that("remove_collisions succeeds", {
     )
 })
 
-# #------------------------------------------------------------------------------#
-# # Tests realign_after_collisions
-# #------------------------------------------------------------------------------#
-# test_that("realign_after_collisions correctly re-aligns", {
-#     separated <- separate_quant_matrices(minimal_test_coll,
-#         key = c(
-#             mandatory_IS_vars(),
-#             "CompleteAmplificationID"
-#         )
-#     )
-#     coll_single <- remove_collisions(
-#         x = separated$seqCount,
-#         association_file = minimal_test_coll_meta,
-#         quant_cols = c(seqCount = "Value")
-#     )
-#     realigned <- realign_after_collisions(
-#         coll_single,
-#         list(fragmentEstimate = separated$fragmentEstimate)
-#     )
-#     expect_true(nrow(coll_single) == nrow(realigned$fragmentEstimate))
-#     expect_true(all(realigned$fragmentEstimate$chr %in% coll_single$chr))
-#     expect_true(all(realigned$fragmentEstimate$integration_locus
-#         %in% coll_single$integration_locus))
-#     expect_true(all(realigned$fragmentEstimate$CompleteAmplificationID
-#         %in% coll_single$CompleteAmplificationID))
-# })
+test_that("remove_collisions produces report", {
+  withr::local_options(list(ISAnalytics.reports = TRUE))
+  tmp_dir <- withr::local_tempdir()
+  coll_rem <- remove_collisions(
+    integration_matrices, association_file,
+    report_path = tmp_dir
+  )
+  path_to_file <- fs::path(tmp_dir, .generate_report_filename("collisions"))
+  expect_true(fs::file_exists(path_to_file))
+})
+
+#------------------------------------------------------------------------------#
+# Tests realign_after_collisions
+#------------------------------------------------------------------------------#
+test_that("realign_after_collisions correctly re-aligns", {
+    separated <- separate_quant_matrices(minimal_test_coll,
+        key = c(
+            mandatory_IS_vars(),
+            "CompleteAmplificationID"
+        )
+    )
+    coll_single <- remove_collisions(
+        x = separated$seqCount,
+        association_file = minimal_test_coll_meta,
+        quant_cols = c(seqCount = "Value")
+    )
+    realigned <- realign_after_collisions(
+        coll_single,
+        list(fragmentEstimate = separated$fragmentEstimate)
+    )
+    expect_true(nrow(coll_single) == nrow(realigned$fragmentEstimate))
+    expect_true(all(realigned$fragmentEstimate$chr %in% coll_single$chr))
+    expect_true(all(realigned$fragmentEstimate$integration_locus
+        %in% coll_single$integration_locus))
+    expect_true(all(realigned$fragmentEstimate$CompleteAmplificationID
+        %in% coll_single$CompleteAmplificationID))
+})

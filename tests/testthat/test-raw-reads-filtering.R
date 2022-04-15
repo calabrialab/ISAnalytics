@@ -575,6 +575,19 @@ test_that("outliers_by_pool_fragments - processes with nas", {
                       dplyr::pull(.data$to_remove) == FALSE))
 })
 
+test_that("outliers_by_pool_fragments - produces report", {
+  withr::local_options(list(ISAnalytics.reports = TRUE))
+  withr::local_options(list(ISAnalytics.reports = TRUE))
+  tmp_dir <- withr::local_tempdir()
+  res <- outliers_by_pool_fragments(min_example,
+                                    key = c("X","Z"),
+                                    keep_calc_cols = TRUE,
+                                    report_path = tmp_dir
+  )
+  path_to_file <- fs::path(tmp_dir, .generate_report_filename("outlier_flag"))
+  expect_true(fs::file_exists(path_to_file))
+})
+
 #------------------------------------------------------------------------------#
 # outlier_filter
 #------------------------------------------------------------------------------#

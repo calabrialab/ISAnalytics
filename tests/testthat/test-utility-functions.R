@@ -1,22 +1,4 @@
-library(ISAnalytics)
-
-#------------------------------------------------------------------------------#
-# Global vars
-#------------------------------------------------------------------------------#
-# op <- withr::local_options(
-#     ISAnalytics.reports = FALSE,
-#     ISAnalytics.verbose = FALSE
-# )
-# # Path to example association file
-# path_af <- system.file("testdata", "ex_association_file.tsv.gz",
-#     package = "ISAnalytics"
-# )
-# # Path to correct file system example
-# path_root_correct <- system.file("testdata", "fs.zip",
-#     package = "ISAnalytics"
-# )
-# root_correct <- unzip_file_system(path_root_correct, "fs")
-# as_file <- import_association_file(path_af, root_correct, dates_format = "dmy")
+withr::local_options(list(ISAnalytics.verbose = FALSE))
 
 #------------------------------------------------------------------------------#
 # Tests .process_af_for_gen
@@ -189,216 +171,441 @@ test_that("pcr_id_column errors if no pcr_repl_id in vars", {
 })
 
 #------------------------------------------------------------------------------#
+# Test comparison_matrix
+#------------------------------------------------------------------------------#
+m1 <- tibble::tribble(
+  ~ chr, ~ integration_locus, ~ strand, ~ CompleteAmplificationID, ~ Value,
+  "1", 42522, "+", "ID1", 453,
+  "3", 43521, "-", "ID1", 564,
+  "2", 12425, "-", "ID2", 67,
+  "1", 25756, "+", "ID3", 123,
+  "7", 12345, "-", "ID3", 897,
+)
+m2 <- tibble::tribble(
+  ~ chr, ~ integration_locus, ~ strand, ~ CompleteAmplificationID, ~ Value,
+  "1", 42522, "+", "ID1", 123.65,
+  "3", 43521, "-", "ID1", 786.12,
+  "2", 12425, "-", "ID2", 12.35,
+  "1", 25756, "+", "ID3", 78.546,
+  "7", 12345, "-", "ID3", 93.456
+)
+example <- list(seqCount = m1, fragmentEstimate = m2)
+
+test_that("comparison_matrix throws error if input is incorrect", {
+    # Input must be a named list, not single data frame
+    expect_error({
+        comp <- comparison_matrix(m1)
+    })
+    # List names must be quantification types
+    expect_error({
+        comp <- comparison_matrix(setNames(example, c("a", "b")))
+    })
+})
+
+test_that("comparison_matrix notifies NA introduction", {
+    withr::local_options(list(ISAnalytics.verbose = TRUE))
+    mod_m2 <- m2[c(1,2,3), ]
+    expect_message({
+        comp <- comparison_matrix(list(seqCount = m1,
+                                       fragmentEstimate = mod_m2))
+    }, class = "comp_nas")
+})
+
+test_that("comparison_matrix produces correct output", {
+    comp <- comparison_matrix(example)
+    expected <- tibble::tribble(
+      ~ chr, ~ integration_locus, ~ strand, ~ CompleteAmplificationID,
+      ~ seqCount, ~ fragmentEstimate,
+      "1", 42522, "+", "ID1", 453, 123.65,
+      "3", 43521, "-", "ID1", 564, 786.12,
+      "2", 12425, "-", "ID2", 67, 12.35,
+      "1", 25756, "+", "ID3", 123, 78.546,
+      "7", 12345, "-", "ID3", 897, 93.456
+    )
+    expect_equal(comp %>% dplyr::arrange(.data$integration_locus),
+                 expected %>% dplyr::arrange(.data$integration_locus),
+                 ignore_attr = TRUE)
+})
+
+test_that("comparison_matrix supports custom names", {
+    comp <- comparison_matrix(example,
+        seqCount = "sc",
+        fragmentEstimate = "fe"
+    )
+    expect_true(all(c("fe", "sc") %in% colnames(comp)))
+    expect_true(nrow(comp) == nrow(example$seqCount))
+    expect_true(is.numeric(comp$sc))
+    expect_true(is.numeric(comp$fe))
+})
+
+#------------------------------------------------------------------------------#
+# Test separate_quant_matrices
+#------------------------------------------------------------------------------#
+smpl <- tibble::tibble(
+  chr = c("1", "2", "3"),
+  integration_locus = c(1263, 1264, 1265),
+  strand = c("+", "+", "+"),
+  CompleteAmplificationID = c("ID1", "ID2", "ID3"),
+  fragmentEstimate = c(432.43, 532.43, 23.43),
+  seqCount = c(34, 435, 65),
+  random_col = c(6483, 486, 873)
+)
+
+test_that("separate_quant_matrices stops if param incorrect", {
+  # Must be single data frame
+  expect_error({
+    sep <- separate_quant_matrices(list(a = smpl, b = smpl))
+  })
+  # Must be an integration matrix
+  expect_error({
+    sep <- separate_quant_matrices(tibble::tibble(a = c(1, 2, 3)))
+  })
+  # Must contain at least one quantification
+  expect_error(
+    {
+      sep <- separate_quant_matrices(tibble::tibble(
+        chr = c("1", "2", "3"),
+        integration_locus = c(1263, 1264, 1265),
+        strand = c("+", "+", "+"),
+        CompleteAmplificationID = c("ID1", "ID2", "ID3"),
+        random_col = c(6483, 486, 873)
+      ), key = c(mandatory_IS_vars(), "CompleteAmplificationID"))
+    },
+    regexp = .non_quant_cols_error()
+  )
+})
+
+test_that("separate_quant_matrices warns if additional columns", {
+  withr::local_options(list(ISAnalytics.verbose = TRUE))
+  expect_message({
+    sep <- separate_quant_matrices(smpl,
+                                   key = c(
+                                     mandatory_IS_vars(),
+                                     "CompleteAmplificationID"
+                                   )
+    )
+  })
+  expected_output <- list(
+    fragmentEstimate =
+      tibble::tibble(
+        chr = c("1", "2", "3"),
+        integration_locus = c(
+          1263,
+          1264,
+          1265
+        ),
+        strand = c("+", "+", "+"),
+        CompleteAmplificationID = c(
+          "ID1",
+          "ID2",
+          "ID3"
+        ),
+        random_col = c(6483, 486, 873),
+        Value = c(
+          432.43, 532.43,
+          23.43
+        )
+      ),
+    seqCount =
+      tibble::tibble(
+        chr = c("1", "2", "3"),
+        integration_locus = c(
+          1263,
+          1264,
+          1265
+        ),
+        strand = c("+", "+", "+"),
+        CompleteAmplificationID = c(
+          "ID1",
+          "ID2",
+          "ID3"
+        ),
+        random_col = c(6483, 486, 873),
+        Value = c(34, 435, 65)
+      )
+  )
+  expect_equal(sep, expected_output)
+})
+
+test_that("separate_quant_matrices supports custom names", {
+  colnames(smpl)[c(5, 6)] <- c("fe", "sc")
+  sep <- separate_quant_matrices(smpl,
+                                 fragmentEstimate = "fe",
+                                 seqCount = "sc",
+                                 key = c(mandatory_IS_vars(),
+                                         "CompleteAmplificationID")
+  )
+  expected_output <- list(
+    fragmentEstimate =
+      tibble::tibble(
+        chr = c("1", "2", "3"),
+        integration_locus = c(
+          1263,
+          1264,
+          1265
+        ),
+        strand = c("+", "+", "+"),
+        CompleteAmplificationID = c(
+          "ID1",
+          "ID2",
+          "ID3"
+        ),
+        random_col = c(6483, 486, 873),
+        Value = c(
+          432.43, 532.43,
+          23.43
+        )
+      ),
+    seqCount =
+      tibble::tibble(
+        chr = c("1", "2", "3"),
+        integration_locus = c(
+          1263,
+          1264,
+          1265
+        ),
+        strand = c("+", "+", "+"),
+        CompleteAmplificationID = c(
+          "ID1",
+          "ID2",
+          "ID3"
+        ),
+        random_col = c(6483, 486, 873),
+        Value = c(34, 435, 65)
+      )
+  )
+  expect_equal(sep, expected_output)
+})
+
+#------------------------------------------------------------------------------#
 # Tests generate_blank_association_file
 #------------------------------------------------------------------------------#
-# test_that("generate_blank_association_file stops if path is not char", {
-#     expect_error({
-#         generate_blank_association_file(1)
-#     })
-# })
-#
-# test_that("generate_blank_association_file works correctly", {
-#     temp <- tempfile()
-#     generate_blank_association_file(temp)
-#     af <- read.csv(temp, sep = "\t", check.names = FALSE, header = TRUE)
-#     expect_true(all(colnames(af) %in% association_file_columns()))
-# })
+test_that("generate_blank_association_file stops if path is not char", {
+    expect_error({
+        generate_blank_association_file(1)
+    })
+})
+
+test_that("generate_blank_association_file works correctly", {
+    temp <- withr::local_tempfile()
+    generate_blank_association_file(temp)
+    af <- read.csv(temp, sep = "\t", check.names = FALSE, header = TRUE)
+    expect_true(all(colnames(af) %in% association_file_columns()))
+})
 
 #------------------------------------------------------------------------------#
 # Tests generate_Vispa2_launch_AF
 #------------------------------------------------------------------------------#
-# ## Testing input
-# test_that("generate_Vispa2_launch_AF stops if association_file is not df", {
-#     expect_error({
-#         generate_Vispa2_launch_AF(path_af, "x", "y", "z")
-#     })
-# })
-#
-# test_that("generate_Vispa2_launch_AF stops if project is not char", {
-#     expect_error({
-#         generate_Vispa2_launch_AF(as_file, 1, "y", "z")
-#     })
-# })
-#
-# test_that("generate_Vispa2_launch_AF stops if pool is not char", {
-#     expect_error({
-#         generate_Vispa2_launch_AF(as_file, "CLOEXP", 1, "z")
-#     })
-# })
-#
-# test_that("generate_Vispa2_launch_AF stops if lengths of projects and pool is
-#           not the same", {
-#     expect_error({
-#         generate_Vispa2_launch_AF(
-#             as_file, c("CLOEXP", "PROJECT1100"),
-#             c("POOL6"), "z"
-#         )
-#     })
-# })
-#
-# test_that("generate_Vispa2_launch_AF stops if path is incorrect", {
-#     expect_error({
-#         generate_Vispa2_launch_AF(as_file, c("CLOEXP"), c("POOL6"), 1)
-#     })
-#     expect_error({
-#         generate_Vispa2_launch_AF(as_file, c("CLOEXP"), c("POOL6"), c("x", "y"))
-#     })
-# })
-#
-# test_that("generate_Vispa2_launch_AF stops if af is malformed", {
-#     af <- as_file %>% dplyr::select(-c(.data$ProjectID))
-#     expect_error({
-#         generate_Vispa2_launch_AF(af, c("CLOEXP"), c("POOL6"), 1)
-#     })
-# })
-#
-# ## Testing output
-# test_that("generate_Vispa2_launch_AF works for single pair", {
-#     temp <- withr::local_tempdir()
-#     project <- c("CLOEXP")
-#     pool <- c("POOL6")
-#     name <- paste0(project, "-", pool, "_AF.tsv")
-#     complete_path <- file.path(temp, name)
-#     complete_path <- gsub('"', "", gsub("\\\\", "/", complete_path))
-#     generate_Vispa2_launch_AF(as_file, project, pool, temp)
-#     df <- read.csv(complete_path, sep = "\t", header = FALSE)
-#     expect_true(ncol(df) == 11)
-#     expect_equal(df[, 1], df[, 2])
-#     expect_message({
-#         generate_Vispa2_launch_AF(as_file, c("CLOEXP"), c("x"), temp)
-#     })
-# })
-#
-# test_that("generate_Vispa2_launch_AF works for multiple pair", {
-#     temp <- withr::local_tempdir()
-#     project <- c("CLOEXP", "PROJECT1100")
-#     pool <- c("POOL6", "ABX-LR-PL5-POOL14")
-#     name <- paste0(project, "-", pool, "_AF.tsv")
-#     complete_path <- file.path(temp, name)
-#     complete_path <- gsub('"', "", gsub("\\\\", "/", complete_path))
-#     generate_Vispa2_launch_AF(as_file, project, pool, temp)
-#     df <- read.csv(complete_path[1], sep = "\t", header = FALSE)
-#     expect_true(ncol(df) == 11)
-#     expect_equal(df[, 1], df[, 2])
-#     df <- read.csv(complete_path[2], sep = "\t", header = FALSE)
-#     expect_true(ncol(df) == 11)
-#     expect_equal(df[, 1], df[, 2])
-# })
+## Testing input
+test_that("generate_Vispa2_launch_AF stops if association_file is not df", {
+    expect_error({
+        generate_Vispa2_launch_AF("af.tsv", "x", "y", "z")
+    })
+})
+
+test_that("generate_Vispa2_launch_AF stops if project is not char", {
+    expect_error({
+        generate_Vispa2_launch_AF(association_file, 1, "y", "z")
+    })
+})
+
+test_that("generate_Vispa2_launch_AF stops if pool is not char", {
+    expect_error({
+        generate_Vispa2_launch_AF(association_file, "PJ01", 1, "z")
+    })
+})
+
+test_that("generate_Vispa2_launch_AF stops if lengths of projects and pool is
+          not the same", {
+    expect_error({
+        generate_Vispa2_launch_AF(
+            association_file, c("PJ01"),
+            c("POOL01", "POOL02"), "z"
+        )
+    })
+})
+
+test_that("generate_Vispa2_launch_AF stops if af is malformed", {
+    af <- association_file %>% dplyr::select(-c(.data$ProjectID))
+    expect_error({
+        generate_Vispa2_launch_AF(af, c("PJ01"), c("POOL01"), "test")
+    })
+})
+
+## Testing output
+test_that("generate_Vispa2_launch_AF works for single pair", {
+    temp <- withr::local_tempdir()
+    project <- c("PJ01")
+    pool <- c("POOL01")
+    name <- paste0(project, "-", pool, "_AF.tsv")
+    complete_path <- fs::path(temp, name)
+    generate_Vispa2_launch_AF(association_file, project, pool, temp)
+    df <- read.csv(complete_path, sep = "\t", header = FALSE)
+    expect_true(ncol(df) == 11)
+    expect_equal(df[, 1], df[, 2])
+    expect_message({
+        generate_Vispa2_launch_AF(association_file,
+                                  c("PJ01"), c("POOL05"), temp)
+    }, class = "launch_af_empty")
+})
+
+test_that("generate_Vispa2_launch_AF works for multiple pair", {
+    temp <- withr::local_tempdir()
+    project <- c("PJ01", "PJ01")
+    pool <- c("POOL01", "POOL02")
+    name <- paste0(project, "-", pool, "_AF.tsv")
+    complete_path <- fs::path(temp, name)
+    generate_Vispa2_launch_AF(association_file, project, pool, temp)
+    df <- read.csv(complete_path[1], sep = "\t", header = FALSE)
+    expect_true(ncol(df) == 11)
+    expect_equal(df[, 1], df[, 2])
+    df <- read.csv(complete_path[2], sep = "\t", header = FALSE)
+    expect_true(ncol(df) == 11)
+    expect_equal(df[, 1], df[, 2])
+})
 
 #------------------------------------------------------------------------------#
 # Tests as_sparse_matrix
 #------------------------------------------------------------------------------#
-# smpl <- tibble::tibble(
-#     chr = c(1, 2, 3), integration_locus = c(1354, 5634, 4765),
-#     strand = c("+", "+", "+"),
-#     GeneName = c("GENE1", "GENE2", "GENE3"),
-#     GeneStrand = c("+", "+", "+"),
-#     CompleteAmplificationID = c("ID1", "ID2", "ID3"),
-#     Value = c(46, 546, 587)
-# )
-#
-# smpl_multi <- tibble::tibble(
-#     chr = c(1, 2, 3),
-#     integration_locus = c(1354, 5634, 4765),
-#     strand = c("+", "+", "+"),
-#     GeneName = c("GENE1", "GENE2", "GENE3"),
-#     GeneStrand = c("+", "+", "+"),
-#     CompleteAmplificationID = c("ID1", "ID2", "ID3"),
-#     seqCount = c(46, 546, 587),
-#     fragmentEstimate = c(4234.5, 533.45, 5431.43),
-#     barcodeCount = c(46, 6456, 456)
-# )
-# test_that("as_sparse_matrix works with single matrix", {
-#     sparse <- as_sparse_matrix(smpl)
-#     expect_true(tibble::is_tibble(sparse))
-#     expect_true(all(c(
-#         "chr", "integration_locus", "strand",
-#         "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
-#     ) %in%
-#         colnames(sparse)))
-#     expect_equal(nrow(sparse), 3)
-# })
-#
-# test_that("as_sparse_matrix works with multi-quant matrix", {
-#     sparse <- as_sparse_matrix(smpl_multi)
-#     expect_true(!tibble::is_tibble(sparse) & is.list(sparse))
-#     expect_equal(names(sparse), c(
-#         "fragmentEstimate",
-#         "seqCount",
-#         "barcodeCount"
-#     ))
-#     expect_true(all(c(
-#         "chr", "integration_locus", "strand",
-#         "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
-#     ) %in%
-#         colnames(sparse$seqCount)))
-#     expect_equal(nrow(sparse$seqCount), 3)
-#     expect_true(all(c(
-#         "chr", "integration_locus", "strand",
-#         "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
-#     ) %in%
-#         colnames(sparse$fragmentEstimate)))
-#     expect_equal(nrow(sparse$fragmentEstimate), 3)
-# })
-#
-# test_that("as_sparse_matrix works with list of matrices", {
-#     sparse <- as_sparse_matrix(list(smpl, smpl))
-#     expect_true(!tibble::is_tibble(sparse) & is.list(sparse))
-#     expect_true(all(c(
-#         "chr", "integration_locus", "strand",
-#         "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
-#     ) %in%
-#         colnames(sparse[[1]])))
-#     expect_equal(nrow(sparse[[1]]), 3)
-#     expect_true(all(c(
-#         "chr", "integration_locus", "strand",
-#         "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
-#     ) %in%
-#         colnames(sparse[[2]])))
-#     expect_equal(nrow(sparse[[2]]), 3)
-# })
-#
-# #------------------------------------------------------------------------------#
-# # Tests annotation_issues
-# #------------------------------------------------------------------------------#
-# test_df_issues <- tibble::tribble(
-#     ~chr, ~integration_locus, ~strand, ~GeneName, ~GeneStrand,
-#     ~CompleteAmplificationID, ~Value,
-#     "1", 123456, "+", "ABCDE", "+", "ID1", 56,
-#     "1", 123456, "+", "ABCDE", "-", "ID2", 675,
-#     "1", 123456, "+", "FGHIL", "-", "ID3", 67,
-#     "2", 5674653, "-", "FGHIL", "-", "ID2", 873,
-#     "1", 4578768, "-", "RSPQX", "-", "ID3", 983,
-# )
-#
-# test_df_no_issues <- tibble::tribble(
-#     ~chr, ~integration_locus, ~strand, ~GeneName, ~GeneStrand,
-#     ~CompleteAmplificationID, ~Value,
-#     "1", 123456, "+", "ABCDE", "+", "ID1", 56,
-#     "1", 123456, "+", "ABCDE", "+", "ID2", 675,
-#     "1", 123456, "+", "ABCDE", "+", "ID3", 67,
-#     "2", 5674653, "-", "FGHIL", "-", "ID2", 873,
-#     "1", 4578768, "-", "RSPQX", "-", "ID3", 983,
-# )
-#
-# test_that("annotation_issues returns df if issues", {
-#     res <- annotation_issues(test_df_issues)
-#     expect_true(!is.null(res))
-#     expect_true(nrow(res) == 1 & res$chr[1] == "1" &
-#         res$integration_locus[1] == 123456 & res$strand == "+" &
-#         res$distinct_genes == 3)
-# })
-#
-# test_that("annotation_issues returns null if no issues", {
-#   expect_message({
-#     res <- annotation_issues(test_df_no_issues)
-#   })
-#   expect_null(res)
-# })
-#
-# test_that("annotation_issues works with lists", {
-#     res <- annotation_issues(list(a = test_df_issues, b = test_df_no_issues))
-#     expect_true(!is.null(res))
-#     expect_true(is.null(res[[2]]))
-#     expect_true(nrow(res[[1]]) == 1)
-# })
+smpl <- tibble::tibble(
+    chr = c(1, 2, 3), integration_locus = c(1354, 5634, 4765),
+    strand = c("+", "+", "+"),
+    GeneName = c("GENE1", "GENE2", "GENE3"),
+    GeneStrand = c("+", "+", "+"),
+    CompleteAmplificationID = c("ID1", "ID2", "ID3"),
+    Value = c(46, 546, 587)
+)
+
+smpl_multi <- tibble::tibble(
+    chr = c(1, 2, 3),
+    integration_locus = c(1354, 5634, 4765),
+    strand = c("+", "+", "+"),
+    GeneName = c("GENE1", "GENE2", "GENE3"),
+    GeneStrand = c("+", "+", "+"),
+    CompleteAmplificationID = c("ID1", "ID2", "ID3"),
+    seqCount = c(46, 546, 587),
+    fragmentEstimate = c(4234.5, 533.45, 5431.43),
+    barcodeCount = c(46, 6456, 456)
+)
+
+test_that("as_sparse_matrix works with single matrix", {
+    sparse <- as_sparse_matrix(smpl)
+    expected <- tibble::tibble(chr = c(1, 2, 3),
+                               integration_locus = c(1354, 5634, 4765),
+                               strand = c('+', '+', '+'),
+                               GeneName = c('GENE1', 'GENE2', 'GENE3'),
+                               GeneStrand = c('+', '+', '+'),
+                               ID1 = c(46, NA, NA),
+                               ID2 = c(NA, 546, NA),
+                               ID3 = c(NA, NA, 587))
+    expect_equal(sparse, expected, ignore_attr = TRUE)
+})
+
+test_that("as_sparse_matrix works with multi-quant matrix", {
+    sparse <- as_sparse_matrix(smpl_multi)
+    expect_true(is.list(sparse) & !is.data.frame(sparse))
+    expect_true(all(c("seqCount", "fragmentEstimate", "barcodeCount") %in%
+                      names(sparse)))
+    expect_true(all(c(
+        "chr", "integration_locus", "strand",
+        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+    ) %in% colnames(sparse$seqCount)))
+    expect_equal(nrow(sparse$seqCount), 3)
+    expect_true(all(c(
+        "chr", "integration_locus", "strand",
+        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+    ) %in% colnames(sparse$fragmentEstimate)))
+    expect_equal(nrow(sparse$fragmentEstimate), 3)
+    expect_true(all(c(
+      "chr", "integration_locus", "strand",
+      "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+    ) %in% colnames(sparse$barcodeCount)))
+    expect_equal(nrow(sparse$barcodeCount), 3)
+})
+
+test_that("as_sparse_matrix works with list of matrices", {
+    sparse <- as_sparse_matrix(list(smpl, smpl))
+    expect_true(!tibble::is_tibble(sparse) & is.list(sparse))
+    expect_true(all(c(
+        "chr", "integration_locus", "strand",
+        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+    ) %in%
+        colnames(sparse[[1]])))
+    expect_equal(nrow(sparse[[1]]), 3)
+    expect_true(all(c(
+        "chr", "integration_locus", "strand",
+        "GeneName", "GeneStrand", "ID1", "ID2", "ID3"
+    ) %in%
+        colnames(sparse[[2]])))
+    expect_equal(nrow(sparse[[2]]), 3)
+})
+
+#------------------------------------------------------------------------------#
+# Tests annotation_issues
+#------------------------------------------------------------------------------#
+test_df_issues <- tibble::tribble(
+    ~chr, ~integration_locus, ~strand, ~GeneName, ~GeneStrand,
+    ~CompleteAmplificationID, ~Value,
+    "1", 123456, "+", "ABCDE", "+", "ID1", 56,
+    "1", 123456, "+", "ABCDE", "-", "ID2", 675,
+    "1", 123456, "+", "FGHIL", "-", "ID3", 67,
+    "2", 5674653, "-", "FGHIL", "-", "ID2", 873,
+    "1", 4578768, "-", "RSPQX", "-", "ID3", 983,
+)
+
+test_df_no_issues <- tibble::tribble(
+    ~chr, ~integration_locus, ~strand, ~GeneName, ~GeneStrand,
+    ~CompleteAmplificationID, ~Value,
+    "1", 123456, "+", "ABCDE", "+", "ID1", 56,
+    "1", 123456, "+", "ABCDE", "+", "ID2", 675,
+    "1", 123456, "+", "ABCDE", "+", "ID3", 67,
+    "2", 5674653, "-", "FGHIL", "-", "ID2", 873,
+    "1", 4578768, "-", "RSPQX", "-", "ID3", 983,
+)
+
+test_that("annotation_issues returns df if issues", {
+    res <- annotation_issues(test_df_issues)
+    expect_true(!is.null(res))
+    expect_true(nrow(res) == 1 & res$chr[1] == "1" &
+        res$integration_locus[1] == 123456 & res$strand == "+" &
+        res$distinct_genes == 3)
+})
+
+test_that("annotation_issues returns null if no issues", {
+  withr::local_options(list(ISAnalytics.verbose = TRUE))
+  expect_message({
+    res <- annotation_issues(test_df_no_issues)
+  })
+  expect_null(res)
+})
+
+test_that("annotation_issues works with lists", {
+    res <- annotation_issues(list(a = test_df_issues, b = test_df_no_issues))
+    expect_true(!is.null(res))
+    expect_true(is.null(res[[2]]))
+    expect_true(nrow(res[[1]]) == 1)
+})
+
+#------------------------------------------------------------------------------#
+# Tests inspect_tags
+#------------------------------------------------------------------------------#
+test_that("inspect_tags prints tag info", {
+  expect_message({
+    inspect_tags("chromosome")
+  }, class = "tag_inspect")
+  expect_message({
+    expect_message({
+      inspect_tags(c("chromosome", "locus"))
+    }, class = "tag_inspect")
+  }, class = "tag_inspect")
+})
+
+#------------------------------------------------------------------------------#
+# Tests unzip_file_system
+#------------------------------------------------------------------------------#
+test_that("unzip_file_system signals deprecation", {
+  expect_defunct({
+    unzip_file_system("fs", "fs")
+  })
+})
+

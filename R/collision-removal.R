@@ -290,22 +290,27 @@ remove_collisions <- function(x,
 #'     other_matrices = list(fragmentEstimate = separated$fragmentEstimate)
 #' )
 #' realigned
-realign_after_collisions <- function(sc_matrix, other_matrices) {
+realign_after_collisions <- function(sc_matrix,
+                                     other_matrices,
+                                     sample_column = pcr_id_column()) {
     stopifnot(is.list(other_matrices) & !is.null(names(other_matrices)))
     stopifnot(all(names(other_matrices) %in% quantification_types()))
+    stopifnot(is.character(sample_column))
+    sample_column <- sample_column[1]
     all_ISm <- purrr::map_lgl(other_matrices, .check_mandatory_vars)
     if (!all(all_ISm)) {
         rlang::abort(.non_ISM_error())
     }
-    all_campid <- purrr::map_lgl(other_matrices, .check_sample_col)
+    all_campid <- purrr::map_lgl(other_matrices,
+                                 ~ sample_column %in% colnames(.x))
     if (!all(all_campid)) {
-        rlang::abort(.missing_complAmpID_error())
+        rlang::abort(.missing_needed_cols(sample_column))
     }
     realigned <- purrr::map(other_matrices, function(x) {
         x %>% dplyr::semi_join(sc_matrix,
             by = c(
                 mandatory_IS_vars(),
-                "CompleteAmplificationID"
+                sample_column
             )
         )
     })

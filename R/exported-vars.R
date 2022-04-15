@@ -27,12 +27,12 @@
   tibble::tribble(
     ~ names, ~ types, ~ transform, ~ flag, ~ tag,
     "ProjectID", "char", NULL, "required", "project_id",
-    "FUSIONID", "char", NULL, "optional", NA_character_,
+    "FUSIONID", "char", NULL, "optional", "fusion_id",
     "PoolID", "char", NULL, "required", "pool_id",
     "TagSequence", "char", NULL, "required", "tag_seq",
     "SubjectID", "char", NULL, "required", "subject",
     "VectorType", "char", NULL, "optional", NA_character_,
-    "VectorID", "char", NULL, "required", NA_character_,
+    "VectorID", "char", NULL, "required", "vector_id",
     "ExperimentID", "char", NULL, "optional", NA_character_,
     "Tissue", "char", NULL, "required", "tissue",
     "TimePoint", "char", ~ stringr::str_pad(.x, 4, side = "left", pad = "0"),
@@ -42,7 +42,7 @@
     "TagIDextended", "char", NULL, "optional", NA_character_,
     "Keywords","char", NULL, "optional", NA_character_,
     "CellMarker", "char", NULL, "required", "cell_marker",
-    "TagID", "char", NULL, "required", NA_character_,
+    "TagID", "char", NULL, "required", "tag_id",
     "NGSProvider", "char", NULL, "optional", NA_character_,
     "NGSTechnology", "char", NULL, "required", "ngs_tech",
     "ConverrtedFilesDir", "char", NULL, "optional", NA_character_,
@@ -266,11 +266,36 @@
 #' @examples
 #' reduced_AF_columns()
 reduced_AF_columns <- function() {
-    c(
-        "TagID", "Tissue", "SubjectID", "TimePoint", "FUSIONID",
-        "CompleteAmplificationID", "CellMarker", "ProjectID", "VectorID",
-        "PoolID"
-    )
+  required <- list(
+    tag_id = "char",
+    tissue = "char",
+    subject = "char",
+    tp_days = c("char", "numeric", "integer"),
+    fusion_id = "char",
+    pcr_repl_id = "char",
+    cell_marker = "char",
+    project_id = "char",
+    vector_id = "char",
+    pool_id = "char"
+  )
+  politics <- list(
+    tag_id = "error",
+    tissue = "error",
+    subject = "error",
+    tp_days = "first",
+    fusion_id = "error",
+    pcr_repl_id = "error",
+    cell_marker = "error",
+    project_id = "error",
+    vector_id = "error",
+    pool_id = "error"
+  )
+  tag_cols <- .check_required_cols(required_tags = required,
+                                   vars_df = association_file_columns(TRUE),
+                                   duplicate_politic = politics) %>%
+    dplyr::select(.data$names, .data$tag)
+  data.table::setDT(tag_cols)
+  return(tag_cols)
 }
 
 # Names of the columns of iss stats considered for aggregation
@@ -334,20 +359,107 @@ refGene_table_cols <- function() {
 }
 
 
-available_column_tags <- function() {
-    list(
-        critical = list(af = c(
-            "project_id", "pool_id", "tag_seq", "subject", "tissue",
-            "cell_marker", "pcr_replicate", "vispa_concatenate",
-            "pcr_repl_id", "proj_folder"
-        ),
-        matrix = c("chromosome", "locus", "is_strand", "gene_symbol"),
-        stats = c("vispa_concatenate", "tag_seq")),
-        optional = list(af = c(
-            "tp_days", "pcr_method", "ngs_tech", "dna_num",
-            "vcn", "genome"
-        ),
-        matrix = c("gene_strand"),
-        stats = c())
-    )
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+available_tags <- function() {
+  data.table::data.table(
+    tag = c("chromosome", "locus", "is_strand", "gene_symbol", "gene_strand",
+            "project_id", "fusion_id", "tag_seq", "subject", "vector_id",
+            "tissue", "tp_days", "pcr_method", "cell_marker", "tag_id",
+            "ngs_tech", "dna_num", "pcr_replicate", "vcn", "vispa_concatenate",
+            "pcr_repl_id", "proj_folder", "genome",
+            "vispa_concatenate", "tag_seq"),
+    needed_in = list(c("top_targeted_genes",
+                       "CIS_grubbs",
+                       "compute_near_integrations"),
+                     c("top_targeted_genes",
+                       "CIS_grubbs",
+                       "compute_near_integrations"),
+                     c("CIS_grubbs",
+                       "compute_near_integrations"),
+                     c("top_targeted_genes",
+                       "CIS_grubbs",
+                       "compute_near_integrations",
+                       "CIS_volcano_plot"),
+                     c("top_targeted_genes",
+                       "CIS_grubbs"),
+                     c("generate_default_folder_structure",
+                       "import_Vispa2_stats", "remove_collisions",
+                       "generate_Vispa2_launch_AF", "import_association_file",
+                       "import_parallel_Vispa2Matrices"),
+                     c("generate_Vispa2_launch_AF"),
+                     c("generate_default_folder_structure",
+                       "import_association_file", "import_Vispa2_stats"),
+                     c("import_association_file",
+                       "HSC_population_size_estimate"),
+                     c("generate_Vispa2_launch_AF"),
+                     c("generate_Vispa2_launch_AF", "import_association_file",
+                       "HSC_population_size_estimate"),
+                     c("generate_Vispa2_launch_AF", "import_association_file"),
+                     c(),
+                     c("generate_Vispa2_launch_AF", "import_association_file",
+                       "HSC_population_size_estimate"),
+                     c("generate_Vispa2_launch_AF"),
+                     c(),
+                     c(),
+                     c("import_association_file", "remove_collisions"),
+                     c(),
+                     c("import_association_file", "generate_Vispa2_launch_AF",
+                       "generate_default_folder_structure",
+                       "import_Vispa2_stats", "import_parallel_Vispa2Matrices"),
+                     c("pcr_id_column", "generate_Vispa2_launch_AF",
+                       "import_association_file", "import_Vispa2_stats"),
+                     c("import_association_file"),
+                     c(),
+                     c("import_association_file", "generate_Vispa2_launch_AF",
+                       "generate_default_folder_structure",
+                       "import_Vispa2_stats", "import_parallel_Vispa2Matrices"),
+                     c("generate_default_folder_structure",
+                       "import_association_file", "import_Vispa2_stats")
+                     ),
+    description = c(paste("Number of the chromosome"),
+                    paste("The locus at which the integration occurs"),
+                    paste("The DNA strand in which the integration occurs"),
+                    paste("The symbol of the gene"),
+                    paste("The strand of the gene"),
+                    paste("Unique identifier of a project"),
+                    paste("Identification code/number of the",
+                          "barcoded (SLiM-)PCR product included in the",
+                          "sequencing library"),
+                    paste("The barcode tag sequence"),
+                    paste("Unique identifier of a study subject",
+                          "(usually a patient)"),
+                    paste("Unique identifier of the vector used"),
+                    paste("The biological tissue the sample belongs to"),
+                    paste("The time point expressed in days"),
+                    paste("The PCR method used"),
+                    paste("Cell marker associated with isolated",
+                          "cells carrying the IS"),
+                    paste("Unique identifier of the barcode tag, as specified",
+                          "in VISPA2 requirements"),
+                    paste("Technology used for next generation sequencing"),
+                    paste("Identification code/number of the DNA extraction",
+                          "from a specific biological sample"),
+                    paste("Number of the PCR replicate"),
+                    paste("Vector copy number"),
+                    paste("Unique identifier of a pool as specified in VISPA2"),
+                    paste("Unique identifier of the pcr replicate, used as",
+                          "key to join data and metadata"),
+                    paste("Path on disk containing the standard VISPA2 folder",
+                          "structure of the project"),
+                    paste("The reference genome (e.g. “hg19”)"),
+                    paste("Unique identifier of a pool as specified in VISPA2"),
+                    paste("The barcode tag sequence")
+                    ),
+    dyn_vars_tbl = c("mand_vars", "mand_vars", "mand_vars",
+                     "annot_vars", "annot_vars",
+                     "af_vars", "af_vars", "af_vars", "af_vars", "af_vars",
+                     "af_vars", "af_vars", "af_vars", "af_vars", "af_vars",
+                     "af_vars", "af_vars", "af_vars", "af_vars", "af_vars",
+                     "af_vars", "af_vars", "af_vars", "iss_vars", "iss_vars")
+  )
 }

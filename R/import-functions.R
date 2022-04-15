@@ -79,7 +79,7 @@ import_single_Vispa2Matrix <- function(path,
                                  "which allows a more refined tuning. See",
                                  "`?import_single_Vispa2Matrix` for details")
     if (lifecycle::is_present(to_exclude)) {
-      lifecycle::deprecate_warn(
+      lifecycle::deprecate_stop(
         when = "1.5.4",
         what = "import_single_Vispa2Matrix(to_exclude)",
         with = "import_single_Vispa2Matrix(additional_cols)",
@@ -88,7 +88,7 @@ import_single_Vispa2Matrix <- function(path,
       return(NULL)
     }
     if (lifecycle::is_present(keep_excluded)) {
-      lifecycle::deprecate_warn(
+      lifecycle::deprecate_stop(
         when = "1.5.4",
         what = "import_single_Vispa2Matrix(keep_excluded)",
         with = "import_single_Vispa2Matrix(additional_cols)",
@@ -359,9 +359,13 @@ import_association_file <- function(path,
     if (!is.null(transformations)) {
         as_file <- transform_columns(as_file, transformations)
     }
-
+    crit_tags <- c(
+      "project_id", "pool_id", "tag_seq", "subject", "tissue",
+      "cell_marker", "pcr_replicate", "vispa_concatenate",
+      "pcr_repl_id", "proj_folder"
+    )
     crit_colnames <- association_file_columns(TRUE) %>%
-        dplyr::filter(.data$tag %in% available_column_tags()$critical$af) %>%
+        dplyr::filter(.data$tag %in% crit_tags) %>%
         dplyr::pull(.data$names)
     crit_colnames <- colnames(as_file)[colnames(as_file) %in% crit_colnames]
     crit_nas <- if (length(crit_colnames) > 0) {
@@ -778,6 +782,7 @@ import_parallel_Vispa2Matrices <- function(association_file,
         dplyr::pull(.data$names)
     ### --- Interactive
     if (mode == "INTERACTIVE") {
+      matching_option <- NULL
         ## User selects projects to keep
         association_file <- .interactive_select_projects_import(
             association_file,
@@ -996,7 +1001,8 @@ annotation_issues <- function(matrix) {
     find_probs <- function(m) {
         needed <- c(mandatory_IS_vars(), annotation_IS_vars())
         if (!all(needed %in% colnames(m))) {
-            rlang::inform(.missing_needed_cols(needed[!needed %in% colnames(m)]))
+            rlang::inform(
+              .missing_needed_cols(needed[!needed %in% colnames(m)]))
             return(NULL)
         }
         tmp <- m %>%
@@ -1005,7 +1011,8 @@ annotation_issues <- function(matrix) {
                 annotation_IS_vars()
             ))) %>%
             dplyr::distinct() %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
+            dplyr::group_by(dplyr::across(
+              dplyr::all_of(mandatory_IS_vars()))) %>%
             dplyr::summarise(distinct_genes = dplyr::n())
         if (any(tmp$distinct_genes > 1)) {
             tmp %>%

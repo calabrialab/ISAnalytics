@@ -12,6 +12,7 @@ integration_alluvial_plot(
   alluvia = mandatory_IS_vars(),
   alluvia_plot_y_threshold = 1,
   top_abundant_tbl = TRUE,
+  empty_space_color = "grey90",
   ...
 )
 }
@@ -33,6 +34,12 @@ threshold on y will be plotted in grey and aggregated. See details.}
 
 \item{top_abundant_tbl}{Logical. Produce the summary top abundant tables
 via \link{top_abund_tableGrob}?}
+
+\item{empty_space_color}{Color of the empty portion of the bars (IS below
+the threshold). Can be either a string of known colors, an hex code or
+\code{NA_character} to set the space transparent. All color
+specs accepted in ggplot2
+are suitable here.}
 
 \item{...}{Additional arguments to pass on to \link{top_abund_tableGrob}}
 }

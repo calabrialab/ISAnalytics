@@ -1,4 +1,3 @@
-library(ISAnalytics)
 #------------------------------------------------------------------------------#
 # Tests for general use of dynamic variables
 # * Internals
@@ -9,38 +8,38 @@ library(ISAnalytics)
 test_that(".new_IS_vars_checks errors if input not in format", {
     specs <- 5
     expect_error({
-        vars <- .new_IS_vars_checks(specs, "err")
+        vars <- .new_IS_vars_checks(specs, "err", NULL)
     })
     specs <- tibble::tribble(
         ~a, ~b,
         "var1", "int"
     )
     expect_error({
-        vars <- .new_IS_vars_checks(specs, "err")
+        vars <- .new_IS_vars_checks(specs, "err", NULL)
     })
     specs <- tibble::tribble(
         ~names, ~types,
         "var1", integer()
     )
     expect_error({
-        vars <- .new_IS_vars_checks(specs, "err")
+        vars <- .new_IS_vars_checks(specs, "err", NULL)
     })
     specs <- tibble::tribble(
         ~names, ~types, ~ transform, ~ flag,
         "var1", "unknown", NULL, "no"
     )
     expect_error({
-        vars <- .new_IS_vars_checks(specs, "err")
+        vars <- .new_IS_vars_checks(specs, "err", NULL)
     })
     specs <- c(var1 = "unknown")
     expect_error({
-        vars <- .new_IS_vars_checks(specs, "err")
+        vars <- .new_IS_vars_checks(specs, "err", NULL)
     })
 })
 
 test_that(".new_IS_vars_checks accepts named vec", {
     specs <- c(var1 = "char", var2 = "int", var3 = "numeric")
-    vars <- .new_IS_vars_checks(specs, "err")
+    vars <- .new_IS_vars_checks(specs, "err", NULL)
     expected <- tibble::tribble(
         ~names, ~types, ~ transform, ~flag, ~ tag,
         "var1", "char", NULL, "required", NA_character_,
@@ -52,7 +51,7 @@ test_that(".new_IS_vars_checks accepts named vec", {
 
 test_that(".new_IS_vars_checks accepts named list", {
     specs <- list(var1 = "char", var2 = "int", var3 = "numeric")
-    vars <- .new_IS_vars_checks(specs, "err")
+    vars <- .new_IS_vars_checks(specs, "err", NULL)
     expected <- tibble::tribble(
       ~names, ~types, ~ transform, ~flag, ~ tag,
       "var1", "char", NULL, "required", NA_character_,
@@ -69,7 +68,7 @@ test_that(".new_IS_vars_checks accepts data frame", {
       "var2", "int", NULL, "required", NA_character_,
       "var3", "numeric", NULL, "required", NA_character_
     )
-    vars <- .new_IS_vars_checks(specs, "err")
+    vars <- .new_IS_vars_checks(specs, "err", NULL)
     expect_equal(vars, specs)
 })
 
@@ -430,7 +429,7 @@ test_that("association_file_columns works as expected", {
   })
 })
 
-test_that("set_mandatory_IS_vars works as expected", {
+test_that("set_mandatory_IS_vars signals missing tags", {
   temp_specs <- tibble::tribble(
     ~names, ~types, ~ transform, ~flag, ~ tag,
     "var1", "char", NULL, "required", NA_character_,
@@ -438,13 +437,33 @@ test_that("set_mandatory_IS_vars works as expected", {
     "var3", "numeric", NULL, "required", NA_character_
   )
   before <- getOption("ISAnalytics.mandatory_is_vars")
-  set_mandatory_IS_vars(temp_specs)
+  expect_message(
+    expect_message({
+      set_mandatory_IS_vars(temp_specs)
+    }, class = "missing_crit_tags")
+  )
   after <- getOption("ISAnalytics.mandatory_is_vars")
   expect_equal(after, temp_specs)
   options(ISAnalytics.mandatory_is_vars = before)
 })
 
-test_that("set_annotation_IS_vars works as expected", {
+test_that("set_mandatory_IS_vars works as expected", {
+  temp_specs <- tibble::tribble(
+    ~names, ~types, ~ transform, ~flag, ~ tag,
+    "var1", "char", NULL, "required", "chromosome",
+    "var2", "int", NULL, "required", "locus",
+    "var3", "numeric", NULL, "required", "is_strand"
+  )
+  before <- getOption("ISAnalytics.mandatory_is_vars")
+  expect_message(
+    set_mandatory_IS_vars(temp_specs)
+  )
+  after <- getOption("ISAnalytics.mandatory_is_vars")
+  expect_equal(after, temp_specs)
+  options(ISAnalytics.mandatory_is_vars = before)
+})
+
+test_that("set_annotation_IS_vars signals missing tags", {
   temp_specs <- tibble::tribble(
     ~names, ~types, ~ transform, ~flag, ~ tag,
     "var1", "char", NULL, "required", NA_character_,
@@ -452,7 +471,27 @@ test_that("set_annotation_IS_vars works as expected", {
     "var3", "numeric", NULL, "required", NA_character_
   )
   before <- getOption("ISAnalytics.genomic_annotation_vars")
-  set_annotation_IS_vars(temp_specs)
+  expect_message(
+    expect_message({
+      set_annotation_IS_vars(temp_specs)
+    }, class = "missing_crit_tags")
+  )
+  after <- getOption("ISAnalytics.genomic_annotation_vars")
+  expect_equal(after, temp_specs)
+  options(ISAnalytics.genomic_annotation_vars = before)
+})
+
+test_that("set_annotation_IS_vars works as expected", {
+  temp_specs <- tibble::tribble(
+    ~names, ~types, ~ transform, ~flag, ~ tag,
+    "var1", "char", NULL, "required", "gene_symbol",
+    "var2", "int", NULL, "required", "gene_strand",
+    "var3", "numeric", NULL, "required", NA_character_
+  )
+  before <- getOption("ISAnalytics.genomic_annotation_vars")
+  expect_message(
+    set_annotation_IS_vars(temp_specs)
+  )
   after <- getOption("ISAnalytics.genomic_annotation_vars")
   expect_equal(after, temp_specs)
   options(ISAnalytics.genomic_annotation_vars = before)
@@ -466,9 +505,94 @@ test_that("set_af_columns_def works as expected", {
     "var3", "numeric", NULL, "required", NA_character_
   )
   before <- getOption("ISAnalytics.af_specs")
-  set_af_columns_def(temp_specs)
+  expect_message(
+    expect_message({
+      set_af_columns_def(temp_specs)
+    }, class = "missing_crit_tags")
+  )
   after <- getOption("ISAnalytics.af_specs")
   expect_equal(after, temp_specs)
   options(ISAnalytics.af_specs = before)
 })
 
+test_that("iss_stats_specs works as expected", {
+  withr::with_options(list(ISAnalytics.iss_stats_specs = "default"), {
+    vars <- iss_stats_specs()
+    expect_equal(vars, .default_iss_stats_specs()$names)
+    vars <- iss_stats_specs(TRUE)
+    expect_equal(vars, .default_iss_stats_specs())
+  })
+  temp_specs <- tibble::tribble(
+    ~names, ~types, ~ transform, ~flag, ~ tag,
+    "var1", "char", NULL, "required", "vispa_concatenate",
+    "var2", "int", NULL, "required", "tag_seq",
+    "var3", "numeric", NULL, "required", NA_character_
+  )
+  withr::with_options(list(ISAnalytics.iss_stats_specs = temp_specs), {
+    vars <- iss_stats_specs()
+    expect_equal(vars, temp_specs$names)
+    vars <- iss_stats_specs(TRUE)
+    expect_equal(vars, temp_specs)
+  })
+})
+
+test_that("set_iss_stats_specs works as expected", {
+  temp_specs <- tibble::tribble(
+    ~names, ~types, ~ transform, ~flag, ~ tag,
+    "var1", "char", NULL, "required", "vispa_concatenate",
+    "var2", "int", NULL, "required", "tag_seq",
+    "var3", "numeric", NULL, "required", NA_character_
+  )
+  before <- getOption("ISAnalytics.iss_stats_specs")
+  expect_message(
+    set_iss_stats_specs(temp_specs)
+  )
+  after <- getOption("ISAnalytics.iss_stats_specs")
+  expect_equal(after, temp_specs)
+  options(ISAnalytics.iss_stats_specs = before)
+})
+
+test_that("matrix_file_suffixes returns expected", {
+  expected <- tibble::tibble(
+    quantification = c('seqCount', 'fragmentEstimate', 'barcodeCount',
+                       'cellCount', 'ShsCount', 'seqCount',
+                       'fragmentEstimate', 'barcodeCount',
+                       'cellCount', 'ShsCount'),
+    matrix_type = c('annotated', 'annotated', 'annotated',
+                    'annotated', 'annotated', 'not_annotated',
+                    'not_annotated', 'not_annotated', 'not_annotated',
+                    'not_annotated'),
+    file_suffix = c('seqCount_matrix.no0.annotated.tsv.gz',
+                    'fragmentEstimate_matrix.no0.annotated.tsv.gz',
+                    'barcodeCount_matrix.no0.annotated.tsv.gz',
+                    'cellCount_matrix.no0.annotated.tsv.gz',
+                    'ShsCount_matrix.no0.annotated.tsv.gz',
+                    'seqCount_matrix.tsv.gz', 'fragmentEstimate_matrix.tsv.gz',
+                    'barcodeCount_matrix.tsv.gz', 'cellCount_matrix.tsv.gz',
+                    'ShsCount_matrix.tsv.gz'))
+  matrix_suffixes <- matrix_file_suffixes()
+  expect_equal(matrix_suffixes, expected)
+})
+
+test_that("set_matrix_file_suffixes works as expected", {
+  before <- getOption("ISAnalytics.matrix_file_suffix")
+  expect_error({
+    set_matrix_file_suffixes(annotation_suffix = list(annotated = "ann"))
+  }, class = "miss_annot_suff_specs")
+  expect_message({
+    expect_message({
+      set_matrix_file_suffixes(quantification_suffix = list(
+        fragmentEstimate = "fe", seqCount = "sc"
+      ))
+    }, class = "missing_quant_specs")
+  })
+  expected_out <- tibble::tibble(
+    quantification = c('fragmentEstimate', 'seqCount', 'fragmentEstimate',
+                       'seqCount'),
+    matrix_type = c('annotated', 'annotated', 'not_annotated', 'not_annotated'),
+    file_suffix = c('fe_matrix.no0.annotated.tsv.gz',
+                    'sc_matrix.no0.annotated.tsv.gz',
+                    'fe_matrix.tsv.gz', 'sc_matrix.tsv.gz'))
+  expect_equal(getOption("ISAnalytics.matrix_file_suffix"), expected_out)
+  options(ISAnalytics.matrix_file_suffix = before)
+})

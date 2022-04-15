@@ -9,7 +9,9 @@ CIS_grubbs(
   genomic_annotation_file = "hg19",
   grubbs_flanking_gene_bp = 1e+05,
   threshold_alpha = 0.05,
-  by = NULL
+  by = NULL,
+  return_missing_as_df = TRUE,
+  results_as_list = TRUE
 )
 }
 \arguments{
@@ -44,9 +46,14 @@ this paper:
 \details{
 \subsection{Genomic annotation file}{
 
-This file is a data base, or more simply a .tsv file to import, with
-genes annotation for the specific genome. The annotations for the
-human genome (hg19) and murine genome (mm9) are already
+A data frame containing
+genes annotation for the specific genome.
+From version \verb{1.5.4} the argument \code{genomic_annotation_file} accepts only
+data frames or package provided defaults.
+The user is responsible for importing the appropriate tabular files if
+customization is needed.
+The annotations for the human genome (hg19) and
+murine genome (mm9) are already
 included in this package: to use one of them just
 set the argument \code{genomic_annotation_file} to either \code{"hg19"} or
 \code{"mm9"}.

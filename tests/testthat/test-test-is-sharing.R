@@ -1,6 +1,6 @@
 library(ISAnalytics)
 library(data.table, include.only = "%like%")
-
+withr::local_options(list(ISAnalytics.verbose = FALSE))
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
@@ -354,23 +354,27 @@ test_that(".sharing_multdf_mult_key ok", {
 test_that("is_sharing detects single key in list", {
     keys <- list(c("SubjectID", "CellMarker"))
     withr::with_options(list(ISAnalytics.verbose = TRUE), {
+      expect_message(
+      expect_message(
         expect_message(
             {
                 sharing <- is_sharing(test_sharing_input, group_keys = keys)
             },
             class = "one_key_list"
-        )
+        )))
     })
     keys <- list(
         c("SubjectID", "CellMarker"), c("SubjectID", "CellMarker"),
         c("SubjectID", "CellMarker")
     )
     withr::with_options(list(ISAnalytics.verbose = TRUE), {
+      expect_message(
+      expect_message(
         expect_message(
             {
                 sharing <- is_sharing(test_sharing_input, group_keys = keys)
             },
             class = "one_key_list"
-        )
+        )))
     })
 })

@@ -5,7 +5,8 @@
 
 #### ---- Internals for dynamic variables  ----####
 # Internal for setting mandatory or annotation is vars
-.new_IS_vars_checks <- function(specs, err) {
+# tbl_type must be in {mand_vars, annot_vars, af_vars, iss_vars}
+.new_IS_vars_checks <- function(specs, err, tbl_type) {
     new_vars <- if (is.data.frame(specs)) {
         # if data frame supplied
         colnames_ok <- all(c("names", "types", "transform", "flag", "tag")
@@ -46,7 +47,8 @@
         specs
     } else {
         # if vector supplied
-        if (is.null(names(specs)) || !all(specs %in% .types_mapping()[["types"]])) {
+        if (is.null(names(specs)) || !all(specs %in%
+                                          .types_mapping()[["types"]])) {
             rlang::abort(err)
         }
         purrr::map2_dfr(
@@ -59,6 +61,31 @@
                 tag = NA_character_
             )
         )
+    }
+    # -- check critical tags
+    if (!is.null(tbl_type)) {
+      available_tags <- available_tags()
+      to_check <- available_tags[eval(sym("dyn_vars_tbl")) == tbl_type &
+                                 !purrr::map_lgl(
+                                   eval(sym("needed_in")), ~ purrr::is_empty(.x)
+                                 ), ]
+      if (!all(to_check$tag %in% new_vars$tag)) {
+        missing_tags <- to_check$tag[!to_check$tag %in% new_vars$tag]
+        inspect_cmd <- paste0("inspect_tags(c(", paste0("'", missing_tags,
+                                                        "'", collapse = ","),
+                              "))")
+        warn <- c("Warning: important tags missing",
+                  i = paste("Some tags are required for proper execution",
+                            "of some functions. If these tags are not",
+                            "provided, execution of dependent functions",
+                            "might fail.",
+                            "Review your inputs carefully."),
+                  i = paste("Missing tags:", paste0(missing_tags,
+                                                    collapse = ", ")),
+                  i = paste0("To see where these are involved type `",
+                             inspect_cmd, "`"))
+        rlang::inform(warn, class = "missing_crit_tags")
+      }
     }
     new_vars
 }
@@ -284,7 +311,7 @@
                 tag_list$vispa_concatenate
         ) %>%
         dplyr::distinct() %>%
-      dplyr::filter(!dplyr::if_all(iss_cols, is.na))
+      dplyr::filter(!dplyr::if_all(dplyr::all_of(iss_cols), is.na))
     # Separate by project
     stats_split <- iss_data %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(tag_list$project_id)))
@@ -753,27 +780,6 @@
     return(res)
 }
 
-# Internal helper function for checking `Value` column presence in x.
-#
-# Checks if the column `Value` is present in the data frame and also
-# checks if the column is numeric or integer.
-# @param x A data.frame object (or any extending class)
-# @keywords internal
-#
-# @return FALSE if not found or contains non-numeric data, TRUE otherwise
-.check_value_col <- function(x) {
-    stopifnot(is.data.frame(x))
-    present <- if ("Value" %in% colnames(x)) {
-        TRUE
-    } else {
-        FALSE
-    }
-    if (present == TRUE) {
-        return(is.numeric(x$Value) | is.integer(x$Value))
-    } else {
-        return(FALSE)
-    }
-}
 
 # Internal helper function for checking that the pcr replicate
 # column presence in x.
@@ -1691,15 +1697,13 @@
         p <- BiocParallel::SnowParam(
             stop.on.error = FALSE,
             tasks = length(stats_paths$stats_files),
-            progressbar = getOption("ISAnalytics.verbose"),
-            exportglobals = TRUE
+            progressbar = getOption("ISAnalytics.verbose")
         )
     } else {
         p <- BiocParallel::MulticoreParam(
             stop.on.error = FALSE,
             tasks = length(stats_paths$stats_files),
-            progressbar = getOption("ISAnalytics.verbose"),
-            exportglobals = FALSE
+            progressbar = getOption("ISAnalytics.verbose")
         )
     }
     FUN <- function(x, req_cols) {
@@ -1715,6 +1719,7 @@
         if (ok == TRUE) {
           # Apply column transformations if present
           stats <- .apply_col_transform(stats, iss_stats_specs(TRUE))
+          return(stats)
         } else {
             return("MALFORMED")
         }
@@ -3053,10 +3058,10 @@
   wanted_tags <- c(
     "subject", "tissue", "cell_marker", "tp_days"
   )
-  wanted <- data.table::setDT(.check_required_cols(required_tags = wanted_tags,
-                       vars_df = association_file_columns(TRUE),
-                       duplicate_politic = "keep") %>%
-    dplyr::filter(.data$names %in% colnames(association_file)))
+  wanted <- association_file_columns(TRUE)
+  data.table::setDT(wanted)
+  wanted <- wanted[eval(sym("tag")) %in% wanted_tags &
+                     eval(sym("names")) %in% colnames(association_file), ]
   wanted <- data.table::rbindlist(list(req_tag_cols, wanted))
   predicate <- purrr::map(mandatory_IS_vars(), ~ {
     rlang::expr(is.na(!!sym(.x)))
@@ -3659,36 +3664,24 @@
 
 # Internal function that performs aggregation on values with a lambda
 # operation.
-#
-# @param x The list of matrices to aggregate. If a single matrix has to be
-# supplied it must be enclosed in a list. For example `x = list(matrix)`.
-# @param af The association file
-# @param key A string or character vector to use as key
-# @param lambda The aggregating operation to apply to values. Must take as
-# input a numeric/integer vector and return a single value
-# @param group The additional variables to add to grouping
-# @param args Additional arguments passed on to lambda (named list)
-# @param namespace The namespace from which the lambda is exported
-# @param envir The environment in which symbols must be evaluated
-#' @importFrom rlang .data
-# @keywords internal
-#
-# @return A list of tibbles with aggregated values
+# - x is a single matrix
 .aggregate_lambda <- function(x, af, key, value_cols, lambda, group,
     join_af_by) {
-    # Vectorize
-    aggregated_matrices <- purrr::map(x, function(y) {
-        cols <- c(colnames(y), key)
-        agg <- y %>%
-            dplyr::left_join(af, by = dplyr::all_of(join_af_by)) %>%
-            dplyr::select(dplyr::all_of(cols)) %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of(c(group, key)))) %>%
-            dplyr::summarise(dplyr::across(
-                .cols = dplyr::all_of(value_cols),
-                .fns = lambda
-            ), .groups = "drop")
-        agg
-    })
+    cols_to_check <- c(group, key, value_cols, join_af_by)
+    joint <- x %>%
+      dplyr::left_join(af, by = dplyr::all_of(join_af_by))
+    if (any(!cols_to_check %in% colnames(joint))) {
+      missing <- cols_to_check[!cols_to_check %in% colnames(joint)]
+      rlang::abort(.missing_user_cols_error(missing))
+    }
+    cols <- c(colnames(x), key)
+    aggregated_matrices <- joint %>%
+      dplyr::select(dplyr::all_of(cols)) %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(c(group, key)))) %>%
+      dplyr::summarise(dplyr::across(
+        .cols = dplyr::all_of(value_cols),
+        .fns = lambda
+      ), .groups = "drop")
     aggregated_matrices
 }
 
@@ -4383,90 +4376,122 @@
     return(filtered)
 }
 
+#---- USED IN : top_targeted_genes ----
+# Internal to count the number of distinct integration sites for each gene
+# - x: input df, must include mand vars and annotation vars
+# - include_chr: should the distinction be made by taking into account that
+#   some genes span over different chromosomes? If TRUE keeps same
+#   (gene_sym, gene_strand) but different chr separated (different rows)
+# - include_gene_strand: same but for gene strand
+#' @importFrom data.table %chin%
+.count_distinct_is_per_gene <- function(x, include_chr,
+                                        include_gene_strand,
+                                        gene_sym_col,
+                                        gene_strand_col,
+                                        chr_col,
+                                        mand_vars_to_check
+                                        ) {
+  data.table::setDT(mand_vars_to_check)
+  data.table::setDT(x)
+  present_mand_vars <- mand_vars_to_check[eval(sym("names")) %chin% colnames(x)]
+  group_key <- c(gene_sym_col)
+  if (include_gene_strand) {
+    group_key <- c(group_key, gene_strand_col)
+  }
+  if (include_chr) {
+    group_key <- c(group_key, chr_col)
+    present_mand_vars <- present_mand_vars[!eval(sym("names")) %chin% chr_col]
+  }
+  is_vars <- present_mand_vars$names
+  count_by_gene <- x[, list(n_IS = dplyr::n_distinct(
+    .SD[, mget(is_vars)]
+  )), by = eval(group_key)]
+  count_by_gene
+}
+
 #---- USED IN : CIS_grubbs ----
 # Internal computation of CIS_grubbs test
 .cis_grubb_calc <- function(x,
     refgenes,
     grubbs_flanking_gene_bp,
-    threshold_alpha) {
-    df_by_gene <- if (requireNamespace("psych", quietly = TRUE)) {
-        x %>%
-            dplyr::group_by(
-                .data$GeneName,
-                .data$GeneStrand,
-                .data$chr
-            ) %>%
-            dplyr::summarise(
-                n_IS_perGene = dplyr::n_distinct(
-                    .data$integration_locus
-                ),
-                min_bp_integration_locus =
-                    min(.data$integration_locus),
-                max_bp_integration_locus =
-                    max(.data$integration_locus),
-                IS_span_bp = (max(.data$integration_locus) -
-                    min(.data$integration_locus)),
-                avg_bp_integration_locus =
-                    mean(.data$integration_locus),
-                median_bp_integration_locus =
-                    stats::median(.data$integration_locus),
-                distinct_orientations = dplyr::n_distinct(.data$strand),
-                describe = list(tibble::as_tibble(
-                    psych::describe(.data$integration_locus)
-                )),
-                .groups = "drop"
-            ) %>%
-            tidyr::unnest(cols = .data$describe)
-    } else {
-        x %>%
-            dplyr::group_by(
-                .data$GeneName,
-                .data$GeneStrand,
-                .data$chr
-            ) %>%
-            dplyr::summarise(
-                n_IS_perGene = dplyr::n_distinct(
-                    .data$integration_locus
-                ),
-                min_bp_integration_locus =
-                    min(.data$integration_locus),
-                max_bp_integration_locus =
-                    max(.data$integration_locus),
-                IS_span_bp = (max(.data$integration_locus) -
-                    min(.data$integration_locus)),
-                avg_bp_integration_locus =
-                    mean(.data$integration_locus),
-                median_bp_integration_locus =
-                    stats::median(.data$integration_locus),
-                distinct_orientations = dplyr::n_distinct(.data$strand),
-                .groups = "drop"
-            )
+    threshold_alpha,
+    gene_symbol_col,
+    gene_strand_col,
+    chr_col,
+    locus_col,
+    strand_col
+    ) {
+    ## -- Grouping by gene
+    df_by_gene <- x %>%
+      dplyr::group_by(
+        dplyr::across(
+          dplyr::all_of(c(gene_symbol_col, gene_strand_col, chr_col))
+          )
+        ) %>%
+      dplyr::summarise(
+        n_IS_perGene = dplyr::n_distinct(
+          .data[[locus_col]]
+        ),
+        min_bp_integration_locus =
+          min(.data[[locus_col]]),
+        max_bp_integration_locus =
+          max(.data[[locus_col]]),
+        IS_span_bp = (max(.data[[locus_col]]) -
+                        min(.data[[locus_col]])),
+        avg_bp_integration_locus =
+          mean(.data[[locus_col]]),
+        median_bp_integration_locus =
+          stats::median(.data[[locus_col]]),
+        distinct_orientations = dplyr::if_else(
+          condition = is.null(strand_col),
+          true = NA_integer_,
+          false = dplyr::n_distinct(.data[[strand_col]])
+        ),
+        .groups = "drop"
+      )
+    ## --- Add describe if package available
+    if (requireNamespace("psych", quietly = TRUE)) {
+      desc <- x %>%
+        dplyr::group_by(
+          dplyr::across(
+            dplyr::all_of(c(gene_symbol_col, gene_strand_col, chr_col))
+          )
+        ) %>%
+        dplyr::summarise(
+          describe = list(tibble::as_tibble(
+            psych::describe(.data[[locus_col]])
+          )), .groups = "drop"
+        ) %>%
+        tidyr::unnest(cols = .data$describe)
+      df_by_gene <- df_by_gene %>%
+        dplyr::left_join(desc,
+                         by = c(gene_symbol_col, gene_strand_col, chr_col))
     }
     df_bygene_withannotation <- df_by_gene %>%
-        dplyr::inner_join(refgenes, by = c(
-            "chr" = "chrom",
-            "GeneStrand" = "strand",
-            "GeneName" = "name2"
-        )) %>%
+        dplyr::inner_join(refgenes, by = setNames(
+          object = c("chrom","strand","name2"),
+          nm = c(chr_col, gene_strand_col, gene_symbol_col))
+          ) %>%
         dplyr::select(c(
             dplyr::all_of(colnames(df_by_gene)),
             .data$average_TxLen
         ))
+    missing_genes <- df_by_gene %>%
+      dplyr::anti_join(df_bygene_withannotation,
+                       by = c(gene_symbol_col, gene_strand_col, chr_col)) %>%
+      dplyr::distinct(dplyr::across(dplyr::all_of(
+        c(gene_symbol_col, gene_strand_col, chr_col)
+      )))
+
     n_elements <- nrow(df_bygene_withannotation)
-
-    df_bygene_withannotation <- df_bygene_withannotation %>%
-        dplyr::mutate(
-            geneIS_frequency_byHitIS = .data$n_IS_perGene / n_elements
-        )
-
     ### Grubbs test
     ### --- Gene Frequency
     df_bygene_withannotation <- df_bygene_withannotation %>%
         dplyr::mutate(
             raw_gene_integration_frequency =
                 .data$n_IS_perGene / .data$average_TxLen,
-            integration_frequency_withtolerance = .data$n_IS_perGene /
-                (.data$average_TxLen + grubbs_flanking_gene_bp) * 1000,
+            integration_frequency_withtolerance = (.data$n_IS_perGene /
+                (.data$average_TxLen + grubbs_flanking_gene_bp)) * 1000,
             minus_log2_integration_freq_withtolerance =
                 -log(x = .data$integration_frequency_withtolerance, base = 2)
         )
@@ -4478,10 +4503,7 @@
     df_bygene_withannotation <- df_bygene_withannotation %>%
         dplyr::mutate(
             zscore_minus_log2_int_freq_tolerance =
-                scale(-log(
-                    x = .data$integration_frequency_withtolerance,
-                    base = 2
-                ))[, 1],
+                scale(.data$minus_log2_integration_freq_withtolerance)[, 1],
             neg_zscore_minus_log2_int_freq_tolerance =
                 -.data$zscore_minus_log2_int_freq_tolerance,
             t_z_mlif = z_mlif(
@@ -4551,7 +4573,7 @@
                     NA
                 )
         )
-    return(df_bygene_withannotation)
+    return(list(df = df_bygene_withannotation, missing = missing_genes))
 }
 
 #---- USED IN : CIS_volcano_plot ----
@@ -4663,6 +4685,42 @@
         dplyr::select(-c("OncoGene", "TumorSuppressor")) %>%
         dplyr::distinct()
     return(onco_tumsup)
+}
+
+.expand_cis_df <- function(cis_grubbs_df,
+                           gene_sym_col,
+                           onco_db_file,
+                           tumor_suppressors_db_file,
+                           species,
+                           known_onco,
+                           suspicious_genes) {
+  ## Load onco and ts
+  oncots_to_use <- .load_onco_ts_genes(
+    onco_db_file,
+    tumor_suppressors_db_file,
+    species
+  )
+  ## Join all dfs by gene
+  cis_grubbs_df <- cis_grubbs_df %>%
+    dplyr::left_join(oncots_to_use, by = gene_sym_col) %>%
+    dplyr::left_join(known_onco, by = gene_sym_col) %>%
+    dplyr::left_join(suspicious_genes, by = gene_sym_col)
+  ## Add info
+  cis_grubbs_df <- cis_grubbs_df %>%
+    dplyr::mutate(
+      KnownGeneClass = ifelse(
+        is.na(.data$Onco1_TS2),
+        yes = "Other",
+        no = ifelse(.data$Onco1_TS2 == 1,
+                    yes = "OncoGene",
+                    no = "TumSuppressor"
+        )
+      ),
+      CriticalForInsMut = ifelse(!is.na(.data$KnownClonalExpansion),
+                                 yes = TRUE, no = FALSE
+      )
+    )
+  return(cis_grubbs_df)
 }
 
 
@@ -5042,7 +5100,8 @@
     timepoint_column,
     annotation_cols,
     stable_timepoints,
-    subject) {
+    subject,
+    tissue_col) {
     quant_cols <- if (is.null(fragmentEstimate_column)) {
         seqCount_column
     } else {
@@ -5069,16 +5128,17 @@
         dplyr::mutate(bin = 1) %>%
         dplyr::select(-dplyr::all_of(quant_cols)) %>%
         tidyr::pivot_wider(
-            names_from = c(
+            names_from = dplyr::all_of(c(
                 "CellType",
-                "Tissue",
+                tissue_col,
                 timepoint_column
-            ),
+            )),
             values_from = .data$bin,
             names_sort = TRUE,
             values_fill = 0
         ) %>%
-        dplyr::select(-c(mandatory_IS_vars(), annotation_cols)) %>%
+        dplyr::select(-dplyr::all_of(c(mandatory_IS_vars(),
+                                       annotation_cols))) %>%
         as.matrix()
     # --- OBTAIN MATRIX (STABLE TPs)
     patient_slice_stable <- if (first_stable_index > 0) {
@@ -5089,16 +5149,17 @@
             dplyr::mutate(bin = 1) %>%
             dplyr::select(-dplyr::all_of(quant_cols)) %>%
             tidyr::pivot_wider(
-                names_from = c(
+                names_from = dplyr::all_of(c(
                     "CellType",
-                    "Tissue",
+                    tissue_col,
                     timepoint_column
-                ),
+                )),
                 values_from = .data$bin,
                 names_sort = TRUE,
                 values_fill = 0
             ) %>%
-            dplyr::select(-c(mandatory_IS_vars(), annotation_cols)) %>%
+            dplyr::select(-dplyr::all_of(c(mandatory_IS_vars(),
+                                           annotation_cols))) %>%
             as.matrix()
     } else {
         NULL
@@ -5360,6 +5421,106 @@
     )
 }
 
+## Internal to call on each slice (a slice typically corresponding to 1 patient)
+.re_agg_and_estimate <- function(df,
+                                 metadata,
+                                 fragmentEstimate_column,
+                                 seqCount_column,
+                                 tissue_col,
+                                 timepoint_column,
+                                 aggregation_key,
+                                 seqCount_threshold,
+                                 fragmentEstimate_threshold,
+                                 cell_type,
+                                 tissue_type,
+                                 annotation_cols,
+                                 subj_col,
+                                 stable_timepoints) {
+  # --- RE-AGGREGATION - by cell type, tissue and time point
+  val_cols <- if (!is.null(fragmentEstimate_column)) {
+    c(seqCount_column, fragmentEstimate_column)
+  } else {
+    seqCount_column
+  }
+  re_agg <- aggregate_values_by_key(
+    x = df,
+    association_file = metadata,
+    value_cols = val_cols,
+    key = c("CellType", tissue_col, timepoint_column),
+    join_af_by = aggregation_key
+  )
+  re_agg <- re_agg %>%
+    dplyr::filter(!is.na(.data$CellType))
+  seqCount_column <- colnames(re_agg)[stringr::str_detect(
+    colnames(re_agg),
+    seqCount_column
+  )]
+  fragmentEstimate_column <- if (!is.null(fragmentEstimate_column)) {
+    colnames(re_agg)[stringr::str_detect(
+      colnames(re_agg),
+      fragmentEstimate_column
+    )]
+  } else {
+    NULL
+  }
+  ### Keep only sequence count value greater or equal to
+  ### seqCount_threshold (or put it in AND with fe filter)
+  ### (for each is)
+  per_int_sums_low <- if (is.null(fragmentEstimate_column)) {
+    re_agg %>%
+      dplyr::group_by(dplyr::across(
+        dplyr::all_of(mandatory_IS_vars())
+      )) %>%
+      dplyr::summarise(
+        sum_sc = sum(.data[[seqCount_column]]),
+        .groups = "drop"
+      ) %>%
+      dplyr::filter(.data$sum_sc >= seqCount_threshold)
+  } else {
+    re_agg %>%
+      dplyr::group_by(dplyr::across(
+        dplyr::all_of(mandatory_IS_vars())
+      )) %>%
+      dplyr::summarise(
+        sum_sc = sum(.data[[seqCount_column]]),
+        sum_fe = sum(.data[[fragmentEstimate_column]]),
+        .groups = "drop"
+      ) %>%
+      dplyr::filter(
+        .data$sum_sc >= seqCount_threshold,
+        .data$sum_fe >= fragmentEstimate_threshold |
+          .data$sum_fe == 0
+      )
+  }
+  re_agg <- re_agg %>%
+    dplyr::semi_join(per_int_sums_low, by = mandatory_IS_vars())
+  ### Keep values whose cell type is in cell_type, tissue
+  ### in tissue_type and
+  ### have timepoint greater than zero
+  patient_slice <- re_agg %>%
+    dplyr::filter(
+      stringr::str_to_upper(.data$CellType) %in% cell_type,
+      stringr::str_to_upper(.data[[tissue_col]]) %in% tissue_type,
+      as.numeric(.data[[timepoint_column]]) > 0
+    )
+  ### If selected patient does not have at least 3 distinct timepoints
+  ### simply return (do not consider for population estimate)
+  if (length(unique(patient_slice[[timepoint_column]])) <= 2) {
+    return(NULL)
+  }
+  estimate <- .estimate_pop(
+    df = patient_slice,
+    seqCount_column = seqCount_column,
+    fragmentEstimate_column = fragmentEstimate_column,
+    timepoint_column = timepoint_column,
+    annotation_cols = annotation_cols,
+    subject = df[[subj_col]][1],
+    stable_timepoints = stable_timepoints,
+    tissue_col = tissue_col
+  )
+  return(estimate)
+}
+
 #---- USED IN : is_sharing ----
 ## Internal to find absolute shared number of is between an arbitrary
 ## number of groups
@@ -5368,7 +5529,7 @@
     groups <- as.list(...)
     in_common <- purrr::pmap(groups, function(...) {
         grps <- list(...)
-        filt <- lookup_tbl[group_id %chin% grps, ]
+        filt <- lookup_tbl[eval(sym("group_id")) %in% grps, ]
         common <- purrr::reduce(filt$is, function(l, r) {
             l[r, on = mandatory_IS_vars(), nomatch = 0]
         })

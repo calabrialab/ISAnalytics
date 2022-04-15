@@ -7,11 +7,13 @@ form.}
 \usage{
 as_sparse_matrix(
   x,
+  single_value_col = "Value",
   fragmentEstimate = "fragmentEstimate",
   seqCount = "seqCount",
   barcodeCount = "barcodeCount",
   cellCount = "cellCount",
-  ShsCount = "ShsCount"
+  ShsCount = "ShsCount",
+  key = pcr_id_column()
 )
 }
 \arguments{
@@ -37,9 +39,9 @@ the name of the Shs Count values column}
 \value{
 Depending on input, 2 possible outputs:
 \itemize{
-\item A single sparce matrix (tibble) if input is a single quantification
+\item A single sparse matrix (tibble) if input is a single quantification
 matrix
-\item A list of sparce matrices divided by quantification if input
+\item A list of sparse matrices divided by quantification if input
 is a single multi-quantification matrix or a list of matrices
 }
 }

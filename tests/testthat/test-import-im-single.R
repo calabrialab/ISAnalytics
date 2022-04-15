@@ -229,13 +229,12 @@ test_that(".import_single_matrix for EXTERNAL - works", {
 # import_single_Vispa2Matrix
 #------------------------------------------------------------------------------#
 test_that("import_single_Vispa2Matrix warns deprecation", {
-  expect_deprecated({
+  expect_defunct({
     df <- import_single_Vispa2Matrix(sample_df_add_path,
                                      to_exclude = "chr")
   })
-  expect_deprecated({
+  expect_defunct({
     df <- import_single_Vispa2Matrix(sample_df_add_path,
-                                     to_exclude = "chr",
                                      keep_excluded = TRUE)
   })
 })

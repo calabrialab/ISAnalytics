@@ -183,6 +183,18 @@ test_that(paste(func_name[4], "works as expected"), {
   expect_true(nrow(managed_af$parsing_probs) == 0)
   expect_true(is.data.frame(managed_af$check) & nrow(managed_af$check) == 4)
   expect_true(all(path_cols %in% colnames(managed_af$af)))
+  expect_message({
+    managed_af <- .manage_association_file(
+      af_path = fs_path$af,
+      root = fs_path$root_corr,
+      delimiter = "\t",
+      format = "ymd",
+      filter = list(X = "A"),
+      proj_fold_col = "PathToFolderProjectID",
+      concat_pool_col = "concatenatePoolIDSeqRun",
+      project_id_col = "ProjectID"
+    )
+  }, class = "filter_warn")
 })
 
 #------------------------------------------------------------------------------#
@@ -379,3 +391,15 @@ test_that(paste(func_name[5], "signals deprecation of tp_padding"), {
   expect_true(nrow(af) == 53 & ncol(af) == 71)
 })
 
+test_that("import_association_file works with import_iss = TRUE", {
+  withr::local_options(list(ISAnalytics.verbose = FALSE))
+  af <- import_association_file(fs_path$af,
+                                root = fs_path$root_corr,
+                                convert_tp = TRUE,
+                                import_iss = TRUE)
+  expect_true(all(c("RUN_NAME", "PHIX_MAPPING", "PLASMID_MAPPED_BYPOOL",
+                    "BARCODE_MUX", "LTR_IDENTIFIED", "TRIMMING_FINAL_LTRLC",
+                    "LV_MAPPED", "BWA_MAPPED_OVERALL", "ISS_MAPPED_OVERALL",
+                    "RAW_READS", "QUALITY_PASSED", "ISS_MAPPED_PP") %in%
+                    colnames(af)))
+})

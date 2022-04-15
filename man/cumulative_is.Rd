@@ -9,8 +9,9 @@ cumulative_is(
   key = c("SubjectID", "CellMarker", "Tissue", "TimePoint"),
   timepoint_col = "TimePoint",
   include_tp_zero = FALSE,
-  keep_og_is = TRUE,
-  expand = FALSE
+  counts = TRUE,
+  keep_og_is = FALSE,
+  expand = TRUE
 )
 }
 \arguments{

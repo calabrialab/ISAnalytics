@@ -114,12 +114,6 @@ CIS_volcano_plot <- function(x,
     } else {
         title_prefix <- paste(title_prefix, collapse = " ")
     }
-    ## Load onco and ts
-    oncots_to_use <- .load_onco_ts_genes(
-        onco_db_file,
-        tumor_suppressors_db_file,
-        species
-    )
     ## Check if CIS function was already called
     min_cis_col <- c(
         "tdist_bonferroni_default", "tdist_fdr",
@@ -133,12 +127,13 @@ CIS_volcano_plot <- function(x,
     } else {
         x
     }
-    ## Join all dfs by gene
-    cis_grubbs_df <- cis_grubbs_df %>%
-        dplyr::left_join(oncots_to_use, by = "GeneName") %>%
-        dplyr::left_join(known_onco, by = "GeneName") %>%
-        dplyr::left_join(suspicious_genes, by = "GeneName")
+    gene_sym_col <- annotation_IS_vars(TRUE) %>%
+      dplyr::filter(.data$tag == "gene_symbol") %>%
+      dplyr::pull(.data$names)
     ## Add info to CIS
+    cis_grubbs_df <- .expand_cis_df(cis_grubbs_df, gene_sym_col,
+                                    onco_db_file, tumor_suppressors_db_file,
+                                    species, known_onco, suspicious_genes)
     cis_grubbs_df <- cis_grubbs_df %>%
         dplyr::mutate(minus_log_p = -log(.data$tdist_bonferroni_default,
             base = 10
@@ -151,20 +146,6 @@ CIS_volcano_plot <- function(x,
                     .data$tdist_fdr < significance_threshold,
                 yes = TRUE,
                 no = FALSE
-            )
-        )
-    cis_grubbs_df <- cis_grubbs_df %>%
-        dplyr::mutate(
-            KnownGeneClass = ifelse(
-                is.na(.data$Onco1_TS2),
-                yes = "Other",
-                no = ifelse(.data$Onco1_TS2 == 1,
-                    yes = "OncoGene",
-                    no = "TumSuppressor"
-                )
-            ),
-            CriticalForInsMut = ifelse(!is.na(.data$KnownClonalExpansion),
-                yes = TRUE, no = FALSE
             )
         )
     significance_threshold_minus_log_p <- -log(significance_threshold,
@@ -199,7 +180,7 @@ CIS_volcano_plot <- function(x,
                 cis_grubbs_df,
                 .data$tdist_fdr < significance_threshold
             ),
-            ggplot2::aes_(label = ~GeneName),
+            ggplot2::aes_string(label = gene_sym_col),
             box.padding = ggplot2::unit(0.35, "lines"),
             point.padding = ggplot2::unit(0.3, "lines"),
             color = "white",
@@ -231,7 +212,7 @@ CIS_volcano_plot <- function(x,
         ggplot2::labs(
             title = paste(
                 title_prefix,
-                "- Volcano plot of IS gene frequency and",
+                "Volcano plot of IS gene frequency and",
                 "CIS results"
             ),
             y = "P-value Grubbs test (-log10(p))",
@@ -253,14 +234,14 @@ CIS_volcano_plot <- function(x,
         ## Look for the genes (case insensitive)
         to_highlight <- cis_grubbs_df %>%
             dplyr::filter(
-                stringr::str_to_lower(.data$GeneName) %in%
+                stringr::str_to_lower(.data[[gene_sym_col]]) %in%
                     stringr::str_to_lower(highlight_genes),
                 .data$tdist_fdr >= significance_threshold
             )
         plot_cis_fdr_slice <- plot_cis_fdr_slice +
             ggrepel::geom_label_repel(
                 data = to_highlight,
-                ggplot2::aes_(label = ~GeneName),
+                ggplot2::aes_string(label = gene_sym_col),
                 box.padding = ggplot2::unit(0.35, "lines"),
                 point.padding = ggplot2::unit(0.3, "lines"),
                 color = "white",
@@ -312,6 +293,36 @@ clinical_relevant_suspicious_genes <- function() {
         DOIReference =
             "https://doi.org/10.1182/blood-2018-01-829937"
     )
+}
+
+fisher_scatterplot <- function(fisher_df,
+                               p_value_col = "Fisher_p_value_fdr",
+                               annot_threshold = 0.05,
+                               annot_color = "red",
+                               gene_sym_col = "GeneName") {
+  below_threshold <- fisher_df %>%
+    dplyr::filter(.data[[p_value_col]] < annot_threshold)
+  above_threshold <- fisher_df %>%
+    dplyr::filter(.data[[p_value_col]] >= annot_threshold)
+  plot <- ggplot2::ggplot(above_threshold,
+                          ggplot2::aes_(x = ~ IS_per_kbGeneLen_1,
+                                        y = ~ IS_per_kbGeneLen_2,
+                                        color = ggplot2::sym(p_value_col))) +
+    ggplot2::geom_point() +
+    ggplot2::geom_point(data = below_threshold, color = annot_color) +
+    ggplot2::theme_bw() +
+    ggplot2::labs(x = "Gene frequency G1", y = "Gene frequency G2",
+                  color = "Fisher's test p-value") +
+    ggrepel::geom_label_repel(data = below_threshold,
+                              ggplot2::aes_string(label = gene_sym_col),
+                              box.padding = ggplot2::unit(0.35, "lines"),
+                              point.padding = ggplot2::unit(0.3, "lines"),
+                              max.overlaps = Inf, color = annot_color,
+                              fill = ggplot2::alpha("white", alpha = 0.6)
+    ) +
+    ggplot2::scale_x_continuous() +
+    ggplot2::scale_y_continuous()
+  return(plot)
 }
 
 #' Plot of the estimated HSC population size for each patient.
@@ -440,6 +451,11 @@ HSC_population_plot <- function(estimates,
 #' threshold on y will be plotted in grey and aggregated. See details.
 #' @param top_abundant_tbl Logical. Produce the summary top abundant tables
 #' via \link{top_abund_tableGrob}?
+#' @param empty_space_color Color of the empty portion of the bars (IS below
+#' the threshold). Can be either a string of known colors, an hex code or
+#' `NA_character` to set the space transparent. All color
+#' specs accepted in ggplot2
+#' are suitable here.
 #' @param ... Additional arguments to pass on to \link{top_abund_tableGrob}
 #'
 #' @family Plotting functions
@@ -484,6 +500,7 @@ integration_alluvial_plot <- function(x,
     alluvia = mandatory_IS_vars(),
     alluvia_plot_y_threshold = 1,
     top_abundant_tbl = TRUE,
+    empty_space_color = "grey90",
     ...) {
     if (!requireNamespace("ggalluvial", quietly = TRUE)) {
         rlang::abort(.missing_pkg_error("ggalluvial"))
@@ -526,12 +543,14 @@ integration_alluvial_plot <- function(x,
     alluvia,
     alluvia_plot_y_threshold,
     top_abundant_tbl,
+    empty_space_color,
     other_params) {
         cleaned <- .clean_data(
             group_df, plot_x, plot_y,
             alluvia, alluvia_plot_y_threshold
         )
-        alluv_plot <- .alluvial_plot(cleaned, plot_x, plot_y)
+        alluv_plot <- .alluvial_plot(cleaned, plot_x, plot_y,
+                                     empty_space_color)
         if (top_abundant_tbl == TRUE) {
             summary_tbls <- NULL
             withCallingHandlers(
@@ -550,10 +569,11 @@ integration_alluvial_plot <- function(x,
                             )
                         },
                         missing = function() {
-                            rlang::inform(paste(
-                                "Failed to produce top",
-                                "abundance tables, skipping"
-                            ))
+                          msg <- paste(
+                            "Failed to produce top",
+                            "abundance tables, skipping"
+                          )
+                            rlang::inform(msg)
                         }
                     )
                 },
@@ -584,6 +604,7 @@ integration_alluvial_plot <- function(x,
         alluvia = alluvia,
         alluvia_plot_y_threshold = alluvia_plot_y_threshold,
         top_abundant_tbl = top_abundant_tbl,
+        empty_space_color = empty_space_color,
         other_params = dot_args,
         BPPARAM = p
     )
@@ -604,13 +625,13 @@ integration_alluvial_plot <- function(x,
     alluvia_plot_y_threshold) {
     tbl <- if (length(alluvia) > 1) {
         df %>%
-            tidyr::unite(col = "alluvia_id", {{ alluvia }}) %>%
-            data.table::setDT()
+            tidyr::unite(col = "alluvia_id", {{ alluvia }})
+
     } else {
         df %>%
-            dplyr::rename(alluvia_id = alluvia) %>%
-            data.table::setDT()
+            dplyr::rename(alluvia_id = alluvia)
     }
+    data.table::setDT(tbl)
     ## Getting counts by x
     counts_by_x <- tbl %>%
         dplyr::group_by(dplyr::across({{ plot_x }})) %>%
@@ -622,7 +643,8 @@ integration_alluvial_plot <- function(x,
         dplyr::pull(.data[["alluvia_id"]])
     # Modify ids - identifiers that are below threshold are converted to
     # NA and the quantities in y are aggregated
-    tbl[!alluvia_id %in% alluvia_to_plot, alluvia_id := NA_character_]
+    tbl[!eval(sym("alluvia_id")) %in% alluvia_to_plot,
+        c("alluvia_id") := NA_character_]
     tbl <- tbl[, setNames(list(sum(.SD)), plot_y),
         by = c(plot_x, "alluvia_id"), .SDcols = plot_y
     ]
@@ -637,7 +659,7 @@ integration_alluvial_plot <- function(x,
 #' @importFrom ggplot2 ggplot aes_ geom_text scale_fill_viridis_d sym
 #' @importFrom dplyr group_by summarise pull across all_of
 #' @importFrom rlang .data
-.alluvial_plot <- function(tbl, plot_x, plot_y) {
+.alluvial_plot <- function(tbl, plot_x, plot_y, empty_space_color) {
     sums_y <- tbl %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
         dplyr::summarise(sums = sum(.data[[plot_y]])) %>%
@@ -646,6 +668,12 @@ integration_alluvial_plot <- function(x,
     labels <- tbl %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
         dplyr::summarise(count = .data$count[1], .groups = "drop")
+    tbl <- tbl %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
+      dplyr::arrange(dplyr::desc(dplyr::across(dplyr::all_of(plot_y))),
+                     .by_group = TRUE) %>%
+      dplyr::mutate(alluvia_id = forcats::as_factor(.data$alluvia_id)) %>%
+      dplyr::ungroup()
     alluv <- ggplot2::ggplot(
         tbl,
         ggplot2::aes_(
@@ -654,19 +682,19 @@ integration_alluvial_plot <- function(x,
             alluvium = ~alluvia_id
         )
     ) +
-        ggalluvial::geom_stratum(ggplot2::aes_(stratum = ~alluvia_id),
-            na.rm = FALSE, decreasing = FALSE,
-            fill = NA
-        ) +
-        ggalluvial::geom_alluvium(ggplot2::aes_(fill = ~alluvia_id),
-            na.rm = FALSE,
-            decreasing = FALSE,
-            alpha = .75,
-            aes.bind = "alluvia"
-        ) +
-        ggplot2::scale_fill_viridis_d() +
-        ggplot2::theme(legend.position = "none")
+      ggalluvial::stat_stratum(ggplot2::aes_(stratum = ~alluvia_id),
+                               na.rm = FALSE,
+                               fill = empty_space_color
+      ) +
+      ggalluvial::geom_alluvium(ggplot2::aes_(fill = ~alluvia_id),
+                                na.rm = FALSE,
+                                alpha = .75,
+                                aes.bind = "alluvia"
+      )
     alluv <- alluv +
+      ggplot2::scale_fill_hue(na.value = NA_character_) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(legend.position = "none") +
         ggplot2::geom_text(
             data = labels,
             ggplot2::aes_(
@@ -1291,8 +1319,13 @@ circos_genomic_density <- function(data,
             rlang::fn_fmls_names(
                 rlang::as_function(device)
             )]
-        device_args <- device_args[!names(device_args) %in% c("filename")]
-        rlang::exec(.fn = device, filename = file_path, !!!device_args)
+        if (device == "pdf") {
+          device_args <- device_args[!names(device_args) %in% c("file")]
+          rlang::exec(.fn = device, file = file_path, !!!device_args)
+        } else {
+          device_args <- device_args[!names(device_args) %in% c("filename")]
+          rlang::exec(.fn = device, filename = file_path, !!!device_args)
+        }
     }
     ## Draw plot
     par_args <- dots[names(dots) %in%
