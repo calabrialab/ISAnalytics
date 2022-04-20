@@ -7,7 +7,7 @@
 identified from genomics next generation sequencing reads for
 clonal tracking studies}
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 In gene therapy, stem cells are modified using viral
 vectors to deliver the therapeutic transgene and replace functional
 properties since the genetic modification is stable and inherited in
@@ -31,75 +31,10 @@ and Annotation of Vector Integration Sites}
 }
 }
 
-\section{ISAnalytics function families}{
-
-\itemize{
-\item Import functions:
-\itemize{
-\item \code{\link{import_single_Vispa2Matrix}}
-\item \code{\link{import_association_file}}
-\item \code{\link{import_Vispa2_stats}}
-\item \code{\link{import_parallel_Vispa2Matrices}}
-}
-\item Aggregation functions:
-\itemize{
-\item \code{\link{aggregate_metadata}}
-\item \code{\link{aggregate_values_by_key}}
-}
-\item Collision removal functions:
-\itemize{
-\item \code{\link{remove_collisions}}
-\item \code{\link{realign_after_collisions}}
-}
-\item Removal of outliers from raw reads
-\itemize{
-\item \code{\link{outlier_filter}}
-\item \code{\link{outliers_by_pool_fragments}}
-}
-\item Recalibration functions:
-\itemize{
-\item \code{\link{compute_near_integrations}}
-}
-\item Analysis functions:
-\itemize{
-\item \code{\link{compute_abundance}}
-\item \code{\link{comparison_matrix}}
-\item \code{\link{separate_quant_matrices}}
-\item \code{\link{threshold_filter}}
-\item \code{\link{top_integrations}}
-\item \code{\link{sample_statistics}}
-\item \code{\link{CIS_grubbs}}
-\item \code{\link{cumulative_count_union}}
-\item \code{\link{is_sharing}}
-\item \code{\link{cumulative_is}}
-}
-\item HSC population size estimate:
-\itemize{
-\item \code{\link{HSC_population_size_estimate}}
-}
-\item Plotting functions:
-\itemize{
-\item \code{\link{CIS_volcano_plot}}
-\item \code{\link{HSC_population_plot}}
-\item \code{\link{sharing_heatmap}}
-\item \code{\link{integration_alluvial_plot}}
-\item \code{\link{top_abund_tableGrob}}
-\item \code{\link{circos_genomic_density}}
-\item \code{\link{sharing_venn}}
-}
-\item Utility functions:
-\itemize{
-\item \code{\link{generate_blank_association_file}}
-\item \code{\link{generate_Vispa2_launch_AF}}
-\item \code{\link{unzip_file_system}}
-\item \code{\link{as_sparse_matrix}}
-}
-}
-}
-
 \section{Vignettes}{
 
 \itemize{
+\item \code{vignette("setup_workflow", package = "ISAnalytics")}
 \item \code{vignette("how_to_import_functions", package = "ISAnalytics")}
 \item \code{vignette("collision_removal",
 package = "ISAnalytics")}

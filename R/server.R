@@ -1,9 +1,5 @@
-library(shiny)
-library(datamods)
-library(shinyWidgets)
-library(DT)
-library(ggplot2)
 
+#' @import shinyWidgets
 .modal_warning_data <- function() {
     confirmSweetAlert(
         inputId = "data_override_warn",
@@ -17,6 +13,10 @@ library(ggplot2)
     )
 }
 
+#' @import shiny
+#' @import datamods
+#' @import shinyWidgets
+#' @import ggplot2
 server <- shinyServer(function(input, output, session) {
     values <- reactiveValues(
         loaded_data = NULL,
@@ -65,8 +65,8 @@ server <- shinyServer(function(input, output, session) {
             )
         }
     })
-    output$loaded_data <- renderDT({
-        datatable(values$loaded_data,
+    output$loaded_data <- DT::renderDT({
+      DT::datatable(values$loaded_data,
             options = list(
                 autoWidth = TRUE,
                 class = "stripe",

@@ -1,10 +1,9 @@
-library(shiny)
-library(shinyWidgets)
-library(datamods)
-library(bslib)
-library(DT)
 
-# Define UI for application that draws a histogram
+
+#' @import shiny
+#' @import shinyWidgets
+#' @import datamods
+#' @import bslib
 ui <- shinyUI(fluidPage(
     useSweetAlert(),
     ### --- Top level navbar
@@ -49,7 +48,7 @@ ui <- shinyUI(fluidPage(
                 id = "explore_pills",
                 nav(
                     title = "Explore loaded data",
-                    DTOutput("loaded_data"),
+                    DT::DTOutput("loaded_data"),
                     class = "p-3 border rounded"
                 ),
                 nav(
