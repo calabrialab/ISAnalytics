@@ -16,6 +16,10 @@ use the replacement indicated below:
 \code{\link{import_parallel_Vispa2Matrices}}
 \item import_parallel_Vispa2Matrices_interactive:
 \code{\link{import_parallel_Vispa2Matrices}}
+\item unzip_file_system:
+\code{\link{generate_default_folder_structure}}
+\item cumulative_count_union:
+\code{\link{cumulative_is}}
 }
 }
 \keyword{internal}

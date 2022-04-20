@@ -38,11 +38,11 @@ between the matrix and the metadata. Useful to re-aggregate already
 aggregated matrices.}
 }
 \value{
-A list of tibbles or a single tibble aggregated according to
+A list of data frames or a single data frame aggregated according to
 the specified arguments
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Performs aggregation on values contained in the integration matrices based
 on the key and the specified lambda. For more details on how to use this
 function:
@@ -99,8 +99,15 @@ aggreg <- aggregate_values_by_key(
 head(aggreg)
 }
 \seealso{
-Other Aggregate functions: 
+Other Data cleaning and pre-processing: 
 \code{\link{aggregate_metadata}()},
-\code{\link{default_meta_agg}()}
+\code{\link{compute_near_integrations}()},
+\code{\link{default_meta_agg}()},
+\code{\link{outlier_filter}()},
+\code{\link{outliers_by_pool_fragments}()},
+\code{\link{purity_filter}()},
+\code{\link{realign_after_collisions}()},
+\code{\link{remove_collisions}()},
+\code{\link{threshold_filter}()}
 }
-\concept{Aggregate functions}
+\concept{Data cleaning and pre-processing}

@@ -13,7 +13,6 @@ coverage:
         threshold: 1%
         informational: true
 ignore:
-  - "R/report-utilities.R"
   - "R/plotting-functions.R"
   - "R/internal-msgs.R"
   - "R/exported-vars.R"

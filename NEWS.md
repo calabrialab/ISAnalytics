@@ -1,6 +1,63 @@
 NEWS
 ================
 
+# ISAnalytics 1.5.4 (2022-04-20)
+
+## MAJOR CHANGES
+
+-   ISAnalytics has now a new “dynamic vars system” to allow more
+    flexibility on user inputs, view the dedicated vignette with
+    `vignette("setup_workflow", package="ISAnalytics")`
+-   All package functions were reviewed to work properly with this
+    system
+
+## NEW FEATURES
+
+-   `gene_frequency_fisher()` is a new function of the analysis family
+    that allows the computation of Fisher’s exact test p-values on gene
+    frequency - `fisher_scatterplot()` is the associated plotting
+    function
+-   `top_targeted_genes()` is a new function of the analysis family that
+    produces the top n targeted genes based on the number of IS
+-   `NGSdataExplorer()` is a newly implemented Shiny interface that
+    allows the exploration and plotting of data
+-   zipped examples were removed from the package to contain size. To
+    compensate, the new function `generate_default_folder_structure()`
+    generates the standard folder structure with package-included data
+    on-demand
+-   `transform_columns()` is a new utility function, also used
+    internally by other exported functions, that allows arbitrary
+    transformations on data frame columns
+
+## MINOR CHANGES
+
+-   `remove_collisions()` now has a dedicated parameter to specify how
+    independent samples are identified
+-   `compute_near_integration_sites()` now has a parameter called
+    `additional_agg_lambda()` to allow aggregation of additional columns
+-   `CIS_grubbs()` now signals if there are missing genes in the
+    refgenes table and eventually returns them as a df
+-   `outlier_filter()` is now able to take multiple tests in input and
+    combine them with a given logic. It now also produces an HTML
+    report.
+-   Several functions now use data.table under the hood
+-   Color of the strata containing IS below threshold can now be set in
+    `integration_alluvial_plot()`
+
+## BUG FIXES
+
+-   Fixed a minor bug in `import_Vispa2_stats()` - function failed when
+    passing `report_path = NULL`
+-   Fixed minor issue in `circos_genomic_density()` when trying to use a
+    pdf device
+
+## DEPRECATED FUNCTIONS
+
+-   `unzip_file_system()` was made defunct in favor of
+    `generate_default_folder_structure()`
+-   `cumulative_count_union()` was deprecated and its functionality was
+    moved to `cumulative_is()`
+
 # ISAnalytics 1.5.3 (2022-01-13)
 
 ## MINOR CHANGES

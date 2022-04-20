@@ -1,11 +1,25 @@
 ### Convenience functions for errors and warnings ###
 
+.missing_req_cols <- function(requested, missing) {
+    err_msg <- c("Some of the required columns were not found",
+        i = paste0(
+            "Requested: ",
+            paste0(requested, collapse = ", ")
+        ),
+        x = paste0(
+            "Not found: ",
+            paste0(missing, collapse = ", ")
+        )
+    )
+    return(err_msg)
+}
+
 # Signals the user that file system alignment can't be performed because
-# 'PathToFolderProjectID' is missing.
+# column containing the path to project folder is missing.
 # USED IN:
 # - .check_file_system_alignment
-.af_missing_pathfolder_error <- function() {
-    c("Column 'PathToFolderProjectID' is missing",
+.af_missing_pathfolder_error <- function(folder_col) {
+    c(paste("Column", folder_col, "is missing"),
         x = "Can't proceed with file system alignment",
         i = paste(
             "To import metadata without performing file system aligment",
@@ -98,13 +112,16 @@
 # Produces a mini-report to print after file reading only if verbose is active
 # USED IN:
 # - import_single_Vispa2Matrix
-.summary_ism_import_msg <- function(df_type, annotated, dims, mode) {
+.summary_ism_import_msg <- function(annotated,
+    dims,
+    mode,
+    sample_count) {
     c(
         "*** File info *** ",
-        paste("--- Matrix type:", df_type),
         paste("--- Annotated:", annotated),
         paste("--- Dimensions:", paste0(dims, collapse = " x ")),
-        paste("--- Read mode: ", mode)
+        paste("--- Read mode:", mode),
+        paste("--- Sample count:", sample_count)
     )
 }
 
@@ -120,23 +137,6 @@
         "supported by fread"
     ),
     i = "File will be read using readr"
-    )
-}
-
-# Error that signals the integration matrix to import is malformed, aka
-# it does not contain mandatory variables or does not have a standard structure
-# USED IN:
-# - import_single_Vispa2Matrix
-.malformed_ISmatrix_error <- function() {
-    c("The input integration matrix seems to be malformed",
-        x = "Non standard column structure detected",
-        i = paste(
-            "Matrix should contain either these columns: [",
-            paste0(mandatory_IS_vars(), collapse = ", "),
-            "], or",
-            "'IS_genomicID'",
-            "but not both or a combination of the two."
-        )
     )
 }
 
@@ -160,10 +160,9 @@
 
 # USED IN:
 # - remove_collisions
-# - compute_near_integrations
 .missing_cAmp_sub_msg <- function() {
     paste0(
-        "The `CompleteAmplificationID` column is missing",
+        "The `", pcr_id_column(), "` column is missing",
         " and it is needed for this functionality"
     )
 }
@@ -199,29 +198,6 @@
     paste(
         "No quantification values columns found. Did you set the function",
         "parameters correctly?"
-    )
-}
-
-# @keywords internal
-.max_val_col_warning <- function(x) {
-    paste0("Column for max value `", x, "` not found in numeric columns.")
-}
-
-# @keywords internal
-.using_val_col_warning <- function(x) {
-    paste(c(
-        .max_val_col_warning(x),
-        "Using `Value` column as reference instead."
-    ), collapse = "\n")
-}
-
-# @keywords internal
-.max_val_stop_error <- function(x) {
-    paste(c(
-        .max_val_col_warning(x),
-        "Did you set `max_value_column` parameter correctly?"
-    ),
-    collapse = "\n"
     )
 }
 
@@ -308,7 +284,6 @@
     )
 }
 
-# @keywords internal
 .missing_user_cols_list_error <- function(set, name) {
     paste0(c(
         "Columns ",
@@ -323,14 +298,12 @@
 # - compute_abundance
 # - sample_statistics
 .non_num_user_cols_error <- function(non_num) {
-    paste(
+    c(
         paste(
-            "Some or all of the input column names are not numeric",
+            "Some or all of the input columns are not numeric",
             "or integer in the data frame"
         ),
-        "Non-numeric columns:",
-        paste0(non_num, collapse = ", "),
-        sep = "\t"
+        i = paste("Non-numeric columns:", paste0(non_num, collapse = ", "))
     )
 }
 
@@ -364,7 +337,6 @@
     )
 }
 
-# @keywords internal
 .unnamed_list_err <- function() {
     paste(
         "Some parameters were provided as named lists",
@@ -374,7 +346,6 @@
     )
 }
 
-# @keywords internal
 .param_names_not_in_list_err <- function() {
     paste(
         "Named lists in parameters must have the same",
@@ -383,20 +354,11 @@
     )
 }
 
-# @keywords internal
 .param_names_not_equal_err <- function() {
     paste(
         "Some list parameters between `threshold`,",
         "`cols_to_compare` or `comparators` miss elements.",
         "See ?threshold_filter for details"
-    )
-}
-
-#---- USED IN : CIS_grubbs ----
-.missing_annot <- function() {
-    paste(
-        "Annotation columns are missing but are required for",
-        "the function correct execution"
     )
 }
 
@@ -419,9 +381,6 @@
     paste("The sample key must contain the time point column")
 }
 
-.key_not_found <- function() {
-    paste("One or more columns in the sample keys were not found in x")
-}
 
 .not_min_key_err <- function(missing) {
     c("The aggregation key must contain the minimal required key",

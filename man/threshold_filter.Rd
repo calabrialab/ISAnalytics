@@ -23,7 +23,7 @@ character vectors. Must be one of the allowed values between
 A data frame or a list of data frames
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Filter a single data frame or a list of data frames with custom
 predicates assembled from the function parameters.
 }
@@ -204,17 +204,15 @@ filtered <- threshold_filter(example_list,
 filtered
 }
 \seealso{
-Other Analysis functions: 
-\code{\link{CIS_grubbs}()},
-\code{\link{comparison_matrix}()},
-\code{\link{compute_abundance}()},
-\code{\link{cumulative_count_union}()},
-\code{\link{cumulative_is}()},
-\code{\link{is_sharing}()},
-\code{\link{iss_source}()},
+Other Data cleaning and pre-processing: 
+\code{\link{aggregate_metadata}()},
+\code{\link{aggregate_values_by_key}()},
+\code{\link{compute_near_integrations}()},
+\code{\link{default_meta_agg}()},
+\code{\link{outlier_filter}()},
+\code{\link{outliers_by_pool_fragments}()},
 \code{\link{purity_filter}()},
-\code{\link{sample_statistics}()},
-\code{\link{separate_quant_matrices}()},
-\code{\link{top_integrations}()}
+\code{\link{realign_after_collisions}()},
+\code{\link{remove_collisions}()}
 }
-\concept{Analysis functions}
+\concept{Data cleaning and pre-processing}

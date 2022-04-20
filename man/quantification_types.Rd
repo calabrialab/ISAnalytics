@@ -34,6 +34,9 @@ quant_types <- quantification_types()
 
 Other Import functions helpers: 
 \code{\link{annotation_issues}()},
+\code{\link{date_formats}()},
+\code{\link{default_af_transform}()},
+\code{\link{default_iss_file_prefixes}()},
 \code{\link{matching_options}()}
 }
 \concept{Import functions helpers}

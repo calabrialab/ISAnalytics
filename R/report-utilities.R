@@ -31,7 +31,12 @@
         outlier_flag = list(
             template_name = "outlier-report.Rmd",
             required_pkgs = c("flexdashboard", "DT"),
-            def_filename = "raw_reads_outliers_report.html"
+            def_filename = "outlier_test_pool_fragments_report.html"
+        ),
+        outlier_filter = list(
+            template_name = "outlier-filter-report.Rmd",
+            required_pkgs = c("flexdashboard", "DT"),
+            def_filename = "outlier_filter_report.html"
         )
     )
 }
@@ -103,17 +108,11 @@
 
 # Gets a cleaned file path to the report file
 .clean_file_path <- function(path, type) {
-    if (fs::is_dir(path)) {
-        if (!fs::dir_exists(path)) {
-            fs::dir_create(path)
-        }
-        gen_filename <- .generate_report_filename(type)
-        path <- fs::path(path, gen_filename)
-    } else {
-        if (fs::path_ext(path) == "") {
-            path <- fs::path_ext_set(path, "html")
-        }
+    if (!fs::is_dir(path)) {
+        fs::dir_create(path)
     }
+    gen_filename <- .generate_report_filename(type)
+    path <- fs::path(path, gen_filename)
     return(path)
 }
 

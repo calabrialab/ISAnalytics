@@ -2,29 +2,32 @@
 % Please edit documentation in R/utility-functions.R
 \name{generate_blank_association_file}
 \alias{generate_blank_association_file}
-\title{Creates a blank association file.}
+\title{Create a blank association file.}
 \usage{
 generate_blank_association_file(path)
 }
 \arguments{
-\item{path}{The path on disk where the file should be written}
+\item{path}{The path on disk where the file should be written - must be a
+file}
 }
 \value{
-returns NULL
+\code{NULL}
 }
 \description{
-This function is useful if you want a blank association file to start using
-both Vispa2 and this package or simply if you want a correct framework to
-fix a malformed association file you have already.
+Produces a blank association file to start using
+both VISPA2 and ISAnalytics
 }
 \examples{
 temp <- tempfile()
 generate_blank_association_file(temp)
 }
 \seealso{
-Other Utility functions: 
+Other Utilities: 
 \code{\link{as_sparse_matrix}()},
+\code{\link{comparison_matrix}()},
 \code{\link{generate_Vispa2_launch_AF}()},
-\code{\link{unzip_file_system}()}
+\code{\link{generate_default_folder_structure}()},
+\code{\link{separate_quant_matrices}()},
+\code{\link{transform_columns}()}
 }
-\concept{Utility functions}
+\concept{Utilities}

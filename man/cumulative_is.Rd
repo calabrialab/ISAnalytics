@@ -2,15 +2,16 @@
 % Please edit documentation in R/analysis-functions.R
 \name{cumulative_is}
 \alias{cumulative_is}
-\title{Expands integration matrix with the cumulative is union over time.}
+\title{Expands integration matrix with the cumulative IS union over time.}
 \usage{
 cumulative_is(
   x,
   key = c("SubjectID", "CellMarker", "Tissue", "TimePoint"),
   timepoint_col = "TimePoint",
   include_tp_zero = FALSE,
-  keep_og_is = TRUE,
-  expand = FALSE
+  counts = TRUE,
+  keep_og_is = FALSE,
+  expand = TRUE
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ cumulative_is(
 
 \item{include_tp_zero}{Should time point 0 be included?}
 
+\item{counts}{Add cumulative counts? Logical}
+
 \item{keep_og_is}{Keep original set of integrations as a separate column?}
 
 \item{expand}{If \code{FALSE}, for each group, the set of integration sites is
@@ -33,12 +36,22 @@ column is unnested.}
 A data frame
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 Given an input integration matrix that can be grouped over time,
 this function adds integrations in groups assuming that
 if an integration is observed at time point "t" then it is also observed in
 time point "t+1".
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item All columns declared in \code{mandatory_IS_vars()}
+\item Checks if the matrix is annotated by assessing presence of
+\code{annotation_IS_vars()}
+}
+}
+
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
@@ -53,15 +66,13 @@ cumulated_is
 \seealso{
 Other Analysis functions: 
 \code{\link{CIS_grubbs}()},
-\code{\link{comparison_matrix}()},
+\code{\link{HSC_population_size_estimate}()},
 \code{\link{compute_abundance}()},
-\code{\link{cumulative_count_union}()},
+\code{\link{gene_frequency_fisher}()},
 \code{\link{is_sharing}()},
 \code{\link{iss_source}()},
-\code{\link{purity_filter}()},
 \code{\link{sample_statistics}()},
-\code{\link{separate_quant_matrices}()},
-\code{\link{threshold_filter}()},
-\code{\link{top_integrations}()}
+\code{\link{top_integrations}()},
+\code{\link{top_targeted_genes}()}
 }
 \concept{Analysis functions}

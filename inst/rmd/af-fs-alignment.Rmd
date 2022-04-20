@@ -21,13 +21,14 @@ valueBox(found_folders, icon = "fa-folder-open")
 
 ### Quantification folders found
 ```{r}
-quant_folders_found <- length(params$fs_align$Path_quant[!is.na(params$fs_align$Path_quant)])
+paths_cols <- .path_cols_names()
+quant_folders_found <- length(params$fs_align[[paths_cols$quant]][!is.na(params$fs_align[[paths_cols$quant]])])
 valueBox(quant_folders_found, icon = "fa-table")
 ```
 
 ### VISPA2 stats folders found
 ```{r}
-stats_folders_found <- length(params$fs_align$Path_iss[!is.na(params$fs_align$Path_iss)])
+stats_folders_found <- length(params$fs_align[[paths_cols$iss]][!is.na(params$fs_align[[paths_cols$iss]])])
 valueBox(stats_folders_found, icon = "fa-chart-bar")
 ```
 
@@ -61,7 +62,8 @@ datatable(
   filter = "top", 
   rownames = FALSE,
   options = list(
-    order = list(list(3, 'asc'))
+    order = list(list(3, 'asc')),
+    scrollY = "450px"
   )
 ) %>%
   formatStyle(columns = "Found", 

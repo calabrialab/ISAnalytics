@@ -6,49 +6,111 @@
 \usage{
 import_single_Vispa2Matrix(
   path,
-  to_exclude = NULL,
-  keep_excluded = FALSE,
-  separator = "\\t"
+  separator = "\\t",
+  additional_cols = NULL,
+  transformations = NULL,
+  sample_names_to = pcr_id_column(),
+  values_to = "Value",
+  to_exclude = lifecycle::deprecated(),
+  keep_excluded = lifecycle::deprecated()
 )
 }
 \arguments{
 \item{path}{The path to the file on disk}
 
-\item{to_exclude}{Either NULL or a character vector of column names that
-should be ignored when importing}
-
-\item{keep_excluded}{Keep the columns in \code{to_exclude} as additional
-id columns?}
-
 \item{separator}{The column delimiter used, defaults to \verb{\\t}}
+
+\item{additional_cols}{Either \code{NULL}, a named character vector or a named
+list. See details.}
+
+\item{transformations}{Either \code{NULL} or a named list of purrr-style lambdas
+where names
+are column names the function should be applied to.}
+
+\item{sample_names_to}{Name of the output column holding the sample
+identifier. Defaults to \code{pcr_id_column()}}
+
+\item{values_to}{Name of the output column holding the quantification
+values. Defaults to \code{Value}.}
+
+\item{to_exclude}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+Deprecated. Use \code{additonal_cols} instead}
+
+\item{keep_excluded}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+Deprecated. Use \code{additonal_cols} instead}
 }
 \value{
 A data.table object in tidy format
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 This function allows to read and import an integration matrix
-produced as the output of Vispa2 pipeline and converts it to a tidy
+(ideally produced by VISPA2) and converts it to a tidy
 format.
 }
 \details{
+\subsection{Additional columns}{
+
+Additional columns are annotation columns present in the integration matrix
+to import that are not
+\itemize{
+\item part of the mandatory IS vars (see \code{mandatory_IS_vars()})
+\item part of the annotation IS vars (see \code{annotation_IS_vars()})
+\item the sample identifier column
+\item the quantification column
+}
+
+When specified they tell the function how to treat those columns in the
+import phase, by providing a named character vector, where names correspond
+to the additional column names and values are a choice of the following:
+\itemize{
+\item \code{"char"} for character (strings)
+\item \code{"int"} for integers
+\item \code{"logi"} for logical values (TRUE / FALSE)
+\item \code{"numeric"} for numeric values
+\item \code{"factor"} for factors
+\item \code{"date"} for generic date format - note that functions that
+need to read and parse files will try to guess the format and parsing
+may fail
+\item One of the accepted date/datetime formats by \code{lubridate},
+you can use \code{ISAnalytics::date_formats()} to view the accepted formats
+\item \code{"_"} to drop the column
+}
+
 For more details see the "How to use import functions" vignette:
 \code{vignette("import_functions_howto", package = "ISAnalytics")}
 }
+
+\subsection{Transformations}{
+
+Lambdas provided in input in the \code{transformations} argument,
+must be transformations, aka functions that take
+in input a vector and return a vector of the same length as the input.
+
+If the transformation list contains column names that are not present
+in the data frame, they are simply ignored.
+}
+}
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item All columns declared in \code{mandatory_IS_vars()}
+}
+}
+
 \examples{
-fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-fs <- unzip_file_system(fs_path, "fs")
+fs_path <- generate_default_folder_structure(type = "correct")
 matrix_path <- fs::path(
-    fs,
-    "PJ01",
-    "quantification",
-    "POOL01-1",
-    "PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz"
+    fs_path$root, "PJ01", "quantification",
+    "POOL01-1", "PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz"
 )
 matrix <- import_single_Vispa2Matrix(matrix_path)
 head(matrix)
 }
 \seealso{
+\code{\link{transform_columns}}
+
 Other Import functions: 
 \code{\link{import_Vispa2_stats}()},
 \code{\link{import_association_file}()},

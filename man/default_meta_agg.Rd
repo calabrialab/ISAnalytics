@@ -31,8 +31,15 @@ a unique output column name. See \link[glue]{glue} for more details.
 default_meta_agg()
 }
 \seealso{
-Other Aggregate functions: 
+Other Data cleaning and pre-processing: 
 \code{\link{aggregate_metadata}()},
-\code{\link{aggregate_values_by_key}()}
+\code{\link{aggregate_values_by_key}()},
+\code{\link{compute_near_integrations}()},
+\code{\link{outlier_filter}()},
+\code{\link{outliers_by_pool_fragments}()},
+\code{\link{purity_filter}()},
+\code{\link{realign_after_collisions}()},
+\code{\link{remove_collisions}()},
+\code{\link{threshold_filter}()}
 }
-\concept{Aggregate functions}
+\concept{Data cleaning and pre-processing}

@@ -32,7 +32,7 @@ see \link{import_Vispa2_stats}.}
 An aggregated data frame
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Groups metadata by the specified grouping keys and returns a
 summary of info for each group. For more details on how to use this function:
 \code{vignette("aggregate_function_usage", package = "ISAnalytics")}
@@ -45,8 +45,15 @@ aggreg_meta <- aggregate_metadata(
 head(aggreg_meta)
 }
 \seealso{
-Other Aggregate functions: 
+Other Data cleaning and pre-processing: 
 \code{\link{aggregate_values_by_key}()},
-\code{\link{default_meta_agg}()}
+\code{\link{compute_near_integrations}()},
+\code{\link{default_meta_agg}()},
+\code{\link{outlier_filter}()},
+\code{\link{outliers_by_pool_fragments}()},
+\code{\link{purity_filter}()},
+\code{\link{realign_after_collisions}()},
+\code{\link{remove_collisions}()},
+\code{\link{threshold_filter}()}
 }
-\concept{Aggregate functions}
+\concept{Data cleaning and pre-processing}

@@ -3,7 +3,8 @@
 #------------------------------------------------------------------------------#
 #' Performs aggregation on metadata contained in the association file.
 #'
-#' \lifecycle{stable}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' Groups metadata by the specified grouping keys and returns a
 #' summary of info for each group. For more details on how to use this function:
 #' \code{vignette("aggregate_function_usage", package = "ISAnalytics")}
@@ -20,10 +21,8 @@
 #' @param import_stats `r lifecycle::badge("deprecated")` The import
 #' of VISPA2 stats has been moved to its dedicated function,
 #' see \link{import_Vispa2_stats}.
-#' @family Aggregate functions
-#' @importFrom rlang abort inform
-#' @importFrom purrr is_empty
-#' @import lifecycle
+#'
+#' @family Data cleaning and pre-processing
 #'
 #' @return An aggregated data frame
 #' @export
@@ -101,9 +100,8 @@ aggregate_metadata <- function(association_file,
 #' * `Output_colname`: a `glue` specification that will be used to determine
 #' a unique output column name. See \link[glue]{glue} for more details.
 #'
-#' @importFrom tibble tribble
 #' @return A data frame
-#' @family Aggregate functions
+#' @family Data cleaning and pre-processing
 #' @export
 #'
 #' @examples
@@ -146,7 +144,8 @@ default_meta_agg <- function() {
 
 #' Aggregates matrices values based on specified key.
 #'
-#' \lifecycle{stable}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' Performs aggregation on values contained in the integration matrices based
 #' on the key and the specified lambda. For more details on how to use this
 #' function:
@@ -206,12 +205,13 @@ default_meta_agg <- function() {
 #' @param join_af_by A character vector representing the joining key
 #' between the matrix and the metadata. Useful to re-aggregate already
 #' aggregated matrices.
-#' @family Aggregate functions
+#'
+#' @family Data cleaning and pre-processing
 #'
 #' @importFrom purrr walk set_names map_lgl
 #' @importFrom rlang expr eval_tidy abort
 #'
-#' @return A list of tibbles or a single tibble aggregated according to
+#' @return A list of data frames or a single data frame aggregated according to
 #' the specified arguments
 #' @export
 #'
@@ -240,115 +240,54 @@ aggregate_values_by_key <- function(x,
     ),
     join_af_by = "CompleteAmplificationID") {
     stopifnot(is.data.frame(x) || is.list(x))
-    if (!is.data.frame(x)) {
-        purrr::walk(x, function(df) {
-            stopifnot(is.data.frame(df))
-            if (.check_mandatory_vars(df) == FALSE) {
-                rlang::abort(.missing_mand_vars())
-            }
-            if (!all(join_af_by %in% colnames(df))) {
-                rlang::abort(c(
-                    x = paste(
-                        "Missing common columns",
-                        "to join metadata"
-                    ),
-                    i = paste(
-                        "Missing: ",
-                        paste0(join_af_by[!join_af_by %in%
-                            colnames(df)],
-                        collapse = ", "
-                        )
-                    )
-                ))
-            }
-            if (!all(value_cols %in% colnames(df))) {
-                rlang::abort(.missing_user_cols_error(
-                    value_cols[!value_cols %in% colnames(df)]
-                ))
-            }
-            is_numeric_col <- purrr::map_lgl(value_cols, function(col) {
-                if (!is.double(df[[col]]) &&
-                    !is.integer(df[[col]])) {
-                    FALSE
-                } else {
-                    TRUE
-                }
-            }) %>% purrr::set_names(value_cols)
-            if (any(!is_numeric_col)) {
-                rlang::abort(.non_num_user_cols_error(
-                    names(is_numeric_col)[!is_numeric_col]
-                ))
-            }
-        })
-    } else {
-        if (.check_mandatory_vars(x) == FALSE) {
-            rlang::abort(.missing_mand_vars())
-        }
-        if (!all(join_af_by %in% colnames(x))) {
-            rlang::abort(c(
-                x = paste(
-                    "Missing common columns",
-                    "to join metadata"
-                ),
-                i = paste(
-                    "Missing: ",
-                    paste0(join_af_by[!join_af_by %in%
-                        colnames(x)],
-                    collapse = ", "
-                    )
-                )
-            ))
-        }
-        if (!all(value_cols %in% colnames(x))) {
-            rlang::abort(.missing_user_cols_error(
-                value_cols[!value_cols %in% colnames(x)]
-            ))
-        }
-        is_numeric_col <- purrr::map_lgl(value_cols, function(col) {
-            if (!is.double(x[[col]]) &&
-                !is.integer(x[[col]])) {
-                FALSE
-            } else {
-                TRUE
-            }
-        }) %>% purrr::set_names(value_cols)
+    stopifnot(is.character(value_cols))
+    stopifnot(is.character(key))
+    stopifnot(is.null(group) || is.character(group))
+    stopifnot(is.character(join_af_by))
+    stopifnot(is.data.frame(association_file))
+    data.table::setDT(association_file)
+    stopifnot(is.list(lambda) && !is.null(names(lambda)))
+    join_key_err <- c("Join key not present in in both data frames",
+        x = paste(
+            "Fields specified in the argument",
+            "`join_af_by` must appear in both",
+            "the association file and the matrix(es)"
+        )
+    )
+    check_single_matrix <- function(df) {
+        stopifnot(is.data.frame(df))
+        is_numeric_col <- purrr::map_lgl(
+            value_cols,
+            ~ is.numeric(df[[.x]]) ||
+                is.double(df[[.x]]) ||
+                is.integer(df[[.x]])
+        ) %>% purrr::set_names(value_cols)
         if (any(!is_numeric_col)) {
             rlang::abort(.non_num_user_cols_error(
                 names(is_numeric_col)[!is_numeric_col]
             ))
         }
-    }
-    # Check association file
-    stopifnot(is.data.frame(association_file))
-    # Check key
-    stopifnot(is.character(key))
-    if (!all(key %in% colnames(association_file))) {
-        rlang::abort(c(x = "Key fields are missing from association file"))
-    }
-    # Check lambda
-    stopifnot(is.list(lambda))
-    # Check group
-    stopifnot(is.character(group) | is.null(group))
-    if (is.data.frame(x)) {
-        if (!all(group %in% c(colnames(association_file), colnames(x)))) {
-            rlang::abort(paste("Grouping variables not found"))
+        if (!all(join_af_by %in% colnames(df))) {
+            rlang::abort(join_key_err, class = "join_key_err_agg")
         }
-    } else {
-        purrr::walk(x, function(df) {
-            if (!all(group %in% c(colnames(association_file), colnames(df)))) {
-                rlang::abort(paste("Grouping variables not found"))
-            }
-        })
     }
-    if (is.data.frame(x)) {
-        x <- list(x)
-        agg_matrix <- .aggregate_lambda(
+    if (!is.data.frame(x)) {
+        purrr::walk(x, check_single_matrix)
+    } else {
+        check_single_matrix(x)
+    }
+    join_key_in_af <- all(join_af_by %in% colnames(association_file))
+    if (!join_key_in_af) {
+        rlang::abort(join_key_err, class = "join_key_err_agg")
+    }
+    agg_matrix <- if (is.data.frame(x)) {
+        .aggregate_lambda(
             x, association_file, key, value_cols, lambda, group, join_af_by
         )
-        return(agg_matrix[[1]])
+    } else {
+        agg_matrix <- purrr::map(x, ~ .aggregate_lambda(
+            .x, association_file, key, value_cols, lambda, group, join_af_by
+        ))
     }
-    agg_matrix <- .aggregate_lambda(
-        x, association_file, key, value_cols, lambda, group, join_af_by
-    )
-    agg_matrix
+    return(agg_matrix)
 }

@@ -6,6 +6,7 @@ output: html_document
 ```{r include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 options(DT.warn.size = FALSE)
+utils::globalVariables("where")
 ```
 
 VISPA2 stats info {data-orientation=rows}
@@ -24,10 +25,13 @@ datatable(iss_stats,
           filter = "top", 
           rownames = FALSE,
           options = list(
-            order = list(list(3, 'asc'))
+            order = list(list(3, 'asc')),
+            scrollY = "450px",
+            scrollX = TRUE,
+            autoWidth = TRUE
           ), 
           colnames = c("ProjectID", 
-                       "concatenatePoolIDSeqRun", 
+                       "VISPA concatenate", 
                        "Path to stats folder",
                        "File found",
                        "Imported",
@@ -52,16 +56,21 @@ minimal required columns
 Row2 {.tabset .tabset-fade}
 -------------------------------------------------------------------------------
 ### Missing stats for samples
-```{r eval=is.null(iss_stats_miss), results='asis'}
+```{r eval=is.null(iss_stats_miss) || nrow(iss_stats_miss) == 0, results='asis'}
 cat("*Nothing to report*")
 ```
 
-```{r eval=!is.null(iss_stats_miss)}
-datatable(iss_stats_miss %>% 
-            dplyr::mutate(dplyr::across(
-              c(.data$ProjectID, .data$concatenatePoolIDSeqRun), as.factor)),
+```{r eval=!is.null(iss_stats_miss) && nrow(iss_stats_miss) > 0, echo=FALSE}
+iss_stats_miss <- iss_stats_miss %>%
+  dplyr::mutate(dplyr::across(where(is.character), as.factor))
+
+datatable(iss_stats_miss,
           class = "stripe",
           filter = "top", 
-          rownames = FALSE)
+          rownames = FALSE,
+          options = list(
+            scrollY = "450px",
+            autoWidth = TRUE
+          ))
 ```
 

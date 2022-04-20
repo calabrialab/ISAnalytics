@@ -36,7 +36,7 @@ Either a single data frame with computed abundance values or
 a list of 2 data frames (abundance_df, quant_totals)
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Abundance is obtained for every integration event by calculating the ratio
 between the single value and the total value for the given group.
 }
@@ -46,6 +46,14 @@ in the \code{columns} parameter. For each column a corresponding
 relative abundance column (and optionally a percentage abundance
 column) will be produced.
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item All columns declared in \code{mandatory_IS_vars()}
+}
+}
+
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 abund <- compute_abundance(
@@ -58,15 +66,13 @@ head(abund)
 \seealso{
 Other Analysis functions: 
 \code{\link{CIS_grubbs}()},
-\code{\link{comparison_matrix}()},
-\code{\link{cumulative_count_union}()},
+\code{\link{HSC_population_size_estimate}()},
 \code{\link{cumulative_is}()},
+\code{\link{gene_frequency_fisher}()},
 \code{\link{is_sharing}()},
 \code{\link{iss_source}()},
-\code{\link{purity_filter}()},
 \code{\link{sample_statistics}()},
-\code{\link{separate_quant_matrices}()},
-\code{\link{threshold_filter}()},
-\code{\link{top_integrations}()}
+\code{\link{top_integrations}()},
+\code{\link{top_targeted_genes}()}
 }
 \concept{Analysis functions}

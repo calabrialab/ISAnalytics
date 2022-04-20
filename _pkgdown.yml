@@ -33,6 +33,8 @@ navbar:
     articles:
       text: Articles
       menu:
+      - text: Setup your analysis workflow
+        href: articles/setup_workflow.html
       - text: Working with aggregate functions
         href: articles/aggregate_function_usage.html
       - text: Collision removal functionality
@@ -46,86 +48,104 @@ navbar:
       text: RELEASE
       href: https://calabrialab.github.io/ISAnalytics/
 reference:
-- title: "Import functions"
-  desc: >
-    Importing integration matrices and metadata from files
-- contents:
-  - import_association_file
-  - import_Vispa2_stats
-  - import_single_Vispa2Matrix
-  - import_parallel_Vispa2Matrices
-- title: "Data cleaning and pre-processing"
-- contents:
-  - annotation_issues
-  - compute_near_integrations
-  - remove_collisions
-  - realign_after_collisions
-  - outlier_filter
-  - outliers_by_pool_fragments
-- title: "Aggregating functions"
-- contents:
-  - aggregate_metadata
-  - aggregate_values_by_key
-- title: "Analysis functions"
-- contents:
-  - compute_abundance
-  - comparison_matrix
-  - separate_quant_matrices
-  - threshold_filter
-  - top_integrations
-  - sample_statistics
-  - CIS_grubbs
-  - cumulative_count_union
-  - cumulative_is
-  - is_sharing
-  - purity_filter
-  - iss_source
-- title: "HSC population estimate"
-- contents:
-  - HSC_population_size_estimate
-- title: "Plotting functions"
-- contents:
-  - CIS_volcano_plot
-  - HSC_population_plot
-  - integration_alluvial_plot
-  - top_abund_tableGrob
-  - sharing_heatmap
-  - sharing_venn
-  - circos_genomic_density
-- title: "Utility functions"
-- contents:
-  - as_sparse_matrix
-  - generate_blank_association_file
-  - generate_Vispa2_launch_AF
-  - unzip_file_system
-- title: "Exported variables and helpers"
-- contents:
-  - annotation_IS_vars
-  - association_file_columns
-  - date_columns_coll
-  - date_formats
-  - mandatory_IS_vars
-  - matching_options
-  - quantification_types
-  - reduced_AF_columns
-  - default_stats
-  - clinical_relevant_suspicious_genes
-  - known_clinical_oncogenes
-  - available_outlier_tests
-  - blood_lineages_default
-  - default_iss_file_prefixes
-  - default_meta_agg
-  - default_report_path
-  - refGene_table_cols
-- title: "Deprecated"
-- contents:
-  - import_parallel_Vispa2Matrices_interactive
-  - import_parallel_Vispa2Matrices_auto
-- title: "Data"
-- contents:
-  - association_file
-  - integration_matrices
-  - proto_oncogenes
-  - refGenes_hg19
-  - refGenes_mm9
-  - tumor_suppressors
+  - title: "Import functions"
+    desc: >
+      Importing integration matrices and metadata from files
+  - contents:
+    - import_association_file
+    - import_Vispa2_stats
+    - import_single_Vispa2Matrix
+    - import_parallel_Vispa2Matrices
+  - title: "Data cleaning and pre-processing"
+  - contents:
+    - annotation_issues
+    - compute_near_integrations
+    - remove_collisions
+    - realign_after_collisions
+    - outlier_filter
+    - outliers_by_pool_fragments
+    - aggregate_metadata
+    - aggregate_values_by_key
+    - threshold_filter
+  - title: "Analysis functions"
+  - contents:
+    - compute_abundance
+    - top_integrations
+    - top_targeted_genes
+    - sample_statistics
+    - CIS_grubbs
+    - gene_frequency_fisher
+    - cumulative_is
+    - is_sharing
+    - purity_filter
+    - iss_source
+    - HSC_population_size_estimate
+  - title: "Plotting functions"
+  - contents:
+    - CIS_volcano_plot
+    - HSC_population_plot
+    - integration_alluvial_plot
+    - top_abund_tableGrob
+    - sharing_heatmap
+    - sharing_venn
+    - circos_genomic_density
+    - fisher_scatterplot
+  - title: "Utility functions"
+  - contents:
+    - as_sparse_matrix
+    - generate_blank_association_file
+    - generate_Vispa2_launch_AF
+    - inspect_tags
+    - set_mandatory_IS_vars
+    - reset_mandatory_IS_vars
+    - mandatory_IS_vars
+    - set_annotation_IS_vars
+    - reset_annotation_IS_vars
+    - annotation_IS_vars
+    - set_af_columns_def
+    - reset_af_columns_def
+    - association_file_columns
+    - set_iss_stats_specs
+    - reset_iss_stats_specs
+    - iss_stats_specs
+    - matrix_file_suffixes
+    - set_matrix_file_suffixes
+    - reset_matrix_file_suffixes
+    - reset_dyn_vars_config
+    - pcr_id_column
+    - transform_columns
+    - comparison_matrix
+    - separate_quant_matrices
+    - generate_default_folder_structure
+    - NGSdataExplorer
+  - title: "Exported variables and helpers"
+  - contents:
+    - date_formats
+    - matching_options
+    - quantification_types
+    - reduced_AF_columns
+    - default_stats
+    - clinical_relevant_suspicious_genes
+    - known_clinical_oncogenes
+    - available_outlier_tests
+    - blood_lineages_default
+    - default_iss_file_prefixes
+    - default_meta_agg
+    - default_report_path
+    - refGene_table_cols
+    - default_af_transform
+    - default_rec_agg_lambdas
+  - title: "Deprecated"
+  - contents:
+    - import_parallel_Vispa2Matrices_interactive
+    - import_parallel_Vispa2Matrices_auto
+    - cumulative_count_union
+    - unzip_file_system
+  - title: "Data"
+  - contents:
+    - association_file
+    - integration_matrices
+    - proto_oncogenes
+    - refGenes_hg19
+    - refGenes_mm9
+    - tumor_suppressors

@@ -1,4 +1,4 @@
-library(ISAnalytics)
+
 func_name <- "compute_abundance"
 #------------------------------------------------------------------------------#
 # Global vars
@@ -132,9 +132,7 @@ test_that(paste(func_name, "fails if any columns not numeric"), {
     expect_error(compute_abundance(
         x = test_df_simple, columns = c("chr"),
         key = "CompleteAmplificationID"
-    ),
-    regexp = .non_num_user_cols_error("chr")
-    )
+    ))
 })
 
 ### - Percentage
@@ -143,14 +141,6 @@ test_that(paste(func_name, "fails if percentage is not logical"), {
         x = test_df_simple,
         columns = "Value",
         percentage = "true",
-        key = "CompleteAmplificationID"
-    ))
-})
-test_that(paste(func_name, "fails if percentage length > 1"), {
-    expect_error(compute_abundance(
-        x = test_df_simple,
-        percentage = c(TRUE, FALSE),
-        columns = "Value",
         key = "CompleteAmplificationID"
     ))
 })

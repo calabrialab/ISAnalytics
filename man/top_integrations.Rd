@@ -37,7 +37,7 @@ Either a data frame with at most n rows or
 a data frames with at most n*(number of groups) rows.
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 The input data frame will be sorted by the highest values in
 the columns specified and the top n rows will be returned as output.
 The user can choose to keep additional columns in the output
@@ -48,6 +48,14 @@ by passing a vector of column names or passing 2 "shortcuts":
 (\code{mandatory_IS_vars()}) plus the columns in the \code{columns} parameter.
 }
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item All columns declared in \code{mandatory_IS_vars()}
+}
+}
+
 \examples{
 smpl <- tibble::tibble(
     chr = c("1", "2", "3", "4", "5", "6"),
@@ -73,15 +81,13 @@ top_key <- top_integrations(smpl,
 \seealso{
 Other Analysis functions: 
 \code{\link{CIS_grubbs}()},
-\code{\link{comparison_matrix}()},
+\code{\link{HSC_population_size_estimate}()},
 \code{\link{compute_abundance}()},
-\code{\link{cumulative_count_union}()},
 \code{\link{cumulative_is}()},
+\code{\link{gene_frequency_fisher}()},
 \code{\link{is_sharing}()},
 \code{\link{iss_source}()},
-\code{\link{purity_filter}()},
 \code{\link{sample_statistics}()},
-\code{\link{separate_quant_matrices}()},
-\code{\link{threshold_filter}()}
+\code{\link{top_targeted_genes}()}
 }
 \concept{Analysis functions}

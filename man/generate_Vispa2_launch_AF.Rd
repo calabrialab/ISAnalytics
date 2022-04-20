@@ -2,31 +2,28 @@
 % Please edit documentation in R/utility-functions.R
 \name{generate_Vispa2_launch_AF}
 \alias{generate_Vispa2_launch_AF}
-\title{Creates a reduced association file for Vispa2 run,
+\title{Creates a reduced association file for a VISPA2 run,
 given project and pool}
 \usage{
 generate_Vispa2_launch_AF(association_file, project, pool, path)
 }
 \arguments{
 \item{association_file}{The imported association file (via
-\code{import_association_file})}
+\code{import_association_file()})}
 
 \item{project}{A vector of characters containing project names}
 
-\item{pool}{A vector of characters containing pool names.
-\strong{NOTE: the names should refer to the values contained in the
-PoolID column of the association file and NOT the
-concatenatePoolIDSeqRun column!}}
+\item{pool}{A vector of characters containing pool names}
 
 \item{path}{A single string representing the path to the folder where files
 should be written. If the folder doesn't exist it will be created.}
 }
 \value{
-returns NULL
+\code{NULL}
 }
 \description{
 The function selects the appropriate columns and prepares a file for the
-launch of Vispa2 pipeline for each project/pool pair specified.
+launch of VISPA2 pipeline for each project/pool pair specified.
 }
 \details{
 Note: the function is vectorized, meaning you can specify more than
@@ -35,21 +32,44 @@ ensure that:
 \itemize{
 \item Both \code{project} and \code{pool} vectors have the same length
 \item You correclty type names in corresponding positions, for example
-c("CLOEXP", "PROJECT1100", "PROJECT1100") - c("POOL6", "ABX-LR-PL5-POOL14-1",
-"ABX-LR-PL6-POOL15-1"). If you type a pool in the position of a corresponding
+c("PJ01", "PJ01") - c("POOL01", "POOL02").
+If you type a pool in the position of a corresponding
 project that doesn't match no file will be produced since that pool doesn't
 exist in the corresponding project.
 }
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item cell_marker
+\item fusion_id
+\item pcr_repl_id
+\item pool_id
+\item project_id
+\item subject
+\item tag_id
+\item tissue
+\item tp_days
+\item vector_id
+}
+
+The names of the pools in the \code{pool} argument is checked against the
+column corresponding to the \code{pool_id} tag.
+}
+
 \examples{
 temp <- tempdir()
 data("association_file", package = "ISAnalytics")
 generate_Vispa2_launch_AF(association_file, "PJ01", "POOL01", temp)
 }
 \seealso{
-Other Utility functions: 
+Other Utilities: 
 \code{\link{as_sparse_matrix}()},
+\code{\link{comparison_matrix}()},
 \code{\link{generate_blank_association_file}()},
-\code{\link{unzip_file_system}()}
+\code{\link{generate_default_folder_structure}()},
+\code{\link{separate_quant_matrices}()},
+\code{\link{transform_columns}()}
 }
-\concept{Utility functions}
+\concept{Utilities}

@@ -13,5 +13,7 @@ Nothing
 Launch the shiny application NGSdataExplorer.
 }
 \examples{
-\dontrun{NGSdataExplorer()}
+\dontrun{
+NGSdataExplorer()
+}
 }

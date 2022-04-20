@@ -5,7 +5,11 @@
 \title{Re-aligns matrices of other quantification types based on the processed
 sequence count matrix.}
 \usage{
-realign_after_collisions(sc_matrix, other_matrices)
+realign_after_collisions(
+  sc_matrix,
+  other_matrices,
+  sample_column = pcr_id_column()
+)
 }
 \arguments{
 \item{sc_matrix}{The sequence count matrix already processed for collisions
@@ -14,12 +18,14 @@ via \code{remove_collisions()}}
 \item{other_matrices}{A named list of matrices to re-align. Names in the list
 must be quantification types (\code{quantification_types()}) except
 "seqCount".}
+
+\item{sample_column}{The name of the column containing the sample identifier}
 }
 \value{
 A named list with re-aligned matrices
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 This function should be used to keep data consistent among the same analysis:
 if for some reason you removed the collisions by passing only the sequence
 count matrix to \code{remove_collisions()}, you should call this
@@ -52,7 +58,15 @@ realigned
 \seealso{
 \code{\link{remove_collisions}}
 
-Other Collision removal: 
-\code{\link{remove_collisions}()}
+Other Data cleaning and pre-processing: 
+\code{\link{aggregate_metadata}()},
+\code{\link{aggregate_values_by_key}()},
+\code{\link{compute_near_integrations}()},
+\code{\link{default_meta_agg}()},
+\code{\link{outlier_filter}()},
+\code{\link{outliers_by_pool_fragments}()},
+\code{\link{purity_filter}()},
+\code{\link{remove_collisions}()},
+\code{\link{threshold_filter}()}
 }
-\concept{Collision removal}
+\concept{Data cleaning and pre-processing}

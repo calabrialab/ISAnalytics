@@ -60,15 +60,6 @@ bib <- c(
 In this vignette we're going to explain more in detail how functions of the 
 import family should be used, the most common workflows to follow and more.
 
-```{r echo=FALSE}
-inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", 
-                               package = "ISAnalytics")
-```
-
-```{r child=inst_chunk_path}
-
-```
-
 ```{r}
 library(ISAnalytics)
 ```
@@ -110,9 +101,11 @@ as the one described above.
 
 We call an *"integration matrix"* a tabular structure characterized by:
 
-* 3 mandatory columns of genomic features that characterize a viral insertion
-site in the genome: `chr`, `integration_locus` and `strand`
-* 2 (optional) annotation columns: `GeneName` and `GeneStrand`
+* k mandatory columns of genomic features that characterize a viral insertion
+site in the genome, which are specified via `mandatory_IS_vars()`. By default
+they're set to `chr`, `integration_locus` and `strand`
+* a (optional) annotation columns, provided via `annotation_IS_vars()`. 
+By default they're set to `GeneName` and `GeneStrand`
 * A variable number n of sample columns containing the quantification
 of the corresponding integration site
 
@@ -135,8 +128,7 @@ For more info on this take a look at:
 While integration matrices contain the actual data, we also need associated
 sample metadata to perform the vast majority of the analyses. 
 `ISAnalytics` expects the metadata to be contained in a so called 
-*"association file"*, which is a simple tabular file with a set of 
-standard column headers. 
+*"association file"*, which is a simple tabular file.
 
 To generate a blank association file you can use the function 
 `generate_blank_association_file`. You can also view the standard 
@@ -152,20 +144,17 @@ the file system starting from the provided root to check if the corresponding
 folders (contained in the appropriate column) can be found. Remember that
 to work properly, this operation expects a standard folder structure, such
 as the one provided by VISPA2. This function also produces an interactive
-HTML report, to know more about this feature see `vignette(report_system)`.
+HTML report.
 
 ```{r}
-fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- unzip_file_system(fs_path, "fs")
+fs_path <- generate_default_folder_structure()
 withr::with_options(list(ISAnalytics.reports = FALSE), code = {
-  af_path <- system.file("extdata", "asso.file.tsv.gz", 
-                         package = "ISAnalytics")
-  af <- import_association_file(af_path, root = root)
+  af <- import_association_file(fs_path$af, root = fs_path$root)
 })
 ```
 
 ```{r echo=FALSE}
-print(head(af), width = Inf)
+print(head(af))
 ```
 
 ## Function arguments
@@ -178,7 +167,8 @@ behavior of the function.
   file system alignment. Beware that some of the automated import 
   functionalities won't work!
   * Set it to a non-empty string (path on disk): in this case, 
-  the column `PathToFolderProjectID` in the file should contain 
+  the column associated with the tag `proj_folder`
+  (by default `PathToFolderProjectID`) in the file should contain 
   **relative** file paths, so if for example your root is set to "/home" and
   your project folder in the association file is set to "/PJ01", the function
   will check that the directory exists under "/home/PJ01"
@@ -186,8 +176,6 @@ behavior of the function.
   association file as **absolute** file paths. In this case if your project
   folder is in "/home/PJ01" you should have this path in the
   `PathToFolderProjectID` column and set `root` = ""
-* `tp_padding`: this argument is used to pad the `TimePoint` column in the
-association file so that time points have all the same length
 * `dates_format`: a string that is useful for properly parsing dates from 
 tabular formats
 * `separator`: the column separator used in the file. Defaults to "\\t",
@@ -198,14 +186,15 @@ return only those rows whose attribute "ProjectID" equals "PJ01"
 * `import_iss`: either `TRUE` or `FALSE`. If set to `TRUE`, performs
 an internal call to `import_Vispa2_stats()` (see next section), and appends
 the imported files to metadata
-* `convert_tp`: either `TRUE` or `FALSE`. Converts the "TimePoint" column
-in months and years (with custom logic).
+* `convert_tp`: either `TRUE` or `FALSE`. Converts the column containing
+the time point expressed in days in months and years (with custom logic).
 * `report_path`
   * Set it to `NULL` to avoid the production of a report
   * Set it to a folder (if it doesn't exist, it gets automatically created)
-  * Set it to a file
 * `...`: additional named arguments to pass to `import_Vispa2_stats()` if
 you chose to import VISPA2 stats
+
+For further details view the dedicated function documentation.
 
 *NOTE*: the function supports files in various formats as long as the correct
 separator is provided. It also accepts files in `*.xlsx` and `*.xls` formats 
@@ -261,7 +250,7 @@ This function reads the file and converts it into a tidy structure: several
 different formats can be read, since you can specify the column separator.
 
 ```{r message=FALSE, results='hide'}
-matrix_path <- fs::path(root,
+matrix_path <- fs::path(fs_path$root,
                         "PJ01",
                         "quantification",
                         "POOL01-1",
@@ -273,15 +262,7 @@ matrix <- import_single_Vispa2Matrix(matrix_path)
 matrix
 ```
 
-Other arguments you can pass to the function are
-
-* `to_exclude`: a character vector that contains column names that need to
-be excluded when imported. This is more targeted towards files that do have
-all the columns of an integration matrix as presented in section
-\@ref(notation) and other additional columns. By default this argument is set
-to `NULL`
-* `keep_excluded`: if set to `TRUE` all columns contained in `to_exclude` are
-preserved as additional annotation columns
+For details on usage and arguments view the dedicated function documentation.
 
 # Automated integration matrices import
 
@@ -329,11 +310,10 @@ all the supported quantification types can be viewed with
 As we mentioned in Section \@ref(notation), annotation columns are optional 
 and may not be included in some matrices. This argument allows you to 
 specify the function to look for only a specific type of matrix, either
-`annotated` or `not_annotated`. Please note that in order to do that,
-for now,
-the function needs to assume some standard file name notation, that is, 
-for `annotated` matrices, the function will look for the `.no0.annotated` 
-suffix in the file name.
+`annotated` or `not_annotated`. 
+
+File suffixes for matrices are specified via `matrix_file_suffixes()`, 
+see also the vignette `vignette("setup_workflow", package = "ISAnalytics")`.
 
 ### `workers` argument
 
@@ -349,7 +329,7 @@ single data frames that has a dedicated column for each quantification.
 For example, for the matrices we've imported before:
 
 ```{r echo=FALSE}
-print(head(matrices), width = Inf)
+print(head(matrices))
 ```
 
 ### `report_path` argument

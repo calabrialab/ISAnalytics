@@ -1,4 +1,3 @@
-library(ISAnalytics)
 func_name <- "purity_filter"
 #------------------------------------------------------------------------------#
 # Global vars

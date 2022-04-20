@@ -4,7 +4,8 @@
 
 #' Hematopoietic stem cells population size estimate.
 #'
-#' @description \lifecycle{experimental}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' Hematopoietic stem cells population size estimate with capture-recapture
 #' models.
 #'
@@ -14,14 +15,15 @@
 #' format (ideally through the use of \code{\link{aggregate_metadata}}
 #' and \code{\link{aggregate_values_by_key}}).
 #' Note that the `aggregation_key`, aka the vector of column names used for
-#' aggregation, must contain at least the columns SubjectID, CellMarker,
-#' Tissue and a time point column (the user can specify the name of the
+#' aggregation, must contain at least the columns associated with the tags
+#' `subject`, `cell_marker`, `tissue` and a time point column
+#' (the user can specify the name of the
 #' column in the argument `timepoint_column`).
 #'
 #' # On time points
 #' If `stable_timepoints` is a vector with length > 1, the function will look
 #' for the first available stable time point and slice the data from that
-#' time point onward. If NULL is supplied instead, it means there are no
+#' time point onward. If `NULL` is supplied instead, it means there are no
 #' stable time points available. Note that 0 time points are ALWAYS discarded.
 #' Also, to be included in the analysis, a group must have at least 2
 #' distinct non-zero time points.
@@ -67,8 +69,18 @@
 #' @param tissue_type The tissue types to include in the models. Note that
 #' the matching is case-insensitive.
 #'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' ```{r echo=FALSE, results="asis"}
+#' all_tags <- available_tags()
+#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
+#'  ~ "HSC_population_size_estimate" %in% .x)][["tag"]])
+#'  cat(paste0("* ", needed, collapse="\n"))
+#' ```
+#'
 #' @return A data frame with the results of the estimates
-#' @family Population estimates
+#' @family Analysis functions
 #'
 #' @importFrom rlang abort inform
 #' @importFrom stringr str_to_upper str_detect
@@ -131,7 +143,16 @@ HSC_population_size_estimate <- function(x,
     cell_type <- stringr::str_to_upper(cell_type)
     tissue_type <- stringr::str_to_upper(tissue_type)
     ## Assumptions on aggregation key
-    minimum_key <- c("SubjectID", "CellMarker", "Tissue", timepoint_column)
+    required_tags <- list(
+        subject = "char", cell_marker = "char",
+        tissue = "char"
+    )
+    tag_cols <- .check_required_cols(
+        required_tags,
+        vars_df = association_file_columns(TRUE),
+        duplicate_politic = "error"
+    )
+    minimum_key <- c(tag_cols$names, timepoint_column)
     if (!all(minimum_key %in% aggregation_key)) {
         rlang::abort(.not_min_key_err(
             minimum_key[!minimum_key %in% aggregation_key]
@@ -180,27 +201,39 @@ HSC_population_size_estimate <- function(x,
         numIs <- x %>%
             dplyr::left_join(metadata, by = dplyr::all_of(aggregation_key)) %>%
             dplyr::group_by(dplyr::across(dplyr::all_of(aggregation_key))) %>%
-            dplyr::distinct(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
+            dplyr::distinct(dplyr::across(
+                dplyr::all_of(mandatory_IS_vars())
+            )) %>%
             dplyr::count(name = "NumIS")
         metadata <- metadata %>%
-            dplyr::left_join(numIs, by = dplyr::all_of(aggregation_key)) %>%
+            dplyr::left_join(numIs, by = aggregation_key) %>%
             dplyr::distinct()
     }
     ## Check blood lineages
-    if (!all(c("CellMarker", "CellType") %in% colnames(blood_lineages))) {
-        rlang::abort(c(paste(
+    cm_col <- tag_cols %>%
+        dplyr::filter(.data$tag == "cell_marker") %>%
+        dplyr::pull(.data$names)
+    tissue_col <- tag_cols %>%
+        dplyr::filter(.data$tag == "tissue") %>%
+        dplyr::pull(.data$names)
+    subj_col <- tag_cols %>%
+        dplyr::filter(.data$tag == "subject") %>%
+        dplyr::pull(.data$names)
+    if (!all(c(cm_col, "CellType") %in% colnames(blood_lineages))) {
+        err <- c(paste0(
             "The blood lineages table must contain at least",
-            "the columns `CellMarker` and `CellType`"
-        )))
+            "the columns `", cm_col, "` and `CellType`"
+        ))
+        rlang::abort(err)
     }
     # --- METADATA
     ### Join meta with blood lineages
     metadata <- metadata %>%
         dplyr::filter(.data$NumIS > nIS_threshold) %>%
-        dplyr::left_join(blood_lineages, by = "CellMarker")
+        dplyr::left_join(blood_lineages, by = cm_col)
     # --- SPLIT THE INPUT AGGREGATED MATRIX BY SubjectID
     x_subj_split <- x %>%
-        dplyr::group_by(.data$SubjectID) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(subj_col))) %>%
         dplyr::group_split()
     #### Process in parallel
     annotation_cols <- if (.is_annotated(x)) {
@@ -223,102 +256,26 @@ HSC_population_size_estimate <- function(x,
             exportglobals = FALSE
         )
     }
-    FUN <- function(df, metadata) {
-        # --- RE-AGGREGATION
-        val_cols <- if (!is.null(fragmentEstimate_column)) {
-            c(seqCount_column, fragmentEstimate_column)
-        } else {
-            seqCount_column
-        }
-        re_agg <- aggregate_values_by_key(
-            x = df,
-            association_file = metadata,
-            value_cols = val_cols,
-            key = c("CellType", "Tissue", timepoint_column),
-            join_af_by = aggregation_key
-        )
-        re_agg <- re_agg %>%
-            dplyr::filter(!is.na(.data$CellType))
-        seqCount_column <- colnames(re_agg)[stringr::str_detect(
-            colnames(re_agg),
-            seqCount_column
-        )]
-        fragmentEstimate_column <- if (!is.null(fragmentEstimate_column)) {
-            colnames(re_agg)[stringr::str_detect(
-                colnames(re_agg),
-                fragmentEstimate_column
-            )]
-        } else {
-            NULL
-        }
-        ### Keep only sequence count value greater or equal to
-        ### seqCount_threshold (or put it in AND with fe filter)
-        ### (for each is)
-        per_int_sums_low <- if (is.null(fragmentEstimate_column)) {
-            re_agg %>%
-                dplyr::group_by(dplyr::across(
-                    dplyr::all_of(mandatory_IS_vars())
-                )) %>%
-                dplyr::summarise(
-                    sum_sc = sum(.data[[seqCount_column]]),
-                    .groups = "drop"
-                ) %>%
-                dplyr::filter(.data$sum_sc >= seqCount_threshold)
-        } else {
-            re_agg %>%
-                dplyr::group_by(dplyr::across(
-                    dplyr::all_of(mandatory_IS_vars())
-                )) %>%
-                dplyr::summarise(
-                    sum_sc = sum(.data[[seqCount_column]]),
-                    sum_fe = sum(.data[[fragmentEstimate_column]]),
-                    .groups = "drop"
-                ) %>%
-                dplyr::filter(
-                    .data$sum_sc >= seqCount_threshold,
-                    .data$sum_fe >= fragmentEstimate_threshold |
-                        .data$sum_fe == 0
-                )
-        }
-        re_agg <- re_agg %>%
-            dplyr::filter(
-                .data$chr %in% per_int_sums_low$chr,
-                .data$integration_locus %in% per_int_sums_low$integration_locus,
-                .data$strand %in% per_int_sums_low$strand
-            )
-        ### Keep values whose cell type is in cell_type, tissue
-        ### in tissue_type and
-        ### have timepoint greater than zero
-        patient_slice <- re_agg %>%
-            dplyr::filter(
-                stringr::str_to_upper(.data$CellType) %in% cell_type,
-                stringr::str_to_upper(.data$Tissue) %in% tissue_type,
-                as.numeric(.data[[timepoint_column]]) > 0
-            )
-        ### If selected patient does not have at least 3 distinct timepoints
-        ### simply return (do not consider for population estimate)
-        if (length(unique(patient_slice[[timepoint_column]])) <= 2) {
-            return(NULL)
-        }
-        estimate <- .estimate_pop(
-            df = patient_slice,
-            seqCount_column = seqCount_column,
-            fragmentEstimate_column = fragmentEstimate_column,
-            timepoint_column = timepoint_column,
-            annotation_cols = annotation_cols,
-            subject = df$SubjectID[1],
-            stable_timepoints = stable_timepoints
-        )
-    }
     population_size <- BiocParallel::bptry({
         BiocParallel::bplapply(
             x_subj_split,
-            FUN = FUN,
+            FUN = .re_agg_and_estimate,
             metadata = metadata,
+            fragmentEstimate_column = fragmentEstimate_column,
+            seqCount_column = seqCount_column,
+            tissue_col = tissue_col,
+            timepoint_column = timepoint_column,
+            aggregation_key = aggregation_key,
+            seqCount_threshold = seqCount_threshold,
+            fragmentEstimate_threshold = fragmentEstimate_threshold,
+            cell_type = cell_type,
+            tissue_type = tissue_type,
+            annotation_cols = annotation_cols,
+            subj_col = subj_col,
+            stable_timepoints = stable_timepoints,
             BPPARAM = p
         )
     })
-
     BiocParallel::bpstop(p)
     if (all(BiocParallel::bpok(population_size))) {
         population_size <- purrr::reduce(population_size, function(x, y) {

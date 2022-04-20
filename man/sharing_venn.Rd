@@ -19,7 +19,7 @@ will produce tables for venn diagrams}
 A list of data frames
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 This function processes a sharing data frame obtained via \code{is_sharing()}
 with the option \code{table_for_venn = TRUE} to obtain a list of objects
 that can be plotted as venn or euler diagrams.
@@ -54,6 +54,7 @@ Other Plotting functions:
 \code{\link{CIS_volcano_plot}()},
 \code{\link{HSC_population_plot}()},
 \code{\link{circos_genomic_density}()},
+\code{\link{fisher_scatterplot}()},
 \code{\link{integration_alluvial_plot}()},
 \code{\link{sharing_heatmap}()},
 \code{\link{top_abund_tableGrob}()}

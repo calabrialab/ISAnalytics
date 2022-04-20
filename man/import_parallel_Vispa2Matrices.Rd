@@ -6,8 +6,8 @@
 \usage{
 import_parallel_Vispa2Matrices(
   association_file,
-  quantification_type,
-  matrix_type = "annotated",
+  quantification_type = c("seqCount", "fragmentEstimate"),
+  matrix_type = c("annotated", "not_annotated"),
   workers = 2,
   multi_quant_matrix = TRUE,
   report_path = default_report_path(),
@@ -31,49 +31,54 @@ to be imported. Can only be one in "annotated" or "not_annotated".}
 \item{workers}{A single integer representing the number of parallel
 workers to use for the import}
 
-\item{multi_quant_matrix}{If set to TRUE will produce a
+\item{multi_quant_matrix}{If set to \code{TRUE} will produce a
 multi-quantification matrix through \link{comparison_matrix}
 instead of a list.}
 
 \item{report_path}{The path where the report file should be saved.
-Can be a folder, a file or NULL if no report should be produced.
+Can be a folder or \code{NULL} if no report should be produced.
 Defaults to \code{{user_home}/ISAnalytics_reports}.}
 
 \item{patterns}{Relevant only if argument \code{mode} is set to \code{AUTO}.
 A character vector of additional patterns to match on file
-names. Please note that patterns must be regular expressions. Can be NULL if
-no patterns need to be matched.}
+names. Please note that patterns must be regular expressions. Can be \code{NULL}
+if no patterns need to be matched.}
 
 \item{matching_opt}{Relevant only if argument \code{mode} is set to \code{AUTO}.
 A single value between \link{matching_options}}
 
 \item{mode}{A single value between \code{AUTO} and \code{INTERACTIVE}. If
-INTERACTIVE, the function will ask for input from the user on console,
+\code{INTERACTIVE}, the function will ask for input from the user on console,
 otherwise the process is fully automated (with limitations, see vignette).}
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Additional named arguments
-to pass to \code{ìmport_association_file} and \code{comparison_matrix}}
+to pass to \code{ìmport_association_file}, \code{comparison_matrix} and
+\code{import_single_Vispa2_matrix}}
 }
 \value{
 Either a multi-quantification matrix or a list of integration
 matrices
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 The function offers a convenient way of importing multiple integration
 matrices in an automated or semi-automated way.
 For more details see the "How to use import functions" vignette:
 \code{vignette("import_functions_howto", package = "ISAnalytics")}
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item project_id
+\item vispa_concatenate
+}
+}
+
 \examples{
-fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-fs <- unzip_file_system(fs_path, "fs")
-af_path <- system.file("extdata", "asso.file.tsv.gz",
-    package = "ISAnalytics"
-)
-af <- import_association_file(af_path,
-    root = fs,
-    import_iss = FALSE,
+fs_path <- generate_default_folder_structure(type = "correct")
+af <- import_association_file(fs_path$af,
+    root = fs_path$root,
     report_path = NULL
 )
 matrices <- import_parallel_Vispa2Matrices(af,

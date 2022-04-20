@@ -7,6 +7,7 @@
 remove_collisions(
   x,
   association_file,
+  independent_sample_id = c("ProjectID", "SubjectID"),
   date_col = "SequencingDate",
   reads_ratio = 10,
   quant_cols = c(seqCount = "seqCount", fragmentEstimate = "fragmentEstimate"),
@@ -15,14 +16,16 @@ remove_collisions(
 )
 }
 \arguments{
-\item{x}{Either a multi-quantification matrix or a
+\item{x}{Either a multi-quantification matrix (recommended) or a
 named list of matrices (names must be quantification types)}
 
 \item{association_file}{The association file imported via
 \code{import_association_file()}}
 
-\item{date_col}{The date column that should be considered.
-Must be one value in \code{date_columns_coll()}}
+\item{independent_sample_id}{A character vector of column names that
+identify independent samples}
+
+\item{date_col}{The date column that should be considered.}
 
 \item{reads_ratio}{A single numeric value that represents the ratio that has
 to be considered when deciding between \code{seqCount} value.}
@@ -33,7 +36,7 @@ values are the names of the corresponding columns. The quantification
 \code{seqCount} MUST be included in the vector.}
 
 \item{report_path}{The path where the report file should be saved.
-Can be a folder, a file or NULL if no report should be produced.
+Can be a folder or \code{NULL} if no report should be produced.
 Defaults to \code{{user_home}/ISAnalytics_reports}.}
 
 \item{max_workers}{Maximum number of parallel workers to distribute the
@@ -46,17 +49,27 @@ accordingly.}
 Either a multi-quantification matrix or a list of data frames
 }
 \description{
-\lifecycle{stable}
-A collision is an integration (aka a unique combination of
-\code{chr}, \code{integration_locus} and \code{strand}) which is observed in more than one
-independent sample (a unique pair of \code{ProjectID} and \code{SubjectID}).
-The function tries to decide to which subject an integration
-should be assigned to and, if no
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
+A collision is an integration (aka a unique combination of the provided
+\code{mandatory_IS_vars()}) which is observed in more than one
+independent sample.
+The function tries to decide to which independent sample should
+an integration event be assigned to, and if no
 decision can be taken, the integration is completely removed from the data
 frame.
 For more details refer to the vignette "Collision removal functionality":
 \code{vignette("collision_removal", package = "ISAnalytics")}
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item project_id
+\item pool_id
+\item pcr_replicate
+}
+}
+
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
@@ -68,9 +81,15 @@ no_coll <- remove_collisions(
 head(no_coll)
 }
 \seealso{
-\code{\link{date_columns_coll}}
-
-Other Collision removal: 
-\code{\link{realign_after_collisions}()}
+Other Data cleaning and pre-processing: 
+\code{\link{aggregate_metadata}()},
+\code{\link{aggregate_values_by_key}()},
+\code{\link{compute_near_integrations}()},
+\code{\link{default_meta_agg}()},
+\code{\link{outlier_filter}()},
+\code{\link{outliers_by_pool_fragments}()},
+\code{\link{purity_filter}()},
+\code{\link{realign_after_collisions}()},
+\code{\link{threshold_filter}()}
 }
-\concept{Collision removal}
+\concept{Data cleaning and pre-processing}

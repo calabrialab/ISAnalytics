@@ -15,3 +15,12 @@ Note that each element is a regular expression.
 \examples{
 default_iss_file_prefixes()
 }
+\seealso{
+Other Import functions helpers: 
+\code{\link{annotation_issues}()},
+\code{\link{date_formats}()},
+\code{\link{default_af_transform}()},
+\code{\link{matching_options}()},
+\code{\link{quantification_types}()}
+}
+\concept{Import functions helpers}

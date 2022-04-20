@@ -50,13 +50,13 @@ shared integration sites in a dedicated column (as a nested table)}
 A data frame
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Computes the amount of integration sites shared between the groups identified
 in the input data.
 }
 \details{
-An integration site is always identified by the triple
-\verb{(chr, integration_locus, strand)}, thus these columns must be present
+An integration site is always identified by the combination of fields in
+\code{mandatory_IS_vars()}, thus these columns must be present
 in the input(s).
 
 The function accepts multiple inputs for different scenarios, please refer
@@ -77,6 +77,14 @@ function \code{\link{sharing_heatmap}} or via the function
 \code{\link{sharing_venn}}
 }
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item All columns declared in \code{mandatory_IS_vars()}
+}
+}
+
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
@@ -91,15 +99,13 @@ sharing
 \seealso{
 Other Analysis functions: 
 \code{\link{CIS_grubbs}()},
-\code{\link{comparison_matrix}()},
+\code{\link{HSC_population_size_estimate}()},
 \code{\link{compute_abundance}()},
-\code{\link{cumulative_count_union}()},
 \code{\link{cumulative_is}()},
+\code{\link{gene_frequency_fisher}()},
 \code{\link{iss_source}()},
-\code{\link{purity_filter}()},
 \code{\link{sample_statistics}()},
-\code{\link{separate_quant_matrices}()},
-\code{\link{threshold_filter}()},
-\code{\link{top_integrations}()}
+\code{\link{top_integrations}()},
+\code{\link{top_targeted_genes}()}
 }
 \concept{Analysis functions}

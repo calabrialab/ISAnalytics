@@ -4,7 +4,8 @@
 
 #' Trace volcano plot for computed CIS data.
 #'
-#' \lifecycle{stable}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' Traces a volcano plot for IS frequency and CIS results.
 #'
 #' @details
@@ -14,40 +15,10 @@
 #' In the first case an internal call to
 #' the function `CIS_grubbs()` is performed.
 #'
-#' ## Oncogene and tumor suppressor genes files
-#' These files are included in the package for user convenience and are
-#' simply UniProt files with gene annotations for human and mouse.
-#' For more details on how this files were generated use the help
-#' `?tumor_suppressors`, `?proto_oncogenes`
-#'
-#' ## Known oncogenes
-#' The default values are included in this package and
-#' it can be accessed by doing:
-#'
-#' ```{r}
-#' head(known_clinical_oncogenes())
-#'
-#' ```
-#' If the user wants to change this parameter the input data frame must
-#' preserve the column structure. The same goes for the `suspicious_genes`
-#' parameter (DOIReference column is optional):
-#'
-#' ```{r}
-#' head(clinical_relevant_suspicious_genes())
-#'
-#' ```
 #' @family Plotting functions
 #'
 #' @param x Either a simple integration matrix or a data frame resulting
 #' from the call to \link{CIS_grubbs} with `add_standard_padjust = TRUE`
-#' @param onco_db_file Uniprot file for proto-oncogenes (see details).
-#' If different from default, should be supplied as a path to a file.
-#' @param tumor_suppressors_db_file Uniprot file for tumor-suppressor genes.
-#' If different from default, should be supplied as a path to a file.
-#' @param species One between `"human"`, `"mouse"` and `"all"`
-#' @param known_onco Data frame with known oncogenes. See details.
-#' @param suspicious_genes Data frame with clinical relevant suspicious
-#' genes. See details.
 #' @param significance_threshold The significance threshold
 #' @param annotation_threshold_ontots Value above which genes are annotated
 #' with colorful labels
@@ -62,13 +33,19 @@
 #' ggplot2. If TRUE the function returns a list containing both the plot
 #' and the data frame.
 #'
-#' @importFrom ggplot2 ggplot aes_ geom_point geom_hline scale_y_continuous
-#' @importFrom ggplot2 scale_x_continuous unit theme element_text labs
-#' @importFrom ggrepel geom_label_repel
-#' @importFrom dplyr left_join mutate filter
-#' @importFrom rlang .data inform
-#' @importFrom purrr is_empty
-#' @importFrom stringr str_to_lower
+#' @template genes_db
+#'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' ```{r echo=FALSE, results="asis"}
+#' all_tags <- available_tags()
+#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
+#'  ~ "CIS_volcano_plot" %in% .x)][["tag"]])
+#'  cat(paste0("* ", needed, collapse="\n"))
+#' ```
+#'
+#' @importFrom rlang .data
 #'
 #' @return A plot or a list containing a plot and a data frame
 #' @export
@@ -114,12 +91,6 @@ CIS_volcano_plot <- function(x,
     } else {
         title_prefix <- paste(title_prefix, collapse = " ")
     }
-    ## Load onco and ts
-    oncots_to_use <- .load_onco_ts_genes(
-        onco_db_file,
-        tumor_suppressors_db_file,
-        species
-    )
     ## Check if CIS function was already called
     min_cis_col <- c(
         "tdist_bonferroni_default", "tdist_fdr",
@@ -129,16 +100,19 @@ CIS_volcano_plot <- function(x,
         if (getOption("ISAnalytics.verbose") == TRUE) {
             rlang::inform("Calculating CIS_grubbs for x...")
         }
-        CIS_grubbs(x)
+        CIS_grubbs(x, return_missing_as_df = FALSE)
     } else {
         x
     }
-    ## Join all dfs by gene
-    cis_grubbs_df <- cis_grubbs_df %>%
-        dplyr::left_join(oncots_to_use, by = "GeneName") %>%
-        dplyr::left_join(known_onco, by = "GeneName") %>%
-        dplyr::left_join(suspicious_genes, by = "GeneName")
+    gene_sym_col <- annotation_IS_vars(TRUE) %>%
+        dplyr::filter(.data$tag == "gene_symbol") %>%
+        dplyr::pull(.data$names)
     ## Add info to CIS
+    cis_grubbs_df <- .expand_cis_df(
+        cis_grubbs_df, gene_sym_col,
+        onco_db_file, tumor_suppressors_db_file,
+        species, known_onco, suspicious_genes
+    )
     cis_grubbs_df <- cis_grubbs_df %>%
         dplyr::mutate(minus_log_p = -log(.data$tdist_bonferroni_default,
             base = 10
@@ -151,20 +125,6 @@ CIS_volcano_plot <- function(x,
                     .data$tdist_fdr < significance_threshold,
                 yes = TRUE,
                 no = FALSE
-            )
-        )
-    cis_grubbs_df <- cis_grubbs_df %>%
-        dplyr::mutate(
-            KnownGeneClass = ifelse(
-                is.na(.data$Onco1_TS2),
-                yes = "Other",
-                no = ifelse(.data$Onco1_TS2 == 1,
-                    yes = "OncoGene",
-                    no = "TumSuppressor"
-                )
-            ),
-            CriticalForInsMut = ifelse(!is.na(.data$KnownClonalExpansion),
-                yes = TRUE, no = FALSE
             )
         )
     significance_threshold_minus_log_p <- -log(significance_threshold,
@@ -199,7 +159,7 @@ CIS_volcano_plot <- function(x,
                 cis_grubbs_df,
                 .data$tdist_fdr < significance_threshold
             ),
-            ggplot2::aes_(label = ~GeneName),
+            ggplot2::aes_string(label = gene_sym_col),
             box.padding = ggplot2::unit(0.35, "lines"),
             point.padding = ggplot2::unit(0.3, "lines"),
             color = "white",
@@ -231,7 +191,7 @@ CIS_volcano_plot <- function(x,
         ggplot2::labs(
             title = paste(
                 title_prefix,
-                "- Volcano plot of IS gene frequency and",
+                "Volcano plot of IS gene frequency and",
                 "CIS results"
             ),
             y = "P-value Grubbs test (-log10(p))",
@@ -253,14 +213,14 @@ CIS_volcano_plot <- function(x,
         ## Look for the genes (case insensitive)
         to_highlight <- cis_grubbs_df %>%
             dplyr::filter(
-                stringr::str_to_lower(.data$GeneName) %in%
+                stringr::str_to_lower(.data[[gene_sym_col]]) %in%
                     stringr::str_to_lower(highlight_genes),
                 .data$tdist_fdr >= significance_threshold
             )
         plot_cis_fdr_slice <- plot_cis_fdr_slice +
             ggrepel::geom_label_repel(
                 data = to_highlight,
-                ggplot2::aes_(label = ~GeneName),
+                ggplot2::aes_string(label = gene_sym_col),
                 box.padding = ggplot2::unit(0.35, "lines"),
                 point.padding = ggplot2::unit(0.3, "lines"),
                 color = "white",
@@ -312,6 +272,75 @@ clinical_relevant_suspicious_genes <- function() {
         DOIReference =
             "https://doi.org/10.1182/blood-2018-01-829937"
     )
+}
+
+#' Plot results of gene frequency Fisher's exact test.
+#'
+#' @description
+#' `r lifecycle::badge("stable")`
+#' Plots results of Fisher's exact test on gene frequency obtained via
+#' `gene_frequency_fisher()` as a scatterplot.
+#'
+#' @param fisher_df Test results obtained via `gene_frequency_fisher()`
+#' @param p_value_col Name of the column containing the p-value to consider
+#' @param annot_threshold Annotate with a different color if a point is below
+#' the significance threshold. Single numerical value.
+#' @param annot_color The color in which points below the threshold should be
+#' annotated
+#' @param gene_sym_col The name of the column containing the gene symbol
+#'
+#' @family Plotting functions
+#' @return A plot
+#' @export
+#'
+#' @examples
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
+#'     association_file = association_file,
+#'     value_cols = c("seqCount", "fragmentEstimate")
+#' )
+#' cis <- CIS_grubbs(aggreg, by = "SubjectID")
+#' fisher <- gene_frequency_fisher(cis$cis$PT001, cis$cis$PT002,
+#'     min_is_per_gene = 2
+#' )
+#' fisher_scatterplot(fisher)
+fisher_scatterplot <- function(fisher_df,
+    p_value_col = "Fisher_p_value_fdr",
+    annot_threshold = 0.05,
+    annot_color = "red",
+    gene_sym_col = "GeneName") {
+    below_threshold <- fisher_df %>%
+        dplyr::filter(.data[[p_value_col]] < annot_threshold)
+    above_threshold <- fisher_df %>%
+        dplyr::filter(.data[[p_value_col]] >= annot_threshold)
+    plot <- ggplot2::ggplot(
+        above_threshold,
+        ggplot2::aes_(
+            x = ~IS_per_kbGeneLen_1,
+            y = ~IS_per_kbGeneLen_2,
+            color = ggplot2::sym(p_value_col)
+        )
+    ) +
+        ggplot2::geom_point() +
+        ggplot2::geom_point(data = below_threshold, color = annot_color) +
+        ggplot2::theme_bw() +
+        ggplot2::labs(
+            x = "Gene frequency G1", y = "Gene frequency G2",
+            color = "Fisher's test p-value"
+        ) +
+        ggrepel::geom_label_repel(
+            data = below_threshold,
+            ggplot2::aes_string(label = gene_sym_col),
+            box.padding = ggplot2::unit(0.35, "lines"),
+            point.padding = ggplot2::unit(0.3, "lines"),
+            max.overlaps = Inf, color = annot_color,
+            fill = ggplot2::alpha("white", alpha = 0.6)
+        ) +
+        ggplot2::scale_x_continuous() +
+        ggplot2::scale_y_continuous()
+    return(plot)
 }
 
 #' Plot of the estimated HSC population size for each patient.
@@ -406,28 +435,50 @@ HSC_population_plot <- function(estimates,
 
 #' Alluvial plots for IS distribution in time.
 #'
-#' \lifecycle{experimental}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' Alluvial plots allow the visualization of integration sites distribution
 #' in different points in time in the same group.
 #' This functionality requires the suggested package
 #' [ggalluvial](https://corybrunson.github.io/ggalluvial/).
 #'
 #' @details
-#' ### Input data frame
+#' ## Input data frame
 #' The input data frame must contain all the columns specified in the
 #' arguments `group`, `plot_x`, `plot_y` and `alluvia`. The standard
 #' input for this function is the data frame obtained via the
 #' \link{compute_abundance} function.
 #'
-#' ### Plotting threshold on y
+#' ## Plotting threshold on y
 #' The plotting threshold on the quantification on the y axis has the
 #' function to highlight only relevant information on the plot and reduce
 #' computation time. The default value is 1, that acts on the default column
-#' plotted on the y axis which holds a percentage value. This translates
+#' plotted on the y axis which contains a percentage value. This translates
 #' in natural language roughly as "highlight with colors only those
 #' integrations (alluvia) that at least in 1 point in time have an
 #' abundance value >= 1 %". The remaining integrations will be plotted
-#' as transparent in the strata.
+#' as a unique layer in the column, colored as specified by the argument
+#' `empty_space_color`.
+#'
+#' ## Customizing the plot
+#' The returned plots are ggplot2 objects and can therefore further modified
+#' as any other ggplot2 object. For example, if the user decides to change the
+#' fill scale it is sufficient to do
+#'
+#' ```{r eval=FALSE}
+#' plot +
+#'   ggplot2::scale_fill_viridis_d(...) + # or any other discrete fill scale
+#'   ggplot2::theme(...) # change theme options
+#' ```
+#' NOTE: if you requested the computation of the top ten abundant tables and
+#' you want the colors to match you should re-compute them
+#'
+#' ## A note on strata ordering
+#' Strata in each column are ordered first by time of appearance and secondly
+#' in decreasing order of abundance (value of y). It means, for example,
+#' that if the plot has 2 or more columns, in the second column, on top,
+#' will appear first appear IS that appeared in the previous columns and then
+#' all other IS, ordered in decreasing order of abundance.
 #'
 #' @param x A data frame. See details.
 #' @param group Character vector containing the column names that identify
@@ -440,6 +491,11 @@ HSC_population_plot <- function(estimates,
 #' threshold on y will be plotted in grey and aggregated. See details.
 #' @param top_abundant_tbl Logical. Produce the summary top abundant tables
 #' via \link{top_abund_tableGrob}?
+#' @param empty_space_color Color of the empty portion of the bars (IS below
+#' the threshold). Can be either a string of known colors, an hex code or
+#' `NA_character` to set the space transparent. All color
+#' specs accepted in ggplot2
+#' are suitable here.
 #' @param ... Additional arguments to pass on to \link{top_abund_tableGrob}
 #'
 #' @family Plotting functions
@@ -484,6 +540,7 @@ integration_alluvial_plot <- function(x,
     alluvia = mandatory_IS_vars(),
     alluvia_plot_y_threshold = 1,
     top_abundant_tbl = TRUE,
+    empty_space_color = "grey90",
     ...) {
     if (!requireNamespace("ggalluvial", quietly = TRUE)) {
         rlang::abort(.missing_pkg_error("ggalluvial"))
@@ -526,12 +583,16 @@ integration_alluvial_plot <- function(x,
     alluvia,
     alluvia_plot_y_threshold,
     top_abundant_tbl,
+    empty_space_color,
     other_params) {
         cleaned <- .clean_data(
             group_df, plot_x, plot_y,
             alluvia, alluvia_plot_y_threshold
         )
-        alluv_plot <- .alluvial_plot(cleaned, plot_x, plot_y)
+        alluv_plot <- .alluvial_plot(
+            cleaned, plot_x, plot_y,
+            empty_space_color
+        )
         if (top_abundant_tbl == TRUE) {
             summary_tbls <- NULL
             withCallingHandlers(
@@ -550,10 +611,11 @@ integration_alluvial_plot <- function(x,
                             )
                         },
                         missing = function() {
-                            rlang::inform(paste(
+                            msg <- paste(
                                 "Failed to produce top",
                                 "abundance tables, skipping"
-                            ))
+                            )
+                            rlang::inform(msg)
                         }
                     )
                 },
@@ -584,6 +646,7 @@ integration_alluvial_plot <- function(x,
         alluvia = alluvia,
         alluvia_plot_y_threshold = alluvia_plot_y_threshold,
         top_abundant_tbl = top_abundant_tbl,
+        empty_space_color = empty_space_color,
         other_params = dot_args,
         BPPARAM = p
     )
@@ -604,13 +667,12 @@ integration_alluvial_plot <- function(x,
     alluvia_plot_y_threshold) {
     tbl <- if (length(alluvia) > 1) {
         df %>%
-            tidyr::unite(col = "alluvia_id", {{ alluvia }}) %>%
-            data.table::setDT()
+            tidyr::unite(col = "alluvia_id", {{ alluvia }})
     } else {
         df %>%
-            dplyr::rename(alluvia_id = alluvia) %>%
-            data.table::setDT()
+            dplyr::rename(alluvia_id = alluvia)
     }
+    data.table::setDT(tbl)
     ## Getting counts by x
     counts_by_x <- tbl %>%
         dplyr::group_by(dplyr::across({{ plot_x }})) %>%
@@ -622,7 +684,10 @@ integration_alluvial_plot <- function(x,
         dplyr::pull(.data[["alluvia_id"]])
     # Modify ids - identifiers that are below threshold are converted to
     # NA and the quantities in y are aggregated
-    tbl[!alluvia_id %in% alluvia_to_plot, alluvia_id := NA_character_]
+    tbl[
+        !eval(sym("alluvia_id")) %in% alluvia_to_plot,
+        c("alluvia_id") := NA_character_
+    ]
     tbl <- tbl[, setNames(list(sum(.SD)), plot_y),
         by = c(plot_x, "alluvia_id"), .SDcols = plot_y
     ]
@@ -637,7 +702,7 @@ integration_alluvial_plot <- function(x,
 #' @importFrom ggplot2 ggplot aes_ geom_text scale_fill_viridis_d sym
 #' @importFrom dplyr group_by summarise pull across all_of
 #' @importFrom rlang .data
-.alluvial_plot <- function(tbl, plot_x, plot_y) {
+.alluvial_plot <- function(tbl, plot_x, plot_y, empty_space_color) {
     sums_y <- tbl %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
         dplyr::summarise(sums = sum(.data[[plot_y]])) %>%
@@ -646,6 +711,13 @@ integration_alluvial_plot <- function(x,
     labels <- tbl %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
         dplyr::summarise(count = .data$count[1], .groups = "drop")
+    tbl <- tbl %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
+        dplyr::arrange(dplyr::desc(dplyr::across(dplyr::all_of(plot_y))),
+            .by_group = TRUE
+        ) %>%
+        dplyr::mutate(alluvia_id = forcats::as_factor(.data$alluvia_id)) %>%
+        dplyr::ungroup()
     alluv <- ggplot2::ggplot(
         tbl,
         ggplot2::aes_(
@@ -654,19 +726,19 @@ integration_alluvial_plot <- function(x,
             alluvium = ~alluvia_id
         )
     ) +
-        ggalluvial::geom_stratum(ggplot2::aes_(stratum = ~alluvia_id),
-            na.rm = FALSE, decreasing = FALSE,
-            fill = NA
+        ggalluvial::stat_stratum(ggplot2::aes_(stratum = ~alluvia_id),
+            na.rm = FALSE,
+            fill = empty_space_color
         ) +
         ggalluvial::geom_alluvium(ggplot2::aes_(fill = ~alluvia_id),
             na.rm = FALSE,
-            decreasing = FALSE,
             alpha = .75,
             aes.bind = "alluvia"
-        ) +
-        ggplot2::scale_fill_viridis_d() +
-        ggplot2::theme(legend.position = "none")
+        )
     alluv <- alluv +
+        ggplot2::scale_fill_hue(na.value = NA_character_) +
+        ggplot2::theme_bw() +
+        ggplot2::theme(legend.position = "none") +
         ggplot2::geom_text(
             data = labels,
             ggplot2::aes_(
@@ -862,7 +934,8 @@ top_abund_tableGrob <- function(df,
 
 #' Plot IS sharing heatmaps.
 #'
-#' \lifecycle{experimental}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' Displays the IS sharing calculated via \link{is_sharing} as heatmaps.
 #'
 #' @param sharing_df The data frame containing the IS sharing data
@@ -1061,7 +1134,8 @@ sharing_heatmap <- function(sharing_df,
 
 #' Produce tables to plot sharing venn or euler diagrams.
 #'
-#' @description \lifecycle{experimental}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' This function processes a sharing data frame obtained via `is_sharing()`
 #' with the option `table_for_venn = TRUE` to obtain a list of objects
 #' that can be plotted as venn or euler diagrams.
@@ -1154,7 +1228,8 @@ sharing_venn <- function(sharing_df,
 
 #' Trace a circos plot of genomic densities.
 #'
-#' @description \lifecycle{experimental}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' For this functionality
 #' the suggested package
 #' [circlize](https://cran.r-project.org/web/packages/circlize/index.html)
@@ -1291,8 +1366,13 @@ circos_genomic_density <- function(data,
             rlang::fn_fmls_names(
                 rlang::as_function(device)
             )]
-        device_args <- device_args[!names(device_args) %in% c("filename")]
-        rlang::exec(.fn = device, filename = file_path, !!!device_args)
+        if (device == "pdf") {
+            device_args <- device_args[!names(device_args) %in% c("file")]
+            rlang::exec(.fn = device, file = file_path, !!!device_args)
+        } else {
+            device_args <- device_args[!names(device_args) %in% c("filename")]
+            rlang::exec(.fn = device, filename = file_path, !!!device_args)
+        }
     }
     ## Draw plot
     par_args <- dots[names(dots) %in%

@@ -67,7 +67,7 @@ the matching is case-insensitive.}
 A data frame with the results of the estimates
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Hematopoietic stem cells population size estimate with capture-recapture
 models.
 }
@@ -76,15 +76,16 @@ Both \code{x} and \code{metadata} should be supplied to the function in aggregat
 format (ideally through the use of \code{\link{aggregate_metadata}}
 and \code{\link{aggregate_values_by_key}}).
 Note that the \code{aggregation_key}, aka the vector of column names used for
-aggregation, must contain at least the columns SubjectID, CellMarker,
-Tissue and a time point column (the user can specify the name of the
+aggregation, must contain at least the columns associated with the tags
+\code{subject}, \code{cell_marker}, \code{tissue} and a time point column
+(the user can specify the name of the
 column in the argument \code{timepoint_column}).
 }
 
 \section{On time points}{
 If \code{stable_timepoints} is a vector with length > 1, the function will look
 for the first available stable time point and slice the data from that
-time point onward. If NULL is supplied instead, it means there are no
+time point onward. If \code{NULL} is supplied instead, it means there are no
 stable time points available. Note that 0 time points are ALWAYS discarded.
 Also, to be included in the analysis, a group must have at least 2
 distinct non-zero time points.
@@ -100,6 +101,16 @@ This means that for rows that miss fragment estimate, the filtering logic
 will be applied only on sequence count. If the user wishes not to use
 the combined filtering with fragment estimate, simply set
 \code{fragmentEstimate_threshold = 0}.
+}
+
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item subject
+\item tissue
+\item cell_marker
+}
 }
 
 \examples{
@@ -119,4 +130,16 @@ estimate <- HSC_population_size_estimate(
     cell_type = "Other"
 )
 }
-\concept{Population estimates}
+\seealso{
+Other Analysis functions: 
+\code{\link{CIS_grubbs}()},
+\code{\link{compute_abundance}()},
+\code{\link{cumulative_is}()},
+\code{\link{gene_frequency_fisher}()},
+\code{\link{is_sharing}()},
+\code{\link{iss_source}()},
+\code{\link{sample_statistics}()},
+\code{\link{top_integrations}()},
+\code{\link{top_targeted_genes}()}
+}
+\concept{Analysis functions}

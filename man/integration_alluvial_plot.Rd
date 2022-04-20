@@ -12,6 +12,7 @@ integration_alluvial_plot(
   alluvia = mandatory_IS_vars(),
   alluvia_plot_y_threshold = 1,
   top_abundant_tbl = TRUE,
+  empty_space_color = "grey90",
   ...
 )
 }
@@ -34,6 +35,12 @@ threshold on y will be plotted in grey and aggregated. See details.}
 \item{top_abundant_tbl}{Logical. Produce the summary top abundant tables
 via \link{top_abund_tableGrob}?}
 
+\item{empty_space_color}{Color of the empty portion of the bars (IS below
+the threshold). Can be either a string of known colors, an hex code or
+\code{NA_character} to set the space transparent. All color
+specs accepted in ggplot2
+are suitable here.}
+
 \item{...}{Additional arguments to pass on to \link{top_abund_tableGrob}}
 }
 \value{
@@ -41,7 +48,7 @@ For each group a list with the associated plot and optionally
 the summary tableGrob
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Alluvial plots allow the visualization of integration sites distribution
 in different points in time in the same group.
 This functionality requires the suggested package
@@ -61,11 +68,34 @@ input for this function is the data frame obtained via the
 The plotting threshold on the quantification on the y axis has the
 function to highlight only relevant information on the plot and reduce
 computation time. The default value is 1, that acts on the default column
-plotted on the y axis which holds a percentage value. This translates
+plotted on the y axis which contains a percentage value. This translates
 in natural language roughly as "highlight with colors only those
 integrations (alluvia) that at least in 1 point in time have an
 abundance value >= 1 \%". The remaining integrations will be plotted
-as transparent in the strata.
+as a unique layer in the column, colored as specified by the argument
+\code{empty_space_color}.
+}
+
+\subsection{Customizing the plot}{
+
+The returned plots are ggplot2 objects and can therefore further modified
+as any other ggplot2 object. For example, if the user decides to change the
+fill scale it is sufficient to do\if{html}{\out{<div class="sourceCode r">}}\preformatted{plot +
+  ggplot2::scale_fill_viridis_d(...) + # or any other discrete fill scale
+  ggplot2::theme(...) # change theme options
+}\if{html}{\out{</div>}}
+
+NOTE: if you requested the computation of the top ten abundant tables and
+you want the colors to match you should re-compute them
+}
+
+\subsection{A note on strata ordering}{
+
+Strata in each column are ordered first by time of appearance and secondly
+in decreasing order of abundance (value of y). It means, for example,
+that if the plot has 2 or more columns, in the second column, on top,
+will appear first appear IS that appeared in the previous columns and then
+all other IS, ordered in decreasing order of abundance.
 }
 }
 \examples{
@@ -94,6 +124,7 @@ Other Plotting functions:
 \code{\link{CIS_volcano_plot}()},
 \code{\link{HSC_population_plot}()},
 \code{\link{circos_genomic_density}()},
+\code{\link{fisher_scatterplot}()},
 \code{\link{sharing_heatmap}()},
 \code{\link{sharing_venn}()},
 \code{\link{top_abund_tableGrob}()}
