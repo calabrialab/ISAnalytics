@@ -1,12 +1,17 @@
 ### Convenience functions for errors and warnings ###
 
 .missing_req_cols <- function(requested, missing) {
-  err_msg <- c("Some of the required columns were not found",
-               i = paste0("Requested: ",
-                          paste0(requested, collapse = ", ")),
-               x = paste0("Not found: ",
-                          paste0(missing, collapse = ", ")))
-  return(err_msg)
+    err_msg <- c("Some of the required columns were not found",
+        i = paste0(
+            "Requested: ",
+            paste0(requested, collapse = ", ")
+        ),
+        x = paste0(
+            "Not found: ",
+            paste0(missing, collapse = ", ")
+        )
+    )
+    return(err_msg)
 }
 
 # Signals the user that file system alignment can't be performed because
@@ -108,9 +113,9 @@
 # USED IN:
 # - import_single_Vispa2Matrix
 .summary_ism_import_msg <- function(annotated,
-                                    dims,
-                                    mode,
-                                    sample_count) {
+    dims,
+    mode,
+    sample_count) {
     c(
         "*** File info *** ",
         paste("--- Annotated:", annotated),
@@ -354,6 +359,13 @@
         "Some list parameters between `threshold`,",
         "`cols_to_compare` or `comparators` miss elements.",
         "See ?threshold_filter for details"
+    )
+}
+
+.non_standard_annotation_structure <- function() {
+    paste(
+        "The genomic annotation file must have the standard UCSC format,",
+        "see ?CIS_grubbs for details"
     )
 }
 

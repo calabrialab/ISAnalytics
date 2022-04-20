@@ -53,6 +53,7 @@ p
 Other Plotting functions: 
 \code{\link{CIS_volcano_plot}()},
 \code{\link{circos_genomic_density}()},
+\code{\link{fisher_scatterplot}()},
 \code{\link{integration_alluvial_plot}()},
 \code{\link{sharing_heatmap}()},
 \code{\link{sharing_venn}()},

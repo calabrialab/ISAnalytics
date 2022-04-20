@@ -56,14 +56,6 @@ aggregate family, namely:
 1. `aggregate_metadata()`
 2. `aggregate_values_by_key()`
 
-```{r echo=FALSE}
-inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAnalytics")
-```
-
-```{r child=inst_chunk_path}
-
-```
-
 # Aggregating metadata
 
 We refer to information contained in the association file as "metadata": 

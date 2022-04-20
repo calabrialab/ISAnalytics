@@ -41,32 +41,41 @@ min_example <- data.table::data.table(
 # .outlier_test_verify_logiop
 #------------------------------------------------------------------------------#
 test_that(".outlier_test_verify_logiop warns when flag_logic too long", {
-  withr::local_options(list(ISAnalytics.verbose = TRUE))
-  key <- c("A", "B")
-  flag_logic <- c("AND", "OR")
-  expect_message({
-    .outlier_test_verify_logiop(key, flag_logic, "flag_logic")
-  }, class = "flag_logic_long")
-  expect_true(length(flag_logic) == 1)
+    withr::local_options(list(ISAnalytics.verbose = TRUE))
+    key <- c("A", "B")
+    flag_logic <- c("AND", "OR")
+    expect_message(
+        {
+            .outlier_test_verify_logiop(key, flag_logic, "flag_logic")
+        },
+        class = "flag_logic_long"
+    )
+    expect_true(length(flag_logic) == 1)
 })
 
 test_that(".outlier_test_verify_logiop warns flags short but not 1", {
-  withr::local_options(list(ISAnalytics.verbose = TRUE))
-  key <- c("A", "B", "C", "D")
-  flag_logic <- c("AND", "OR")
-  expect_message({
-    .outlier_test_verify_logiop(key, flag_logic, "flag_logic")
-  }, class = "flag_logic_short")
-  expect_true(length(flag_logic) == 1)
+    withr::local_options(list(ISAnalytics.verbose = TRUE))
+    key <- c("A", "B", "C", "D")
+    flag_logic <- c("AND", "OR")
+    expect_message(
+        {
+            .outlier_test_verify_logiop(key, flag_logic, "flag_logic")
+        },
+        class = "flag_logic_short"
+    )
+    expect_true(length(flag_logic) == 1)
 })
 
 test_that(".outlier_test_verify_logiop errors if unsupported ops", {
-  withr::local_options(list(ISAnalytics.verbose = TRUE))
-  key <- c("A", "B", "C", "D")
-  flag_logic <- c("AND", "OR", "X")
-  expect_error({
-    .outlier_test_verify_logiop(key, flag_logic, "flag_logic")
-  }, class = "unsupp_logi_op")
+    withr::local_options(list(ISAnalytics.verbose = TRUE))
+    key <- c("A", "B", "C", "D")
+    flag_logic <- c("AND", "OR", "X")
+    expect_error(
+        {
+            .outlier_test_verify_logiop(key, flag_logic, "flag_logic")
+        },
+        class = "unsupp_logi_op"
+    )
 })
 
 #------------------------------------------------------------------------------#
@@ -562,30 +571,30 @@ test_that("outliers_by_pool_fragments - processes with nas", {
             nas$CompleteAmplificationID) %>%
         dplyr::pull(.data$to_remove) == FALSE))
     res <- outliers_by_pool_fragments(min_example,
-                                      key = c("X","Z"),
-                                      keep_calc_cols = TRUE
+        key = c("X", "Z"),
+        keep_calc_cols = TRUE
     )
     expect_true(all(res %>%
-                      dplyr::filter(.data$CompleteAmplificationID %in%
-                                      nas$CompleteAmplificationID) %>%
-                      dplyr::pull(.data$processed) == FALSE))
+        dplyr::filter(.data$CompleteAmplificationID %in%
+            nas$CompleteAmplificationID) %>%
+        dplyr::pull(.data$processed) == FALSE))
     expect_true(all(res %>%
-                      dplyr::filter(.data$CompleteAmplificationID %in%
-                                      nas$CompleteAmplificationID) %>%
-                      dplyr::pull(.data$to_remove) == FALSE))
+        dplyr::filter(.data$CompleteAmplificationID %in%
+            nas$CompleteAmplificationID) %>%
+        dplyr::pull(.data$to_remove) == FALSE))
 })
 
 test_that("outliers_by_pool_fragments - produces report", {
-  withr::local_options(list(ISAnalytics.reports = TRUE))
-  withr::local_options(list(ISAnalytics.reports = TRUE))
-  tmp_dir <- withr::local_tempdir()
-  res <- outliers_by_pool_fragments(min_example,
-                                    key = c("X","Z"),
-                                    keep_calc_cols = TRUE,
-                                    report_path = tmp_dir
-  )
-  path_to_file <- fs::path(tmp_dir, .generate_report_filename("outlier_flag"))
-  expect_true(fs::file_exists(path_to_file))
+    withr::local_options(list(ISAnalytics.reports = TRUE))
+    withr::local_options(list(ISAnalytics.reports = TRUE))
+    tmp_dir <- withr::local_tempdir()
+    res <- outliers_by_pool_fragments(min_example,
+        key = c("X", "Z"),
+        keep_calc_cols = TRUE,
+        report_path = tmp_dir
+    )
+    path_to_file <- fs::path(tmp_dir, .generate_report_filename("outlier_flag"))
+    expect_true(fs::file_exists(path_to_file))
 })
 
 #------------------------------------------------------------------------------#
@@ -626,130 +635,150 @@ test_that("outlier_filter - works with calls to functions", {
 
     ## With custom function
     foo <- function(metadata) {
-      processed <- data.table::copy(metadata)
-      processed[eval(sym("X")) < 10000, c("to_remove") := TRUE]
-      processed[eval(sym("X")) >= 10000, c("to_remove") := FALSE]
-      return(processed[, mget(c("CompleteAmplificationID", "to_remove"))])
+        processed <- data.table::copy(metadata)
+        processed[eval(sym("X")) < 10000, c("to_remove") := TRUE]
+        processed[eval(sym("X")) >= 10000, c("to_remove") := FALSE]
+        return(processed[, mget(c("CompleteAmplificationID", "to_remove"))])
     }
-    res <- outlier_filter(metadata = example,
-                          outlier_test = c(outliers_by_pool_fragments, foo),
-                          key = "Z",
-                          outlier_p_value_threshold = 0.05
+    res <- outlier_filter(
+        metadata = example,
+        outlier_test = c(outliers_by_pool_fragments, foo),
+        key = "Z",
+        outlier_p_value_threshold = 0.05
     )
     expected_flagged <- c("ID20")
     expect_true(all(!expected_flagged %in% res$CompleteAmplificationID))
-    res <- outlier_filter(metadata = example,
-                          outlier_test = c(outliers_by_pool_fragments, foo),
-                          key = "Z",
-                          outlier_p_value_threshold = 0.05,
-                          combination_logic = c("OR")
+    res <- outlier_filter(
+        metadata = example,
+        outlier_test = c(outliers_by_pool_fragments, foo),
+        key = "Z",
+        outlier_p_value_threshold = 0.05,
+        combination_logic = c("OR")
     )
-    expected_flagged <- c("ID20", "ID6", "ID13", "ID9", "ID16", "ID18", "ID8",
-                          "ID10")
+    expected_flagged <- c(
+        "ID20", "ID6", "ID13", "ID9", "ID16", "ID18", "ID8",
+        "ID10"
+    )
     expect_true(all(!expected_flagged %in% res$CompleteAmplificationID))
 })
 
 test_that("outlier_filter - works with tests outputs", {
-  example <- tibble::tribble(
-    ~CompleteAmplificationID,
-    ~PoolID, ~X, ~Y, ~Z,
-    "ID1", "POOL2", 10000.143, 160.42487, NA,
-    "ID2", "POOL1", 10000.257, 214.61753, 363,
-    "ID3", "POOL3", 10000.716, 931.20962, 956,
-    "ID4", "POOL2", 10001.609, 211.75091, NA,
-    "ID5", "POOL1", 10000.667, 413.37500, 541,
-    "ID6", "POOL1", 9999.257, 33.85144, 398,
-    "ID7", "POOL1", 10000.065, 247.01316, 1549,
-    "ID8", "POOL2", 9999.991, -610.04281, 578,
-    "ID9", "POOL3", 9999.359, 385.85765, 2520,
-    "ID10", "POOL2", 9999.490, 955.12338, 2032)
-  test_result_1 <- tibble::tribble(
-    ~CompleteAmplificationID, ~ to_remove,
-    "ID1", TRUE,
-    "ID2", FALSE,
-    "ID3", FALSE,
-    "ID4", FALSE,
-    "ID5", TRUE,
-    "ID6", TRUE,
-    "ID7", FALSE,
-    "ID8", FALSE,
-    "ID9", FALSE,
-    "ID10", FALSE
-  )
-  test_result_2 <- tibble::tribble(
-    ~CompleteAmplificationID, ~ to_remove,
-    "ID1", TRUE,
-    "ID2", FALSE,
-    "ID3", TRUE,
-    "ID4", FALSE,
-    "ID5", FALSE,
-    "ID6", TRUE,
-    "ID7", FALSE,
-    "ID8", FALSE,
-    "ID9", FALSE,
-    "ID10", TRUE
-  )
-  res <- outlier_filter(metadata = example,
-                        outlier_test_outputs = test_result_1)
-  expected_flagged <- c("ID1", "ID5", "ID6")
-  expect_true(all(!expected_flagged %in% res$CompleteAmplificationID))
+    example <- tibble::tribble(
+        ~CompleteAmplificationID,
+        ~PoolID, ~X, ~Y, ~Z,
+        "ID1", "POOL2", 10000.143, 160.42487, NA,
+        "ID2", "POOL1", 10000.257, 214.61753, 363,
+        "ID3", "POOL3", 10000.716, 931.20962, 956,
+        "ID4", "POOL2", 10001.609, 211.75091, NA,
+        "ID5", "POOL1", 10000.667, 413.37500, 541,
+        "ID6", "POOL1", 9999.257, 33.85144, 398,
+        "ID7", "POOL1", 10000.065, 247.01316, 1549,
+        "ID8", "POOL2", 9999.991, -610.04281, 578,
+        "ID9", "POOL3", 9999.359, 385.85765, 2520,
+        "ID10", "POOL2", 9999.490, 955.12338, 2032
+    )
+    test_result_1 <- tibble::tribble(
+        ~CompleteAmplificationID, ~to_remove,
+        "ID1", TRUE,
+        "ID2", FALSE,
+        "ID3", FALSE,
+        "ID4", FALSE,
+        "ID5", TRUE,
+        "ID6", TRUE,
+        "ID7", FALSE,
+        "ID8", FALSE,
+        "ID9", FALSE,
+        "ID10", FALSE
+    )
+    test_result_2 <- tibble::tribble(
+        ~CompleteAmplificationID, ~to_remove,
+        "ID1", TRUE,
+        "ID2", FALSE,
+        "ID3", TRUE,
+        "ID4", FALSE,
+        "ID5", FALSE,
+        "ID6", TRUE,
+        "ID7", FALSE,
+        "ID8", FALSE,
+        "ID9", FALSE,
+        "ID10", TRUE
+    )
+    res <- outlier_filter(
+        metadata = example,
+        outlier_test_outputs = test_result_1
+    )
+    expected_flagged <- c("ID1", "ID5", "ID6")
+    expect_true(all(!expected_flagged %in% res$CompleteAmplificationID))
 
-  res <- outlier_filter(metadata = example,
-                        outlier_test_outputs = list(test_result_1,
-                                                    test_result_2),
-                        combination_logic = c("AND"))
-  expected_flagged <- c("ID1", "ID6")
-  expect_true(all(!expected_flagged %in% res$CompleteAmplificationID))
+    res <- outlier_filter(
+        metadata = example,
+        outlier_test_outputs = list(
+            test_result_1,
+            test_result_2
+        ),
+        combination_logic = c("AND")
+    )
+    expected_flagged <- c("ID1", "ID6")
+    expect_true(all(!expected_flagged %in% res$CompleteAmplificationID))
 })
 
 test_that("outlier_filter - fails with wrong output format", {
-  example <- tibble::tribble(
-    ~CompleteAmplificationID,
-    ~PoolID, ~X, ~Y, ~Z,
-    "ID1", "POOL2", 10000.143, 160.42487, NA,
-    "ID2", "POOL1", 10000.257, 214.61753, 363,
-    "ID3", "POOL3", 10000.716, 931.20962, 956,
-    "ID4", "POOL2", 10001.609, 211.75091, NA)
-  ## Missing IDs
-  test_result_1 <- tibble::tribble(
-    ~CompleteAmplificationID, ~ to_remove,
-    "ID1", TRUE,
-    "ID3", FALSE,
-    "ID4", FALSE
+    example <- tibble::tribble(
+        ~CompleteAmplificationID,
+        ~PoolID, ~X, ~Y, ~Z,
+        "ID1", "POOL2", 10000.143, 160.42487, NA,
+        "ID2", "POOL1", 10000.257, 214.61753, 363,
+        "ID3", "POOL3", 10000.716, 931.20962, 956,
+        "ID4", "POOL2", 10001.609, 211.75091, NA
     )
-  ## Missing columns
-  test_result_2 <- tibble::tribble(
-    ~SampleID, ~ remove,
-    "ID1", TRUE,
-    "ID2", FALSE,
-    "ID3", FALSE,
-    "ID4", FALSE
-  )
-  expect_error({
-    res <- outlier_filter(metadata = example,
-                          outlier_test_outputs = test_result_1)
-  }, class = "outlier_format_err")
-  expect_error({
-    res <- outlier_filter(metadata = example,
-                          outlier_test_outputs = test_result_2)
-  }, class = "outlier_format_err")
-  ## Additional IDs should not raise errors but should not appear in final
-  ## output
-  test_result_3 <- tibble::tribble(
-    ~CompleteAmplificationID, ~ to_remove,
-    "ID1", TRUE,
-    "ID2", FALSE,
-    "ID3", FALSE,
-    "ID4", FALSE,
-    "ID5", FALSE
-  )
-  res <- outlier_filter(metadata = example,
-                        outlier_test_outputs = test_result_3)
-  expect_true(all(c("ID2", "ID3", "ID4") %in%
-                    res$CompleteAmplificationID))
-  expect_true(all(!c("ID1", "ID5") %in% res$CompleteAmplificationID))
+    ## Missing IDs
+    test_result_1 <- tibble::tribble(
+        ~CompleteAmplificationID, ~to_remove,
+        "ID1", TRUE,
+        "ID3", FALSE,
+        "ID4", FALSE
+    )
+    ## Missing columns
+    test_result_2 <- tibble::tribble(
+        ~SampleID, ~remove,
+        "ID1", TRUE,
+        "ID2", FALSE,
+        "ID3", FALSE,
+        "ID4", FALSE
+    )
+    expect_error(
+        {
+            res <- outlier_filter(
+                metadata = example,
+                outlier_test_outputs = test_result_1
+            )
+        },
+        class = "outlier_format_err"
+    )
+    expect_error(
+        {
+            res <- outlier_filter(
+                metadata = example,
+                outlier_test_outputs = test_result_2
+            )
+        },
+        class = "outlier_format_err"
+    )
+    ## Additional IDs should not raise errors but should not appear in final
+    ## output
+    test_result_3 <- tibble::tribble(
+        ~CompleteAmplificationID, ~to_remove,
+        "ID1", TRUE,
+        "ID2", FALSE,
+        "ID3", FALSE,
+        "ID4", FALSE,
+        "ID5", FALSE
+    )
+    res <- outlier_filter(
+        metadata = example,
+        outlier_test_outputs = test_result_3
+    )
+    expect_true(all(c("ID2", "ID3", "ID4") %in%
+        res$CompleteAmplificationID))
+    expect_true(all(!c("ID1", "ID5") %in% res$CompleteAmplificationID))
 })
-
-
-
-

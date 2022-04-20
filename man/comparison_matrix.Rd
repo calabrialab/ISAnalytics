@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility-functions.R
 \name{comparison_matrix}
 \alias{comparison_matrix}
-\title{obtain a single integration matrix from individual quantification
+\title{Obtain a single integration matrix from individual quantification
 matrices.}
 \usage{
 comparison_matrix(
@@ -17,9 +17,8 @@ comparison_matrix(
 }
 \arguments{
 \item{x}{A named list of integration matrices, ideally obtained via
-\link{import_parallel_Vispa2Matrices_interactive} or
-\link{import_parallel_Vispa2Matrices_auto}. Names must be
-quantification types.}
+\link{import_parallel_Vispa2Matrices}. Names must be
+quantification types in \code{quantification_types()}.}
 
 \item{fragmentEstimate}{The name of the output column for fragment
 estimate values}
@@ -33,49 +32,49 @@ values}
 \item{cellCount}{The name of the output column for cell count values}
 
 \item{ShsCount}{The name of the output column for Shs count values}
+
+\item{value_col_name}{Name of the column containing the corresponding
+values in the single matrices}
 }
 \value{
-A tibble
+A single data frame
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Takes a list of integration matrices referring to different quantification
-types and merges them in a single data frame that has multiple
+types and merges them into a single data frame with multiple
 value columns, each renamed according to their quantification type
 of reference.
 }
 \examples{
-fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-fs <- unzip_file_system(fs_path, "fs")
-af_path <- system.file("extdata", "asso.file.tsv.gz",
-    package = "ISAnalytics"
+sc <- tibble::tribble(
+    ~chr, ~integration_locus, ~strand, ~CompleteAmplificationID, ~Value,
+    "1", 45324, "+", "ID1", 543,
+    "2", 52423, "-", "ID1", 42,
+    "6", 54623, "-", "ID2", 67,
+    "X", 12314, "+", "ID3", 8
 )
-af <- import_association_file(af_path,
-    root = fs,
-    import_iss = FALSE,
-    report_path = NULL
+fe <- tibble::tribble(
+    ~chr, ~integration_locus, ~strand, ~CompleteAmplificationID, ~Value,
+    "1", 45324, "+", "ID1", 56.76,
+    "2", 52423, "-", "ID1", 78.32,
+    "6", 54623, "-", "ID2", 123.45,
+    "X", 12314, "+", "ID3", 5.34
 )
-matrices <- import_parallel_Vispa2Matrices(af,
-    c("seqCount", "fragmentEstimate"),
-    mode = "AUTO", report_path = NULL, multi_quant_matrix = FALSE
-)
-multi_quant <- comparison_matrix(matrices)
-head(multi_quant)
+comparison_matrix(list(
+    fragmentEstimate = fe,
+    seqCount = sc
+))
 }
 \seealso{
 \link{quantification_types}
 
-Other Analysis functions: 
-\code{\link{CIS_grubbs}()},
-\code{\link{compute_abundance}()},
-\code{\link{cumulative_count_union}()},
-\code{\link{cumulative_is}()},
-\code{\link{is_sharing}()},
-\code{\link{iss_source}()},
-\code{\link{purity_filter}()},
-\code{\link{sample_statistics}()},
+Other Utilities: 
+\code{\link{as_sparse_matrix}()},
+\code{\link{generate_Vispa2_launch_AF}()},
+\code{\link{generate_blank_association_file}()},
+\code{\link{generate_default_folder_structure}()},
 \code{\link{separate_quant_matrices}()},
-\code{\link{threshold_filter}()},
-\code{\link{top_integrations}()}
+\code{\link{transform_columns}()}
 }
-\concept{Analysis functions}
+\concept{Utilities}

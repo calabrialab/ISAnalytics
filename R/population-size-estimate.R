@@ -4,7 +4,8 @@
 
 #' Hematopoietic stem cells population size estimate.
 #'
-#' @description \lifecycle{experimental}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' Hematopoietic stem cells population size estimate with capture-recapture
 #' models.
 #'
@@ -14,14 +15,15 @@
 #' format (ideally through the use of \code{\link{aggregate_metadata}}
 #' and \code{\link{aggregate_values_by_key}}).
 #' Note that the `aggregation_key`, aka the vector of column names used for
-#' aggregation, must contain at least the columns SubjectID, CellMarker,
-#' Tissue and a time point column (the user can specify the name of the
+#' aggregation, must contain at least the columns associated with the tags
+#' `subject`, `cell_marker`, `tissue` and a time point column
+#' (the user can specify the name of the
 #' column in the argument `timepoint_column`).
 #'
 #' # On time points
 #' If `stable_timepoints` is a vector with length > 1, the function will look
 #' for the first available stable time point and slice the data from that
-#' time point onward. If NULL is supplied instead, it means there are no
+#' time point onward. If `NULL` is supplied instead, it means there are no
 #' stable time points available. Note that 0 time points are ALWAYS discarded.
 #' Also, to be included in the analysis, a group must have at least 2
 #' distinct non-zero time points.
@@ -67,8 +69,18 @@
 #' @param tissue_type The tissue types to include in the models. Note that
 #' the matching is case-insensitive.
 #'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' ```{r echo=FALSE, results="asis"}
+#' all_tags <- available_tags()
+#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
+#'  ~ "HSC_population_size_estimate" %in% .x)][["tag"]])
+#'  cat(paste0("* ", needed, collapse="\n"))
+#' ```
+#'
 #' @return A data frame with the results of the estimates
-#' @family Population estimates
+#' @family Analysis functions
 #'
 #' @importFrom rlang abort inform
 #' @importFrom stringr str_to_upper str_detect
@@ -131,11 +143,14 @@ HSC_population_size_estimate <- function(x,
     cell_type <- stringr::str_to_upper(cell_type)
     tissue_type <- stringr::str_to_upper(tissue_type)
     ## Assumptions on aggregation key
-    required_tags <- list(subject = "char", cell_marker = "char",
-                          tissue = "char")
+    required_tags <- list(
+        subject = "char", cell_marker = "char",
+        tissue = "char"
+    )
     tag_cols <- .check_required_cols(
-      required_tags, vars_df = association_file_columns(TRUE),
-      duplicate_politic = "error"
+        required_tags,
+        vars_df = association_file_columns(TRUE),
+        duplicate_politic = "error"
     )
     minimum_key <- c(tag_cols$names, timepoint_column)
     if (!all(minimum_key %in% aggregation_key)) {
@@ -187,7 +202,8 @@ HSC_population_size_estimate <- function(x,
             dplyr::left_join(metadata, by = dplyr::all_of(aggregation_key)) %>%
             dplyr::group_by(dplyr::across(dplyr::all_of(aggregation_key))) %>%
             dplyr::distinct(dplyr::across(
-              dplyr::all_of(mandatory_IS_vars()))) %>%
+                dplyr::all_of(mandatory_IS_vars())
+            )) %>%
             dplyr::count(name = "NumIS")
         metadata <- metadata %>%
             dplyr::left_join(numIs, by = aggregation_key) %>%
@@ -195,20 +211,20 @@ HSC_population_size_estimate <- function(x,
     }
     ## Check blood lineages
     cm_col <- tag_cols %>%
-      dplyr::filter(.data$tag == "cell_marker") %>%
-      dplyr::pull(.data$names)
+        dplyr::filter(.data$tag == "cell_marker") %>%
+        dplyr::pull(.data$names)
     tissue_col <- tag_cols %>%
-      dplyr::filter(.data$tag == "tissue") %>%
-      dplyr::pull(.data$names)
+        dplyr::filter(.data$tag == "tissue") %>%
+        dplyr::pull(.data$names)
     subj_col <- tag_cols %>%
-      dplyr::filter(.data$tag == "subject") %>%
-      dplyr::pull(.data$names)
+        dplyr::filter(.data$tag == "subject") %>%
+        dplyr::pull(.data$names)
     if (!all(c(cm_col, "CellType") %in% colnames(blood_lineages))) {
-      err <- c(paste0(
-        "The blood lineages table must contain at least",
-        "the columns `", cm_col, "` and `CellType`"
-      ))
-      rlang::abort(err)
+        err <- c(paste0(
+            "The blood lineages table must contain at least",
+            "the columns `", cm_col, "` and `CellType`"
+        ))
+        rlang::abort(err)
     }
     # --- METADATA
     ### Join meta with blood lineages

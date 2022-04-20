@@ -11,5 +11,9 @@
 #'  \code{\link{import_parallel_Vispa2Matrices}}
 #'  * import_parallel_Vispa2Matrices_interactive:
 #'  \code{\link{import_parallel_Vispa2Matrices}}
+#'  * unzip_file_system:
+#'  \code{\link{generate_default_folder_structure}}
+#'  * cumulative_count_union:
+#'  \code{\link{cumulative_is}}
 #' @keywords internal
 NULL

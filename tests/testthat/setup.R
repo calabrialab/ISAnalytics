@@ -15,8 +15,10 @@ fs_path <- generate_default_folder_structure(type = "both")
 
 # Align AF
 local_af_corr <- import_association_file(fs_path$af,
-                                         root = fs_path$root_corr,
-                                         report_path = NULL)
+    root = fs_path$root_corr,
+    report_path = NULL
+)
 local_af_inc <- import_association_file(fs_path$af,
-                                        root = fs_path$root_inc,
-                                        report_path = NULL)
+    root = fs_path$root_inc,
+    report_path = NULL
+)

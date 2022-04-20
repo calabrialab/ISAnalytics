@@ -29,13 +29,13 @@ must be numeric or integer}
 
 \item{add_integrations_count}{Add the count of distinct integration sites
 for each group? Can be computed only if \code{x} contains the mandatory columns
-\code{chr}, \code{integration_locus}, \code{strand}}
+\code{mandatory_IS_vars()}}
 }
 \value{
 A list with modified x and metadata data frames
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 The function operates on a data frame by grouping the content by
 the sample key and computing every function specified on every
 column in the \code{value_columns} parameter. After that the metadata
@@ -60,6 +60,16 @@ sample_key = c("SubjectID", "CellMarker","Tissue", "TimePoint"))
 
 }\if{html}{\out{</div>}}
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item All columns declared in \code{mandatory_IS_vars()}
+}
+
+These are checked only if \code{add_integrations_count = TRUE}.
+}
+
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
@@ -73,15 +83,13 @@ stats
 \seealso{
 Other Analysis functions: 
 \code{\link{CIS_grubbs}()},
-\code{\link{comparison_matrix}()},
+\code{\link{HSC_population_size_estimate}()},
 \code{\link{compute_abundance}()},
-\code{\link{cumulative_count_union}()},
 \code{\link{cumulative_is}()},
+\code{\link{gene_frequency_fisher}()},
 \code{\link{is_sharing}()},
 \code{\link{iss_source}()},
-\code{\link{purity_filter}()},
-\code{\link{separate_quant_matrices}()},
-\code{\link{threshold_filter}()},
-\code{\link{top_integrations}()}
+\code{\link{top_integrations}()},
+\code{\link{top_targeted_genes}()}
 }
 \concept{Analysis functions}

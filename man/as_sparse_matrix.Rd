@@ -21,6 +21,9 @@ as_sparse_matrix(
 matrices. Supports also multi-quantification matrices
 obtained via \link{comparison_matrix}}
 
+\item{single_value_col}{Name of the column containing the values when
+providing a single-quantification matrix}
+
 \item{fragmentEstimate}{For multi-quantification matrix support:
 the name of the fragment estimate values column}
 
@@ -35,19 +38,22 @@ the name of the cell count values column}
 
 \item{ShsCount}{For multi-quantification matrix support:
 the name of the Shs Count values column}
+
+\item{key}{The name of the sample identifier fields (for aggregated
+matrices can be a vector with more than 1 element)}
 }
 \value{
 Depending on input, 2 possible outputs:
 \itemize{
-\item A single sparse matrix (tibble) if input is a single quantification
+\item A single sparse matrix (data frame) if input is a single quantification
 matrix
 \item A list of sparse matrices divided by quantification if input
 is a single multi-quantification matrix or a list of matrices
 }
 }
 \description{
-\lifecycle{stable}
-This function is particularly useful when a sparce matrix structure
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
+This function is particularly useful when a sparse matrix structure
 is needed by a specific function (mainly from other packages).
 }
 \examples{
@@ -55,9 +61,12 @@ data("integration_matrices", package = "ISAnalytics")
 sparse <- as_sparse_matrix(integration_matrices)
 }
 \seealso{
-Other Utility functions: 
+Other Utilities: 
+\code{\link{comparison_matrix}()},
 \code{\link{generate_Vispa2_launch_AF}()},
 \code{\link{generate_blank_association_file}()},
-\code{\link{unzip_file_system}()}
+\code{\link{generate_default_folder_structure}()},
+\code{\link{separate_quant_matrices}()},
+\code{\link{transform_columns}()}
 }
-\concept{Utility functions}
+\concept{Utilities}

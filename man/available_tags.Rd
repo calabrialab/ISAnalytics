@@ -2,13 +2,18 @@
 % Please edit documentation in R/exported-vars.R
 \name{available_tags}
 \alias{available_tags}
-\title{Title}
+\title{All available tags for dynamic vars look-up tables.}
 \usage{
 available_tags()
 }
 \value{
-
+A data frame
 }
 \description{
-Title
+Contains all information associated with critical tags used in the dynamic
+vars system. To know more see
+\code{vignette("setup_workflow", package="ISAnalytics")}.
+}
+\examples{
+available_tags()
 }

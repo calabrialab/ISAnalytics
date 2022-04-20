@@ -46,7 +46,7 @@ functionality. Returns the heatmaps as interactive HTML widgets.}
 A list of plots or widgets
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Displays the IS sharing calculated via \link{is_sharing} as heatmaps.
 }
 \examples{
@@ -73,6 +73,7 @@ Other Plotting functions:
 \code{\link{CIS_volcano_plot}()},
 \code{\link{HSC_population_plot}()},
 \code{\link{circos_genomic_density}()},
+\code{\link{fisher_scatterplot}()},
 \code{\link{integration_alluvial_plot}()},
 \code{\link{sharing_venn}()},
 \code{\link{top_abund_tableGrob}()}

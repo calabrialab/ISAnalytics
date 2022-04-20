@@ -16,18 +16,13 @@ unzip_file_system(zipfile, name)
 A path to reference
 }
 \description{
-This utility function is a simple shortcut to create a temporary directory,
-unzip and reference the examples file systems included in the package for
-testing purposes.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+From \verb{ISAnalytics 1.5.4} this function is defunct, since the package
+doesn't include example tabular files anymore. Use the function
+\code{generate_default_folder_structure()} to generate a default folder
+structure for running tests and play with the package import functions.
+If you don't need to test import functions, you can simply load
+package included data via \code{data("integration_matrices")} or
+\code{data("association_file")}.
 }
-\examples{
-root_pth <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-root <- unzip_file_system(root_pth, "fs")
-}
-\seealso{
-Other Utility functions: 
-\code{\link{as_sparse_matrix}()},
-\code{\link{generate_Vispa2_launch_AF}()},
-\code{\link{generate_blank_association_file}()}
-}
-\concept{Utility functions}
+\keyword{internal}

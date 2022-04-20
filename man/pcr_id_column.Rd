@@ -2,13 +2,28 @@
 % Please edit documentation in R/utility-functions.R
 \name{pcr_id_column}
 \alias{pcr_id_column}
-\title{Title}
+\title{Easily retrieve the name of the pcr id column.}
 \usage{
 pcr_id_column()
 }
 \value{
-
+The name of the column
 }
 \description{
-Title
+The function is a shortcut to retrieve the currently set
+pcr id column name from the association file column tags look-up table.
+This column is needed every time a joining operation with metadata
+needs to be performed
 }
+\examples{
+pcr_id_column()
+}
+\seealso{
+Other dynamic vars: 
+\code{\link{inspect_tags}()},
+\code{\link{mandatory_IS_vars}()},
+\code{\link{reset_mandatory_IS_vars}()},
+\code{\link{set_mandatory_IS_vars}()},
+\code{\link{set_matrix_file_suffixes}()}
+}
+\concept{dynamic vars}

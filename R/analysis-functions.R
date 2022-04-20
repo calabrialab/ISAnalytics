@@ -4,7 +4,8 @@
 
 #' Computes the abundance for every integration event in the input data frame.
 #'
-#' \lifecycle{stable}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' Abundance is obtained for every integration event by calculating the ratio
 #' between the single value and the total value for the given group.
 #'
@@ -12,6 +13,11 @@
 #' in the `columns` parameter. For each column a corresponding
 #' relative abundance column (and optionally a percentage abundance
 #' column) will be produced.
+#'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' * All columns declared in `mandatory_IS_vars()`
 #'
 #' @param x An integration matrix - aka a data frame that includes
 #' the `mandatory_IS_vars()` as columns. The matrix can either be aggregated
@@ -29,12 +35,6 @@
 #'
 #' @family Analysis functions
 #'
-#' @importFrom magrittr `%>%`
-#' @importFrom dplyr group_by across all_of summarise left_join mutate
-#' @importFrom dplyr cur_column distinct select contains rename_with
-#' @importFrom rlang .data eval_tidy parse_expr abort
-#' @importFrom purrr map_lgl
-#' @importFrom stringr str_replace
 #' @return Either a single data frame with computed abundance values or
 #' a list of 2 data frames (abundance_df, quant_totals)
 #' @export
@@ -130,7 +130,7 @@ compute_abundance <- function(x,
 #' Filter data frames with custom predicates
 #'
 #' @description
-#' \lifecycle{experimental}
+#' `r lifecycle::badge("stable")`
 #' Filter a single data frame or a list of data frames with custom
 #' predicates assembled from the function parameters.
 #'
@@ -242,7 +242,7 @@ compute_abundance <- function(x,
 #' character vectors. Must be one of the allowed values between
 #' `c("<", ">", "==", "!=", ">=", "<=")`
 #'
-#' @family Analysis functions
+#' @family Data cleaning and pre-processing
 #'
 #' @return A data frame or a list of data frames
 #' @export
@@ -291,7 +291,8 @@ threshold_filter <- function(x,
 #' Sorts and keeps the top n integration sites based on the values
 #' in a given column.
 #'
-#' \lifecycle{experimental}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' The input data frame will be sorted by the highest values in
 #' the columns specified and the top n rows will be returned as output.
 #' The user can choose to keep additional columns in the output
@@ -299,6 +300,11 @@ threshold_filter <- function(x,
 #' * `keep = "everything"` keeps all columns in the original data frame
 #' * `keep = "nothing"` only keeps the mandatory columns
 #' (`mandatory_IS_vars()`) plus the columns in the `columns` parameter.
+#'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' * All columns declared in `mandatory_IS_vars()`
 #'
 #' @param x An integration matrix (data frame containing
 #' `mandatory_IS_vars()`)
@@ -316,8 +322,6 @@ threshold_filter <- function(x,
 #'
 #' @family Analysis functions
 #'
-#' @importFrom magrittr `%>%`
-#' @importFrom rlang abort
 #'
 #' @return Either a data frame with at most n rows or
 #' a data frames with at most n*(number of groups) rows.
@@ -344,7 +348,7 @@ threshold_filter <- function(x,
 #'     keep = "Value2",
 #'     key = "CompleteAmplificationID"
 #' )
-#top_abundant_is
+# top_abundant_is
 top_integrations <- function(x,
     n = 20,
     columns = "fragmentEstimate_sum_RelAbundance",
@@ -408,6 +412,75 @@ top_integrations <- function(x,
 }
 
 
+#' Top n targeted genes based on number of IS.
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' Produces a summary of the number of integration events per gene, orders
+#' the table in decreasing order and slices the first n rows - either on
+#' all the data frame or by group.
+#'
+#' @details
+#' ## Gene grouping
+#' When producing a summary of IS by gene, there are different options that
+#' can be chosen.
+#' The argument `consider_chr` accounts for the fact that some genes (same
+#' gene symbol) may span more than one chromosome: if set to `TRUE`
+#' counts of IS will be separated for those genes that span 2 or more
+#' chromosomes - in other words they will be in 2 different rows of the
+#' output table. On the contrary, if the argument is set to `FALSE`,
+#' counts will be produced in a single row.
+#'
+#' NOTE: the function counts **DISTINCT** integration events, which logically
+#' corresponds to a union of sets. Be aware of the fact that counts per group
+#' and counts with different arguments might be different: if for example
+#' counts are performed by considering chromosome and there is one gene symbol
+#' with 2 different counts, the sum of those 2 will likely not be equal to
+#' the count obtained by performing the calculations without
+#' considering the chromosome.
+#'
+#' The same reasoning can be applied for the argument `consider_gene_strand`,
+#' that takes into account the strand of the gene.
+#'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' ```{r echo=FALSE, results="asis"}
+#' all_tags <- available_tags()
+#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
+#'  ~ "top_targeted_genes" %in% .x)][["tag"]])
+#'  cat(paste0("* ", needed, collapse="\n"))
+#' ```
+#'
+#' Note that the tags "gene_strand" and "chromosome" are explicitly required
+#' only if `consider_chr = TRUE` and/or `consider_gene_strand = TRUE`.
+#'
+#' @param x An integration matrix - must be annotated
+#' @param n Number of rows to slice
+#' @param key If slice has to be performed for each group, the character
+#' vector of column names that identify the groups. If `NULL` considers the
+#' whole input data frame.
+#' @param consider_chr Logical, should the chromosome be taken into account?
+#' See details.
+#' @param consider_gene_strand Logical, should the gene strand be taken into
+#' account? See details.
+#' @param as_df If computation is performed by group, `TRUE` returns all
+#' groups merged in a single data frame with a column containing the group id.
+#' If `FALSE` returns a named list.
+#'
+#' @importFrom rlang sym
+#'
+#' @return A data frame or a list of data frames
+#' @export
+#' @family Analysis functions
+#'
+#' @examples
+#' data("integration_matrices", package = "ISAnalytics")
+#' top_targ <- top_targeted_genes(
+#'     integration_matrices,
+#'     key = NULL
+#' )
+#' top_targ
 top_targeted_genes <- function(x,
     n = 20,
     key = c(
@@ -417,70 +490,134 @@ top_targeted_genes <- function(x,
     consider_chr = TRUE,
     consider_gene_strand = TRUE,
     as_df = TRUE) {
-  stopifnot(is.data.frame(x))
-  data.table::setDT(x)
-  stopifnot(is.numeric(n) || is.integer(n))
-  stopifnot(is.null(key) || is.character(key))
-  stopifnot(is.logical(consider_chr))
-  stopifnot(is.logical(consider_gene_strand))
+    stopifnot(is.data.frame(x))
+    data.table::setDT(x)
+    stopifnot(is.numeric(n) || is.integer(n))
+    stopifnot(is.null(key) || is.character(key))
+    stopifnot(is.logical(consider_chr))
+    stopifnot(is.logical(consider_gene_strand))
 
-  required_annot_tags <- c("gene_symbol")
-  if (consider_gene_strand) {
-    required_annot_tags <- c(required_annot_tags, "gene_strand")
-  }
-  annot_tag_cols <- .check_required_cols(required_annot_tags,
-                                         annotation_IS_vars(TRUE),
-                                         "error")
-  if (consider_chr) {
-    chr_tag_col <- .check_required_cols(c("chromosome", "locus"),
-                                        mandatory_IS_vars(TRUE),
-                                        "error")
-    annot_tag_cols <- annot_tag_cols %>%
-      dplyr::bind_rows(chr_tag_col)
-  }
-  data.table::setDT(annot_tag_cols)
-  cols_to_check <- c(annot_tag_cols$names, key)
-  if (!all(cols_to_check %in% colnames(x))) {
-    rlang::abort(.missing_needed_cols(
-      cols_to_check[!cols_to_check %in% colnames(x)]))
-  }
+    required_annot_tags <- c("gene_symbol")
+    if (consider_gene_strand) {
+        required_annot_tags <- c(required_annot_tags, "gene_strand")
+    }
+    annot_tag_cols <- .check_required_cols(
+        required_annot_tags,
+        annotation_IS_vars(TRUE),
+        "error"
+    )
+    if (consider_chr) {
+        chr_tag_col <- .check_required_cols(
+            c("chromosome", "locus"),
+            mandatory_IS_vars(TRUE),
+            "error"
+        )
+        annot_tag_cols <- annot_tag_cols %>%
+            dplyr::bind_rows(chr_tag_col)
+    }
+    data.table::setDT(annot_tag_cols)
+    cols_to_check <- c(annot_tag_cols$names, key)
+    if (!all(cols_to_check %in% colnames(x))) {
+        rlang::abort(.missing_needed_cols(
+            cols_to_check[!cols_to_check %in% colnames(x)]
+        ))
+    }
 
-  df_with_is_counts <- if (is.null(key)) {
-    .count_distinct_is_per_gene(
-      x = x, include_chr = consider_chr,
-      include_gene_strand = consider_gene_strand,
-      gene_sym_col = annot_tag_cols[
-        eval(sym("tag")) == "gene_symbol"][["names"]],
-      gene_strand_col = annot_tag_cols[
-        eval(sym("tag")) == "gene_strand"][["names"]],
-      chr_col = annot_tag_cols[eval(sym("tag")) == "chromosome"][["names"]],
-      mand_vars_to_check = mandatory_IS_vars(TRUE)
-    ) %>%
-      dplyr::arrange(dplyr::desc(.data$n_IS)) %>%
-      dplyr::slice_head(n = n)
-  } else {
-    tmp <- x[, .count_distinct_is_per_gene(
-      x = .SD, include_chr = consider_chr,
-      include_gene_strand = consider_gene_strand,
-      gene_sym_col = annot_tag_cols[
-        eval(sym("tag")) == "gene_symbol"][["names"]],
-      gene_strand_col = annot_tag_cols[
-        eval(sym("tag")) == "gene_strand"][["names"]],
-      chr_col = annot_tag_cols[eval(sym("tag")) == "chromosome"][["names"]],
-      mand_vars_to_check = mandatory_IS_vars(TRUE)
-    ), by = eval(key)]
-    tmp[,
-        .SD %>% dplyr::arrange(dplyr::desc(.data$n_IS)) %>%
-          dplyr::slice_head(n = n),
-        by = eval(key)]
-  }
-  if (as_df) {
-    return(df_with_is_counts)
-  }
-  return(split(df_with_is_counts, by = key))
+    df_with_is_counts <- if (is.null(key)) {
+        .count_distinct_is_per_gene(
+            x = x, include_chr = consider_chr,
+            include_gene_strand = consider_gene_strand,
+            gene_sym_col = annot_tag_cols[
+                eval(sym("tag")) == "gene_symbol"
+            ][["names"]],
+            gene_strand_col = annot_tag_cols[
+                eval(sym("tag")) == "gene_strand"
+            ][["names"]],
+            chr_col = annot_tag_cols[eval(sym("tag")) ==
+                "chromosome"][["names"]],
+            mand_vars_to_check = mandatory_IS_vars(TRUE)
+        ) %>%
+            dplyr::arrange(dplyr::desc(.data$n_IS)) %>%
+            dplyr::slice_head(n = n)
+    } else {
+        tmp <- x[, .count_distinct_is_per_gene(
+            x = .SD, include_chr = consider_chr,
+            include_gene_strand = consider_gene_strand,
+            gene_sym_col = annot_tag_cols[
+                eval(sym("tag")) == "gene_symbol"
+            ][["names"]],
+            gene_strand_col = annot_tag_cols[
+                eval(sym("tag")) == "gene_strand"
+            ][["names"]],
+            chr_col = annot_tag_cols[eval(sym("tag")) ==
+                "chromosome"][["names"]],
+            mand_vars_to_check = mandatory_IS_vars(TRUE)
+        ), by = eval(key)]
+        tmp[,
+            .SD %>% dplyr::arrange(dplyr::desc(.data$n_IS)) %>%
+                dplyr::slice_head(n = n),
+            by = eval(key)
+        ]
+    }
+    if (as_df) {
+        return(df_with_is_counts)
+    }
+    return(split(df_with_is_counts, by = key))
 }
 
 
+#' Compute Fisher's exact test on gene frequencies.
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' Provided 2 data frames with calculations for CIS, via `CIS_grubbs()`,
+#' computes Fisher's exact test.
+#' Results can be plotted via `fisher_scatterplot()`.
+#'
+#' @param cis_x A data frame obtained via `CIS_grubbs()`
+#' @param cis_y A data frame obtained via `CIS_grubbs()`
+#' @param min_is_per_gene Used for pre-filtering purposes. Genes with a
+#' number of distinct integration less than this number will be filtered out
+#' prior calculations. Single numeric or integer.
+#' @param gene_set_method One between "intersection" and "union". When merging
+#' the 2 data frames, `intersection` will perform an inner join operation,
+#' while `union` will perform a full join operation.
+#' @param significance_threshold Significance threshold for the Fisher's
+#' test p-value
+#' @param remove_unbalanced_0 Remove from the final output those pairs in
+#' which there are no IS for one group or the other and the number of
+#' IS of the non-missing group are less than the mean number of IS for that
+#' group
+#'
+#' @template genes_db
+#'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' ```{r echo=FALSE, results="asis"}
+#' all_tags <- available_tags()
+#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
+#'  ~ "gene_frequency_fisher" %in% .x)][["tag"]])
+#'  cat(paste0("* ", needed, collapse="\n"))
+#' ```
+#'
+#' @return A data frame
+#' @export
+#' @family Analysis functions
+#'
+#' @examples
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
+#'     association_file = association_file,
+#'     value_cols = c("seqCount", "fragmentEstimate")
+#' )
+#' cis <- CIS_grubbs(aggreg, by = "SubjectID")
+#' fisher <- gene_frequency_fisher(cis$cis$PT001, cis$cis$PT002,
+#'     min_is_per_gene = 2
+#' )
+#' fisher
 gene_frequency_fisher <- function(cis_x,
     cis_y,
     min_is_per_gene = 3,
@@ -506,142 +643,169 @@ gene_frequency_fisher <- function(cis_x,
     stopifnot(is.logical(remove_unbalanced_0))
     ## -- Fetch gene symbol column
     gene_sym_col <- .check_required_cols(
-      "gene_symbol", annotation_IS_vars(TRUE), duplicate_politic = "error"
+        "gene_symbol", annotation_IS_vars(TRUE),
+        duplicate_politic = "error"
     )[["names"]]
-    req_cis_cols <- c(gene_sym_col, "n_IS_perGene", "average_TxLen",
-                      "raw_gene_integration_frequency")
+    req_cis_cols <- c(
+        gene_sym_col, "n_IS_perGene", "average_TxLen",
+        "raw_gene_integration_frequency"
+    )
     quiet_expand <- purrr::quietly(.expand_cis_df)
-    cols_for_join <- c(gene_sym_col,
-                     "Onco1_TS2", "ClinicalRelevance", "DOIReference",
-                     "KnownGeneClass", "KnownClonalExpansion",
-                     "CriticalForInsMut")
+    cols_for_join <- c(
+        gene_sym_col,
+        "Onco1_TS2", "ClinicalRelevance", "DOIReference",
+        "KnownGeneClass", "KnownClonalExpansion",
+        "CriticalForInsMut"
+    )
     ## --- Calculations to perform on each df
     append_calc <- function(df, group_n) {
-      if (!all(req_cis_cols %in% colnames(df))) {
-        rlang::abort(
-          .missing_needed_cols(req_cis_cols[!req_cis_cols %in% colnames(df)]))
-      }
-      modified <- quiet_expand(df, gene_sym_col,
-                                 onco_db_file, tumor_suppressors_db_file,
-                                 species, known_onco, suspicious_genes)$result
-      modified <- modified %>%
-        dplyr::mutate(
-          IS_per_kbGeneLen = .data$raw_gene_integration_frequency * 1000,
-          Sum_IS_per_kbGeneLen = sum(.data$IS_per_kbGeneLen, na.rm = TRUE),
-          IS_per_kbGeneLen_perMDepth_TPM = (.data$IS_per_kbGeneLen /
-                                              .data$Sum_IS_per_kbGeneLen) * 1e6
-        ) %>%
-        dplyr::filter(.data$n_IS_perGene >= min_is_per_gene) %>%
-        dplyr::select(dplyr::all_of(c(req_cis_cols, cols_for_join,
-                                      "IS_per_kbGeneLen",
-                                      "Sum_IS_per_kbGeneLen",
-                                      "IS_per_kbGeneLen_perMDepth_TPM")))
-      colnames(modified)[!colnames(modified) %in% cols_for_join] <- paste(
-        colnames(modified)[!colnames(modified) %in% cols_for_join], group_n,
-        sep = "_"
-      )
-      return(modified)
+        if (!all(req_cis_cols %in% colnames(df))) {
+            rlang::abort(
+                .missing_needed_cols(req_cis_cols[!req_cis_cols %in%
+                    colnames(df)])
+            )
+        }
+        modified <- quiet_expand(
+            df, gene_sym_col,
+            onco_db_file, tumor_suppressors_db_file,
+            species, known_onco, suspicious_genes
+        )$result
+        modified <- modified %>%
+            dplyr::mutate(
+                IS_per_kbGeneLen = .data$raw_gene_integration_frequency * 1000,
+                Sum_IS_per_kbGeneLen = sum(.data$IS_per_kbGeneLen,
+                    na.rm = TRUE
+                ),
+                IS_per_kbGeneLen_perMDepth_TPM = (.data$IS_per_kbGeneLen /
+                    .data$Sum_IS_per_kbGeneLen) * 1e6
+            ) %>%
+            dplyr::filter(.data$n_IS_perGene >= min_is_per_gene) %>%
+            dplyr::select(dplyr::all_of(c(
+                req_cis_cols, cols_for_join,
+                "IS_per_kbGeneLen",
+                "Sum_IS_per_kbGeneLen",
+                "IS_per_kbGeneLen_perMDepth_TPM"
+            )))
+        colnames(modified)[!colnames(modified) %in% cols_for_join] <- paste(
+            colnames(modified)[!colnames(modified) %in% cols_for_join], group_n,
+            sep = "_"
+        )
+        return(modified)
     }
-    cis_mod <- purrr::map2(list(cis_x, cis_y), c(1,2), append_calc)
+    cis_mod <- purrr::map2(list(cis_x, cis_y), c(1, 2), append_calc)
     ## --- Merge the two in 1 df
     merged <- if (gene_set_method == "union") {
-      purrr::reduce(cis_mod, ~ dplyr::full_join(.x, .y, by = cols_for_join))
+        purrr::reduce(cis_mod, ~ dplyr::full_join(.x, .y, by = cols_for_join))
     } else {
-      purrr::reduce(cis_mod, ~ dplyr::inner_join(.x, .y, by = cols_for_join))
+        purrr::reduce(cis_mod, ~ dplyr::inner_join(.x, .y, by = cols_for_join))
     }
     if (nrow(merged) == 0) {
-      if (getOption("ISAnalytics.verbose") == TRUE) {
-        msg <- c("Data frame empty after filtering",
-                 i = paste("Data frame is empty after applying filter on IS,",
-                           "is your filter too stringent?"),
-                 x = "Nothing to return")
-        rlang::inform(msg, class = "empty_df_gene_freq")
-      }
-      return(NULL)
+        if (getOption("ISAnalytics.verbose") == TRUE) {
+            msg <- c("Data frame empty after filtering",
+                i = paste(
+                    "Data frame is empty after applying filter on IS,",
+                    "is your filter too stringent?"
+                ),
+                x = "Nothing to return"
+            )
+            rlang::inform(msg, class = "empty_df_gene_freq")
+        }
+        return(NULL)
     }
     ## --- Actual computation of fisher test: test is applied on each row
     ## (each gene)
     merged <- merged %>%
-      dplyr::mutate(
-        tot_n_IS_perGene_1 = sum(cis_x$n_IS_perGene, na.rm = TRUE),
-        tot_n_IS_perGene_2 = sum(cis_y$n_IS_perGene, na.rm = TRUE)
-      )
+        dplyr::mutate(
+            tot_n_IS_perGene_1 = sum(cis_x$n_IS_perGene, na.rm = TRUE),
+            tot_n_IS_perGene_2 = sum(cis_y$n_IS_perGene, na.rm = TRUE)
+        )
     compute_fisher <- function(...) {
-      row <- list(...)
-      n_IS_perGene_1 <- row$n_IS_perGene_1
-      n_IS_perGene_2 <- row$n_IS_perGene_2
-      n_IS_perGene_1[which(is.na(n_IS_perGene_1))] <- 0
-      n_IS_perGene_2[which(is.na(n_IS_perGene_2))] <- 0
-      matrix <- matrix(
-        data = c(n_IS_perGene_1,
-                 row$tot_n_IS_perGene_1 - n_IS_perGene_1,
-                 n_IS_perGene_2,
-                 row$tot_n_IS_perGene_2 - n_IS_perGene_2),
-        nrow = 2,
-        dimnames = list(G1 = c("IS_of_gene", "TotalIS"),
-                        G2 = c("IS_of_gene", "TotalIS"))
-      )
-      ft <- stats::fisher.test(matrix)
-      return(ft$p.value)
+        row <- list(...)
+        n_IS_perGene_1 <- row$n_IS_perGene_1
+        n_IS_perGene_2 <- row$n_IS_perGene_2
+        n_IS_perGene_1[which(is.na(n_IS_perGene_1))] <- 0
+        n_IS_perGene_2[which(is.na(n_IS_perGene_2))] <- 0
+        matrix <- matrix(
+            data = c(
+                n_IS_perGene_1,
+                row$tot_n_IS_perGene_1 - n_IS_perGene_1,
+                n_IS_perGene_2,
+                row$tot_n_IS_perGene_2 - n_IS_perGene_2
+            ),
+            nrow = 2,
+            dimnames = list(
+                G1 = c("IS_of_gene", "TotalIS"),
+                G2 = c("IS_of_gene", "TotalIS")
+            )
+        )
+        ft <- stats::fisher.test(matrix)
+        return(ft$p.value)
     }
     merged <- merged %>%
-      dplyr::mutate(
-        Fisher_p_value = purrr::pmap_dbl(., compute_fisher)
-      ) %>%
-      dplyr::mutate(
-        Fisher_p_value_significant = dplyr::if_else(
-          condition = .data$Fisher_p_value < significance_threshold,
-          true = TRUE, false = FALSE
+        dplyr::mutate(
+            Fisher_p_value = purrr::pmap_dbl(., compute_fisher)
+        ) %>%
+        dplyr::mutate(
+            Fisher_p_value_significant = dplyr::if_else(
+                condition = .data$Fisher_p_value < significance_threshold,
+                true = TRUE, false = FALSE
+            )
         )
-      )
     ## --- Removing unbalanced 0s if requested - this scenario applies
     ## only if "union" is selected as method for join
     if (remove_unbalanced_0) {
-      mean_is_per_gene_1 <- ceiling(mean(merged$n_IS_perGene_1, na.rm = TRUE))
-      mean_is_per_gene_2 <- ceiling(mean(merged$n_IS_perGene_2, na.rm = TRUE))
-      test_exclude <- function(...) {
-        row <- list(...)
-        if (is.na(row$n_IS_perGene_1) || is.na(row$n_IS_perGene_2)) {
-          to_ex <- ifelse(
-              test = ((row$n_IS_perGene_1 < mean_is_per_gene_1) &
-                (is.na(row$n_IS_perGene_2))) |
-                ((is.na(row$n_IS_perGene_1)) &
-                   (row$n_IS_perGene_2 < mean_is_per_gene_2)),
-              yes = TRUE,
-              no = FALSE
-          )
-          return(to_ex)
+        mean_is_per_gene_1 <- ceiling(mean(merged$n_IS_perGene_1, na.rm = TRUE))
+        mean_is_per_gene_2 <- ceiling(mean(merged$n_IS_perGene_2, na.rm = TRUE))
+        test_exclude <- function(...) {
+            row <- list(...)
+            if (is.na(row$n_IS_perGene_1) || is.na(row$n_IS_perGene_2)) {
+                to_ex <- ifelse(
+                    test = ((row$n_IS_perGene_1 < mean_is_per_gene_1) &
+                        (is.na(row$n_IS_perGene_2))) |
+                        ((is.na(row$n_IS_perGene_1)) &
+                            (row$n_IS_perGene_2 < mean_is_per_gene_2)),
+                    yes = TRUE,
+                    no = FALSE
+                )
+                return(to_ex)
+            }
+            return(FALSE)
         }
-        return(FALSE)
-      }
-      merged <- merged %>%
-        dplyr::mutate(
-          to_exclude_from_test = purrr::pmap(., test_exclude)
-        ) %>%
-        dplyr::filter(.data$to_exclude_from_test == FALSE) %>%
-        dplyr::select(-.data$to_exclude_from_test)
-      if (nrow(merged) == 0) {
-        if (getOption("ISAnalytics.verbose") == TRUE) {
-          msg <- c("Data frame empty after filtering",
-                   i = paste("Data frame is after removing unbalanced IS,",
-                             "nothing to return"))
-          rlang::inform(msg, class = "empty_df_gene_freq_unbal")
+        merged <- merged %>%
+            dplyr::mutate(
+                to_exclude_from_test = purrr::pmap(., test_exclude)
+            ) %>%
+            dplyr::filter(.data$to_exclude_from_test == FALSE) %>%
+            dplyr::select(-.data$to_exclude_from_test)
+        if (nrow(merged) == 0) {
+            if (getOption("ISAnalytics.verbose") == TRUE) {
+                msg <- c("Data frame empty after filtering",
+                    i = paste(
+                        "Data frame is after removing unbalanced IS,",
+                        "nothing to return"
+                    )
+                )
+                rlang::inform(msg, class = "empty_df_gene_freq_unbal")
+            }
+            return(NULL)
         }
-        return(NULL)
-      }
     }
     ## --- Apply statistical corrections to p-value
     merged <- merged %>%
-      dplyr::mutate(
-        Fisher_p_value_fdr = p.adjust(.data$Fisher_p_value, method = "fdr",
-                                      n = length(.data$Fisher_p_value)),
-        Fisher_p_value_benjamini = p.adjust(.data$Fisher_p_value, method = "BY",
-                                            n = length(.data$Fisher_p_value)),
-        minus_log10_pvalue = -log(.data$Fisher_p_value, base = 10)
-      ) %>%
-      dplyr::mutate(
-        minus_log10_pvalue_fdr = -log(.data$Fisher_p_value_fdr, base = 10),
-      )
+        dplyr::mutate(
+            Fisher_p_value_fdr = stats::p.adjust(.data$Fisher_p_value,
+                method = "fdr",
+                n = length(.data$Fisher_p_value)
+            ),
+            Fisher_p_value_benjamini = stats::p.adjust(.data$Fisher_p_value,
+                method = "BY",
+                n = length(.data$Fisher_p_value)
+            ),
+            minus_log10_pvalue = -log(.data$Fisher_p_value, base = 10)
+        ) %>%
+        dplyr::mutate(
+            minus_log10_pvalue_fdr = -log(.data$Fisher_p_value_fdr, base = 10),
+        )
     return(merged)
 }
 
@@ -650,7 +814,7 @@ gene_frequency_fisher <- function(cis_x,
 #' the metadata data frame accordingly.
 #'
 #' @description
-#' \lifecycle{experimental}
+#' `r lifecycle::badge("stable")`
 #' The function operates on a data frame by grouping the content by
 #' the sample key and computing every function specified on every
 #' column in the `value_columns` parameter. After that the metadata
@@ -686,14 +850,17 @@ gene_frequency_fisher <- function(cis_x,
 #' @param functions A named list of function or purrr-style lambdas
 #' @param add_integrations_count Add the count of distinct integration sites
 #' for each group? Can be computed only if `x` contains the mandatory columns
-#' `chr`, `integration_locus`, `strand`
+#' `mandatory_IS_vars()`
+#'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' * All columns declared in `mandatory_IS_vars()`
+#'
+#' These are checked only if `add_integrations_count = TRUE`.
 #'
 #' @family Analysis functions
-#' @importFrom rlang eval_tidy expr abort .data sym inform
-#' @importFrom purrr is_function is_formula map_lgl walk map set_names
-#' @importFrom dplyr group_by across all_of summarise rename_with bind_cols
-#' @importFrom dplyr n_distinct left_join
-#' @importFrom magrittr `%>%`
+#' @importFrom rlang .data sym
 #'
 #' @return A list with modified x and metadata data frames
 #' @export
@@ -797,7 +964,8 @@ sample_statistics <- function(x,
 
 #' Grubbs test for Common Insertion Sites (CIS).
 #'
-#' \lifecycle{stable}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' Statistical approach for the validation of common insertion sites
 #' significance based on the comparison of the integration frequency
 #' at the CIS gene with respect to other genes contained in the
@@ -824,6 +992,16 @@ sample_statistics <- function(x,
 #'
 #' `r refGene_table_cols()`
 #'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' ```{r echo=FALSE, results="asis"}
+#' all_tags <- available_tags()
+#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
+#'  ~ "CIS_grubbs" %in% .x)][["tag"]])
+#'  cat(paste0("* ", needed, collapse="\n"))
+#' ```
+#'
 #' @param x An integration matrix, must include the `mandatory_IS_vars()`
 #' columns and the `annotation_IS_vars()` columns
 #' @param genomic_annotation_file Database file for gene annotation,
@@ -834,17 +1012,16 @@ sample_statistics <- function(x,
 #' NULL, the function will perform calculations for each group and return
 #' a list of data frames with the results. E.g. for `by = "SubjectID"`,
 #' CIS will be computed for each distinct SubjectID found in the table
-#' (of course, "SubjectID" column must be included in the input data frame).
+#' ("SubjectID" column must be included in the input data frame).
+#' @param return_missing_as_df Returns those genes present in the input df
+#' but not in the refgenes as a data frame?
+#' @param results_as_list Relevant only if `by` is not `NULL` - if `TRUE`
+#' return the group computations as a named list, otherwise return a single
+#' df with an additional column containing the group id
 #'
 #' @family Analysis functions
 #'
-#' @importFrom tibble as_tibble
-#' @importFrom rlang .data abort current_env eval_tidy sym
-#' @importFrom magrittr `%>%`
-#' @importFrom utils read.csv
-#' @importFrom stringr str_replace_all
-#' @importFrom tidyr unite
-#' @importFrom purrr set_names map
+#' @importFrom rlang .data sym
 #'
 #' @return A data frame
 #' @export
@@ -852,7 +1029,7 @@ sample_statistics <- function(x,
 #' @examples
 #' data("integration_matrices", package = "ISAnalytics")
 #' cis <- CIS_grubbs(integration_matrices)
-#' head(cis)
+#' cis
 CIS_grubbs <- function(x,
     genomic_annotation_file = "hg19",
     grubbs_flanking_gene_bp = 100000,
@@ -996,7 +1173,7 @@ CIS_grubbs <- function(x,
                 "a mismatch in the annotation phase of",
                 "the matrix. Here is a summary: "
             ),
-            paste0(capture.output({
+            paste0(utils::capture.output({
                 print(missing_df, n = Inf)
             }), collapse = "\n"),
             sep = "\n"
@@ -1030,36 +1207,11 @@ CIS_grubbs <- function(x,
 
 #' Integrations cumulative count in time by sample
 #'
-#' \lifecycle{experimental}
-#' This function computes the cumulative number of integrations
-#' observed in each sample at different time points by assuming that
-#' if an integration is observed at time point "t" then it is also observed in
-#' time point "t+1".
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#' This function was deprecated in favour of a single function,
+#' please use `cumulative_is` instead.
 #'
-#' @details
-#' ## Input data frame
-#' The user can provide as input for the `x` parameter both a simple
-#' integration matrix AND setting the `aggregate` parameter to TRUE,
-#' or provide an already aggregated matrix via
-#' \link{aggregate_values_by_key}.
-#' If the user supplies a matrix to be aggregated the `association_file`
-#' parameter must not be NULL: aggregation will be done by an internal
-#' call to the aggregation function.
-#' If the user supplies an already aggregated matrix, the `key` parameter
-#' is the key used for aggregation -
-#' **NOTE: for this operation is mandatory
-#' that the time point column is included in the key.**
-#' ## Assumptions on time point format
-#' By using the functions provided by this package, when imported,
-#' an association file will be correctly formatted for future usage.
-#' In the formatting process there is also a padding operation performed on
-#' time points: this means the functions expects the time point column to
-#' be of type character and to be correctly padded with 0s. If the
-#' chosen column for time point is detected as numeric the function will
-#' attempt the conversion to character and automatic padding.
-#' If you choose to import the association file not using the
-#' \link{import_association_file} function, be sure to check the format of
-#' the chosen column to avoid undesired results.
 #'
 #' @param x A simple integration matrix or an aggregated matrix (see details)
 #' @param association_file NULL or the association file for x if `aggregate`
@@ -1071,20 +1223,9 @@ CIS_grubbs <- function(x,
 #' @param aggregate Should x be aggregated?
 #' @param ... Additional parameters to pass to `aggregate_values_by_key`
 #'
-#' @family Analysis functions
-#'
-#' @importFrom dplyr mutate filter across all_of select summarise group_by
-#' @importFrom dplyr arrange group_split first full_join starts_with distinct
-#' @importFrom dplyr semi_join n rename
-#' @importFrom magrittr `%>%`
-#' @importFrom rlang .data abort inform `:=`
-#' @importFrom stringr str_pad
-#' @importFrom purrr reduce is_empty
-#' @importFrom tidyr pivot_longer
-#' @importFrom stats na.omit
-#'
 #' @return A data frame
 #' @export
+#' @keywords internal
 #'
 #' @examples
 #' data("integration_matrices", package = "ISAnalytics")
@@ -1114,7 +1255,8 @@ cumulative_count_union <- function(x,
         what = "cumulative_count_union()",
         with = "cumulative_is()",
         details = c(paste(
-            "Use option `counts = TRUE`. Function will be likely dropped in the",
+            "Use option `counts = TRUE`.",
+            "Function will be likely dropped in the",
             "next release cycle"
         ))
     )
@@ -1124,9 +1266,10 @@ cumulative_count_union <- function(x,
     )
 }
 
-#' Expands integration matrix with the cumulative is union over time.
+#' Expands integration matrix with the cumulative IS union over time.
 #'
-#' @description \lifecycle{experimental}
+#' @description
+#' `r lifecycle::badge("experimental")`
 #' Given an input integration matrix that can be grouped over time,
 #' this function adds integrations in groups assuming that
 #' if an integration is observed at time point "t" then it is also observed in
@@ -1141,6 +1284,14 @@ cumulative_count_union <- function(x,
 #' @param expand If `FALSE`, for each group, the set of integration sites is
 #' returned in a separate column as a nested table, otherwise the resulting
 #' column is unnested.
+#' @param counts Add cumulative counts? Logical
+#'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' * All columns declared in `mandatory_IS_vars()`
+#' * Checks if the matrix is annotated by assessing presence of
+#' `annotation_IS_vars()`
 #'
 #' @family Analysis functions
 #' @return A data frame
@@ -1210,12 +1361,12 @@ cumulative_is <- function(x,
             .keep_all = TRUE
         )
     data.table::setDT(temp)
-    temp <- temp[, .(is = list(.SD)), by = key]
+    temp <- temp[, list(is = list(.SD)), by = key]
     no_tp_key <- key[key != timepoint_col]
     split <- split(temp, by = no_tp_key)
     cumulate <- purrr::map(split, function(x) {
         x[, cumulative_is := purrr::accumulate(
-            is,
+            get("is"),
             ~ data.table::funion(.x, .y)
         )]
     })
@@ -1246,13 +1397,14 @@ cumulative_is <- function(x,
 
 #' Sharing of integration sites between given groups.
 #'
-#' \lifecycle{experimental}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' Computes the amount of integration sites shared between the groups identified
 #' in the input data.
 #'
 #' @details
-#' An integration site is always identified by the triple
-#' `(chr, integration_locus, strand)`, thus these columns must be present
+#' An integration site is always identified by the combination of fields in
+#' `mandatory_IS_vars()`, thus these columns must be present
 #' in the input(s).
 #'
 #' The function accepts multiple inputs for different scenarios, please refer
@@ -1269,6 +1421,11 @@ cumulative_is <- function(x,
 #' The sharing data obtained can be easily plotted in a heatmap via the
 #' function \code{\link{sharing_heatmap}} or via the function
 #' \code{\link{sharing_venn}}
+#'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' * All columns declared in `mandatory_IS_vars()`
 #'
 #' @param ... One or more integration matrices
 #' @param group_key Character vector of column names which identify a
@@ -1522,7 +1679,8 @@ is_sharing <- function(...,
 
 #' Find the source of IS by evaluating sharing.
 #'
-#' @description \lifecycle{experimental}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' The function computes the sharing between a reference group of interest
 #' for each time point and a selection of groups of interest. In this way
 #' it is possible to observe the percentage of shared integration sites between

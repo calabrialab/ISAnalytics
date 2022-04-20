@@ -81,8 +81,10 @@ test_that("threshold_filter gives errors with df - params wrong", {
     )
     expect_error(
         {
-            threshold_filter(example_df, threshold = 1,
-                             cols_to_compare = c(1, 2))
+            threshold_filter(example_df,
+                threshold = 1,
+                cols_to_compare = c(1, 2)
+            )
         },
         regexp = paste("`cols_to_compare` must be character"),
         fixed = TRUE
@@ -554,80 +556,92 @@ test_that("threshold_filter gives result with list", {
 # Test sample_statistics
 #------------------------------------------------------------------------------#
 test_that("sample_statistics works as expected with default functions", {
-  val_cols <- c("seqCount", "fragmentEstimate")
-  stats <- sample_statistics(
-    x = integration_matrices,
-    metadata = association_file,
-    value_columns = val_cols
-  )
-  fun_names <- names(default_stats())
-  fun_names <- fun_names[fun_names != "describe"]
-  desc_fun_names <- paste("describe", c("vars", "n", "mean", "sd",
-                                        "median", "trimmed", "mad",
-                                        "min", "max", "range", "skew",
-                                        "kurtosis", "se"), sep = "_")
-  fun_names <- c(fun_names, desc_fun_names)
-  expected_name_cols <- unlist(purrr::map(val_cols,
-                                          ~ paste(.x, fun_names, sep = "_")))
-  expect_true(all(c(expected_name_cols, "nIS") %in% colnames(stats$x)))
-  expect_true(all(c(expected_name_cols, "nIS") %in% colnames(stats$metadata)))
+    val_cols <- c("seqCount", "fragmentEstimate")
+    stats <- sample_statistics(
+        x = integration_matrices,
+        metadata = association_file,
+        value_columns = val_cols
+    )
+    fun_names <- names(default_stats())
+    fun_names <- fun_names[fun_names != "describe"]
+    desc_fun_names <- paste("describe", c(
+        "vars", "n", "mean", "sd",
+        "median", "trimmed", "mad",
+        "min", "max", "range", "skew",
+        "kurtosis", "se"
+    ), sep = "_")
+    fun_names <- c(fun_names, desc_fun_names)
+    expected_name_cols <- unlist(purrr::map(
+        val_cols,
+        ~ paste(.x, fun_names, sep = "_")
+    ))
+    expect_true(all(c(expected_name_cols, "nIS") %in% colnames(stats$x)))
+    expect_true(all(c(expected_name_cols, "nIS") %in% colnames(stats$metadata)))
 })
 
 #------------------------------------------------------------------------------#
 # Test top_integrations
 #------------------------------------------------------------------------------#
 test_that("top_integrations works as expected", {
-  example <- tibble::tribble(
-    ~ chr, ~ integration_locus, ~ strand, ~ SubjectID, ~ Tissue, ~ abundance,
-    "1", 34254, "+", "S1", "T1", 0.27,
-    "1", 56423, "+", "S1", "T1", 0.02,
-    "2", 85834, "-", "S1", "T1", 0.12,
-    "5", 12334, "-", "S1", "T1", 0.05,
-    "6", 64721, "+", "S1", "T1", 0.16,
-    "1", 96473, "-", "S1", "T1", 0.29,
-    "7", 31434, "+", "S1", "T1", 0.09,
-    "1", 34254, "+", "S2", "T1", 0.56,
-    "X", 31246, "+", "S2", "T1", 0.01,
-    "8", 12354, "-", "S2", "T1", 0.08,
-    "9", 13468, "+", "S2", "T1", 0.15,
-    "5", 86534, "-", "S2", "T1", 0.19,
-    "1", 74567, "+", "S2", "T1", 0.01
-  )
-  top_3 <- top_integrations(example, n = 3,
-                            columns = "abundance")
-  expected_top_3 <- tibble::tribble(
-    ~ chr, ~ integration_locus, ~ strand, ~ abundance, ~ SubjectID, ~ Tissue,
-    "1", 34254, "+", 0.56, "S2", "T1",
-    "1", 96473, "-", 0.29, "S1", "T1",
-    "1", 34254, "+", 0.27, "S1", "T1"
-  )
-  expect_equal(top_3, expected_top_3)
-  top_3 <- top_integrations(example, n = 3,
-                            columns = "abundance",
-                            key = c("SubjectID", "Tissue"))
-  expected_top_3 <- tibble::tribble(
-    ~ SubjectID, ~ Tissue, ~ chr, ~ integration_locus, ~ strand, ~ abundance,
-    "S1", "T1", "1", 96473, "-", 0.29,
-    "S1", "T1", "1", 34254, "+", 0.27,
-    "S1", "T1", "6", 64721, "+", 0.16,
-    "S2", "T1", "1", 34254, "+", 0.56,
-    "S2", "T1", "5", 86534, "-", 0.19,
-    "S2", "T1", "9", 13468, "+", 0.15,
-  )
-  expect_equal(top_3, expected_top_3)
+    example <- tibble::tribble(
+        ~chr, ~integration_locus, ~strand, ~SubjectID, ~Tissue, ~abundance,
+        "1", 34254, "+", "S1", "T1", 0.27,
+        "1", 56423, "+", "S1", "T1", 0.02,
+        "2", 85834, "-", "S1", "T1", 0.12,
+        "5", 12334, "-", "S1", "T1", 0.05,
+        "6", 64721, "+", "S1", "T1", 0.16,
+        "1", 96473, "-", "S1", "T1", 0.29,
+        "7", 31434, "+", "S1", "T1", 0.09,
+        "1", 34254, "+", "S2", "T1", 0.56,
+        "X", 31246, "+", "S2", "T1", 0.01,
+        "8", 12354, "-", "S2", "T1", 0.08,
+        "9", 13468, "+", "S2", "T1", 0.15,
+        "5", 86534, "-", "S2", "T1", 0.19,
+        "1", 74567, "+", "S2", "T1", 0.01
+    )
+    top_3 <- top_integrations(example,
+        n = 3,
+        columns = "abundance"
+    )
+    expected_top_3 <- tibble::tribble(
+        ~chr, ~integration_locus, ~strand, ~abundance, ~SubjectID, ~Tissue,
+        "1", 34254, "+", 0.56, "S2", "T1",
+        "1", 96473, "-", 0.29, "S1", "T1",
+        "1", 34254, "+", 0.27, "S1", "T1"
+    )
+    expect_equal(top_3, expected_top_3)
+    top_3 <- top_integrations(example,
+        n = 3,
+        columns = "abundance",
+        key = c("SubjectID", "Tissue")
+    )
+    expected_top_3 <- tibble::tribble(
+        ~SubjectID, ~Tissue, ~chr, ~integration_locus, ~strand, ~abundance,
+        "S1", "T1", "1", 96473, "-", 0.29,
+        "S1", "T1", "1", 34254, "+", 0.27,
+        "S1", "T1", "6", 64721, "+", 0.16,
+        "S2", "T1", "1", 34254, "+", 0.56,
+        "S2", "T1", "5", 86534, "-", 0.19,
+        "S2", "T1", "9", 13468, "+", 0.15,
+    )
+    expect_equal(top_3, expected_top_3)
 })
 
 #------------------------------------------------------------------------------#
 # Test cumulative_is
 #------------------------------------------------------------------------------#
 test_that("cumulative_is produces correct output", {
-    c_is <- cumulative_is(minimal_agg_example, expand = FALSE,
-                          keep_og_is = TRUE)
+    c_is <- cumulative_is(minimal_agg_example,
+        expand = FALSE,
+        keep_og_is = TRUE
+    )
     expect_true(nrow(c_is$coordinates) == 5)
     expect_true(all(c("is", "cumulative_is") %in% colnames(c_is$coordinates)))
     expect_equal(c_is$counts$is_n_cumulative, c(3, 4, 5, 2, 4))
-    c_is <- cumulative_is(minimal_agg_example, keep_og_is = FALSE,
-                          expand = FALSE)
+    c_is <- cumulative_is(minimal_agg_example,
+        keep_og_is = FALSE,
+        expand = FALSE
+    )
     expect_true(nrow(c_is$coordinates) == 5)
     expect_true(all(c("cumulative_is") %in% colnames(c_is$coordinates)))
     expect_equal(c_is$counts$is_n_cumulative, c(3, 4, 5, 2, 4))
@@ -639,18 +653,21 @@ test_that("cumulative_is produces correct output", {
 })
 
 test_that("cumulative_is works as expected with tp 0", {
-  all_zeros <- minimal_agg_example %>%
-    dplyr::mutate(TimePoint = "0000")
-  expect_message({
-    c_is <- cumulative_is(all_zeros)
-  }, class = "only_zero_tps")
-  expect_null(c_is)
+    all_zeros <- minimal_agg_example %>%
+        dplyr::mutate(TimePoint = "0000")
+    expect_message(
+        {
+            c_is <- cumulative_is(all_zeros)
+        },
+        class = "only_zero_tps"
+    )
+    expect_null(c_is)
 
-  some_zeros <- minimal_agg_example
-  some_zeros[c(1,2,3), ]$TimePoint <- "0000"
-  c_is <- cumulative_is(some_zeros, expand = FALSE)
-  expect_true(c_is$counts[1, ]$TimePoint == 10 &
-                c_is$counts[1, ]$is_n_cumulative == 1)
+    some_zeros <- minimal_agg_example
+    some_zeros[c(1, 2, 3), ]$TimePoint <- "0000"
+    c_is <- cumulative_is(some_zeros, expand = FALSE)
+    expect_true(c_is$counts[1, ]$TimePoint == 10 &
+        c_is$counts[1, ]$is_n_cumulative == 1)
 })
 
 #------------------------------------------------------------------------------#
@@ -1227,96 +1244,115 @@ test_that("iss_source produces expected output - NO per patient", {
 # Test gene_frequency_fisher
 #------------------------------------------------------------------------------#
 test_that("gene_frequency_fisher produces expected output", {
-  withr::local_options(list(ISAnalytics.verbose = TRUE))
-  test_cis <- readRDS(system.file("testdata", "test_cis_for_fisher.Rds",
-                      package = "ISAnalytics"
-  ))
-  ## -- Testing intersection
-  fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
-                                     min_is_per_gene = 1,
-                                     gene_set_method = "intersection")
-  common_genes <- intersect(test_cis$PT001$GeneName, test_cis$PT002$GeneName)
-  expect_true(all(fisher_df$GeneName %in% common_genes) &
-                all(common_genes %in% fisher_df$GeneName))
-  ## -- Testing union
-  fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
-                                     min_is_per_gene = 1,
-                                     gene_set_method = "union",
-                                     remove_unbalanced_0 = FALSE)
-  union_genes <- union(test_cis$PT001$GeneName, test_cis$PT002$GeneName)
-  expect_true(all(fisher_df$GeneName %in% union_genes) &
-                all(union_genes %in% fisher_df$GeneName))
-  ## -- Testing default filtering
-  expect_message({
+    withr::local_options(list(ISAnalytics.verbose = TRUE))
+    test_cis <- readRDS(system.file("testdata", "test_cis_for_fisher.Rds",
+        package = "ISAnalytics"
+    ))
+    ## -- Testing intersection
     fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
-                                       min_is_per_gene = 3,
-                                       gene_set_method = "intersection")
-  }, class = "empty_df_gene_freq")
-  expect_null(fisher_df)
-  fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
-                                     min_is_per_gene = 3,
-                                    gene_set_method = "union")
-  expect_true(nrow(fisher_df) == 2)
+        min_is_per_gene = 1,
+        gene_set_method = "intersection"
+    )
+    common_genes <- intersect(test_cis$PT001$GeneName, test_cis$PT002$GeneName)
+    expect_true(all(fisher_df$GeneName %in% common_genes) &
+        all(common_genes %in% fisher_df$GeneName))
+    ## -- Testing union
+    fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
+        min_is_per_gene = 1,
+        gene_set_method = "union",
+        remove_unbalanced_0 = FALSE
+    )
+    union_genes <- union(test_cis$PT001$GeneName, test_cis$PT002$GeneName)
+    expect_true(all(fisher_df$GeneName %in% union_genes) &
+        all(union_genes %in% fisher_df$GeneName))
+    ## -- Testing default filtering
+    expect_message(
+        {
+            fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
+                min_is_per_gene = 3,
+                gene_set_method = "intersection"
+            )
+        },
+        class = "empty_df_gene_freq"
+    )
+    expect_null(fisher_df)
+    fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
+        min_is_per_gene = 3,
+        gene_set_method = "union"
+    )
+    expect_true(nrow(fisher_df) == 2)
 })
 
 #------------------------------------------------------------------------------#
 # Test top_targeted_genes
 #------------------------------------------------------------------------------#
 test_that("top_targeted_genes produces expected output", {
-  annot_ex <- minimal_agg_example %>%
-    dplyr::mutate(
-      GeneName = c(
-      "GENE1", "GENE1", "GENE1", "GENE2", "GENE2", "GENE3", "GENE4",
-      "GENE4", "GENE4"
-    ),
-    GeneStrand = c("+", "+", "+", "-", "-", "-", "+", "+", "+"),
-    .after = "strand")
+    annot_ex <- minimal_agg_example %>%
+        dplyr::mutate(
+            GeneName = c(
+                "GENE1", "GENE1", "GENE1", "GENE2", "GENE2", "GENE3", "GENE4",
+                "GENE4", "GENE4"
+            ),
+            GeneStrand = c("+", "+", "+", "-", "-", "-", "+", "+", "+"),
+            .after = "strand"
+        )
 
-  # --- top genes overall
-  top_5 <- top_targeted_genes(annot_ex, n = 5, key = NULL)
-  expected <- data.table::data.table(
-    GeneName = c("GENE1", "GENE2", "GENE1", "GENE3", "GENE4"),
-    GeneStrand = c("+", "-", "+", "-", "+"),
-    chr = c("2", "5", "1", "3", "3"),
-    n_IS = c(2, 2, 1, 1, 1)
-  )
-  expect_equal(top_5, expected)
-  top_5 <- top_targeted_genes(annot_ex, n = 5, key = NULL,
-                              consider_chr = FALSE)
-  expected <- data.table::data.table(
-    GeneName = c("GENE1", "GENE4", "GENE2", "GENE3"),
-    GeneStrand = c("+", "+", "-", "-"),
-    n_IS = c(3, 3, 2, 1)
-  )
-  expect_equal(top_5, expected)
-  top_5 <- top_targeted_genes(annot_ex, n = 5, key = NULL,
-                              consider_chr = FALSE,
-                              consider_gene_strand = FALSE)
-  expected <- data.table::data.table(
-    GeneName = c("GENE1", "GENE4", "GENE2", "GENE3"),
-    n_IS = c(3, 3, 2, 1)
-  )
-  expect_equal(top_5, expected)
+    # --- top genes overall
+    top_5 <- top_targeted_genes(annot_ex, n = 5, key = NULL)
+    expected <- data.table::data.table(
+        GeneName = c("GENE1", "GENE2", "GENE1", "GENE3", "GENE4"),
+        GeneStrand = c("+", "-", "+", "-", "+"),
+        chr = c("2", "5", "1", "3", "3"),
+        n_IS = c(2, 2, 1, 1, 1)
+    )
+    expect_equal(top_5, expected)
+    top_5 <- top_targeted_genes(annot_ex,
+        n = 5, key = NULL,
+        consider_chr = FALSE
+    )
+    expected <- data.table::data.table(
+        GeneName = c("GENE1", "GENE4", "GENE2", "GENE3"),
+        GeneStrand = c("+", "+", "-", "-"),
+        n_IS = c(3, 3, 2, 1)
+    )
+    expect_equal(top_5, expected)
+    top_5 <- top_targeted_genes(annot_ex,
+        n = 5, key = NULL,
+        consider_chr = FALSE,
+        consider_gene_strand = FALSE
+    )
+    expected <- data.table::data.table(
+        GeneName = c("GENE1", "GENE4", "GENE2", "GENE3"),
+        n_IS = c(3, 3, 2, 1)
+    )
+    expect_equal(top_5, expected)
 
-  # --- top genes per group
-  top_5 <- top_targeted_genes(annot_ex, n = 5,
-                              key = c("SubjectID", "CellMarker"))
-  expected <- data.table::data.table(
-    SubjectID = c("S1", "S1", "S1", "S2", "S2", "S2", "S2"),
-    CellMarker = c("CM1", "CM1", "CM1", "CM2", "CM2", "CM2", "CM2"),
-    GeneName = c("GENE1", "GENE2", "GENE1", "GENE3", "GENE4", "GENE4", "GENE4"),
-    GeneStrand = c("+", "-", "+", "-", "+", "+", "+"),
-    chr = c("2", "5", "1", "3", "3", "10", "11"),
-    n_IS = c(2, 2, 1, 1, 1, 1, 1)
-  )
-  top_5 <- top_targeted_genes(annot_ex, n = 5,
-                              key = c("SubjectID", "CellMarker"),
-                              consider_chr = FALSE)
-  expected <- data.table::data.table(
-    SubjectID = c("S1", "S1", "S2", "S2"),
-    CellMarker = c("CM1", "CM1", "CM2", "CM2"),
-    GeneName = c("GENE1", "GENE2", "GENE4", "GENE3"),
-    GeneStrand = c("+", "-", "+", "-"),
-    n_IS = c(3, 2, 3, 1)
-  )
+    # --- top genes per group
+    top_5 <- top_targeted_genes(annot_ex,
+        n = 5,
+        key = c("SubjectID", "CellMarker")
+    )
+    expected <- data.table::data.table(
+        SubjectID = c("S1", "S1", "S1", "S2", "S2", "S2", "S2"),
+        CellMarker = c("CM1", "CM1", "CM1", "CM2", "CM2", "CM2", "CM2"),
+        GeneName = c(
+            "GENE1", "GENE2", "GENE1", "GENE3", "GENE4", "GENE4",
+            "GENE4"
+        ),
+        GeneStrand = c("+", "-", "+", "-", "+", "+", "+"),
+        chr = c("2", "5", "1", "3", "3", "10", "11"),
+        n_IS = c(2, 2, 1, 1, 1, 1, 1)
+    )
+    top_5 <- top_targeted_genes(annot_ex,
+        n = 5,
+        key = c("SubjectID", "CellMarker"),
+        consider_chr = FALSE
+    )
+    expected <- data.table::data.table(
+        SubjectID = c("S1", "S1", "S2", "S2"),
+        CellMarker = c("CM1", "CM1", "CM2", "CM2"),
+        GeneName = c("GENE1", "GENE2", "GENE4", "GENE3"),
+        GeneStrand = c("+", "-", "+", "-"),
+        n_IS = c(3, 2, 3, 1)
+    )
 })

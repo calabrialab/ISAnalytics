@@ -13,19 +13,8 @@ date_formats()
 A character vector
 }
 \description{
-All options correspond to \code{lubridate} functions:
-\itemize{
-\item ymd: year, month, date
-\item ydm: year, day, month
-\item mdy: month, day, year
-\item myd: month, year, day
-\item dmy: day, month, year
-\item dym: day, year, month
-\item yq: year quantile
-}
-}
-\details{
-\strong{NOTE: use the same date format across the association file.}
+All options correspond to \code{lubridate} functions, see more in the dedicated
+package documentation.
 }
 \examples{
 date_formats()
@@ -33,4 +22,12 @@ date_formats()
 \seealso{
 \code{\link{import_association_file}},
 \code{\link{import_parallel_Vispa2Matrices_auto}}
+
+Other Import functions helpers: 
+\code{\link{annotation_issues}()},
+\code{\link{default_af_transform}()},
+\code{\link{default_iss_file_prefixes}()},
+\code{\link{matching_options}()},
+\code{\link{quantification_types}()}
 }
+\concept{Import functions helpers}

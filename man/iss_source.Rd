@@ -41,7 +41,7 @@ Relevant only if \code{by_subject = TRUE}}
 A list of data frames or a data frame
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 The function computes the sharing between a reference group of interest
 for each time point and a selection of groups of interest. In this way
 it is possible to observe the percentage of shared integration sites between
@@ -75,15 +75,13 @@ ggplot2::ggplot(source$PT001, ggplot2::aes(
 \seealso{
 Other Analysis functions: 
 \code{\link{CIS_grubbs}()},
-\code{\link{comparison_matrix}()},
+\code{\link{HSC_population_size_estimate}()},
 \code{\link{compute_abundance}()},
-\code{\link{cumulative_count_union}()},
 \code{\link{cumulative_is}()},
+\code{\link{gene_frequency_fisher}()},
 \code{\link{is_sharing}()},
-\code{\link{purity_filter}()},
 \code{\link{sample_statistics}()},
-\code{\link{separate_quant_matrices}()},
-\code{\link{threshold_filter}()},
-\code{\link{top_integrations}()}
+\code{\link{top_integrations}()},
+\code{\link{top_targeted_genes}()}
 }
 \concept{Analysis functions}

@@ -17,8 +17,4 @@ outliers tests that can be called in the function \link{outlier_filter}.
 \examples{
 available_outlier_tests()
 }
-\seealso{
-Other Outlier tests: 
-\code{\link{outliers_by_pool_fragments}()}
-}
 \concept{Outlier tests}

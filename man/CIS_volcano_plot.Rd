@@ -57,7 +57,7 @@ and the data frame.}
 A plot or a list containing a plot and a data frame
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Traces a volcano plot for IS frequency and CIS results.
 }
 \details{
@@ -80,32 +80,23 @@ For more details on how this files were generated use the help
 \subsection{Known oncogenes}{
 
 The default values are included in this package and
-it can be accessed by doing:\if{html}{\out{<div class="sourceCode r">}}\preformatted{head(known_clinical_oncogenes())
-}\if{html}{\out{</div>}}\preformatted{## # A tibble: 5 × 2
-##   GeneName KnownClonalExpansion
-##   <chr>    <lgl>               
-## 1 MECOM    TRUE                
-## 2 CCND2    TRUE                
-## 3 TAL1     TRUE                
-## 4 LMO2     TRUE                
-## 5 HMGA2    TRUE
-}
+it can be accessed by doing:\if{html}{\out{<div class="sourceCode r">}}\preformatted{known_clinical_oncogenes()
+}\if{html}{\out{</div>}}
 
 If the user wants to change this parameter the input data frame must
 preserve the column structure. The same goes for the \code{suspicious_genes}
-parameter (DOIReference column is optional):\if{html}{\out{<div class="sourceCode r">}}\preformatted{head(clinical_relevant_suspicious_genes())
-}\if{html}{\out{</div>}}\preformatted{## # A tibble: 6 × 3
-##   GeneName ClinicalRelevance DOIReference                                
-##   <chr>    <lgl>             <chr>                                       
-## 1 DNMT3A   TRUE              https://doi.org/10.1182/blood-2018-01-829937
-## 2 TET2     TRUE              https://doi.org/10.1182/blood-2018-01-829937
-## 3 ASXL1    TRUE              https://doi.org/10.1182/blood-2018-01-829937
-## 4 JAK2     TRUE              https://doi.org/10.1182/blood-2018-01-829937
-## 5 CBL      TRUE              https://doi.org/10.1182/blood-2018-01-829937
-## 6 TP53     TRUE              https://doi.org/10.1182/blood-2018-01-829937
+parameter (DOIReference column is optional):\if{html}{\out{<div class="sourceCode r">}}\preformatted{clinical_relevant_suspicious_genes()
+}\if{html}{\out{</div>}}
 }
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item gene_symbol
 }
+}
+
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 cis_plot <- CIS_volcano_plot(integration_matrices,
@@ -117,6 +108,7 @@ cis_plot
 Other Plotting functions: 
 \code{\link{HSC_population_plot}()},
 \code{\link{circos_genomic_density}()},
+\code{\link{fisher_scatterplot}()},
 \code{\link{integration_alluvial_plot}()},
 \code{\link{sharing_heatmap}()},
 \code{\link{sharing_venn}()},

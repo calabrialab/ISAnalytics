@@ -48,15 +48,6 @@ bib <- c(
 )
 ```
 
-# Introduction
-
-```{r echo=FALSE}
-inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAnalytics")
-```
-
-```{r child=inst_chunk_path}
-
-```
 
 ```{r}
 library(ISAnalytics)
@@ -68,12 +59,13 @@ We're not going into too much detail here, but we're going to explain in a
 very simple way what a "collision" is and how the function in this package
 deals with them.
 
-We say that an integration (aka a unique combination of chromosome,
-integration locus and strand) is a *collision* if this combination is shared
+We say that an integration (aka a unique combination of 
+`mandatory_IS_vars()`) is a *collision* if this combination is shared
 between different independent samples: an independent sample is a unique
-combination of `ProjectID` and `SubjectID` (where subjects usually represent
-patients). The reason behind this is that it's highly improbable to observe
-the very same integration in two different subjects and this phenomenon might
+combination of metadata fields specified by the user. 
+The reason behind this is that it's highly improbable to observe
+the very same integration in two different independent samples
+and this phenomenon might
 be an indicator of some kind of contamination in the sequencing phase or in
 PCR phase, for this reason we might want to exclude such contamination from
 our analysis.
@@ -89,13 +81,11 @@ matrix is needed for this operation.
 The `remove_collisions()` function follows several logical
 steps to decide whether
 an integration is a collision and if it is it decides whether to re-assign it or
-remove it entirely based on different criterias.
+remove it entirely based on different criteria.
 
 ### Identifying the collisions
 
-As we said before, a collision is a triplet made of `chr`, `integration locus`
-and `strand`, which is shared between different independent samples, aka a pair
-made of `ProjectID` and `SubjectID`. The function uses the information stored
+The function uses the information stored
 in the association file to assess which independent samples are present and
 counts the number of independent samples for each integration: those who have a
 count > 1 are considered collisions.
@@ -117,7 +107,7 @@ knitr::kable(ex_coll, caption = paste("Example of collisions: the same",
 
 Once the collisions are identified, the function follows 3 steps where it tries
 to re-assign the combination to a single independent sample.
-The criterias are:
+The criteria are:
 
 1. Compare dates: if it's possible to have an absolute ordering on dates, the
 integration is re-assigned to the sample that has the earliest date. If two
@@ -135,7 +125,7 @@ is a single group which has a ratio n times bigger than other groups, this one
 is chosen for re-assignment. The factor n is passed as a parameter in the
 function (`reads_ratio`), the default value is 10.
 
-If none of the criterias were sufficient to make a decision, the integration
+If none of the criteria were sufficient to make a decision, the integration
 is simply removed from the matrix.
 
 # Usage

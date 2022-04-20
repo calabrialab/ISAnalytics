@@ -47,7 +47,7 @@ disk where the file should be saved. Defaults to
 \code{NULL}
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 For this functionality
 the suggested package
 \href{https://cran.r-project.org/web/packages/circlize/index.html}{circlize}
@@ -90,6 +90,7 @@ circos_genomic_density(by_subj,
 Other Plotting functions: 
 \code{\link{CIS_volcano_plot}()},
 \code{\link{HSC_population_plot}()},
+\code{\link{fisher_scatterplot}()},
 \code{\link{integration_alluvial_plot}()},
 \code{\link{sharing_heatmap}()},
 \code{\link{sharing_venn}()},

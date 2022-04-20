@@ -29,13 +29,20 @@ see details.}
 NULL, the function will perform calculations for each group and return
 a list of data frames with the results. E.g. for \code{by = "SubjectID"},
 CIS will be computed for each distinct SubjectID found in the table
-(of course, "SubjectID" column must be included in the input data frame).}
+("SubjectID" column must be included in the input data frame).}
+
+\item{return_missing_as_df}{Returns those genes present in the input df
+but not in the refgenes as a data frame?}
+
+\item{results_as_list}{Relevant only if \code{by} is not \code{NULL} - if \code{TRUE}
+return the group computations as a named list, otherwise return a single
+df with an additional column containing the group id}
 }
 \value{
 A data frame
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Statistical approach for the validation of common insertion sites
 significance based on the comparison of the integration frequency
 at the CIS gene with respect to other genes contained in the
@@ -75,23 +82,33 @@ minmax_CdsLen
 average_CdsLen
 }
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item chromosome
+\item locus
+\item is_strand
+\item gene_symbol
+\item gene_strand
+}
+}
+
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 cis <- CIS_grubbs(integration_matrices)
-head(cis)
+cis
 }
 \seealso{
 Other Analysis functions: 
-\code{\link{comparison_matrix}()},
+\code{\link{HSC_population_size_estimate}()},
 \code{\link{compute_abundance}()},
-\code{\link{cumulative_count_union}()},
 \code{\link{cumulative_is}()},
+\code{\link{gene_frequency_fisher}()},
 \code{\link{is_sharing}()},
 \code{\link{iss_source}()},
-\code{\link{purity_filter}()},
 \code{\link{sample_statistics}()},
-\code{\link{separate_quant_matrices}()},
-\code{\link{threshold_filter}()},
-\code{\link{top_integrations}()}
+\code{\link{top_integrations}()},
+\code{\link{top_targeted_genes}()}
 }
 \concept{Analysis functions}

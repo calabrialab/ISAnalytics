@@ -20,8 +20,8 @@ import_Vispa2_stats(
 to match on file names. NOTE: the elements represent regular expressions.
 For defaults see \link{default_iss_file_prefixes}.}
 
-\item{join_with_af}{Logical, if TRUE the imported stats files will be
-merged with the association file, if false a single data frame holding
+\item{join_with_af}{Logical, if \code{TRUE} the imported stats files will be
+merged with the association file, if \code{FALSE} a single data frame holding
 only the stats will be returned.}
 
 \item{pool_col}{A single string. What is the name of the pool column
@@ -29,29 +29,34 @@ used in the Vispa2 run? This will be used as a key to perform a join
 operation with the stats files \code{POOL} column.}
 
 \item{report_path}{The path where the report file should be saved.
-Can be a folder, a file or NULL if no report should be produced.
+Can be a folder or \code{NULL} if no report should be produced.
 Defaults to \code{{user_home}/ISAnalytics_reports}.}
 }
 \value{
 A data frame
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Imports all the Vispa2 stats files for each pool provided the association
 file has been aligned with the file system
 (see \code{\link{import_association_file}}).
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item project_id
+\item tag_seq
+\item vispa_concatenate
+\item pcr_repl_id
+}
+}
+
 \examples{
-fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-fs <- unzip_file_system(fs_path, "fs")
-af_path <- system.file("extdata", "asso.file.tsv.gz",
-    package = "ISAnalytics"
-)
-af <- import_association_file(af_path,
-    root = fs,
-    import_iss = FALSE,
-    report_path = NULL
-)
+fs_path <- generate_default_folder_structure(type = "correct")
+af <- import_association_file(fs_path$af, root = fs_path$root,
+import_iss = FALSE,
+report_path = NULL)
 stats_files <- import_Vispa2_stats(af,
     join_with_af = FALSE,
     report_path = NULL

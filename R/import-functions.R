@@ -3,50 +3,71 @@
 #------------------------------------------------------------------------------#
 #' Import a single integration matrix from file
 #'
-#' @description \lifecycle{stable}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' This function allows to read and import an integration matrix
 #' (ideally produced by VISPA2) and converts it to a tidy
 #' format.
 #'
 #' @param path The path to the file on disk
-#' @param to_exclude Either `NULL` or a character vector of column names that
-#' should be ignored when importing
-#' @param keep_excluded Keep the columns in `to_exclude` as additional
-#' columns? (also as a vector)
 #' @param separator The column delimiter used, defaults to `\t`
+#' @param additional_cols Either `NULL`, a named character vector or a named
+#' list. See details.
+#' @param sample_names_to Name of the output column holding the sample
+#' identifier. Defaults to `pcr_id_column()`
+#' @param values_to Name of the output column holding the quantification
+#' values. Defaults to `Value`.
+#' @param to_exclude `r lifecycle::badge("deprecated")`
+#' Deprecated. Use `additonal_cols` instead
+#' @param keep_excluded `r lifecycle::badge("deprecated")`
+#' Deprecated. Use `additonal_cols` instead
 #'
-#' @section Required vars and tags:
-#' ## Required vars
-#' TODO
+#' @details
+#' ## Additional columns
+#' Additional columns are annotation columns present in the integration matrix
+#' to import that are not
+#' * part of the mandatory IS vars (see `mandatory_IS_vars()`)
+#' * part of the annotation IS vars (see `annotation_IS_vars()`)
+#' * the sample identifier column
+#' * the quantification column
+#'
+#' When specified they tell the function how to treat those columns in the
+#' import phase, by providing a named character vector, where names correspond
+#' to the additional column names and values are a choice of the following:
+#'
+#' * `"char"` for character (strings)
+#' * `"int"` for integers
+#' * `"logi"` for logical values (TRUE / FALSE)
+#' * `"numeric"` for numeric values
+#' * `"factor"` for factors
+#' * `"date"` for generic date format - note that functions that
+#' need to read and parse files will try to guess the format and parsing
+#' may fail
+#' * One of the accepted date/datetime formats by `lubridate`,
+#' you can use `ISAnalytics::date_formats()` to view the accepted formats
+#' * `"_"` to drop the column
+#'
+#' For more details see the "How to use import functions" vignette:
+#' \code{vignette("import_functions_howto", package = "ISAnalytics")}
+#'
+#'
+#' @template transform_list
+#'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' * All columns declared in `mandatory_IS_vars()`
 #'
 #' @return A data.table object in tidy format
 #'
 #' @family Import functions
-#'
-#' @importFrom rlang abort inform
-#' @importFrom fs path_ext
-#' @importFrom readr read_delim cols
-#' @importFrom tidyr separate
-#' @importFrom magrittr `%>%`
-#' @importFrom dplyr mutate
-#' @importFrom stringr str_replace
-#' @importFrom BiocParallel SnowParam MulticoreParam bplapply bpstop
-#' @importFrom data.table melt.data.table rbindlist
-#' @details
-#' For more details see the "How to use import functions" vignette:
-#' \code{vignette("import_functions_howto", package = "ISAnalytics")}
-#'
 #' @export
 #'
 #' @examples
-#' fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' fs <- unzip_file_system(fs_path, "fs")
+#' fs_path <- generate_default_folder_structure(type = "correct")
 #' matrix_path <- fs::path(
-#'     fs,
-#'     "PJ01",
-#'     "quantification",
-#'     "POOL01-1",
-#'     "PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz"
+#'     fs_path$root, "PJ01", "quantification",
+#'     "POOL01-1", "PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz"
 #' )
 #' matrix <- import_single_Vispa2Matrix(matrix_path)
 #' head(matrix)
@@ -57,8 +78,7 @@ import_single_Vispa2Matrix <- function(path,
     sample_names_to = pcr_id_column(),
     values_to = "Value",
     to_exclude = lifecycle::deprecated(),
-    keep_excluded = lifecycle::deprecated()
-    ) {
+    keep_excluded = lifecycle::deprecated()) {
     stopifnot(!missing(path) & is.character(path))
     stopifnot(is.character(separator))
     if (!file.exists(path)) {
@@ -69,56 +89,59 @@ import_single_Vispa2Matrix <- function(path,
         rlang::abort("Path exists but is not a file")
     }
     stopifnot(is.null(transformations) ||
-                (is.list(transformations) && !is.null(names(transformations))))
+        (is.list(transformations) && !is.null(names(transformations))))
     stopifnot(is.character(sample_names_to))
     sample_names_to <- sample_names_to[1]
     stopifnot(is.character(values_to))
     values_to <- values_to[1]
-    deprecation_details <- paste("Arguments 'to_exclude' and 'keep_excluded'",
-                                 "are deprecated in favor of a single argument",
-                                 "which allows a more refined tuning. See",
-                                 "`?import_single_Vispa2Matrix` for details")
+    deprecation_details <- paste(
+        "Arguments 'to_exclude' and 'keep_excluded'",
+        "are deprecated in favor of a single argument",
+        "which allows a more refined tuning. See",
+        "`?import_single_Vispa2Matrix` for details"
+    )
     if (lifecycle::is_present(to_exclude)) {
-      lifecycle::deprecate_stop(
-        when = "1.5.4",
-        what = "import_single_Vispa2Matrix(to_exclude)",
-        with = "import_single_Vispa2Matrix(additional_cols)",
-        details = deprecation_details
-      )
-      return(NULL)
+        lifecycle::deprecate_stop(
+            when = "1.5.4",
+            what = "import_single_Vispa2Matrix(to_exclude)",
+            with = "import_single_Vispa2Matrix(additional_cols)",
+            details = deprecation_details
+        )
+        return(NULL)
     }
     if (lifecycle::is_present(keep_excluded)) {
-      lifecycle::deprecate_stop(
-        when = "1.5.4",
-        what = "import_single_Vispa2Matrix(keep_excluded)",
-        with = "import_single_Vispa2Matrix(additional_cols)",
-        details = deprecation_details
-      )
-      return(NULL)
+        lifecycle::deprecate_stop(
+            when = "1.5.4",
+            what = "import_single_Vispa2Matrix(keep_excluded)",
+            with = "import_single_Vispa2Matrix(additional_cols)",
+            details = deprecation_details
+        )
+        return(NULL)
     }
 
-    tidy_df <- .import_single_matrix(path = path, separator = separator,
-                          additional_cols = additional_cols,
-                          transformations = transformations,
-                          call_mode = "EXTERNAL",
-                          id_col_name = sample_names_to,
-                          val_col_name = values_to)
+    tidy_df <- .import_single_matrix(
+        path = path, separator = separator,
+        additional_cols = additional_cols,
+        transformations = transformations,
+        call_mode = "EXTERNAL",
+        id_col_name = sample_names_to,
+        val_col_name = values_to
+    )
     return(tidy_df)
 }
 
 
 #' Import the association file from disk
 #'
-#' @description \lifecycle{stable}
-#' Imports the association file and immediately performs a check on
+#' @description
+#' `r lifecycle::badge("stable")`
+#' Imports the association file and optionally performs a check on
 #' the file system starting from the root to assess the alignment between the
 #' two.
+#'
 #' @param path The path on disk to the association file.
-#' @param root The path on disk of the root folder of Vispa2 output or NULL.
+#' @param root The path on disk of the root folder of VISPA2 output or `NULL`.
 #' See details.
-#' @param tp_padding Timepoint padding, indicates the number of digits of the
-#' "TimePoint" column once imported. Fills the content with 0s up to the length
-#' specified (ex: 1 becomes 0001 with a tp_padding of 4)
 #' @param dates_format A single string indicating how dates should be parsed.
 #' Must be a value in: \code{date_formats()}
 #' @param separator The column separator used in the file
@@ -128,39 +151,64 @@ import_single_Vispa2Matrix <- function(path,
 #' for which the value of the column "ProjectID" is one of the specified
 #' values. If multiple columns are present in the list all filtering
 #' conditions are applied as a logical AND.
-#' @param import_iss Import Vispa2 stats and merge them with the
-#' association file?
+#' @param import_iss Import VISPA2 pool stats and merge them with the
+#' association file? Logical value
 #' @param convert_tp Should be time points be converted into months and
-#' years?
-#' @param report_path The path where the report file should be saved.
-#' Can be a folder, a file or NULL if no report should be produced.
-#' Defaults to `{user_home}/ISAnalytics_reports`.
+#' years? Logical value
 #' @param ... Additional arguments to pass to
 #' \code{\link{import_Vispa2_stats}}
+#' @param tp_padding `r lifecycle::badge("deprecated")` Deprecated.
+#' Use `transformations` instead.
+#'
+#' @template transform_list
+#' @template report_path_param
+#'
 #' @family Import functions
-#' @return The data frame holding metadata
+#' @return The data frame containing metadata
 #' @details
+#' ## File system alignment
 #' If the `root` argument is set to `NULL` no file system alignment is
 #' performed. This allows to import the basic file but it won't be
-#' possible to perfom automated matrix and stats import.
+#' possible to perform automated matrix and stats import.
 #' For more details see the "How to use import functions" vignette:
 #' \code{vignette("import_functions_howto", package = "ISAnalytics")}
+#'
+#' ## Time point conversion
+#' The time point conversion is based on the following logic, given `TPD`
+#' is the column containing the time point expressed in days and
+#' `TPM` and `TPY` are respectively the time points expressed as month
+#' and years
+#' - If `TPD` is `NA` --> `NA` (for both months and years)
+#' - `TPM` = 0, `TPY` = 0 if and only if `TPD` = 0
+#' For conversion in months:
+#' - `TPM` = ceiling(`TPD`/30) if `TPD` < 30 otherwise `TPM` = round(`TPD`/30)
+#' For conversion in years:
+#' - `TPY` = ceiling(`TPD`/360)
+#'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' ```{r echo=FALSE, results="asis"}
+#' all_tags <- available_tags()
+#' af_needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
+#'  ~ "import_association_file" %in% .x)][["tag"]])
+#'  cat(paste0("* ", af_needed, collapse="\n"))
+#' ```
+#'
+#' The function will use all the available specifications contained in
+#' `association_file_columns(TRUE)` to read and parse the file.
+#' If the specifications contain columns with a type `"date"`, the function
+#' will parse the generic date with the format in the `dates_format` argument.
+#'
 #' @export
 #'
-#' @importFrom purrr map_lgl set_names is_empty
-#' @importFrom rlang inform abort dots_list exec .data
-#' @importFrom tibble add_column
-#' @importFrom dplyr mutate if_else
-#' @importFrom stringr str_pad
-#' @importFrom magrittr `%>%`
 #' @seealso \code{\link{date_formats}}
 #' @examples
-#' fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' fs <- unzip_file_system(fs_path, "fs")
-#' af_path <- system.file("extdata", "asso.file.tsv.gz",
-#'     package = "ISAnalytics"
+#' fs_path <- generate_default_folder_structure(type = "correct")
+#' af <- import_association_file(fs_path$af,
+#'     root = fs_path$root,
+#'     report_path = NULL
 #' )
-#' af <- import_association_file(af_path, root = fs, report_path = NULL)
 #' head(af)
 import_association_file <- function(path,
     root = NULL,
@@ -360,9 +408,9 @@ import_association_file <- function(path,
         as_file <- transform_columns(as_file, transformations)
     }
     crit_tags <- c(
-      "project_id", "pool_id", "tag_seq", "subject", "tissue",
-      "cell_marker", "pcr_replicate", "vispa_concatenate",
-      "pcr_repl_id", "proj_folder"
+        "project_id", "pool_id", "tag_seq", "subject", "tissue",
+        "cell_marker", "pcr_replicate", "vispa_concatenate",
+        "pcr_repl_id", "proj_folder"
     )
     crit_colnames <- association_file_columns(TRUE) %>%
         dplyr::filter(.data$tag %in% crit_tags) %>%
@@ -422,7 +470,8 @@ import_association_file <- function(path,
 
 #' Import Vispa2 stats given the aligned association file.
 #'
-#' \lifecycle{stable}
+#' @description
+#' `r lifecycle::badge("stable")`
 #' Imports all the Vispa2 stats files for each pool provided the association
 #' file has been aligned with the file system
 #' (see \code{\link{import_association_file}}).
@@ -432,32 +481,36 @@ import_association_file <- function(path,
 #' @param file_prefixes A character vector with known file prefixes
 #'  to match on file names. NOTE: the elements represent regular expressions.
 #'  For defaults see \link{default_iss_file_prefixes}.
-#' @param join_with_af Logical, if TRUE the imported stats files will be
-#' merged with the association file, if false a single data frame holding
+#' @param join_with_af Logical, if `TRUE` the imported stats files will be
+#' merged with the association file, if `FALSE` a single data frame holding
 #' only the stats will be returned.
 #' @param pool_col A single string. What is the name of the pool column
 #' used in the Vispa2 run? This will be used as a key to perform a join
 #' operation with the stats files `POOL` column.
-#' @param report_path The path where the report file should be saved.
-#' Can be a folder, a file or NULL if no report should be produced.
-#' Defaults to `{user_home}/ISAnalytics_reports`.
+#'
+#' @template report_path_param
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' ```{r echo=FALSE, results="asis"}
+#' all_tags <- available_tags()
+#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
+#'  ~ "import_Vispa2_stats" %in% .x)][["tag"]])
+#'  cat(paste0("* ", needed, collapse="\n"))
+#' ```
+#'
 #'
 #' @family Import functions
 #' @importFrom rlang inform abort .data
 #' @importFrom stats setNames
-#' @importFrom dplyr left_join filter select all_of distinct
 #'
 #' @return A data frame
 #' @export
 #'
 #' @examples
-#' fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' fs <- unzip_file_system(fs_path, "fs")
-#' af_path <- system.file("extdata", "asso.file.tsv.gz",
-#'     package = "ISAnalytics"
-#' )
-#' af <- import_association_file(af_path,
-#'     root = fs,
+#' fs_path <- generate_default_folder_structure(type = "correct")
+#' af <- import_association_file(fs_path$af,
+#'     root = fs_path$root,
 #'     import_iss = FALSE,
 #'     report_path = NULL
 #' )
@@ -606,7 +659,10 @@ import_Vispa2_stats <- function(association_file,
         ]
 
         missing_stats <- association_file %>%
-            dplyr::filter(dplyr::if_all(dplyr::all_of(iss_cols_in_af), is.na)) %>%
+            dplyr::filter(dplyr::if_all(
+                dplyr::all_of(iss_cols_in_af),
+                is.na
+            )) %>%
             dplyr::select(dplyr::all_of(c(
                 tags_to_cols$names,
                 pool_col,
@@ -664,11 +720,22 @@ import_Vispa2_stats <- function(association_file,
 #' Import integration matrices from paths in the association file.
 #'
 #' @description
-#' \lifecycle{stable}
+#' `r lifecycle::badge("stable")`
 #' The function offers a convenient way of importing multiple integration
 #' matrices in an automated or semi-automated way.
 #' For more details see the "How to use import functions" vignette:
 #' \code{vignette("import_functions_howto", package = "ISAnalytics")}
+#'
+#' @section Required tags:
+#' The function will explicitly check for the presence of these tags:
+#'
+#' ```{r echo=FALSE, results="asis"}
+#' all_tags <- available_tags()
+#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
+#'  ~ "import_parallel_Vispa2Matrices" %in% .x)][["tag"]])
+#'  cat(paste0("* ", needed, collapse="\n"))
+#' ```
+#'
 #'
 #' @param association_file Data frame imported via
 #' \link{import_association_file} (with file system alignment) or
@@ -679,24 +746,23 @@ import_Vispa2_stats <- function(association_file,
 #' to be imported. Can only be one in "annotated" or "not_annotated".
 #' @param workers A single integer representing the number of parallel
 #' workers to use for the import
-#' @param multi_quant_matrix If set to TRUE will produce a
+#' @param multi_quant_matrix If set to `TRUE` will produce a
 #' multi-quantification matrix through \link{comparison_matrix}
 #' instead of a list.
-#' @param report_path The path where the report file should be saved.
-#' Can be a folder, a file or NULL if no report should be produced.
-#' Defaults to `{user_home}/ISAnalytics_reports`.
 #' @param patterns Relevant only if argument `mode` is set to `AUTO`.
 #' A character vector of additional patterns to match on file
-#' names. Please note that patterns must be regular expressions. Can be NULL if
-#' no patterns need to be matched.
+#' names. Please note that patterns must be regular expressions. Can be `NULL`
+#' if no patterns need to be matched.
 #' @param matching_opt Relevant only if argument `mode` is set to `AUTO`.
 #' A single value between \link{matching_options}
 #' @param mode A single value between `AUTO` and `INTERACTIVE`. If
-#' INTERACTIVE, the function will ask for input from the user on console,
+#' `INTERACTIVE`, the function will ask for input from the user on console,
 #' otherwise the process is fully automated (with limitations, see vignette).
 #' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Additional named arguments
 #' to pass to `ìmport_association_file`, `comparison_matrix` and
 #' `import_single_Vispa2_matrix`
+#'
+#' @template report_path_param
 #'
 #' @importFrom rlang fn_fmls_names dots_list arg_match inform abort
 #' @importFrom rlang eval_tidy call2
@@ -707,14 +773,9 @@ import_Vispa2_stats <- function(association_file,
 #' @export
 #'
 #' @examples
-#' fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-#' fs <- unzip_file_system(fs_path, "fs")
-#' af_path <- system.file("extdata", "asso.file.tsv.gz",
-#'     package = "ISAnalytics"
-#' )
-#' af <- import_association_file(af_path,
-#'     root = fs,
-#'     import_iss = FALSE,
+#' fs_path <- generate_default_folder_structure(type = "correct")
+#' af <- import_association_file(fs_path$af,
+#'     root = fs_path$root,
 #'     report_path = NULL
 #' )
 #' matrices <- import_parallel_Vispa2Matrices(af,
@@ -757,12 +818,16 @@ import_parallel_Vispa2Matrices <- function(association_file,
         }
     }
     import_matrix_arg_names <- rlang::fn_fmls_names(
-      import_single_Vispa2Matrix)
+        import_single_Vispa2Matrix
+    )
     import_matrix_arg_names <- import_matrix_arg_names[
-      !import_matrix_arg_names %in% c("path", "to_exclude",
-                                      "keep_excluded")]
+        !import_matrix_arg_names %in% c(
+            "path", "to_exclude",
+            "keep_excluded"
+        )
+    ]
     import_matrix_args <- dots_args[names(dots_args) %in%
-                                      import_matrix_arg_names]
+        import_matrix_arg_names]
     association_file <- .pre_manage_af(
         association_file,
         import_af_args,
@@ -782,7 +847,7 @@ import_parallel_Vispa2Matrices <- function(association_file,
         dplyr::pull(.data$names)
     ### --- Interactive
     if (mode == "INTERACTIVE") {
-      matching_option <- NULL
+        matching_option <- NULL
         ## User selects projects to keep
         association_file <- .interactive_select_projects_import(
             association_file,
@@ -799,9 +864,11 @@ import_parallel_Vispa2Matrices <- function(association_file,
             matrix_type, proj_col, pool_col
         )
         ## Manage missing files and duplicates
-        files_to_import <- .manage_anomalies_interactive(files_found,
-                                                         proj_col,
-                                                         pool_col)
+        files_to_import <- .manage_anomalies_interactive(
+            files_found,
+            proj_col,
+            pool_col
+        )
     } else {
         ### --- Auto
         ## In automatic workflow all projects and pools contained
@@ -826,16 +893,20 @@ import_parallel_Vispa2Matrices <- function(association_file,
             proj_col, pool_col
         )
         ## Manage missing files and duplicates
-        files_to_import <- .manage_anomalies_auto(files_found,
-                                                  proj_col, pool_col)
+        files_to_import <- .manage_anomalies_auto(
+            files_found,
+            proj_col, pool_col
+        )
     }
     ## If files to import are 0 just terminate
     if (nrow(files_to_import) == 0) {
         rlang::abort("No files to import")
     }
     ## Import
-    matrices <- .parallel_import_merge(files_to_import, workers,
-                                       import_matrix_args)
+    matrices <- .parallel_import_merge(
+        files_to_import, workers,
+        import_matrix_args
+    )
     fimported <- matrices$summary
     if (nrow(fimported) == 0) {
         fimported <- NULL
@@ -860,15 +931,15 @@ import_parallel_Vispa2Matrices <- function(association_file,
     }
     launch_params <- list()
     if (!is.null(patterns)) {
-      launch_params[["patterns"]] <- patterns
-      launch_params[["matching_opt"]] <- matching_option
+        launch_params[["patterns"]] <- patterns
+        launch_params[["matching_opt"]] <- matching_option
     }
     withCallingHandlers(
         {
             .produce_report("matrix_imp",
                 params = list(
-                  launch_params = launch_params,
-                  set_vars = list(proj_col = proj_col, pool_col = pool_col),
+                    launch_params = launch_params,
+                    set_vars = list(proj_col = proj_col, pool_col = pool_col),
                     files_found = files_found,
                     files_imp = fimported,
                     annot_prob = annotation_problems
@@ -978,9 +1049,9 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
 
 #' Check for genomic annotation problems in IS matrices.
 #'
-#' \lifecycle{experimental}
+#' @description `r lifecycle::badge("experimental")`
 #' This helper function checks if each individual integration site,
-#' identified by the triplet (chr, integration locus, strand),
+#' identified by the `mandatory_IS_vars()`,
 #' has been annotated with two or more distinct gene symbols.
 #'
 #' @param matrix Either a single matrix or a list of matrices, ideally obtained
@@ -1002,7 +1073,8 @@ annotation_issues <- function(matrix) {
         needed <- c(mandatory_IS_vars(), annotation_IS_vars())
         if (!all(needed %in% colnames(m))) {
             rlang::inform(
-              .missing_needed_cols(needed[!needed %in% colnames(m)]))
+                .missing_needed_cols(needed[!needed %in% colnames(m)])
+            )
             return(NULL)
         }
         tmp <- m %>%
@@ -1012,7 +1084,8 @@ annotation_issues <- function(matrix) {
             ))) %>%
             dplyr::distinct() %>%
             dplyr::group_by(dplyr::across(
-              dplyr::all_of(mandatory_IS_vars()))) %>%
+                dplyr::all_of(mandatory_IS_vars())
+            )) %>%
             dplyr::summarise(distinct_genes = dplyr::n())
         if (any(tmp$distinct_genes > 1)) {
             tmp %>%
@@ -1096,17 +1169,10 @@ matching_options <- function() {
 #' `import_parallel_vispa2Matrices_interactive` and
 #' `import_parallel_vispa2Matrices_auto`.
 #'
-#' All options correspond to `lubridate` functions:
-#' * ymd: year, month, date
-#' * ydm: year, day, month
-#' * mdy: month, day, year
-#' * myd: month, year, day
-#' * dmy: day, month, year
-#' * dym: day, year, month
-#' * yq: year quantile
+#' All options correspond to `lubridate` functions, see more in the dedicated
+#' package documentation.
 #'
-#' **NOTE: use the same date format across the association file.**
-#'
+#' @family Import functions helpers
 #' @return A character vector
 #' @export
 #' @seealso \code{\link{import_association_file}},
@@ -1127,6 +1193,7 @@ date_formats <- function() {
 #'
 #' Note that each element is a regular expression.
 #'
+#' @family Import functions helpers
 #' @return A character vector of regexes
 #' @export
 #'
@@ -1136,6 +1203,22 @@ default_iss_file_prefixes <- function() {
     c("stats\\.sequence.", "stats\\.matrix.")
 }
 
+
+#' Default transformations to apply to association file columns.
+#'
+#' @description
+#' A list of default transformations to apply to the association file columns
+#' after importing it via `import_association_file()`
+#'
+#' @param convert_tp The value of the argument `convert_tp` in the call
+#' to `import_association_file()`
+#'
+#' @family Import functions helpers
+#' @return A named list of lambdas
+#' @export
+#'
+#' @examples
+#' default_af_transform(TRUE)
 default_af_transform <- function(convert_tp) {
     if (convert_tp) {
         return(list(

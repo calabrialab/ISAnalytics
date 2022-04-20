@@ -21,7 +21,7 @@ import_association_file(
 \arguments{
 \item{path}{The path on disk to the association file.}
 
-\item{root}{The path on disk of the root folder of Vispa2 output or NULL.
+\item{root}{The path on disk of the root folder of VISPA2 output or \code{NULL}.
 See details.}
 
 \item{dates_format}{A single string indicating how dates should be parsed.
@@ -36,49 +36,103 @@ for which the value of the column "ProjectID" is one of the specified
 values. If multiple columns are present in the list all filtering
 conditions are applied as a logical AND.}
 
-\item{import_iss}{Import Vispa2 stats and merge them with the
-association file?}
+\item{import_iss}{Import VISPA2 pool stats and merge them with the
+association file? Logical value}
 
 \item{convert_tp}{Should be time points be converted into months and
-years?}
+years? Logical value}
 
 \item{report_path}{The path where the report file should be saved.
-Can be a folder, a file or NULL if no report should be produced.
+Can be a folder or \code{NULL} if no report should be produced.
 Defaults to \code{{user_home}/ISAnalytics_reports}.}
 
-\item{tp_padding}{Timepoint padding, indicates the number of digits of the
-"TimePoint" column once imported. Fills the content with 0s up to the length
-specified (ex: 1 becomes 0001 with a tp_padding of 4)}
+\item{transformations}{Either \code{NULL} or a named list of purrr-style lambdas
+where names
+are column names the function should be applied to.}
+
+\item{tp_padding}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Deprecated.
+Use \code{transformations} instead.}
 
 \item{...}{Additional arguments to pass to
 \code{\link{import_Vispa2_stats}}}
 }
 \value{
-The data frame holding metadata
+The data frame containing metadata
 }
 \description{
-\lifecycle{stable}
-Imports the association file and immediately performs a check on
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
+Imports the association file and optionally performs a check on
 the file system starting from the root to assess the alignment between the
 two.
 }
 \details{
+\subsection{Transformations}{
+
+Lambdas provided in input in the \code{transformations} argument,
+must be transformations, aka functions that take
+in input a vector and return a vector of the same length as the input.
+
+If the transformation list contains column names that are not present
+in the data frame, they are simply ignored.
+}
+
+\subsection{File system alignment}{
+
 If the \code{root} argument is set to \code{NULL} no file system alignment is
 performed. This allows to import the basic file but it won't be
-possible to perfom automated matrix and stats import.
+possible to perform automated matrix and stats import.
 For more details see the "How to use import functions" vignette:
 \code{vignette("import_functions_howto", package = "ISAnalytics")}
 }
+
+\subsection{Time point conversion}{
+
+The time point conversion is based on the following logic, given \code{TPD}
+is the column containing the time point expressed in days and
+\code{TPM} and \code{TPY} are respectively the time points expressed as month
+and years
+\itemize{
+\item If \code{TPD} is \code{NA} --> \code{NA} (for both months and years)
+\item \code{TPM} = 0, \code{TPY} = 0 if and only if \code{TPD} = 0
+For conversion in months:
+\item \code{TPM} = ceiling(\code{TPD}/30) if \code{TPD} < 30 otherwise \code{TPM} = round(\code{TPD}/30)
+For conversion in years:
+\item \code{TPY} = ceiling(\code{TPD}/360)
+}
+}
+}
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item project_id
+\item pool_id
+\item tag_seq
+\item subject
+\item tissue
+\item tp_days
+\item cell_marker
+\item pcr_replicate
+\item vispa_concatenate
+\item pcr_repl_id
+\item proj_folder
+}
+
+The function will use all the available specifications contained in
+\code{association_file_columns(TRUE)} to read and parse the file.
+If the specifications contain columns with a type \code{"date"}, the function
+will parse the generic date with the format in the \code{dates_format} argument.
+}
+
 \examples{
-fs_path <- system.file("extdata", "fs.zip", package = "ISAnalytics")
-fs <- unzip_file_system(fs_path, "fs")
-af_path <- system.file("extdata", "asso.file.tsv.gz",
-    package = "ISAnalytics"
-)
-af <- import_association_file(af_path, root = fs, report_path = NULL)
+fs_path <- generate_default_folder_structure(type = "correct")
+af <- import_association_file(fs_path$af, root = fs_path$root,
+report_path = NULL)
 head(af)
 }
 \seealso{
+\code{\link{transform_columns}}
+
 \code{\link{date_formats}}
 
 Other Import functions: 

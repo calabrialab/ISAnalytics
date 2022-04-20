@@ -51,7 +51,8 @@ fs::file_copy(
             "PJ01_POOL01-1_FOO_fragmentEstimate_",
             "matrix.no0.annotated.tsv.gz"
         )
-    ), overwrite = TRUE
+    ),
+    overwrite = TRUE
 )
 
 smpl_ff <- function() {
@@ -828,31 +829,38 @@ test_that(paste(func_name[15], "correctly manages for fs"), {
         "ProjectID",
         "concatenatePoolIDSeqRun"
     )
-    files_to_import <- .manage_anomalies_auto(files_found,
-                                              "ProjectID",
-                                              "concatenatePoolIDSeqRun")
+    files_to_import <- .manage_anomalies_auto(
+        files_found,
+        "ProjectID",
+        "concatenatePoolIDSeqRun"
+    )
     expect_true(nrow(files_to_import) == 4 * length(quant_types))
 })
 
 test_that(paste(func_name[15], "correctly manages for fserr"), {
-  withr::local_options(list(ISAnalytics.verbose = TRUE))
-  aligned_af_mod <- local_af_corr %>%
-    dplyr::mutate(!!.path_cols_names()$quant :=
-                    stringr::str_replace(
-                      .data[[.path_cols_names()$quant]],
-                      "/fs/", "/fs_dupl/"
-                    ))
+    withr::local_options(list(ISAnalytics.verbose = TRUE))
+    aligned_af_mod <- local_af_corr %>%
+        dplyr::mutate(!!.path_cols_names()$quant :=
+            stringr::str_replace(
+                .data[[.path_cols_names()$quant]],
+                "/fs/", "/fs_dupl/"
+            ))
     files_found <- .lookup_matrices_auto(aligned_af_mod,
         quant_types, "annotated",
         patterns = NULL, matching_opt = "ANY",
         "ProjectID",
         "concatenatePoolIDSeqRun"
     )
-    expect_message({
-      files_to_import <- .manage_anomalies_auto(files_found,
-                                                "ProjectID",
-                                                "concatenatePoolIDSeqRun")
-    }, class = "auto_mode_dupl")
+    expect_message(
+        {
+            files_to_import <- .manage_anomalies_auto(
+                files_found,
+                "ProjectID",
+                "concatenatePoolIDSeqRun"
+            )
+        },
+        class = "auto_mode_dupl"
+    )
     expect_true(nrow(files_to_import) == 7)
     files_found <- .lookup_matrices_auto(aligned_af_mod,
         quant_types, "annotated",
@@ -863,10 +871,13 @@ test_that(paste(func_name[15], "correctly manages for fserr"), {
     )
     expect_message(
         {
-            files_to_import <- .manage_anomalies_auto(files_found,
-                                                      "ProjectID",
-                                                      "concatenatePoolIDSeqRun")
-        }, class = "auto_mode_miss"
+            files_to_import <- .manage_anomalies_auto(
+                files_found,
+                "ProjectID",
+                "concatenatePoolIDSeqRun"
+            )
+        },
+        class = "auto_mode_miss"
     )
     expect_true(nrow(files_to_import) == 1)
 })
@@ -875,95 +886,102 @@ test_that(paste(func_name[15], "correctly manages for fserr"), {
 # Tests .import_type
 #------------------------------------------------------------------------------#
 test_that(paste(func_name[9], "reports errors silently"), {
-  # Expecting errors when mand vars do not mach
-  sample_df <- tibble::tribble(
-    ~IS_GenomicID, ~GeneName, ~GeneStrand, ~id1, ~id2,
-    ~id3, ~id4,
-    "1_140546_+", "GENE1", "-", 4, NA, NA, 1,
-    "14_43567_-", "GENE2", "+", 231, NA, 2, NA,
-    "5_214676_-", "GENE3", "-", NA, NA, NA, NA,
-    "7_66778_-", "GENE4", "-", NA, 355, NA, NA,
-    "1_75687_+", "GENE5", "+", NA, NA, NA, 65,
-    "5_64576_+", "GENE6", "-", 1, 667, NA, NA,
-    "20_57587_-", "GENE7", "-", NA, 13, 1, NA,
-    "X_457658_+", "GENE8", "+", NA, NA, NA, 768
-  )
-  temp_path <- withr::local_tempfile(fileext = "tsv.gz")
-  readr::write_tsv(sample_df, file = temp_path, na = "")
-  sample_file_to_import <- tibble::tribble(
-    ~ ProjectID, ~ concatenatePoolIDSeqRun, ~ Quantification_type,
-    ~ Files_chosen,
-    "P1", "POOL1", "seqCount", temp_path
-  )
-  p <- if (.Platform$OS.type == "windows") {
-    BiocParallel::SnowParam(
-      workers = 2,
-      stop.on.error = FALSE
+    # Expecting errors when mand vars do not mach
+    sample_df <- tibble::tribble(
+        ~IS_GenomicID, ~GeneName, ~GeneStrand, ~id1, ~id2,
+        ~id3, ~id4,
+        "1_140546_+", "GENE1", "-", 4, NA, NA, 1,
+        "14_43567_-", "GENE2", "+", 231, NA, 2, NA,
+        "5_214676_-", "GENE3", "-", NA, NA, NA, NA,
+        "7_66778_-", "GENE4", "-", NA, 355, NA, NA,
+        "1_75687_+", "GENE5", "+", NA, NA, NA, 65,
+        "5_64576_+", "GENE6", "-", 1, 667, NA, NA,
+        "20_57587_-", "GENE7", "-", NA, 13, 1, NA,
+        "X_457658_+", "GENE8", "+", NA, NA, NA, 768
     )
-  } else {
-    BiocParallel::MulticoreParam(
-      workers = 2,
-      stop.on.error = FALSE
+    temp_path <- withr::local_tempfile(fileext = "tsv.gz")
+    readr::write_tsv(sample_df, file = temp_path, na = "")
+    sample_file_to_import <- tibble::tribble(
+        ~ProjectID, ~concatenatePoolIDSeqRun, ~Quantification_type,
+        ~Files_chosen,
+        "P1", "POOL1", "seqCount", temp_path
     )
-  }
-  import_result <- .import_type(q_type = "seqCount",
-                                files = sample_file_to_import,
-                                cluster = p, import_matrix_args =  list())
-  expect_true(is.null(import_result$matrix))
-  expect_true(import_result$imported_files$Imported[1] == FALSE)
-  new_mand <- tibble::tribble(
-    ~ names, ~ types, ~ transform, ~ flag, ~ tag,
-    "IS_GenomicID", "char", NULL, "required", NA_character_
-  )
-  withr::with_options(list(ISAnalytics.mandatory_is_vars = new_mand), {
-    import_result <- .import_type(q_type = "seqCount",
-                                  files = sample_file_to_import,
-                                  cluster = p, import_matrix_args =  list())
-    expect_true(!is.null(import_result$matrix))
-    expect_true(nrow(import_result$matrix) == 11 &
-                  ncol(import_result$matrix) == 5)
-    expect_true(import_result$imported_files$Imported[1] == TRUE)
-    expect_true(import_result$imported_files$Number_of_samples[1] == 4)
-    expect_true(import_result$imported_files$Distinct_is[1] == 7)
-  })
-  BiocParallel::bpstop(p)
+    p <- if (.Platform$OS.type == "windows") {
+        BiocParallel::SnowParam(
+            workers = 2,
+            stop.on.error = FALSE
+        )
+    } else {
+        BiocParallel::MulticoreParam(
+            workers = 2,
+            stop.on.error = FALSE
+        )
+    }
+    import_result <- .import_type(
+        q_type = "seqCount",
+        files = sample_file_to_import,
+        cluster = p, import_matrix_args = list()
+    )
+    expect_true(is.null(import_result$matrix))
+    expect_true(import_result$imported_files$Imported[1] == FALSE)
+    new_mand <- tibble::tribble(
+        ~names, ~types, ~transform, ~flag, ~tag,
+        "IS_GenomicID", "char", NULL, "required", NA_character_
+    )
+    withr::with_options(list(ISAnalytics.mandatory_is_vars = new_mand), {
+        import_result <- .import_type(
+            q_type = "seqCount",
+            files = sample_file_to_import,
+            cluster = p, import_matrix_args = list()
+        )
+        expect_true(!is.null(import_result$matrix))
+        expect_true(nrow(import_result$matrix) == 11 &
+            ncol(import_result$matrix) == 5)
+        expect_true(import_result$imported_files$Imported[1] == TRUE)
+        expect_true(import_result$imported_files$Number_of_samples[1] == 4)
+        expect_true(import_result$imported_files$Distinct_is[1] == 7)
+    })
+    BiocParallel::bpstop(p)
 })
 
 #------------------------------------------------------------------------------#
 # Tests .parallel_import_merge
 #------------------------------------------------------------------------------#
 test_that(paste(func_name[10], "works as expected"), {
-  sample_df <- tibble::tribble(
-    ~IS_GenomicID, ~GeneName, ~GeneStrand, ~id1, ~id2,
-    ~id3, ~id4,
-    "1_140546_+", "GENE1", "-", 4, NA, NA, 1,
-    "14_43567_-", "GENE2", "+", 231, NA, 2, NA,
-    "5_214676_-", "GENE3", "-", NA, NA, NA, NA,
-    "7_66778_-", "GENE4", "-", NA, 355, NA, NA,
-    "1_75687_+", "GENE5", "+", NA, NA, NA, 65,
-    "5_64576_+", "GENE6", "-", 1, 667, NA, NA,
-    "20_57587_-", "GENE7", "-", NA, 13, 1, NA,
-    "X_457658_+", "GENE8", "+", NA, NA, NA, 768
-  )
-  temp_path <- withr::local_tempfile(fileext = "tsv.gz")
-  readr::write_tsv(sample_df, file = temp_path, na = "")
-  sample_df_corr <- sample_df %>%
-    tidyr::separate(.data$IS_GenomicID,
-                    into = c("chr", "integration_locus", "strand"),
-                    sep = "_", remove = TRUE, convert = TRUE)
-  temp_path_corr <- withr::local_tempfile(fileext = "tsv.gz")
-  readr::write_tsv(sample_df_corr, file = temp_path_corr, na = "")
-  sample_file_to_import <- tibble::tribble(
-    ~ ProjectID, ~ concatenatePoolIDSeqRun, ~ Quantification_type,
-    ~ Files_chosen,
-    "P1", "POOL1", "seqCount", temp_path,
-    "P1", "POOL1", "fragmentEstimate", temp_path_corr
-  )
-  results <- .parallel_import_merge(sample_file_to_import, workers = 2,
-                                    import_matrix_args = list())
-  expect_true(is.null(results$matrix$seqCount) &
-                !is.null(results$matrix$fragmentEstimate))
-  expect_equal(results$summary$Imported, c(FALSE, TRUE))
+    sample_df <- tibble::tribble(
+        ~IS_GenomicID, ~GeneName, ~GeneStrand, ~id1, ~id2,
+        ~id3, ~id4,
+        "1_140546_+", "GENE1", "-", 4, NA, NA, 1,
+        "14_43567_-", "GENE2", "+", 231, NA, 2, NA,
+        "5_214676_-", "GENE3", "-", NA, NA, NA, NA,
+        "7_66778_-", "GENE4", "-", NA, 355, NA, NA,
+        "1_75687_+", "GENE5", "+", NA, NA, NA, 65,
+        "5_64576_+", "GENE6", "-", 1, 667, NA, NA,
+        "20_57587_-", "GENE7", "-", NA, 13, 1, NA,
+        "X_457658_+", "GENE8", "+", NA, NA, NA, 768
+    )
+    temp_path <- withr::local_tempfile(fileext = "tsv.gz")
+    readr::write_tsv(sample_df, file = temp_path, na = "")
+    sample_df_corr <- sample_df %>%
+        tidyr::separate(.data$IS_GenomicID,
+            into = c("chr", "integration_locus", "strand"),
+            sep = "_", remove = TRUE, convert = TRUE
+        )
+    temp_path_corr <- withr::local_tempfile(fileext = "tsv.gz")
+    readr::write_tsv(sample_df_corr, file = temp_path_corr, na = "")
+    sample_file_to_import <- tibble::tribble(
+        ~ProjectID, ~concatenatePoolIDSeqRun, ~Quantification_type,
+        ~Files_chosen,
+        "P1", "POOL1", "seqCount", temp_path,
+        "P1", "POOL1", "fragmentEstimate", temp_path_corr
+    )
+    results <- .parallel_import_merge(sample_file_to_import,
+        workers = 2,
+        import_matrix_args = list()
+    )
+    expect_true(is.null(results$matrix$seqCount) &
+        !is.null(results$matrix$fragmentEstimate))
+    expect_equal(results$summary$Imported, c(FALSE, TRUE))
 })
 
 #------------------------------------------------------------------------------#
@@ -1070,61 +1088,67 @@ test_that(paste(func_name[18], "executes correctly"), {
 })
 
 test_that("deprecation of old functions gets signaled - AUTO", {
-  expect_deprecated({
-    matrices <- import_parallel_Vispa2Matrices_auto(
-      local_af_corr, quantification_type = c("seqCount", "fragmentEstimate"))
-  })
-  matrices_new_fun <- import_parallel_Vispa2Matrices(
-    association_file = local_af_corr,
-    quantification_type = c("seqCount", "fragmentEstimate"),
-    mode = "AUTO", report_path = NULL
-  )
-  expect_equal(matrices %>%
-                 dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
-               matrices_new_fun %>%
-                 dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
-               ignore_attr = TRUE)
+    expect_deprecated({
+        matrices <- import_parallel_Vispa2Matrices_auto(
+            local_af_corr,
+            quantification_type = c("seqCount", "fragmentEstimate")
+        )
+    })
+    matrices_new_fun <- import_parallel_Vispa2Matrices(
+        association_file = local_af_corr,
+        quantification_type = c("seqCount", "fragmentEstimate"),
+        mode = "AUTO", report_path = NULL
+    )
+    expect_equal(matrices %>%
+        dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+    matrices_new_fun %>%
+        dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+    ignore_attr = TRUE
+    )
 })
 
 test_that("deprecation of old functions gets signaled - INTERACTIVE", {
-  input1 <- withr::local_tempfile()
-  input2 <- withr::local_tempfile()
-  input3 <- withr::local_tempfile()
-  input4 <- withr::local_tempfile()
-  input5 <- withr::local_tempfile()
-  input6 <- withr::local_tempfile()
-  input_value1 <- "1"
-  input_value3 <- "y"
-  input_value4 <- "1"
-  input_value6 <- "y"
-  op <- withr::local_options(ISAnalytics.connection = c(
-    input1,
-    input2,
-    input3,
-    input4,
-    input5,
-    input6
-  ))
-  write(input_value1, input1)
-  write(input_value3, input3)
-  write(input_value4, input4)
-  write(input_value6, input6)
-  expect_deprecated({
+    input1 <- withr::local_tempfile()
+    input2 <- withr::local_tempfile()
+    input3 <- withr::local_tempfile()
+    input4 <- withr::local_tempfile()
+    input5 <- withr::local_tempfile()
+    input6 <- withr::local_tempfile()
+    input_value1 <- "1"
+    input_value3 <- "y"
+    input_value4 <- "1"
+    input_value6 <- "y"
+    op <- withr::local_options(ISAnalytics.connection = c(
+        input1,
+        input2,
+        input3,
+        input4,
+        input5,
+        input6
+    ))
+    write(input_value1, input1)
+    write(input_value3, input3)
+    write(input_value4, input4)
+    write(input_value6, input6)
+    expect_deprecated({
+        invisible(capture.output({
+            matrices <- import_parallel_Vispa2Matrices_interactive(
+                local_af_corr,
+                quantification_type = c("seqCount", "fragmentEstimate")
+            )
+        }))
+    })
     invisible(capture.output({
-      matrices <- import_parallel_Vispa2Matrices_interactive(
-        local_af_corr, quantification_type = c("seqCount", "fragmentEstimate"))
+        matrices_new_fun <- import_parallel_Vispa2Matrices(
+            association_file = local_af_corr,
+            quantification_type = c("seqCount", "fragmentEstimate"),
+            mode = "INTERACTIVE", report_path = NULL
+        )
     }))
-  })
-  invisible(capture.output({
-    matrices_new_fun <- import_parallel_Vispa2Matrices(
-      association_file = local_af_corr,
-      quantification_type = c("seqCount", "fragmentEstimate"),
-      mode = "INTERACTIVE", report_path = NULL
+    expect_equal(matrices %>%
+        dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+    matrices_new_fun %>%
+        dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+    ignore_attr = TRUE
     )
-  }))
-  expect_equal(matrices %>%
-                 dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
-               matrices_new_fun %>%
-                 dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
-               ignore_attr = TRUE)
 })

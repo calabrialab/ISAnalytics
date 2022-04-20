@@ -2,16 +2,29 @@
 % Please edit documentation in R/utility-functions.R
 \name{inspect_tags}
 \alias{inspect_tags}
-\title{Title}
+\title{Retrieve description of a tag by name.}
 \usage{
 inspect_tags(tags)
 }
 \arguments{
-\item{tags}{}
+\item{tags}{A character vector of tag names}
 }
 \value{
-
+\code{NULL}
 }
 \description{
-Title
+Given one or multiple tags, prints the associated description
+and functions where the tag is explicitly used.
 }
+\examples{
+inspect_tags(c("chromosome", "project_id", "x"))
+}
+\seealso{
+Other dynamic vars: 
+\code{\link{mandatory_IS_vars}()},
+\code{\link{pcr_id_column}()},
+\code{\link{reset_mandatory_IS_vars}()},
+\code{\link{set_mandatory_IS_vars}()},
+\code{\link{set_matrix_file_suffixes}()}
+}
+\concept{dynamic vars}

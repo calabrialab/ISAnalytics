@@ -37,41 +37,9 @@ is set to TRUE}
 A data frame
 }
 \description{
-\lifecycle{experimental}
-This function computes the cumulative number of integrations
-observed in each sample at different time points by assuming that
-if an integration is observed at time point "t" then it is also observed in
-time point "t+1".
-}
-\details{
-\subsection{Input data frame}{
-
-The user can provide as input for the \code{x} parameter both a simple
-integration matrix AND setting the \code{aggregate} parameter to TRUE,
-or provide an already aggregated matrix via
-\link{aggregate_values_by_key}.
-If the user supplies a matrix to be aggregated the \code{association_file}
-parameter must not be NULL: aggregation will be done by an internal
-call to the aggregation function.
-If the user supplies an already aggregated matrix, the \code{key} parameter
-is the key used for aggregation -
-\strong{NOTE: for this operation is mandatory
-that the time point column is included in the key.}
-}
-
-\subsection{Assumptions on time point format}{
-
-By using the functions provided by this package, when imported,
-an association file will be correctly formatted for future usage.
-In the formatting process there is also a padding operation performed on
-time points: this means the functions expects the time point column to
-be of type character and to be correctly padded with 0s. If the
-chosen column for time point is detected as numeric the function will
-attempt the conversion to character and automatic padding.
-If you choose to import the association file not using the
-\link{import_association_file} function, be sure to check the format of
-the chosen column to avoid undesired results.
-}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This function was deprecated in favour of a single function,
+please use \code{cumulative_is} instead.
 }
 \examples{
 data("integration_matrices", package = "ISAnalytics")
@@ -84,18 +52,4 @@ aggreg <- aggregate_values_by_key(
 cumulative_count <- cumulative_count_union(aggreg)
 cumulative_count
 }
-\seealso{
-Other Analysis functions: 
-\code{\link{CIS_grubbs}()},
-\code{\link{comparison_matrix}()},
-\code{\link{compute_abundance}()},
-\code{\link{cumulative_is}()},
-\code{\link{is_sharing}()},
-\code{\link{iss_source}()},
-\code{\link{purity_filter}()},
-\code{\link{sample_statistics}()},
-\code{\link{separate_quant_matrices}()},
-\code{\link{threshold_filter}()},
-\code{\link{top_integrations}()}
-}
-\concept{Analysis functions}
+\keyword{internal}

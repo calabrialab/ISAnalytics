@@ -830,12 +830,14 @@ test_that(".summary_input returns info correctly", {
 # Tests .per_pool_stats
 #------------------------------------------------------------------------------#
 test_that(".per_pool_stats works as expected", {
-  pool_stats <- .per_pool_stats(ex_collisions_multi,
-                                c("seqCount", "fragmentEstimate"),
-                                "PoolID")
-  expect_true(nrow(pool_stats) == 1)
-  expect_true(pool_stats$PoolID == "POOL6")
-  expect_true(ncol(pool_stats) == 31)
+    pool_stats <- .per_pool_stats(
+        ex_collisions_multi,
+        c("seqCount", "fragmentEstimate"),
+        "PoolID"
+    )
+    expect_true(nrow(pool_stats) == 1)
+    expect_true(pool_stats$PoolID == "POOL6")
+    expect_true(ncol(pool_stats) == 31)
 })
 
 #------------------------------------------------------------------------------#
@@ -861,14 +863,14 @@ test_that("remove_collisions succeeds", {
 })
 
 test_that("remove_collisions produces report", {
-  withr::local_options(list(ISAnalytics.reports = TRUE))
-  tmp_dir <- withr::local_tempdir()
-  coll_rem <- remove_collisions(
-    integration_matrices, association_file,
-    report_path = tmp_dir
-  )
-  path_to_file <- fs::path(tmp_dir, .generate_report_filename("collisions"))
-  expect_true(fs::file_exists(path_to_file))
+    withr::local_options(list(ISAnalytics.reports = TRUE))
+    tmp_dir <- withr::local_tempdir()
+    coll_rem <- remove_collisions(
+        integration_matrices, association_file,
+        report_path = tmp_dir
+    )
+    path_to_file <- fs::path(tmp_dir, .generate_report_filename("collisions"))
+    expect_true(fs::file_exists(path_to_file))
 })
 
 #------------------------------------------------------------------------------#

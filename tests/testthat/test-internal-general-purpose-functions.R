@@ -30,6 +30,3 @@
 #     expected <- c("", "tsv")
 #     expect_equal(checks, expected)
 # })
-
-
-

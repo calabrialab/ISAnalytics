@@ -16,9 +16,9 @@ with genomic coordinates of the IS and the number of distinct
 genes associated
 }
 \description{
-\lifecycle{experimental}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 This helper function checks if each individual integration site,
-identified by the triplet (chr, integration locus, strand),
+identified by the \code{mandatory_IS_vars()},
 has been annotated with two or more distinct gene symbols.
 }
 \examples{
@@ -27,6 +27,9 @@ annotation_issues(integration_matrices)
 }
 \seealso{
 Other Import functions helpers: 
+\code{\link{date_formats}()},
+\code{\link{default_af_transform}()},
+\code{\link{default_iss_file_prefixes}()},
 \code{\link{matching_options}()},
 \code{\link{quantification_types}()}
 }

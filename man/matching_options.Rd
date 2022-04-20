@@ -33,6 +33,9 @@ opts <- matching_options()
 
 Other Import functions helpers: 
 \code{\link{annotation_issues}()},
+\code{\link{date_formats}()},
+\code{\link{default_af_transform}()},
+\code{\link{default_iss_file_prefixes}()},
 \code{\link{quantification_types}()}
 }
 \concept{Import functions helpers}

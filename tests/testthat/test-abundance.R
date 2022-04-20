@@ -132,8 +132,7 @@ test_that(paste(func_name, "fails if any columns not numeric"), {
     expect_error(compute_abundance(
         x = test_df_simple, columns = c("chr"),
         key = "CompleteAmplificationID"
-    )
-    )
+    ))
 })
 
 ### - Percentage

@@ -1,0 +1,144 @@
+---
+title: "Getting started with ISAnalytics"
+author: 
+  - name: Giulia Pais
+    affiliation: | 
+     San Raffaele Telethon Institute for Gene Therapy - SR-Tiget, 
+     Via Olgettina 60, 20132 Milano - Italia
+    email: giuliapais1@gmail.com, calabria.andrea@hsr.it
+output: 
+  BiocStyle::html_document:
+    self_contained: yes
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    code_folding: show
+date: "`r doc_date()`"
+package: "`r pkg_ver('ISAnalytics')`"
+vignette: >
+  %\VignetteIndexEntry{ISAnalytics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}  
+---
+
+```{r GenSetup, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    crop = NULL
+    ## Related to
+    ## https://stat.ethz.ch/pipermail/bioc-devel/2020-April/016656.html
+)
+```
+
+```{r vignetteSetup, echo=FALSE, message=FALSE, warning = FALSE}
+## Bib setup
+library("RefManageR")
+
+## Write bibliography information
+bib <- c(
+    R = citation(),
+    BiocStyle = citation("BiocStyle")[1],
+    knitr = citation("knitr")[1],
+    RefManageR = citation("RefManageR")[1],
+    rmarkdown = citation("rmarkdown")[1],
+    sessioninfo = citation("sessioninfo")[1],
+    testthat = citation("testthat")[1],
+    ISAnalytics = citation("ISAnalytics")[1]
+)
+```
+
+# Introduction
+
+ISAnalytics is an R package developed to analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies.
+
+```{r echo=FALSE}
+inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAnalytics")
+```
+
+```{r child=inst_chunk_path}
+
+```
+
+# Setting up the workflow
+
+In the newer version of ISAnalytics, we introduced a "dynamic variables system",
+to allow more flexibility in terms of input formats. Before starting with the
+analysis workflow, you can specify how your inputs are structured so that
+the package can process them. For more information on how to do this
+take a look at `vignette("setup_workflow", package = "ISAnalytics")`.
+
+# The first steps
+
+The first steps of the analysis workflow involve the import and parsing of
+data and metadata files from disk.
+
+* Import metadata with `import_association_file()` and/or
+`import_Vispa2_stats()`
+* Import data with `import_single_Vispa2Matrix()` or
+`import_parallel_Vispa2Matrices()`
+
+Refer to the vignette 
+`vignette("how_to_import_functions", package = "ISAnalytics")` for
+more details.
+
+# Data cleaning and pre-processing  
+
+ISAnalytics offers several different functions for cleaning and pre-processing
+your data.
+
+* Recalibration: identifies integration events that are near to each other
+and condenses them into a single event whenever appropriate -
+`compute_near_integrations()`
+* Outliers identification and removal: identifies samples that are considered
+outliers according to user-defined logic and filters them out - 
+`outlier_filter()`
+* Collision removal: identifies collision events between independent samples -
+`remove_collisions()`, see also the dedicated vignette
+`vignette("collision_removal", package = "ISAnalytics")`
+* Filter based on cell lineage purity: identifies and removes contamination
+between different cell types - `purity_filter()`
+* Data and metadata aggregation: allows the union of biological samples from
+single pcr replicates or other arbitrary aggregations -
+`aggregate_values_by_key()`, `aggregate_metadata()`, see also the 
+dedicated vignette 
+`vignette("aggregate_function_usage", package = "ISAnalytics")`
+
+# Answering biological questions
+
+You can answer very different biological questions by using the
+provided functions with appropriate inputs. 
+
+* Descriptive statistics: `sample_statistics()`
+* IS relative abundance: `compute_abundance()`, `integration_alluvial_plot()`
+* Top abundant IS: `top_integrations()`
+* Top targeted genes: `top_targeted_genes()`
+* Grubbs test for common insertion sites (CIS): `CIS_grubbs()`,
+`CIS_volcano_plot()`
+* Fisher's exact test for gene frequency and IS distribution on target genome:
+`gene_frequency_fisher()`, `fisher_scatterplot()`, `circos_genomic_density()`
+* Clonal sharing analyses: `is_sharing()`, `iss_source()`, `sharing_heatmap()`,
+`sharing_venn()`
+* Estimate HSPCs population size: `HSC_population_size_estimate()`,
+`HSC_population_plot()`
+
+For more, please refer to the full function reference.
+
+# Ensuring reproducibility of results
+
+Several implemented functions produce static HTML reports that can be saved 
+on disk, or tabular files.
+Reports contain the relevant information on how the function was called,
+inputs and outputs statistics, and session info for reproducibility.
+
+# Browse documentation online and keep updated
+
+ISAnalytics has it's dedicated package website where you can browse the 
+documentation and vignettes easily, in addition to keeping up to date with all
+relevant updates. Visit the website at https://calabrialab.github.io/ISAnalytics/
+
+# Problems?
+
+If you have any issues the documentation can't solve, get in touch by 
+opening an issue on GitHub or contacting the maintainers
+

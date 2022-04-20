@@ -2,22 +2,50 @@
 % Please edit documentation in R/utility-functions.R
 \name{set_mandatory_IS_vars}
 \alias{set_mandatory_IS_vars}
-\title{Define custom mandatory IS vars.}
+\alias{vars_setters}
+\alias{set_annotation_IS_vars}
+\alias{set_af_columns_def}
+\alias{set_iss_stats_specs}
+\title{Define custom dynamic vars.}
 \usage{
 set_mandatory_IS_vars(specs)
+
+set_annotation_IS_vars(specs)
+
+set_af_columns_def(specs)
+
+set_iss_stats_specs(specs)
 }
 \arguments{
 \item{specs}{Either a named vector or a data frame with specific format.
 See details.}
 }
 \value{
-Nothing
+\code{NULL}
 }
 \description{
-This function lets the user specify the name and types of the mandatory
-is vars: these variables uniquely identify an integration site within
-a matrix.
-Default values are \verb{chr (char), integration_locus (int), strand (char)}.
+This set of function allows users to specify custom look-up tables for
+dynamic variables.
+For more details, refer to the dedicated vignette
+\code{vignette("setup_workflow", package="ISAnalytics")}.
+\itemize{
+\item \code{set_mandatory_IS_vars()} sets the look-up table for mandatory IS vars.
+}
+
+\itemize{
+\item \code{set_annotation_IS_vars()} sets the look-up table for genomic annotation
+IS vars.
+}
+
+\itemize{
+\item \code{set_af_columns_def()} sets the look-up table for association file columns
+vars
+}
+
+\itemize{
+\item \code{set_iss_stats_specs()} sets the look-up table for VISPA2 pool statistics
+vars
+}
 }
 \details{
 The user can supply specifications in the form of a named vector or a
@@ -28,64 +56,118 @@ When using a named vector, names should be the names of the columns,
 values should be the type associated with each column in the form
 of a string. The vector gets automatically converted into a data frame
 with the right format (default values for the columns \code{transform} and
-\code{flag} are \code{NULL} and \code{required} respectively).
+\code{flag} are \code{NULL} and \code{required} respectively). Use of this method is
+however discouraged: data frame inputs are preferred since they offer more
+control.
 }
 
-\subsection{Data frame}{
+\subsection{Look-up table structure}{
 
-When supplying a data frame, users must follow the format below:\preformatted{## # A tibble: 1 × 4
-##   names      types      transform flag               
-##   <chr>      <chr>      <list>    <chr>              
-## 1 <col_name> <col_type> <formula> <required/optional>
+The look-up table for dynamic vars should always follow this structure:\tabular{lllll}{
+   names \tab types \tab transform \tab flag \tab tag \cr
+   \verb{<name of the column>} \tab \verb{<type>} \tab \verb{<a lambda or NULL>} \tab \verb{<flag>} \tab \verb{<tag>} \cr
 }
 
-Where the column \code{names} contains the names of the column,
-the \code{types} column contains the column classes,
-the column \code{transform} can hold a function or
-a purrr-style lambda
-that will be applied to the corresponding column
-after import the column \code{flag} can contain for each column either the
-value \code{required} or \code{optional}, and it is used in certain functions
-to determine the minimal set of columns required.
-Note that a valid function for the \code{transform} column
-takes as input a vector (the column)
-and outputs a transformed vector that has the same length as the original
-one. If no function should be applied, transform field should be set to
-\code{NULL}. Example:\if{html}{\out{<div class="sourceCode r">}}\preformatted{tibble::tribble(
-~ names, ~ types, ~ transform, ~ flag,
-"col1", "char", ~ stringr::str_to_upper(.x), "required",
-"col2", "int", NULL, "required"
-)
-}\if{html}{\out{</div>}}\preformatted{## # A tibble: 2 × 4
-##   names types transform flag    
-##   <chr> <chr> <list>    <chr>   
-## 1 col1  char  <formula> required
-## 2 col2  int   <NULL>    required
-}
-}
 
-\subsection{Types specification}{
+where
 \itemize{
-\item Integer: \code{int}
-\item Character or string: \code{char}
-\item Numeric (double): \code{numeric}
-\item Logical (True/False): \code{logi}
-\item Factor: \code{factor}
-\item Date or date time: either generic \code{date} or any of the supported
-date types in \code{date_formats()}.
-See also the documentation of package \code{\link{lubridate}} for more info.
-If \code{date} is supplied, the format of the date is either guessed or a
-global specification supplied to the appropriate function is used for
-parsing.
+\item \code{names} contains the name of the column as a character
+\item \code{types} contains the type of the column. Type should be expressed as a
+string and should be in one of the allowed types
+\item \code{char} for character (strings)
+\item \code{int} for integers
+\item \code{logi} for logical values (TRUE / FALSE)
+\item \code{numeric} for numeric values
+\item \code{factor} for factors
+\item \code{date} for generic date format - note that functions that
+need to read and parse files will try to guess the format and parsing
+may fail
+\item One of the accepted date/datetime formats by \code{lubridate},
+you can use \code{ISAnalytics::date_formats()} to view the accepted formats
+\item \code{transform}: a purrr-style lambda that is applied immediately after
+importing.
+This is useful to operate simple transformations like removing unwanted
+characters or rounding to a certain precision. Please note that these lambdas
+need to be functions that accept a vector as input and only operate a
+transformation, aka they output a vector of the same length as the
+input. For more complicated applications that may require the value of other
+columns, appropriate functions should be manually applied post-import.
+\item \code{flag}: as of now, it should be set either to \code{required} or \code{optional} -
+some functions internally check for only required tags presence and if those
+are missing from inputs they fail, signaling failure to the user
+\item \code{tag}: a specific tag expressed as a string
+}
+}
+
+\subsection{Column types:}{
+
+Type should be expressed as a
+string and should be in one of the allowed types
+\itemize{
+\item \code{char} for character (strings)
+\item \code{int} for integers
+\item \code{logi} for logical values (TRUE / FALSE)
+\item \code{numeric} for numeric values
+\item \code{factor} for factors
+\item \code{date} for generic date format - note that functions that
+need to read and parse files will try to guess the format and parsing
+may fail
+\item One of the accepted date/datetime formats by \code{lubridate},
+you can use \code{ISAnalytics::date_formats()} to view the accepted formats
 }
 }
 }
 \examples{
-set_mandatory_IS_vars(c(chr = "char"))
+tmp_mand_vars <- tibble::tribble(
+    ~names, ~types, ~transform, ~flag, ~tag,
+    "chrom", "char", ~ stringr::str_replace_all(.x, "chr", ""), "required",
+    "chromosome",
+    "position", "int", NULL, "required", "locus",
+    "strand", "char", NULL, "required", "is_strand",
+    "gap", "int", NULL, "required", NA_character_,
+    "junction", "int", NULL, "required", NA_character_
+)
+set_mandatory_IS_vars(tmp_mand_vars)
 print(mandatory_IS_vars(TRUE))
 reset_mandatory_IS_vars()
+
+tmp_annot_vars <- tibble::tribble(
+    ~names, ~types, ~transform, ~flag, ~tag,
+    "gene", "char", NULL, "required",
+    "gene_symbol",
+    "gene_strand", "char", NULL, "required", "gene_strand"
+)
+print(annotation_IS_vars(TRUE))
+reset_annotation_IS_vars()
+
+temp_af_cols <- tibble::tribble(
+    ~names, ~types, ~transform, ~flag, ~tag,
+    "project", "char", NULL, "required",
+    "project_id",
+    "pcr_id", "char", NULL, "required", "pcr_repl_id",
+    "subject", "char", NULL, "required", "subject"
+)
+set_af_columns_def(temp_af_cols)
+print(association_file_columns(TRUE))
+reset_af_columns_def()
+
+tmp_iss_vars <- tibble::tribble(
+    ~names, ~types, ~transform, ~flag, ~tag,
+    "pool", "char", NULL, "required",
+    "vispa_concatenate",
+    "tag", "char", NULL, "required", "tag_seq",
+    "barcode", "int", NULL, "required", NA_character_
+)
+set_iss_stats_specs(tmp_iss_vars)
+iss_stats_specs(TRUE)
+reset_iss_stats_specs()
 }
 \seealso{
-\code{\link{date_formats}}, \code{\link{reset_mandatory_IS_vars}},
-\code{\link{mandatory_IS_vars}}
+Other dynamic vars: 
+\code{\link{inspect_tags}()},
+\code{\link{mandatory_IS_vars}()},
+\code{\link{pcr_id_column}()},
+\code{\link{reset_mandatory_IS_vars}()},
+\code{\link{set_matrix_file_suffixes}()}
 }
+\concept{dynamic vars}

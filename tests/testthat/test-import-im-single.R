@@ -27,9 +27,9 @@ sample_df_old_path <- withr::local_tempfile(fileext = "tsv.gz")
 readr::write_tsv(x = sample_df_old, na = "", file = sample_df_old_path)
 
 sample_df_old_2 <- tidyr::unite(sample_df,
-                              col = "IS_genomicID",
-                              .data$chr, .data$integration_locus,
-                              .data$strand, sep = "_", remove = TRUE
+    col = "IS_genomicID",
+    .data$chr, .data$integration_locus,
+    .data$strand, sep = "_", remove = TRUE
 )
 sample_df_old_2_path <- withr::local_tempfile(fileext = "tsv.gz")
 readr::write_tsv(x = sample_df_old_2, na = "", file = sample_df_old_2_path)
@@ -43,200 +43,268 @@ readr::write_tsv(x = sample_df_add_columns, na = "", file = sample_df_add_path)
 # .read_with_fread
 #------------------------------------------------------------------------------#
 test_that(".read_with_fread works with all matrices - standard mand", {
-  df <- .read_with_fread(path = sample_df_path, additional_cols = NULL,
-                         annotated = TRUE, sep = "\t")
-  expect_true(nrow(df) == 8 & ncol(df) == 9)
-  expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
-                is.character(df$strand) & is.character(df$GeneName) &
-                is.character(df$GeneStrand) & all(is.integer(c(df$id1,
-                                                               df$id2,
-                                                               df$id3,
-                                                               df$id4))))
-  df <- .read_with_fread(path = sample_df_old_path,
-                         additional_cols = list(IS_genomicID = "char"),
-                         annotated = TRUE, sep = "\t")
-  expect_true(nrow(df) == 8 & ncol(df) == 10)
-  expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
-                is.character(df$strand) & is.character(df$GeneName) &
-                is.character(df$GeneStrand) & all(is.integer(c(df$id1,
-                                                               df$id2,
-                                                               df$id3,
-                                                               df$id4))) &
-                is.character(df$IS_genomicID))
-  df <- .read_with_fread(path = sample_df_add_path,
-                         additional_cols = list(add1 = "char", add2 = "int"),
-                         annotated = TRUE, sep = "\t")
-  expect_true(nrow(df) == 8 & ncol(df) == 11)
-  expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
-                is.character(df$strand) & is.character(df$GeneName) &
-                is.character(df$GeneStrand) & all(is.integer(c(df$id1,
-                                                               df$id2,
-                                                               df$id3,
-                                                               df$id4))) &
-                is.character(df$add1) & is.integer(df$add2))
-  df <- .read_with_fread(path = sample_df_add_path,
-                         additional_cols = list(add1 = "char", add2 = "_"),
-                         annotated = TRUE, sep = "\t")
-  expect_true(nrow(df) == 8 & ncol(df) == 10)
-  expect_true(!c("add2") %in% colnames(df))
+    df <- .read_with_fread(
+        path = sample_df_path, additional_cols = NULL,
+        annotated = TRUE, sep = "\t"
+    )
+    expect_true(nrow(df) == 8 & ncol(df) == 9)
+    expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
+        is.character(df$strand) & is.character(df$GeneName) &
+        is.character(df$GeneStrand) & all(is.integer(c(
+        df$id1,
+        df$id2,
+        df$id3,
+        df$id4
+    ))))
+    df <- .read_with_fread(
+        path = sample_df_old_path,
+        additional_cols = list(IS_genomicID = "char"),
+        annotated = TRUE, sep = "\t"
+    )
+    expect_true(nrow(df) == 8 & ncol(df) == 10)
+    expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
+        is.character(df$strand) & is.character(df$GeneName) &
+        is.character(df$GeneStrand) & all(is.integer(c(
+        df$id1,
+        df$id2,
+        df$id3,
+        df$id4
+    ))) &
+        is.character(df$IS_genomicID))
+    df <- .read_with_fread(
+        path = sample_df_add_path,
+        additional_cols = list(add1 = "char", add2 = "int"),
+        annotated = TRUE, sep = "\t"
+    )
+    expect_true(nrow(df) == 8 & ncol(df) == 11)
+    expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
+        is.character(df$strand) & is.character(df$GeneName) &
+        is.character(df$GeneStrand) & all(is.integer(c(
+        df$id1,
+        df$id2,
+        df$id3,
+        df$id4
+    ))) &
+        is.character(df$add1) & is.integer(df$add2))
+    df <- .read_with_fread(
+        path = sample_df_add_path,
+        additional_cols = list(add1 = "char", add2 = "_"),
+        annotated = TRUE, sep = "\t"
+    )
+    expect_true(nrow(df) == 8 & ncol(df) == 10)
+    expect_true(!c("add2") %in% colnames(df))
 })
 
 #------------------------------------------------------------------------------#
 # .read_with_readr
 #------------------------------------------------------------------------------#
 test_that(".read_with_readr works with all matrices - standard mand", {
-  withr::local_options(list(ISAnalytics.verbose = FALSE))
-  df <- .read_with_readr(path = sample_df_path,
-                         additional_cols = NULL,
-                         annotated = TRUE,
-                         sep = "\t")
-  expect_true(nrow(df) == 8 & ncol(df) == 9)
-  expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
-                is.character(df$strand) & is.character(df$GeneName) &
-                is.character(df$GeneStrand) & all(is.numeric(c(df$id1,
-                                                               df$id2,
-                                                               df$id3,
-                                                               df$id4))))
-  df <- .read_with_readr(path = sample_df_old_path,
-                        additional_cols = list("IS_genomicID" = "char"),
-                        annotated = TRUE, sep = "\t")
-  expect_true(nrow(df) == 8 & ncol(df) == 10)
-  expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
-                is.character(df$strand) & is.character(df$GeneName) &
-                is.character(df$GeneStrand) & all(is.numeric(c(df$id1,
-                                                               df$id2,
-                                                               df$id3,
-                                                               df$id4))) &
-                is.character(df$IS_genomicID))
-  df <- .read_with_readr(path = sample_df_add_path,
-                         additional_cols = c("add1" = "char", "add2" = "int"),
-                         annotated = TRUE, sep = "\t")
-  expect_true(nrow(df) == 8 & ncol(df) == 11)
-  expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
-                is.character(df$strand) & is.character(df$GeneName) &
-                is.character(df$GeneStrand) & all(is.numeric(c(df$id1,
-                                                               df$id2,
-                                                               df$id3,
-                                                               df$id4))) &
-                is.character(df$add1) & is.integer(df$add2))
-  df <- .read_with_readr(path = sample_df_add_path,
-                         additional_cols = c("add2" = "_", "add1" = "char"),
-                         annotated = TRUE, sep = "\t")
-  expect_true(nrow(df) == 8 & ncol(df) == 10)
-  expect_true(!c("add2") %in% colnames(df))
+    withr::local_options(list(ISAnalytics.verbose = FALSE))
+    df <- .read_with_readr(
+        path = sample_df_path,
+        additional_cols = NULL,
+        annotated = TRUE,
+        sep = "\t"
+    )
+    expect_true(nrow(df) == 8 & ncol(df) == 9)
+    expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
+        is.character(df$strand) & is.character(df$GeneName) &
+        is.character(df$GeneStrand) & all(is.numeric(c(
+        df$id1,
+        df$id2,
+        df$id3,
+        df$id4
+    ))))
+    df <- .read_with_readr(
+        path = sample_df_old_path,
+        additional_cols = list("IS_genomicID" = "char"),
+        annotated = TRUE, sep = "\t"
+    )
+    expect_true(nrow(df) == 8 & ncol(df) == 10)
+    expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
+        is.character(df$strand) & is.character(df$GeneName) &
+        is.character(df$GeneStrand) & all(is.numeric(c(
+        df$id1,
+        df$id2,
+        df$id3,
+        df$id4
+    ))) &
+        is.character(df$IS_genomicID))
+    df <- .read_with_readr(
+        path = sample_df_add_path,
+        additional_cols = c("add1" = "char", "add2" = "int"),
+        annotated = TRUE, sep = "\t"
+    )
+    expect_true(nrow(df) == 8 & ncol(df) == 11)
+    expect_true(is.character(df$chr) & is.integer(df$integration_locus) &
+        is.character(df$strand) & is.character(df$GeneName) &
+        is.character(df$GeneStrand) & all(is.numeric(c(
+        df$id1,
+        df$id2,
+        df$id3,
+        df$id4
+    ))) &
+        is.character(df$add1) & is.integer(df$add2))
+    df <- .read_with_readr(
+        path = sample_df_add_path,
+        additional_cols = c("add2" = "_", "add1" = "char"),
+        annotated = TRUE, sep = "\t"
+    )
+    expect_true(nrow(df) == 8 & ncol(df) == 10)
+    expect_true(!c("add2") %in% colnames(df))
 })
 
 #------------------------------------------------------------------------------#
 # .import_single_matrix
 #------------------------------------------------------------------------------#
 test_that(".import_single_matrix for EXTERNAL - error msgs", {
-  ## Errors on additional columns
-  expect_error({
-    df <- .import_single_matrix(path = sample_df_path, separator = "\t",
-                                additional_cols = c(1, 2, 3),
-                                transformations = NULL,
-                                call_mode = "EXTERNAL",
-                                id_col_name = "CompleteAmplificationID",
-                                val_col_name = "Value")
-  })
-  expect_error({
-    df <- .import_single_matrix(path = sample_df_path, separator = "\t",
-                                additional_cols = c("a", "b", "c"),
-                                transformations = NULL,
-                                call_mode = "EXTERNAL",
-                                id_col_name = "CompleteAmplificationID",
-                                val_col_name = "Value")
-  })
-  expect_error({
-    df <- .import_single_matrix(path = sample_df_path, separator = "\t",
-                                additional_cols = list("a", "b", "c"),
-                                transformations = NULL,
-                                call_mode = "EXTERNAL",
-                                id_col_name = "CompleteAmplificationID",
-                                val_col_name = "Value")
-  })
-  expect_error({
-    df <- .import_single_matrix(path = sample_df_path, separator = "\t",
-                                additional_cols = list(a = "c", b = "char",
-                                                       c = "i"),
-                                transformations = NULL,
-                                call_mode = "EXTERNAL",
-                                id_col_name = "CompleteAmplificationID",
-                                val_col_name = "Value")
-  }, class = "add_types_err")
-  ## Missing mandatory vars
-  expect_error({
-    df <- .import_single_matrix(path = sample_df_old_2_path, separator = "\t",
-                                additional_cols = NULL,
-                                transformations = NULL,
-                                call_mode = "EXTERNAL",
-                                id_col_name = "CompleteAmplificationID",
-                                val_col_name = "Value")
-  }, class = "im_single_miss_mand_vars")
+    ## Errors on additional columns
+    expect_error({
+        df <- .import_single_matrix(
+            path = sample_df_path, separator = "\t",
+            additional_cols = c(1, 2, 3),
+            transformations = NULL,
+            call_mode = "EXTERNAL",
+            id_col_name = "CompleteAmplificationID",
+            val_col_name = "Value"
+        )
+    })
+    expect_error({
+        df <- .import_single_matrix(
+            path = sample_df_path, separator = "\t",
+            additional_cols = c("a", "b", "c"),
+            transformations = NULL,
+            call_mode = "EXTERNAL",
+            id_col_name = "CompleteAmplificationID",
+            val_col_name = "Value"
+        )
+    })
+    expect_error({
+        df <- .import_single_matrix(
+            path = sample_df_path, separator = "\t",
+            additional_cols = list("a", "b", "c"),
+            transformations = NULL,
+            call_mode = "EXTERNAL",
+            id_col_name = "CompleteAmplificationID",
+            val_col_name = "Value"
+        )
+    })
+    expect_error(
+        {
+            df <- .import_single_matrix(
+                path = sample_df_path, separator = "\t",
+                additional_cols = list(
+                    a = "c", b = "char",
+                    c = "i"
+                ),
+                transformations = NULL,
+                call_mode = "EXTERNAL",
+                id_col_name = "CompleteAmplificationID",
+                val_col_name = "Value"
+            )
+        },
+        class = "add_types_err"
+    )
+    ## Missing mandatory vars
+    expect_error(
+        {
+            df <- .import_single_matrix(
+                path = sample_df_old_2_path, separator = "\t",
+                additional_cols = NULL,
+                transformations = NULL,
+                call_mode = "EXTERNAL",
+                id_col_name = "CompleteAmplificationID",
+                val_col_name = "Value"
+            )
+        },
+        class = "im_single_miss_mand_vars"
+    )
 })
 
 test_that(".import_single_matrix for EXTERNAL - works", {
-  ## Standard df
-  expect_message({
-    expect_message({
-      expect_message({
-        df <- .import_single_matrix(path = sample_df_path, separator = "\t",
-                                    additional_cols = NULL,
-                                    transformations = NULL,
-                                    call_mode = "EXTERNAL",
-                                    id_col_name = "CompleteAmplificationID",
-                                    val_col_name = "Value")
-      })
-    })
-  }, class = "ism_import_summary")
-  ## With additional cols
-  expect_message({
-    expect_message({
-      expect_message({
-        df <- .import_single_matrix(path = sample_df_add_path,
-                                    separator = "\t",
-                                    additional_cols = list(add1 = "char",
-                                                           add2 = "int"),
-                                    transformations = NULL,
-                                    call_mode = "EXTERNAL",
-                                    id_col_name = "CompleteAmplificationID",
-                                    val_col_name = "Value")
-      })
-    })
-  }, class = "ism_import_summary")
-  ## With additional cols and transformations
-  expect_message({
-    expect_message({
-      expect_message({
-        expect_message({
-          df <- .import_single_matrix(path = sample_df_add_path,
-                                      separator = "\t",
-                                      additional_cols = list(add1 = "char",
-                                                             add2 = "int"),
-                                      transformations = list(
-                                        add1 = ~ stringr::str_to_upper(.x)),
-                                      call_mode = "EXTERNAL",
-                                      id_col_name = "CompleteAmplificationID",
-                                      val_col_name = "Value")
-        })
-      })
-    })
-  }, class = "ism_import_summary")
-  expect_true(all(df$add1 == "A"))
+    ## Standard df
+    expect_message(
+        {
+            expect_message({
+                expect_message({
+                    df <- .import_single_matrix(
+                        path = sample_df_path, separator = "\t",
+                        additional_cols = NULL,
+                        transformations = NULL,
+                        call_mode = "EXTERNAL",
+                        id_col_name = "CompleteAmplificationID",
+                        val_col_name = "Value"
+                    )
+                })
+            })
+        },
+        class = "ism_import_summary"
+    )
+    ## With additional cols
+    expect_message(
+        {
+            expect_message({
+                expect_message({
+                    df <- .import_single_matrix(
+                        path = sample_df_add_path,
+                        separator = "\t",
+                        additional_cols = list(
+                            add1 = "char",
+                            add2 = "int"
+                        ),
+                        transformations = NULL,
+                        call_mode = "EXTERNAL",
+                        id_col_name = "CompleteAmplificationID",
+                        val_col_name = "Value"
+                    )
+                })
+            })
+        },
+        class = "ism_import_summary"
+    )
+    ## With additional cols and transformations
+    expect_message(
+        {
+            expect_message({
+                expect_message({
+                    expect_message({
+                        df <- .import_single_matrix(
+                            path = sample_df_add_path,
+                            separator = "\t",
+                            additional_cols = list(
+                                add1 = "char",
+                                add2 = "int"
+                            ),
+                            transformations = list(
+                                add1 = ~ stringr::str_to_upper(.x)
+                            ),
+                            call_mode = "EXTERNAL",
+                            id_col_name = "CompleteAmplificationID",
+                            val_col_name = "Value"
+                        )
+                    })
+                })
+            })
+        },
+        class = "ism_import_summary"
+    )
+    expect_true(all(df$add1 == "A"))
 })
 
 #------------------------------------------------------------------------------#
 # import_single_Vispa2Matrix
 #------------------------------------------------------------------------------#
 test_that("import_single_Vispa2Matrix warns deprecation", {
-  expect_defunct({
-    df <- import_single_Vispa2Matrix(sample_df_add_path,
-                                     to_exclude = "chr")
-  })
-  expect_defunct({
-    df <- import_single_Vispa2Matrix(sample_df_add_path,
-                                     keep_excluded = TRUE)
-  })
+    expect_defunct({
+        df <- import_single_Vispa2Matrix(sample_df_add_path,
+            to_exclude = "chr"
+        )
+    })
+    expect_defunct({
+        df <- import_single_Vispa2Matrix(sample_df_add_path,
+            keep_excluded = TRUE
+        )
+    })
 })
 
 ### ---- Testing with custom vars -------------------------------------------###
@@ -244,7 +312,7 @@ test_that("import_single_Vispa2Matrix reads correctly with custom vars", {
     sample_df_mod <- sample_df %>%
         dplyr::mutate(gap = 100, junction = 100, .after = "GeneStrand")
     tmp_mand_vars <- tibble::tribble(
-        ~names, ~types, ~ transform, ~ flag, ~ tag,
+        ~names, ~types, ~transform, ~flag, ~tag,
         "chr", "char", NULL, "required", "chromosome",
         "integration_locus", "int", NULL, "required", "locus",
         "strand", "char", NULL, "required", "is_strand",
@@ -273,7 +341,8 @@ test_that("import_single_Vispa2Matrix reads correctly with custom vars", {
                 )
             )
             expected_summary_msg <- paste0(expected_summary_msg,
-                                           collapse = "\n")
+                collapse = "\n"
+            )
             capture_output(
                 suppressMessages(
                     expect_message(
@@ -304,69 +373,73 @@ test_that("import_single_Vispa2Matrix reads correctly with custom vars", {
     )
 })
 
-test_that(paste("import_single_Vispa2Matrix",
-                "reads correctly with custom vars and dates"), {
-  sample_df_mod <- sample_df %>%
-    dplyr::mutate(custom_date = c("2016-11-15", "2017-06-23",
-                                  "2017-06-23", "2017-06-23",
-                                  "2018-03-15", "2018-03-15",
-                                  "2018-04-14", "2018-04-14"))
-  tmp_mand_vars <- tibble::tribble(
-    ~names, ~types, ~ transform, ~flag, ~tag,
-    "chr", "char", NULL, "required", "chromosome",
-    "integration_locus", "int", NULL, "required", "locus",
-    "strand", "char", NULL, "required", "is_strand",
-    "custom_date", "ymd", NULL, "required", NA_character_
-  )
-  withr::with_options(
-    list(ISAnalytics.mandatory_is_vars = tmp_mand_vars),
-    {
-      tf <- withr::local_tempfile(fileext = ".tsv.gz")
-      readr::write_tsv(sample_df_mod, tf)
-      expected_summary_msg <- .summary_ism_import_msg(
-        TRUE,
-        c(8, 10),
-        "fread",
-        4
-      )
-      expected_summary_msg <- c(
-        expected_summary_msg[1],
-        paste(
-          "*",
-          expected_summary_msg[seq(
-            from = 2,
-            to = length(expected_summary_msg)
-          )]
-        )
-      )
-      expected_summary_msg <- paste0(expected_summary_msg,
-                                     collapse = "\n")
-      capture_output(
-        suppressMessages(
-          expect_message(
-            expect_message(
-              withr::with_file(
-                file = tf,
-                code = {
-                  df <- import_single_Vispa2Matrix(tf)
-                }
-              )
-            ),
-            class = "ism_import_summary",
-            regexp = expected_summary_msg,
-            fixed = TRUE
-          )
-        )
-      )
-      expect_equal(dim(df), c(11, 8))
-      expect_type(df$chr, "character")
-      expect_type(df$strand, "character")
-      expect_type(df$GeneName, "character")
-      expect_type(df$GeneStrand, "character")
-      expect_type(df$integration_locus, "integer")
-      expect_true(typeof(df$Value) %in% c("double", "integer"))
-      expect_true(all(lubridate::is.Date(df$custom_date)))
-    }
-  )
+test_that(paste(
+    "import_single_Vispa2Matrix",
+    "reads correctly with custom vars and dates"
+), {
+    sample_df_mod <- sample_df %>%
+        dplyr::mutate(custom_date = c(
+            "2016-11-15", "2017-06-23",
+            "2017-06-23", "2017-06-23",
+            "2018-03-15", "2018-03-15",
+            "2018-04-14", "2018-04-14"
+        ))
+    tmp_mand_vars <- tibble::tribble(
+        ~names, ~types, ~transform, ~flag, ~tag,
+        "chr", "char", NULL, "required", "chromosome",
+        "integration_locus", "int", NULL, "required", "locus",
+        "strand", "char", NULL, "required", "is_strand",
+        "custom_date", "ymd", NULL, "required", NA_character_
+    )
+    withr::with_options(
+        list(ISAnalytics.mandatory_is_vars = tmp_mand_vars),
+        {
+            tf <- withr::local_tempfile(fileext = ".tsv.gz")
+            readr::write_tsv(sample_df_mod, tf)
+            expected_summary_msg <- .summary_ism_import_msg(
+                TRUE,
+                c(8, 10),
+                "fread",
+                4
+            )
+            expected_summary_msg <- c(
+                expected_summary_msg[1],
+                paste(
+                    "*",
+                    expected_summary_msg[seq(
+                        from = 2,
+                        to = length(expected_summary_msg)
+                    )]
+                )
+            )
+            expected_summary_msg <- paste0(expected_summary_msg,
+                collapse = "\n"
+            )
+            capture_output(
+                suppressMessages(
+                    expect_message(
+                        expect_message(
+                            withr::with_file(
+                                file = tf,
+                                code = {
+                                    df <- import_single_Vispa2Matrix(tf)
+                                }
+                            )
+                        ),
+                        class = "ism_import_summary",
+                        regexp = expected_summary_msg,
+                        fixed = TRUE
+                    )
+                )
+            )
+            expect_equal(dim(df), c(11, 8))
+            expect_type(df$chr, "character")
+            expect_type(df$strand, "character")
+            expect_type(df$GeneName, "character")
+            expect_type(df$GeneStrand, "character")
+            expect_type(df$integration_locus, "integer")
+            expect_true(typeof(df$Value) %in% c("double", "integer"))
+            expect_true(all(lubridate::is.Date(df$custom_date)))
+        }
+    )
 })
-

@@ -37,10 +37,10 @@ in input}
 \item{key}{Key columns to perform the joining operation}
 }
 \value{
-A named list of tibbles, where names are quantification types
+A named list of data frames, where names are quantification types
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 The function separates a single multi-quantification integration
 matrix, obtained via \link{comparison_matrix}, into single
 quantification matrices as a named list of tibbles.
@@ -50,22 +50,16 @@ data("integration_matrices", package = "ISAnalytics")
 separated <- separate_quant_matrices(
     integration_matrices
 )
-separated
 }
 \seealso{
 \link{quantification_types}
 
-Other Analysis functions: 
-\code{\link{CIS_grubbs}()},
+Other Utilities: 
+\code{\link{as_sparse_matrix}()},
 \code{\link{comparison_matrix}()},
-\code{\link{compute_abundance}()},
-\code{\link{cumulative_count_union}()},
-\code{\link{cumulative_is}()},
-\code{\link{is_sharing}()},
-\code{\link{iss_source}()},
-\code{\link{purity_filter}()},
-\code{\link{sample_statistics}()},
-\code{\link{threshold_filter}()},
-\code{\link{top_integrations}()}
+\code{\link{generate_Vispa2_launch_AF}()},
+\code{\link{generate_blank_association_file}()},
+\code{\link{generate_default_folder_structure}()},
+\code{\link{transform_columns}()}
 }
-\concept{Analysis functions}
+\concept{Utilities}

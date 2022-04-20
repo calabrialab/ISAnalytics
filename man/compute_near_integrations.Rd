@@ -27,8 +27,10 @@ number of bases for which two integrations are considered distinct.
 If the threshold is set to 3 it means, provided fields \code{chr}
 and \code{strand} are the same, integrations sites
 which have at least 3 bases in between them are
-considered distinct (e.g. (1, 14576, +) and (1, 14580, +) are
-considered distinct)}
+considered distinct.}
+
+\item{is_identity_tags}{Character vector of tags that identify the
+integration event as distinct (except for \code{"locus"}). See details.}
 
 \item{keep_criteria}{While scanning, which integration should be kept?
 The 2 possible choices for this parameter are:
@@ -44,46 +46,125 @@ experimental columns}
 \item{max_value_column}{The column that has to be considered for
 searching the maximum value}
 
+\item{sample_id_column}{The name of the column containing the sample
+identifier}
+
+\item{additional_agg_lambda}{A named list containing aggregating functions
+for additional columns. See details.}
+
+\item{max_workers}{Maximum parallel workers allowed}
+
 \item{map_as_file}{Produce recalibration map as a .tsv file?}
 
 \item{file_path}{String representing the path were the file will be
-saved. Can be either a folder or a file. Relevant only if \code{map_as_file} is
+saved. Must be a folder. Relevant only if \code{map_as_file} is
 \code{TRUE}.}
 
-\item{strand_specific}{Should strand be considered? If yes,
-for example these two integration sites
-\verb{(chr = "1", strand = "+", integration_locus = 14568)} and
-\verb{(chr = "1", strand = "-", integration_locus = 14568)} are considered
-different and not grouped together.}
+\item{strand_specific}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+Deprecated, use \code{is_identity_tags}}
 }
 \value{
 An integration matrix with same or less number of rows
 }
 \description{
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 This function scans the input integration matrix to detect eventual
 integration sites that are too "near" to each other and merges them
 into single integration sites adjusting their values if needed.
 }
 \details{
-The whole matrix is scanned with a sliding window mechanism:
-for each row in the integration matrix an interval is calculated
-based on the \code{threshold} value, then a "look ahead" operation is
-performed to detect subsequent rows which integration locuses fall
-in the interval. If \code{CompleteAmplificationID}s of the near integrations
-are different only the locus value (and optionally
-\code{GeneName} and \code{GeneStrand} if the matrix is annotated) is modified,
-otherwise rows with the same id are aggregated and values are summed.
-The function will also
-produce a re-calibration map: this data frame contains the reference
-of pre-recalibration values for \code{chr}, \code{strand} and \code{integration_locus} and
-the value to which that integration was changed to.
+\subsection{The concept of "near"}{
+
+An integration event is uniquely identified by all fields specified in
+the \code{mandatory_IS_vars()} look-up table. It can happen to find IS that
+are formally distinct (different combination of values in the fields),
+but that should not considered distinct in practice,
+since they represent the same integration event - this may be due
+to artefacts at the putative locus of the IS in the merging of multiple
+sequencing libraries.
+
+We say that an integration event IS1 is near to another integration event
+IS2 if the absolute difference of their loci is strictly lower than the
+set \code{threshold}.
+}
+
+\subsection{The IS identity}{
+
+There is also another aspect to be considered. Since the algorithm
+is based on a sliding window mechanism, on which groups of IS should we
+set and slide the window?
+
+By default, we have 3 fields in the \code{mandatory_IS_vars()}:
+chr
+integration_locus
+strand, and we assume that all the fields
+contribute to the identity of the IS. This means that IS1 and IS2 can be
+compared only if they have the same chromosome and the same strand.
+However, if we would like to exclude the strand of the integration from
+our considerations then IS1 and IS2 can be selected from all the events
+that fall on the same chromosome. A practical example:
+
+IS1 = \verb{(chr = "1", strand = "+", integration_locus = 14568)}
+
+IS2 = \verb{(chr = "1", strand = "-", integration_locus = 14567)}
+
+if \code{is_identity_tags = c("chromosome", "is_strand")} IS1 and IS2 are
+considered distinct because they differ in strand, therefore no correction
+will be applied to loci of either of the 2.
+If \code{is_identity_tags = c("chromosome")} then IS1 and IS2 are considered
+near, because the strand is irrelevant, hence one of the 2 IS will change
+locus.
+}
+
+\subsection{Aggregating near IS}{
+
+IS that fall in the same interval are evaluated according to the
+criterion selected - if recalibration is necessary, rows with the same
+sample ID are aggregated in a single row with a quantification value that
+is the sum of all the merged rows.
+
+If the input integration matrix contains annotation columns, that is
+additional columns that are not
+\itemize{
+\item part of the mandatory IS vars (see \code{mandatory_IS_vars()})
+\item part of the annotation IS vars (see \code{annotation_IS_vars()})
+\item the sample identifier column
+\item the quantification column
+}
+
+it is possible to specify how they should be aggregated.
+Defaults are provided for each column type (character, integer, numeric...),
+but custom functions can be specified as a named list, where names are
+column names in \code{x} and values are functions to be applied.
+NOTE: functions must be purrr-style lambdas and they must perform some kind
+of aggregating operation, aka they must take a vector as input and return
+a single value. The type of the output should match the type of the
+target column. If you specify custom lambdas, provide defaults in the
+special element \code{.defaults}.
+Example:\if{html}{\out{<div class="sourceCode r">}}\preformatted{list(
+  numeric_col = ~ sum(.x),
+  char_col = ~ paste0(.x, collapse = ", "),
+  .defaults = default_rec_agg_lambdas()
+)
+}\if{html}{\out{</div>}}
+}
 }
 \note{
 We do recommend to use this function in combination with
 \link{comparison_matrix} to automatically perform re-calibration on
 all quantification matrices.
 }
+\section{Required tags}{
+
+The function will explicitly check for the presence of these tags:
+\itemize{
+\item chromosome
+\item locus
+\item is_strand
+\item gene_symbol
+}
+}
+
 \examples{
 data("integration_matrices", package = "ISAnalytics")
 rec <- compute_near_integrations(
@@ -91,4 +172,16 @@ rec <- compute_near_integrations(
 )
 head(rec)
 }
-\concept{Recalibration functions}
+\seealso{
+Other Data cleaning and pre-processing: 
+\code{\link{aggregate_metadata}()},
+\code{\link{aggregate_values_by_key}()},
+\code{\link{default_meta_agg}()},
+\code{\link{outlier_filter}()},
+\code{\link{outliers_by_pool_fragments}()},
+\code{\link{purity_filter}()},
+\code{\link{realign_after_collisions}()},
+\code{\link{remove_collisions}()},
+\code{\link{threshold_filter}()}
+}
+\concept{Data cleaning and pre-processing}

@@ -239,7 +239,7 @@ For example, for mandatory IS vars we have:
 mandatory_IS_vars(TRUE)
 ```
 
-Let's suppose out matrices follow a different standard, and integration events
+Let's suppose our matrices follow a different standard, and integration events
 are characterized by 5 fields, like so (the example contains random data):
 
 chrom   | position | strand | gap    | junction 
@@ -310,6 +310,9 @@ To change this lookup table use the function `set_matrix_file_suffixes()`:
 the function will ask to specify a suffix for each quantification and for
 both annotated and not annotated versions. These suffixes are used in the
 automated matrix import function when scanning the file system.
+
+To reset all lookup tables to their default configurations you can also 
+use the function `reset_dyn_vars_config()`, which reverts all changes.
 
 # FAQs
 
