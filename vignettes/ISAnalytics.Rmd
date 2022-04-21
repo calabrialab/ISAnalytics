@@ -66,7 +66,7 @@ In the newer version of ISAnalytics, we introduced a "dynamic variables system",
 to allow more flexibility in terms of input formats. Before starting with the
 analysis workflow, you can specify how your inputs are structured so that
 the package can process them. For more information on how to do this
-take a look at `vignette("setup_workflow", package = "ISAnalytics")`.
+take a look at `vignette("workflow_start", package = "ISAnalytics")`.
 
 # The first steps
 
@@ -79,7 +79,7 @@ data and metadata files from disk.
 `import_parallel_Vispa2Matrices()`
 
 Refer to the vignette 
-`vignette("how_to_import_functions", package = "ISAnalytics")` for
+`vignette("workflow_start", package = "ISAnalytics")` for
 more details.
 
 # Data cleaning and pre-processing  
@@ -95,14 +95,14 @@ outliers according to user-defined logic and filters them out -
 `outlier_filter()`
 * Collision removal: identifies collision events between independent samples -
 `remove_collisions()`, see also the dedicated vignette
-`vignette("collision_removal", package = "ISAnalytics")`
+`vignette("workflow_start", package = "ISAnalytics")`
 * Filter based on cell lineage purity: identifies and removes contamination
 between different cell types - `purity_filter()`
 * Data and metadata aggregation: allows the union of biological samples from
 single pcr replicates or other arbitrary aggregations -
 `aggregate_values_by_key()`, `aggregate_metadata()`, see also the 
 dedicated vignette 
-`vignette("aggregate_function_usage", package = "ISAnalytics")`
+`vignette("workflow_start", package = "ISAnalytics")`
 
 # Answering biological questions
 

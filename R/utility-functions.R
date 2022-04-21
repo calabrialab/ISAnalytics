@@ -46,7 +46,7 @@ inspect_tags <- function(tags) {
 #' This set of function allows users to specify custom look-up tables for
 #' dynamic variables.
 #' For more details, refer to the dedicated vignette
-#' `vignette("setup_workflow", package="ISAnalytics")`.
+#' `vignette("workflow_start", package="ISAnalytics")`.
 #'
 #' * `set_mandatory_IS_vars()` sets the look-up table for mandatory IS vars.
 #'
@@ -97,7 +97,7 @@ set_mandatory_IS_vars <- function(specs) {
 #' @description
 #' Reverts all changes to dynamic vars to the default values.
 #' For more details, refer to the dedicated vignette
-#' `vignette("setup_workflow", package="ISAnalytics")`.
+#' `vignette("workflow_start", package="ISAnalytics")`.
 #'
 #' * `reset_mandatory_IS_vars()` re-sets the look-up table for
 #' mandatory IS vars.
@@ -122,7 +122,7 @@ reset_mandatory_IS_vars <- function() {
 #' @description Fetches the look-up tables for different categories of dynamic
 #' vars.
 #' For more details, refer to the dedicated vignette
-#' `vignette("setup_workflow", package="ISAnalytics")`.
+#' `vignette("workflow_start", package="ISAnalytics")`.
 #'
 #' * `mandatory_IS_vars` returns the look-up table of variables that are
 #' used to uniquely identify integration events

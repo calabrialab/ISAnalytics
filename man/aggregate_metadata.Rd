@@ -35,7 +35,7 @@ An aggregated data frame
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Groups metadata by the specified grouping keys and returns a
 summary of info for each group. For more details on how to use this function:
-\code{vignette("aggregate_function_usage", package = "ISAnalytics")}
+\code{vignette("workflow_start", package = "ISAnalytics")}
 }
 \examples{
 data("association_file", package = "ISAnalytics")

@@ -46,7 +46,7 @@ the specified arguments
 Performs aggregation on values contained in the integration matrices based
 on the key and the specified lambda. For more details on how to use this
 function:
-\code{vignette("aggregate_function_usage", package = "ISAnalytics")}
+\code{vignette("workflow_start", package = "ISAnalytics")}
 }
 \details{
 \subsection{Setting the lambda parameter}{

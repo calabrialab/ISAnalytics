@@ -12,7 +12,7 @@ A data frame
 \description{
 Contains all information associated with critical tags used in the dynamic
 vars system. To know more see
-\code{vignette("setup_workflow", package="ISAnalytics")}.
+\code{vignette("workflow_start", package="ISAnalytics")}.
 }
 \examples{
 available_tags()

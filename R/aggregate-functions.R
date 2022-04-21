@@ -7,7 +7,7 @@
 #' `r lifecycle::badge("stable")`
 #' Groups metadata by the specified grouping keys and returns a
 #' summary of info for each group. For more details on how to use this function:
-#' \code{vignette("aggregate_function_usage", package = "ISAnalytics")}
+#' \code{vignette("workflow_start", package = "ISAnalytics")}
 #'
 #' @param association_file The imported association file
 #' (via \link{import_association_file})
@@ -149,7 +149,7 @@ default_meta_agg <- function() {
 #' Performs aggregation on values contained in the integration matrices based
 #' on the key and the specified lambda. For more details on how to use this
 #' function:
-#' \code{vignette("aggregate_function_usage", package = "ISAnalytics")}
+#' \code{vignette("workflow_start", package = "ISAnalytics")}
 #'
 #' @details
 #' ## Setting the lambda parameter

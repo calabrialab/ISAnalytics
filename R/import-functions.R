@@ -48,7 +48,7 @@
 #' * `"_"` to drop the column
 #'
 #' For more details see the "How to use import functions" vignette:
-#' \code{vignette("import_functions_howto", package = "ISAnalytics")}
+#' \code{vignette("workflow_start", package = "ISAnalytics")}
 #'
 #'
 #' @template transform_list
@@ -171,7 +171,7 @@ import_single_Vispa2Matrix <- function(path,
 #' performed. This allows to import the basic file but it won't be
 #' possible to perform automated matrix and stats import.
 #' For more details see the "How to use import functions" vignette:
-#' \code{vignette("import_functions_howto", package = "ISAnalytics")}
+#' \code{vignette("workflow_start", package = "ISAnalytics")}
 #'
 #' ## Time point conversion
 #' The time point conversion is based on the following logic, given `TPD`
@@ -724,7 +724,7 @@ import_Vispa2_stats <- function(association_file,
 #' The function offers a convenient way of importing multiple integration
 #' matrices in an automated or semi-automated way.
 #' For more details see the "How to use import functions" vignette:
-#' \code{vignette("import_functions_howto", package = "ISAnalytics")}
+#' \code{vignette("workflow_start", package = "ISAnalytics")}
 #'
 #' @section Required tags:
 #' The function will explicitly check for the presence of these tags:

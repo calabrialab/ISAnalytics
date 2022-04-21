@@ -78,7 +78,8 @@ print(head(integration_matrices))
 ```
 
 We can aggregate our data in different ways according to our needs (to
-know more about this topic take a look at the vignette `vignette("aggregate_function_usage", package = "ISAnalytics")`), obtaining
+know more about this topic take a look at the vignette 
+`vignette("workflow_start", package = "ISAnalytics")`), obtaining
 therefore different groups. Each group has an associated set of integration
 sites.
 

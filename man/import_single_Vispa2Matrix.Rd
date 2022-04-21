@@ -78,7 +78,7 @@ you can use \code{ISAnalytics::date_formats()} to view the accepted formats
 }
 
 For more details see the "How to use import functions" vignette:
-\code{vignette("import_functions_howto", package = "ISAnalytics")}
+\code{vignette("workflow_start", package = "ISAnalytics")}
 }
 
 \subsection{Transformations}{

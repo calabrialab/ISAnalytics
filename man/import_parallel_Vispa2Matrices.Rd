@@ -64,7 +64,7 @@ matrices
 The function offers a convenient way of importing multiple integration
 matrices in an automated or semi-automated way.
 For more details see the "How to use import functions" vignette:
-\code{vignette("import_functions_howto", package = "ISAnalytics")}
+\code{vignette("workflow_start", package = "ISAnalytics")}
 }
 \section{Required tags}{
 

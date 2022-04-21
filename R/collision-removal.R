@@ -14,7 +14,7 @@
 #' decision can be taken, the integration is completely removed from the data
 #' frame.
 #' For more details refer to the vignette "Collision removal functionality":
-#' \code{vignette("collision_removal", package = "ISAnalytics")}
+#' \code{vignette("workflow_start", package = "ISAnalytics")}
 #'
 #' @param x Either a multi-quantification matrix (recommended) or a
 #' named list of matrices (names must be quantification types)
@@ -263,7 +263,7 @@ remove_collisions <- function(x,
 #' `remove_collisions()` before, there is no need to call this function.
 #'
 #' @details For more details on how to use collision removal functionality:
-#' \code{vignette("collision_removal", package = "ISAnalytics")}
+#' \code{vignette("workflow_start", package = "ISAnalytics")}
 #'
 #' @param sc_matrix The sequence count matrix already processed for collisions
 #' via `remove_collisions()`

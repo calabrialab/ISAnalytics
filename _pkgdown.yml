@@ -33,14 +33,8 @@ navbar:
     articles:
       text: Articles
       menu:
-      - text: Setup your analysis workflow
-        href: articles/setup_workflow.html
-      - text: Working with aggregate functions
-        href: articles/aggregate_function_usage.html
-      - text: Collision removal functionality
-        href: articles/collision_removal.html
-      - text: How to use import functions
-        href: articles/how_to_import_functions.html
+      - text: Setting up the workflow and first steps
+        href: articles/workflow_start.html
       - text: Sharing analyses with ISAnalytics
         href: articles/sharing_analyses.html
     release-v:

@@ -30,7 +30,7 @@ A character vector or a data frame
 Fetches the look-up tables for different categories of dynamic
 vars.
 For more details, refer to the dedicated vignette
-\code{vignette("setup_workflow", package="ISAnalytics")}.
+\code{vignette("workflow_start", package="ISAnalytics")}.
 \itemize{
 \item \code{mandatory_IS_vars} returns the look-up table of variables that are
 used to uniquely identify integration events

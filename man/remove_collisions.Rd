@@ -58,7 +58,7 @@ an integration event be assigned to, and if no
 decision can be taken, the integration is completely removed from the data
 frame.
 For more details refer to the vignette "Collision removal functionality":
-\code{vignette("collision_removal", package = "ISAnalytics")}
+\code{vignette("workflow_start", package = "ISAnalytics")}
 }
 \section{Required tags}{
 

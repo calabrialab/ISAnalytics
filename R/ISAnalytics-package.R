@@ -24,12 +24,7 @@
 #' and Annotation of Vector Integration Sites}
 #'
 #' @section Vignettes:
-#' * \code{vignette("setup_workflow", package = "ISAnalytics")}
-#' * \code{vignette("how_to_import_functions", package = "ISAnalytics")}
-#' * \code{vignette("collision_removal",
-#' package = "ISAnalytics")}
-#' * \code{vignette("aggregate_function_usage",
-#' package = "ISAnalytics")}
+#' * \code{vignette("workflow_start", package = "ISAnalytics")}
 #' * \code{vignette("sharing_analyses",
 #' package = "ISAnalytics")}
 #'

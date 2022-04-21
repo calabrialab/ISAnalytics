@@ -143,7 +143,7 @@ Show more
 
 -   ISAnalytics has now a new “dynamic vars system” to allow more
     flexibility on user inputs, view the dedicated vignette with
-    `vignette("setup_workflow", package="ISAnalytics")`
+    `vignette("workflow_start", package="ISAnalytics")`
 -   All package functions were reviewed to work properly with this
     system
 

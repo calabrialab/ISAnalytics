@@ -27,7 +27,7 @@ See details.}
 This set of function allows users to specify custom look-up tables for
 dynamic variables.
 For more details, refer to the dedicated vignette
-\code{vignette("setup_workflow", package="ISAnalytics")}.
+\code{vignette("workflow_start", package="ISAnalytics")}.
 \itemize{
 \item \code{set_mandatory_IS_vars()} sets the look-up table for mandatory IS vars.
 }

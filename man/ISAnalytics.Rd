@@ -34,12 +34,7 @@ and Annotation of Vector Integration Sites}
 \section{Vignettes}{
 
 \itemize{
-\item \code{vignette("setup_workflow", package = "ISAnalytics")}
-\item \code{vignette("how_to_import_functions", package = "ISAnalytics")}
-\item \code{vignette("collision_removal",
-package = "ISAnalytics")}
-\item \code{vignette("aggregate_function_usage",
-package = "ISAnalytics")}
+\item \code{vignette("workflow_start", package = "ISAnalytics")}
 \item \code{vignette("sharing_analyses",
 package = "ISAnalytics")}
 }

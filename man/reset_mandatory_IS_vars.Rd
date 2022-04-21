@@ -28,7 +28,7 @@ reset_dyn_vars_config()
 \description{
 Reverts all changes to dynamic vars to the default values.
 For more details, refer to the dedicated vignette
-\code{vignette("setup_workflow", package="ISAnalytics")}.
+\code{vignette("workflow_start", package="ISAnalytics")}.
 \itemize{
 \item \code{reset_mandatory_IS_vars()} re-sets the look-up table for
 mandatory IS vars.

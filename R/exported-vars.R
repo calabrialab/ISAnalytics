@@ -370,7 +370,7 @@ refGene_table_cols <- function() {
 #' @description
 #' Contains all information associated with critical tags used in the dynamic
 #' vars system. To know more see
-#' `vignette("setup_workflow", package="ISAnalytics")`.
+#' `vignette("workflow_start", package="ISAnalytics")`.
 #'
 #' @return A data frame
 #' @export

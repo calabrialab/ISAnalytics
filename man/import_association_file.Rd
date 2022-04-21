@@ -82,7 +82,7 @@ If the \code{root} argument is set to \code{NULL} no file system alignment is
 performed. This allows to import the basic file but it won't be
 possible to perform automated matrix and stats import.
 For more details see the "How to use import functions" vignette:
-\code{vignette("import_functions_howto", package = "ISAnalytics")}
+\code{vignette("workflow_start", package = "ISAnalytics")}
 }
 
 \subsection{Time point conversion}{

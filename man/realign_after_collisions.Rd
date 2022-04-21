@@ -35,7 +35,7 @@ NOTE: if you provided a list of several quantification types to
 }
 \details{
 For more details on how to use collision removal functionality:
-\code{vignette("collision_removal", package = "ISAnalytics")}
+\code{vignette("workflow_start", package = "ISAnalytics")}
 }
 \examples{
 data("integration_matrices", package = "ISAnalytics")
