@@ -90,6 +90,7 @@ reference:
     - generate_blank_association_file
     - generate_Vispa2_launch_AF
     - inspect_tags
+    - available_tags
     - set_mandatory_IS_vars
     - reset_mandatory_IS_vars
     - mandatory_IS_vars
