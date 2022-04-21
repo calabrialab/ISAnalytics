@@ -10,14 +10,14 @@
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.5.3</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.5.4</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div id="navbar" class="collapse navbar-collapse ms-2">
+    <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item">
   <a class="nav-link" href="../index.html">
     <span class="fas fa fas fa-home fa-lg"></span>
@@ -25,14 +25,15 @@
   </a>
 </li>
 <li class="nav-item">
+  <a class="nav-link" href="../articles/ISAnalytics.html">Get started</a>
+</li>
+<li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/aggregate_function_usage.html">Working with aggregate functions</a>
-    <a class="dropdown-item" href="../articles/collision_removal.html">Collision removal functionality</a>
-    <a class="dropdown-item" href="../articles/how_to_import_functions.html">How to use import functions</a>
+    <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
     <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
@@ -66,6 +67,56 @@
       <small>Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.5.4" id="isanalytics-154-2022-04-20">ISAnalytics 1.5.4 (2022-04-20)<a class="anchor" aria-label="anchor" href="#isanalytics-154-2022-04-20"></a></h2>
+<div class="section level3">
+<h3 id="major-changes-1-5-4">MAJOR CHANGES<a class="anchor" aria-label="anchor" href="#major-changes-1-5-4"></a></h3>
+<ul><li>ISAnalytics has now a new “dynamic vars system” to allow more flexibility on user inputs, view the dedicated vignette with <code><a href="../articles/workflow_start.html">vignette("workflow_start", package="ISAnalytics")</a></code>
+</li>
+<li>All package functions were reviewed to work properly with this system</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-1-5-4">NEW FEATURES<a class="anchor" aria-label="anchor" href="#new-features-1-5-4"></a></h3>
+<ul><li>
+<code><a href="../reference/gene_frequency_fisher.html">gene_frequency_fisher()</a></code> is a new function of the analysis family that allows the computation of Fisher’s exact test p-values on gene frequency - <code><a href="../reference/fisher_scatterplot.html">fisher_scatterplot()</a></code> is the associated plotting function</li>
+<li>
+<code><a href="../reference/top_targeted_genes.html">top_targeted_genes()</a></code> is a new function of the analysis family that produces the top n targeted genes based on the number of IS</li>
+<li>
+<code><a href="../reference/NGSdataExplorer.html">NGSdataExplorer()</a></code> is a newly implemented Shiny interface that allows the exploration and plotting of data</li>
+<li>zipped examples were removed from the package to contain size. To compensate, the new function <code><a href="../reference/generate_default_folder_structure.html">generate_default_folder_structure()</a></code> generates the standard folder structure with package-included data on-demand</li>
+<li>
+<code><a href="../reference/transform_columns.html">transform_columns()</a></code> is a new utility function, also used internally by other exported functions, that allows arbitrary transformations on data frame columns</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-changes-1-5-4">MINOR CHANGES<a class="anchor" aria-label="anchor" href="#minor-changes-1-5-4"></a></h3>
+<ul><li>
+<code><a href="../reference/remove_collisions.html">remove_collisions()</a></code> now has a dedicated parameter to specify how independent samples are identified</li>
+<li>
+<code>compute_near_integration_sites()</code> now has a parameter called <code>additional_agg_lambda()</code> to allow aggregation of additional columns</li>
+<li>
+<code><a href="../reference/CIS_grubbs.html">CIS_grubbs()</a></code> now signals if there are missing genes in the refgenes table and eventually returns them as a df</li>
+<li>
+<code><a href="../reference/outlier_filter.html">outlier_filter()</a></code> is now able to take multiple tests in input and combine them with a given logic. It now also produces an HTML report.</li>
+<li>Several functions now use data.table under the hood</li>
+<li>Color of the strata containing IS below threshold can now be set in <code><a href="../reference/integration_alluvial_plot.html">integration_alluvial_plot()</a></code>
+</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-1-5-4">BUG FIXES<a class="anchor" aria-label="anchor" href="#bug-fixes-1-5-4"></a></h3>
+<ul><li>Fixed a minor bug in <code><a href="../reference/import_Vispa2_stats.html">import_Vispa2_stats()</a></code> - function failed when passing <code>report_path = NULL</code>
+</li>
+<li>Fixed minor issue in <code><a href="../reference/circos_genomic_density.html">circos_genomic_density()</a></code> when trying to use a pdf device</li>
+</ul></div>
+<div class="section level3">
+<h3 id="deprecated-functions-1-5-4">DEPRECATED FUNCTIONS<a class="anchor" aria-label="anchor" href="#deprecated-functions-1-5-4"></a></h3>
+<ul><li>
+<code><a href="../reference/unzip_file_system.html">unzip_file_system()</a></code> was made defunct in favor of <code><a href="../reference/generate_default_folder_structure.html">generate_default_folder_structure()</a></code>
+</li>
+<li>
+<code><a href="../reference/cumulative_count_union.html">cumulative_count_union()</a></code> was deprecated and its functionality was moved to <code><a href="../reference/cumulative_is.html">cumulative_is()</a></code>
+</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5.3" id="isanalytics-153-2022-01-13">ISAnalytics 1.5.3 (2022-01-13)<a class="anchor" aria-label="anchor" href="#isanalytics-153-2022-01-13"></a></h2>
 <div class="section level3">
@@ -475,7 +526,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
     </footer></div>

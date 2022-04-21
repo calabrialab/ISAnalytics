@@ -4,19 +4,16 @@
     <loc>https://calabrialab.github.io/ISAnalytics/dev/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/dev/articles/aggregate_function_usage.html</loc>
-  </url>
-  <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/dev/articles/collision_removal.html</loc>
-  </url>
-  <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/dev/articles/how_to_import_functions.html</loc>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/articles/ISAnalytics.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/articles/index.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/articles/sharing_analyses.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/articles/workflow_start.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/authors.html</loc>
@@ -46,13 +43,13 @@
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/ISAnalytics.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/NGSdataExplorer.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/aggregate_metadata.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/aggregate_values_by_key.html</loc>
-  </url>
-  <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/annotation_IS_vars.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/annotation_issues.html</loc>
@@ -64,10 +61,10 @@
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/association_file.html</loc>
   </url>
   <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/association_file_columns.html</loc>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/available_outlier_tests.html</loc>
   </url>
   <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/available_outlier_tests.html</loc>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/available_tags.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/blood_lineages_default.html</loc>
@@ -94,10 +91,10 @@
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/cumulative_is.html</loc>
   </url>
   <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/date_columns_coll.html</loc>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/date_formats.html</loc>
   </url>
   <url>
-    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/date_formats.html</loc>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/default_af_transform.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/default_iss_file_prefixes.html</loc>
@@ -106,16 +103,28 @@
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/default_meta_agg.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/default_rec_agg_lambdas.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/default_report_path.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/default_stats.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/fisher_scatterplot.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/gene_frequency_fisher.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/generate_Vispa2_launch_AF.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/generate_blank_association_file.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/generate_default_folder_structure.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/import_Vispa2_stats.html</loc>
@@ -137,6 +146,9 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/inspect_tags.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/integration_alluvial_plot.html</loc>
@@ -166,6 +178,9 @@
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/outliers_by_pool_fragments.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/pcr_id_column.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/proto_oncogenes.html</loc>
   </url>
   <url>
@@ -190,10 +205,19 @@
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/remove_collisions.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/reset_mandatory_IS_vars.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/sample_statistics.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/separate_quant_matrices.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/set_mandatory_IS_vars.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/set_matrix_file_suffixes.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/sharing_heatmap.html</loc>
@@ -209,6 +233,12 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/top_integrations.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/top_targeted_genes.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/transform_columns.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/unzip_file_system.html</loc>
