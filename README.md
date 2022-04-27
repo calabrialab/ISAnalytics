@@ -6,12 +6,12 @@
 <!-- badges: start -->
 
 [![Build
-Status](https://app.travis-ci.com/calabrialab/ISAnalytics.svg?branch=master)](https://app.travis-ci.com/calabrialab/ISAnalytics)
-[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
+Status](https://app.travis-ci.com/calabrialab/ISAnalytics.svg?branch=RELEASE_3_15)](https://app.travis-ci.com/calabrialab/ISAnalytics)
+[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/RELEASE_3_15/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
 [![R build status -
-bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
+bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg?branch=RELEASE_3_15)](https://github.com/calabrialab/isanalytics/actions)
 [![BioC
-status](http://www.bioconductor.org/shields/build/devel/bioc/ISAnalytics.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/ISAnalytics)
+status](http://www.bioconductor.org/shields/build/release/bioc/ISAnalytics.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
