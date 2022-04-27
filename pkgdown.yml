@@ -1,12 +1,11 @@
-pandoc: 2.7.3
-pkgdown: 2.0.2
+pandoc: 2.14.2
+pkgdown: 2.0.3
 pkgdown_sha: ~
 articles:
-  aggregate_function_usage: aggregate_function_usage.html
-  collision_removal: collision_removal.html
-  how_to_import_functions: how_to_import_functions.html
+  ISAnalytics: ISAnalytics.html
   sharing_analyses: sharing_analyses.html
-last_built: 2022-01-21T12:38Z
+  workflow_start: workflow_start.html
+last_built: 2022-04-27T09:05Z
 urls:
   reference: https://calabrialab.github.io/ISAnalytics/reference
   article: https://calabrialab.github.io/ISAnalytics/articles
