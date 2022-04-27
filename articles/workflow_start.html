@@ -71,10 +71,10 @@
 
       <ul class="navbar-nav">
 <li class="nav-item">
-  <a class="nav-link" href="https://calabrialab.github.io/ISAnalytics/">
+  <a class="nav-link" href="https://calabrialab.github.io/ISAnalytics/dev">
     <span class="fas fa fas fa-code-branch"></span>
      
-    RELEASE
+    DEVEL
   </a>
 </li>
 <li class="nav-item">
@@ -274,26 +274,26 @@
 <div class="section level4">
 <h4 id="mandatory-is-vars">Mandatory IS vars<a class="anchor" aria-label="anchor" href="#mandatory-is-vars"></a>
 </h4>
-<div id="htmlwidget-e471ce5969ca66d83515" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e471ce5969ca66d83515">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in other functions - for example, when importing matrices it is ensured that all mandatory variables are present in the input, as declared in the look up table. Some functions may require information that needs to be specified as input, always check the documentation if you have doubts.</p>
+<div id="htmlwidget-a6cfa5c09fea040d760c" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a6cfa5c09fea040d760c">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in other functions - for example, when importing matrices it is ensured that all mandatory variables are present in the input, as declared in the look up table. Some functions may require information that needs to be specified as input, always check the documentation if you have doubts.</p>
 </div>
 <div class="section level4">
 <h4 id="annotation-is-vars">Annotation IS vars<a class="anchor" aria-label="anchor" href="#annotation-is-vars"></a>
 </h4>
-<div id="htmlwidget-50238120a462916acc54" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-50238120a462916acc54">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work with ISAnalytics, some operations do require annotation - if you’re working with matrices that are not annotated you can either annotate them with a tool of your choice or skip the steps that require annotation.</p>
+<div id="htmlwidget-c7381cd3e8c524f3f2a1" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c7381cd3e8c524f3f2a1">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work with ISAnalytics, some operations do require annotation - if you’re working with matrices that are not annotated you can either annotate them with a tool of your choice or skip the steps that require annotation.</p>
 </div>
 <div class="section level4">
 <h4 id="association-file-columns">Association file columns<a class="anchor" aria-label="anchor" href="#association-file-columns"></a>
 </h4>
-<div id="htmlwidget-b35b5686b1cc39bb3b89" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b35b5686b1cc39bb3b89">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but they exist for potential new features that will be added in the future.</p>
+<div id="htmlwidget-201fc694c493c7a53cb5" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-201fc694c493c7a53cb5">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but they exist for potential new features that will be added in the future.</p>
 </div>
 <div class="section level4">
 <h4 id="vispa2-stats-specs">VISPA2 stats specs<a class="anchor" aria-label="anchor" href="#vispa2-stats-specs"></a>
 </h4>
-<div id="htmlwidget-0f5a56cc21311c0ade89" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0f5a56cc21311c0ade89">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats"],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions. If the pipeline launch was configured with default parameters, do not change this lookup table.</p>
+<div id="htmlwidget-34e3430c5835b05c3490" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-34e3430c5835b05c3490">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats"],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions. If the pipeline launch was configured with default parameters, do not change this lookup table.</p>
 </div>
 </div>
 <div class="section level3">
@@ -629,26 +629,26 @@
 <span class="co">#&gt; 5:                 /PJ01             &lt;NA&gt;          0180              06</span>
 <span class="co">#&gt; 6:                 /PJ01             &lt;NA&gt;          0060              02</span>
 <span class="co">#&gt;    TimepointYears ng DNA corrected                    Path</span>
-<span class="co">#&gt; 1:             01            23.18 /tmp/RtmppuSvfc/fs/PJ01</span>
-<span class="co">#&gt; 2:             01           181.44 /tmp/RtmppuSvfc/fs/PJ01</span>
-<span class="co">#&gt; 3:             01           181.44 /tmp/RtmppuSvfc/fs/PJ01</span>
-<span class="co">#&gt; 4:             01           181.44 /tmp/RtmppuSvfc/fs/PJ01</span>
-<span class="co">#&gt; 5:             01            23.06 /tmp/RtmppuSvfc/fs/PJ01</span>
-<span class="co">#&gt; 6:             01           171.36 /tmp/RtmppuSvfc/fs/PJ01</span>
+<span class="co">#&gt; 1:             01            23.18 /tmp/RtmpinKLg2/fs/PJ01</span>
+<span class="co">#&gt; 2:             01           181.44 /tmp/RtmpinKLg2/fs/PJ01</span>
+<span class="co">#&gt; 3:             01           181.44 /tmp/RtmpinKLg2/fs/PJ01</span>
+<span class="co">#&gt; 4:             01           181.44 /tmp/RtmpinKLg2/fs/PJ01</span>
+<span class="co">#&gt; 5:             01            23.06 /tmp/RtmpinKLg2/fs/PJ01</span>
+<span class="co">#&gt; 6:             01           171.36 /tmp/RtmpinKLg2/fs/PJ01</span>
 <span class="co">#&gt;                                         Path_quant</span>
-<span class="co">#&gt; 1: /tmp/RtmppuSvfc/fs/PJ01/quantification/POOL01-1</span>
-<span class="co">#&gt; 2: /tmp/RtmppuSvfc/fs/PJ01/quantification/POOL01-1</span>
-<span class="co">#&gt; 3: /tmp/RtmppuSvfc/fs/PJ01/quantification/POOL01-1</span>
-<span class="co">#&gt; 4: /tmp/RtmppuSvfc/fs/PJ01/quantification/POOL01-1</span>
-<span class="co">#&gt; 5: /tmp/RtmppuSvfc/fs/PJ01/quantification/POOL01-1</span>
-<span class="co">#&gt; 6: /tmp/RtmppuSvfc/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 1: /tmp/RtmpinKLg2/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 2: /tmp/RtmpinKLg2/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 3: /tmp/RtmpinKLg2/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 4: /tmp/RtmpinKLg2/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 5: /tmp/RtmpinKLg2/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 6: /tmp/RtmpinKLg2/fs/PJ01/quantification/POOL01-1</span>
 <span class="co">#&gt;                                Path_iss</span>
-<span class="co">#&gt; 1: /tmp/RtmppuSvfc/fs/PJ01/iss/POOL01-1</span>
-<span class="co">#&gt; 2: /tmp/RtmppuSvfc/fs/PJ01/iss/POOL01-1</span>
-<span class="co">#&gt; 3: /tmp/RtmppuSvfc/fs/PJ01/iss/POOL01-1</span>
-<span class="co">#&gt; 4: /tmp/RtmppuSvfc/fs/PJ01/iss/POOL01-1</span>
-<span class="co">#&gt; 5: /tmp/RtmppuSvfc/fs/PJ01/iss/POOL01-1</span>
-<span class="co">#&gt; 6: /tmp/RtmppuSvfc/fs/PJ01/iss/POOL01-1</span></code></pre>
+<span class="co">#&gt; 1: /tmp/RtmpinKLg2/fs/PJ01/iss/POOL01-1</span>
+<span class="co">#&gt; 2: /tmp/RtmpinKLg2/fs/PJ01/iss/POOL01-1</span>
+<span class="co">#&gt; 3: /tmp/RtmpinKLg2/fs/PJ01/iss/POOL01-1</span>
+<span class="co">#&gt; 4: /tmp/RtmpinKLg2/fs/PJ01/iss/POOL01-1</span>
+<span class="co">#&gt; 5: /tmp/RtmpinKLg2/fs/PJ01/iss/POOL01-1</span>
+<span class="co">#&gt; 6: /tmp/RtmpinKLg2/fs/PJ01/iss/POOL01-1</span></code></pre>
 <div class="section level4">
 <h4 id="function-arguments">Function arguments<a class="anchor" aria-label="anchor" href="#function-arguments"></a>
 </h4>
@@ -1132,7 +1132,7 @@ When scanning folders for files that match a given pattern (in our case the func
 <h5 id="typical-workflow">Typical workflow<a class="anchor" aria-label="anchor" href="#typical-workflow"></a>
 </h5>
 <ol style="list-style-type: decimal">
-<li>Import the association file via <code>import_assocition_file()</code>. If you need more information on import function please view the vignette “How to use import functions”: <code><a href="https://calabrialab.github.io/ISAnalytics/articles/how_to_import_functions.html">vignette("how_to_import_functions", package="ISAnalytics")</a></code>.</li>
+<li>Import the association file via <code>import_assocition_file()</code>. If you need more information on import function please view the vignette “How to use import functions”: <code>vignette("how_to_import_functions", package="ISAnalytics")</code>.</li>
 <li>Perform aggregation</li>
 </ol>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
