@@ -2,7 +2,7 @@
 title: "NEWS"
 output: github_document
 ---
-# ISAnalytics <version>
+# ISAnalytics 1.6.1 (2022-05-04)
 
 ## BUG FIXES AND MINOR CHANGES
 
