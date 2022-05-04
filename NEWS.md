@@ -1,6 +1,22 @@
 NEWS
 ================
 
+# ISAnalytics 1.7.1 (2022-05-04)
+
+## BUG FIXES AND MINOR CHANGES
+
+-   Fixed minor issue in `compute_near_integrations()` - function
+    errored when `report_path` argument was set to `NULL`
+-   Fixed dplyr warning in `integration_alluvial_plot()` internals
+-   Fixed issue with report of VISPA2 stats - report failed due to minor
+    error in rmd fragment
+-   Internals of `remove_collisions()` use again dplyr internally for
+    joining and grouping operations - needed because of performance
+    issues with data.table
+-   `fisher_scatterplot()` has 2 new arguments that allow the disabling
+    of highlighting for some genes even if their p-value is under the
+    threshold
+
 # ISAnalytics 1.5.4 (2022-04-20)
 
 ## MAJOR CHANGES
