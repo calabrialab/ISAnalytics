@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.0</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,6 +67,19 @@
       <small>Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.7.1" id="isanalytics-171-2022-05-04">ISAnalytics 1.7.1 (2022-05-04)<a class="anchor" aria-label="anchor" href="#isanalytics-171-2022-05-04"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-and-minor-changes-1-7-1">BUG FIXES AND MINOR CHANGES<a class="anchor" aria-label="anchor" href="#bug-fixes-and-minor-changes-1-7-1"></a></h3>
+<ul><li>Fixed minor issue in <code><a href="../reference/compute_near_integrations.html">compute_near_integrations()</a></code> - function errored when <code>report_path</code> argument was set to <code>NULL</code>
+</li>
+<li>Fixed dplyr warning in <code><a href="../reference/integration_alluvial_plot.html">integration_alluvial_plot()</a></code> internals</li>
+<li>Fixed issue with report of VISPA2 stats - report failed due to minor error in rmd fragment</li>
+<li>Internals of <code><a href="../reference/remove_collisions.html">remove_collisions()</a></code> use again dplyr internally for joining and grouping operations - needed because of performance issues with data.table</li>
+<li>
+<code><a href="../reference/fisher_scatterplot.html">fisher_scatterplot()</a></code> has 2 new arguments that allow the disabling of highlighting for some genes even if their p-value is under the threshold</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5.4" id="isanalytics-154-2022-04-20">ISAnalytics 1.5.4 (2022-04-20)<a class="anchor" aria-label="anchor" href="#isanalytics-154-2022-04-20"></a></h2>
 <div class="section level3">

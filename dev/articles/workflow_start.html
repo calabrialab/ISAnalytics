@@ -34,7 +34,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.0</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,7 +106,7 @@
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 data-toc-skip class="date">27 April 2022</h4>
+            <h4 data-toc-skip class="date">4 May 2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/vignettes/workflow_start.Rmd" class="external-link"><code>vignettes/workflow_start.Rmd</code></a></small>
       <div class="d-none name"><code>workflow_start.Rmd</code></div>
@@ -275,26 +275,26 @@
 <div class="section level4">
 <h4 id="mandatory-is-vars">Mandatory IS vars<a class="anchor" aria-label="anchor" href="#mandatory-is-vars"></a>
 </h4>
-<div id="htmlwidget-0f544963e71b26de34e8" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0f544963e71b26de34e8">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in other functions - for example, when importing matrices it is ensured that all mandatory variables are present in the input, as declared in the look up table. Some functions may require information that needs to be specified as input, always check the documentation if you have doubts.</p>
+<div id="htmlwidget-a5f3ef43a3dc27855cf9" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a5f3ef43a3dc27855cf9">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in other functions - for example, when importing matrices it is ensured that all mandatory variables are present in the input, as declared in the look up table. Some functions may require information that needs to be specified as input, always check the documentation if you have doubts.</p>
 </div>
 <div class="section level4">
 <h4 id="annotation-is-vars">Annotation IS vars<a class="anchor" aria-label="anchor" href="#annotation-is-vars"></a>
 </h4>
-<div id="htmlwidget-f6faad2298ea4f282559" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-f6faad2298ea4f282559">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work with ISAnalytics, some operations do require annotation - if you’re working with matrices that are not annotated you can either annotate them with a tool of your choice or skip the steps that require annotation.</p>
+<div id="htmlwidget-53013b6d6852a0257068" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-53013b6d6852a0257068">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work with ISAnalytics, some operations do require annotation - if you’re working with matrices that are not annotated you can either annotate them with a tool of your choice or skip the steps that require annotation.</p>
 </div>
 <div class="section level4">
 <h4 id="association-file-columns">Association file columns<a class="anchor" aria-label="anchor" href="#association-file-columns"></a>
 </h4>
-<div id="htmlwidget-224c3dfd931bb2f5b8a0" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-224c3dfd931bb2f5b8a0">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but they exist for potential new features that will be added in the future.</p>
+<div id="htmlwidget-6ad36eeb1f28f19cde35" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6ad36eeb1f28f19cde35">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but they exist for potential new features that will be added in the future.</p>
 </div>
 <div class="section level4">
 <h4 id="vispa2-stats-specs">VISPA2 stats specs<a class="anchor" aria-label="anchor" href="#vispa2-stats-specs"></a>
 </h4>
-<div id="htmlwidget-6d9a2803a4f8fd457773" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-6d9a2803a4f8fd457773">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats"],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions. If the pipeline launch was configured with default parameters, do not change this lookup table.</p>
+<div id="htmlwidget-50ede348f05d946fd0c0" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-50ede348f05d946fd0c0">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats"],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions. If the pipeline launch was configured with default parameters, do not change this lookup table.</p>
 </div>
 </div>
 <div class="section level3">
@@ -630,26 +630,26 @@
 <span class="co">#&gt; 5:                 /PJ01             &lt;NA&gt;          0180              06</span>
 <span class="co">#&gt; 6:                 /PJ01             &lt;NA&gt;          0060              02</span>
 <span class="co">#&gt;    TimepointYears ng DNA corrected                    Path</span>
-<span class="co">#&gt; 1:             01            23.18 /tmp/Rtmp3qlmcb/fs/PJ01</span>
-<span class="co">#&gt; 2:             01           181.44 /tmp/Rtmp3qlmcb/fs/PJ01</span>
-<span class="co">#&gt; 3:             01           181.44 /tmp/Rtmp3qlmcb/fs/PJ01</span>
-<span class="co">#&gt; 4:             01           181.44 /tmp/Rtmp3qlmcb/fs/PJ01</span>
-<span class="co">#&gt; 5:             01            23.06 /tmp/Rtmp3qlmcb/fs/PJ01</span>
-<span class="co">#&gt; 6:             01           171.36 /tmp/Rtmp3qlmcb/fs/PJ01</span>
+<span class="co">#&gt; 1:             01            23.18 /tmp/RtmpeYrls0/fs/PJ01</span>
+<span class="co">#&gt; 2:             01           181.44 /tmp/RtmpeYrls0/fs/PJ01</span>
+<span class="co">#&gt; 3:             01           181.44 /tmp/RtmpeYrls0/fs/PJ01</span>
+<span class="co">#&gt; 4:             01           181.44 /tmp/RtmpeYrls0/fs/PJ01</span>
+<span class="co">#&gt; 5:             01            23.06 /tmp/RtmpeYrls0/fs/PJ01</span>
+<span class="co">#&gt; 6:             01           171.36 /tmp/RtmpeYrls0/fs/PJ01</span>
 <span class="co">#&gt;                                         Path_quant</span>
-<span class="co">#&gt; 1: /tmp/Rtmp3qlmcb/fs/PJ01/quantification/POOL01-1</span>
-<span class="co">#&gt; 2: /tmp/Rtmp3qlmcb/fs/PJ01/quantification/POOL01-1</span>
-<span class="co">#&gt; 3: /tmp/Rtmp3qlmcb/fs/PJ01/quantification/POOL01-1</span>
-<span class="co">#&gt; 4: /tmp/Rtmp3qlmcb/fs/PJ01/quantification/POOL01-1</span>
-<span class="co">#&gt; 5: /tmp/Rtmp3qlmcb/fs/PJ01/quantification/POOL01-1</span>
-<span class="co">#&gt; 6: /tmp/Rtmp3qlmcb/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 1: /tmp/RtmpeYrls0/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 2: /tmp/RtmpeYrls0/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 3: /tmp/RtmpeYrls0/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 4: /tmp/RtmpeYrls0/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 5: /tmp/RtmpeYrls0/fs/PJ01/quantification/POOL01-1</span>
+<span class="co">#&gt; 6: /tmp/RtmpeYrls0/fs/PJ01/quantification/POOL01-1</span>
 <span class="co">#&gt;                                Path_iss</span>
-<span class="co">#&gt; 1: /tmp/Rtmp3qlmcb/fs/PJ01/iss/POOL01-1</span>
-<span class="co">#&gt; 2: /tmp/Rtmp3qlmcb/fs/PJ01/iss/POOL01-1</span>
-<span class="co">#&gt; 3: /tmp/Rtmp3qlmcb/fs/PJ01/iss/POOL01-1</span>
-<span class="co">#&gt; 4: /tmp/Rtmp3qlmcb/fs/PJ01/iss/POOL01-1</span>
-<span class="co">#&gt; 5: /tmp/Rtmp3qlmcb/fs/PJ01/iss/POOL01-1</span>
-<span class="co">#&gt; 6: /tmp/Rtmp3qlmcb/fs/PJ01/iss/POOL01-1</span></code></pre>
+<span class="co">#&gt; 1: /tmp/RtmpeYrls0/fs/PJ01/iss/POOL01-1</span>
+<span class="co">#&gt; 2: /tmp/RtmpeYrls0/fs/PJ01/iss/POOL01-1</span>
+<span class="co">#&gt; 3: /tmp/RtmpeYrls0/fs/PJ01/iss/POOL01-1</span>
+<span class="co">#&gt; 4: /tmp/RtmpeYrls0/fs/PJ01/iss/POOL01-1</span>
+<span class="co">#&gt; 5: /tmp/RtmpeYrls0/fs/PJ01/iss/POOL01-1</span>
+<span class="co">#&gt; 6: /tmp/RtmpeYrls0/fs/PJ01/iss/POOL01-1</span></code></pre>
 <div class="section level4">
 <h4 id="function-arguments">Function arguments<a class="anchor" aria-label="anchor" href="#function-arguments"></a>
 </h4>
@@ -1432,14 +1432,14 @@ The <code>group</code> parameter should contain all other variables to include i
 <span class="co">#&gt;  collate  C.UTF-8</span>
 <span class="co">#&gt;  ctype    C.UTF-8</span>
 <span class="co">#&gt;  tz       UTC</span>
-<span class="co">#&gt;  date     2022-04-27</span>
+<span class="co">#&gt;  date     2022-05-04</span>
 <span class="co">#&gt;  pandoc   2.14.2 @ /usr/bin/ (via rmarkdown)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span class="co">#&gt;  <span style="color: #555555; font-style: italic;">package     </span> <span style="color: #555555; font-style: italic;">*</span> <span style="color: #555555; font-style: italic;">version</span> <span style="color: #555555; font-style: italic;">date (UTC)</span> <span style="color: #555555; font-style: italic;">lib</span> <span style="color: #555555; font-style: italic;">source</span></span>
 <span class="co">#&gt;  BiocManager    1.30.17 <span style="color: #555555;">2022-04-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
-<span class="co">#&gt;  BiocParallel   1.29.21 <span style="color: #555555;">2022-04-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
-<span class="co">#&gt;  BiocStyle    * 2.23.1  <span style="color: #555555;">2021-12-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
+<span class="co">#&gt;  BiocParallel   1.30.0  <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
+<span class="co">#&gt;  BiocStyle    * 2.24.0  <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
 <span class="co">#&gt;  bit            4.0.4   <span style="color: #555555;">2020-08-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  bit64          4.0.5   <span style="color: #555555;">2020-08-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  bookdown       0.26    <span style="color: #555555;">2022-04-15</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
@@ -1455,7 +1455,7 @@ The <code>group</code> parameter should contain all other variables to include i
 <span class="co">#&gt;  datamods       1.3.0   <span style="color: #555555;">2022-04-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  desc           1.4.1   <span style="color: #555555;">2022-03-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  digest         0.6.29  <span style="color: #555555;">2021-12-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
-<span class="co">#&gt;  dplyr          1.0.8   <span style="color: #555555;">2022-02-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
+<span class="co">#&gt;  dplyr          1.0.9   <span style="color: #555555;">2022-04-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  DT           * 0.22    <span style="color: #555555;">2022-03-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  ellipsis       0.3.2   <span style="color: #555555;">2021-04-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  evaluate       0.15    <span style="color: #555555;">2022-02-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
@@ -1475,10 +1475,10 @@ The <code>group</code> parameter should contain all other variables to include i
 <span class="co">#&gt;  htmlwidgets    1.5.4   <span style="color: #555555;">2021-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  httpuv         1.6.5   <span style="color: #555555;">2022-01-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  httr           1.4.2   <span style="color: #555555;">2020-07-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
-<span class="co">#&gt;  ISAnalytics  * 1.7.0   <span style="color: #555555;">2022-04-27</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
+<span class="co">#&gt;  ISAnalytics  * 1.7.1   <span style="color: #555555;">2022-05-04</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span>
 <span class="co">#&gt;  jquerylib      0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  jsonlite       1.8.0   <span style="color: #555555;">2022-02-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
-<span class="co">#&gt;  knitr          1.39    <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.0)</span></span>
+<span class="co">#&gt;  knitr          1.39    <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  later          1.3.0   <span style="color: #555555;">2021-08-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  lattice        0.20-45 <span style="color: #555555;">2021-09-22</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.2.0)</span></span>
 <span class="co">#&gt;  lifecycle      1.0.1   <span style="color: #555555;">2021-09-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
@@ -1520,7 +1520,7 @@ The <code>group</code> parameter should contain all other variables to include i
 <span class="co">#&gt;  stringr        1.4.0   <span style="color: #555555;">2019-02-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  systemfonts    1.0.4   <span style="color: #555555;">2022-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  textshaping    0.3.6   <span style="color: #555555;">2021-10-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
-<span class="co">#&gt;  tibble         3.1.6   <span style="color: #555555;">2021-11-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
+<span class="co">#&gt;  tibble         3.1.7   <span style="color: #555555;">2022-05-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.0)</span></span>
 <span class="co">#&gt;  tidyr          1.2.0   <span style="color: #555555;">2022-02-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  tidyselect     1.1.2   <span style="color: #555555;">2022-02-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
 <span class="co">#&gt;  tmvnsim        1.0-2   <span style="color: #555555;">2016-12-15</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span>
@@ -1543,7 +1543,7 @@ The <code>group</code> parameter should contain all other variables to include i
 <div class="section level2">
 <h2 id="bibliography">Bibliography<a class="anchor" aria-label="anchor" href="#bibliography"></a>
 </h2>
-<p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.15/BiocStyle" class="external-link">BiocStyle</a></em> (Oleś, 2021) with <em><a href="https://CRAN.R-project.org/package=knitr" class="external-link">knitr</a></em> (Xie, 2022) and <em><a href="https://CRAN.R-project.org/package=rmarkdown" class="external-link">rmarkdown</a></em> (Allaire, Xie, McPherson, Luraschi, Ushey, Atkins, Wickham, Cheng, Chang, and Iannone, 2022) running behind the scenes.</p>
+<p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.15/BiocStyle" class="external-link">BiocStyle</a></em> (Oleś, 2022) with <em><a href="https://CRAN.R-project.org/package=knitr" class="external-link">knitr</a></em> (Xie, 2022) and <em><a href="https://CRAN.R-project.org/package=rmarkdown" class="external-link">rmarkdown</a></em> (Allaire, Xie, McPherson, Luraschi, Ushey, Atkins, Wickham, Cheng, Chang, and Iannone, 2022) running behind the scenes.</p>
 <p>Citations made with <em><a href="https://CRAN.R-project.org/package=RefManageR" class="external-link">RefManageR</a></em> (McLean, 2017).</p>
 <p>
 <a id="bib-allaire2022rmarkdown"></a><a href="#cite-allaire2022rmarkdown">[1]</a><cite> J. Allaire, Y. Xie, J. McPherson, et al. <em>rmarkdown: Dynamic Documents for R</em>. R package version 2.14. 2022. URL: <a href="https://github.com/rstudio/rmarkdown" class="external-link">https://github.com/rstudio/rmarkdown</a>.</cite>
@@ -1555,7 +1555,7 @@ The <code>group</code> parameter should contain all other variables to include i
 <a id="bib-mclean2017refmanager"></a><a href="#cite-mclean2017refmanager">[3]</a><cite> M. W. McLean. “RefManageR: Import and Manage BibTeX and BibLaTeX References in R”. In: <em>The Journal of Open Source Software</em> (2017). DOI: <a href="https://doi.org/10.21105/joss.00338" class="external-link">10.21105/joss.00338</a>.</cite>
 </p>
 <p>
-<a id="bib-ole2021biocstyle"></a><a href="#cite-ole2021biocstyle">[4]</a><cite> A. Oleś. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.23.1. 2021. URL: <a href="https://github.com/Bioconductor/BiocStyle" class="external-link">https://github.com/Bioconductor/BiocStyle</a>.</cite>
+<a id="bib-ole2022biocstyle"></a><a href="#cite-ole2022biocstyle">[4]</a><cite> A. Oleś. <em>BiocStyle: Standard styles for vignettes and other Bioconductor documents</em>. R package version 2.24.0. 2022. URL: <a href="https://github.com/Bioconductor/BiocStyle" class="external-link">https://github.com/Bioconductor/BiocStyle</a>.</cite>
 </p>
 <p>
 <a id="bib-xie2022knitr"></a><a href="#cite-xie2022knitr">[5]</a><cite> Y. Xie. <em>knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. R package version 1.39. 2022. URL: <a href="https://yihui.org/knitr/" class="external-link">https://yihui.org/knitr/</a>.</cite>
