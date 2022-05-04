@@ -281,6 +281,31 @@ clinical_relevant_suspicious_genes <- function() {
 #' Plots results of Fisher's exact test on gene frequency obtained via
 #' `gene_frequency_fisher()` as a scatterplot.
 #'
+#' @details
+#' ## Specifying genes to avoid highlighting
+#'
+#' In some cases, users might want to avoid highlighting certain genes
+#' even if their p-value is below the threshold. To do so, use the
+#' argument `do_not_highlight`: character vectors are appropriate for specific
+#' genes that are to be excluded, expressions or lambdas allow a finer control.
+#' For example we can supply:
+#' ```{r eval=FALSE}
+#' expr <- rlang::expr(!stringr::str_starts(GeneName, "MIR") &
+#'                       average_TxLen_1 >= 300)
+#' ```
+#'
+#' with this expression, genes that have a p-value < threshold and start with
+#' "MIR" or have an average_TxLen_1 lower than 300 are excluded from the
+#' highlighted points.
+#' NOTE: keep in mind that expressions are evaluated inside a `dplyr::filter`
+#' context.
+#'
+#' Similarly, lambdas are passed to the filtering function but only operate
+#' on the column containing the gene symbol.
+#' ```{r eval=FALSE}
+#' lambda <- ~ stringr::str_starts(.x, "MIR")
+#' ```
+#'
 #' @param fisher_df Test results obtained via `gene_frequency_fisher()`
 #' @param p_value_col Name of the column containing the p-value to consider
 #' @param annot_threshold Annotate with a different color if a point is below
@@ -288,6 +313,14 @@ clinical_relevant_suspicious_genes <- function() {
 #' @param annot_color The color in which points below the threshold should be
 #' annotated
 #' @param gene_sym_col The name of the column containing the gene symbol
+#' @param do_not_highlight Either `NULL`, a character vector, an expression
+#' or a purrr-style lambda. Tells the function to ignore the highlighting
+#' and labeling of these genes even if their p-value is below the threshold.
+#' See details.
+#' @param keep_not_highlighted If present, how should not highlighted genes
+#' be treated? If set to `TRUE` points are plotted and colored with the
+#' chosen color scale. If set to `FALSE` the points are removed entirely from
+#' the plot.
 #'
 #' @family Plotting functions
 #' @return A plot
@@ -310,11 +343,51 @@ fisher_scatterplot <- function(fisher_df,
     p_value_col = "Fisher_p_value_fdr",
     annot_threshold = 0.05,
     annot_color = "red",
-    gene_sym_col = "GeneName") {
-    below_threshold <- fisher_df %>%
+    gene_sym_col = "GeneName",
+    do_not_highlight = NULL,
+    keep_not_highlighted = TRUE) {
+    stopifnot(is.null(do_not_highlight) || is.character(do_not_highlight)
+              || rlang::is_expression(do_not_highlight))
+    if (is.null(do_not_highlight)) {
+      below_threshold <- fisher_df %>%
         dplyr::filter(.data[[p_value_col]] < annot_threshold)
-    above_threshold <- fisher_df %>%
+      above_threshold <- fisher_df %>%
         dplyr::filter(.data[[p_value_col]] >= annot_threshold)
+    } else if (is.character(do_not_highlight)) {
+      below_threshold <- fisher_df %>%
+        dplyr::filter(.data[[p_value_col]] < annot_threshold &
+                        !.data[[gene_sym_col]] %in% do_not_highlight)
+      if (keep_not_highlighted) {
+        above_threshold <- fisher_df %>%
+          dplyr::anti_join(below_threshold, by = gene_sym_col)
+      } else {
+        above_threshold <- fisher_df %>%
+          dplyr::filter(.data[[p_value_col]] >= annot_threshold)
+      }
+    } else if (rlang::is_formula(do_not_highlight)) {
+      below_threshold <- fisher_df %>%
+        dplyr::filter(.data[[p_value_col]] < annot_threshold &
+                        !rlang::as_function(do_not_highlight)(
+                          .data[[gene_sym_col]]))
+      if (keep_not_highlighted) {
+        above_threshold <- fisher_df %>%
+          dplyr::anti_join(below_threshold, by = gene_sym_col)
+      } else {
+        above_threshold <- fisher_df %>%
+          dplyr::filter(.data[[p_value_col]] >= annot_threshold)
+      }
+    } else {
+      below_threshold <- fisher_df %>%
+        dplyr::filter(.data[[p_value_col]] < annot_threshold &
+                        (rlang::eval_tidy(do_not_highlight)))
+      if (keep_not_highlighted) {
+        above_threshold <- fisher_df %>%
+          dplyr::anti_join(below_threshold, by = gene_sym_col)
+      } else {
+        above_threshold <- fisher_df %>%
+          dplyr::filter(.data[[p_value_col]] >= annot_threshold)
+      }
+    }
     plot <- ggplot2::ggplot(
         above_threshold,
         ggplot2::aes_(
@@ -323,7 +396,7 @@ fisher_scatterplot <- function(fisher_df,
             color = ggplot2::sym(p_value_col)
         )
     ) +
-        ggplot2::geom_point() +
+        ggplot2::geom_point(alpha = 0.65) +
         ggplot2::geom_point(data = below_threshold, color = annot_color) +
         ggplot2::theme_bw() +
         ggplot2::labs(
@@ -879,9 +952,7 @@ top_abund_tableGrob <- function(df,
     tops_by_x <- purrr::map(distinct_x, function(x) {
         tmp <- top %>%
             dplyr::filter(
-                dplyr::across(
-                    dplyr::all_of(by), ~ .x == x
-                )
+              dplyr::if_all(.cols = dplyr::all_of(by), .fns = ~ .x == x)
             ) %>%
             dplyr::select(-dplyr::all_of(by))
         if (nrow(tmp) < top_n) {

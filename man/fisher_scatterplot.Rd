@@ -9,7 +9,9 @@ fisher_scatterplot(
   p_value_col = "Fisher_p_value_fdr",
   annot_threshold = 0.05,
   annot_color = "red",
-  gene_sym_col = "GeneName"
+  gene_sym_col = "GeneName",
+  do_not_highlight = NULL,
+  keep_not_highlighted = TRUE
 )
 }
 \arguments{
@@ -24,6 +26,16 @@ the significance threshold. Single numerical value.}
 annotated}
 
 \item{gene_sym_col}{The name of the column containing the gene symbol}
+
+\item{do_not_highlight}{Either \code{NULL}, a character vector, an expression
+or a purrr-style lambda. Tells the function to ignore the highlighting
+and labeling of these genes even if their p-value is below the threshold.
+See details.}
+
+\item{keep_not_highlighted}{If present, how should not highlighted genes
+be treated? If set to \code{TRUE} points are plotted and colored with the
+chosen color scale. If set to \code{FALSE} the points are removed entirely from
+the plot.}
 }
 \value{
 A plot
@@ -32,6 +44,28 @@ A plot
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 Plots results of Fisher's exact test on gene frequency obtained via
 \code{gene_frequency_fisher()} as a scatterplot.
+}
+\details{
+\subsection{Specifying genes to avoid highlighting}{
+
+In some cases, users might want to avoid highlighting certain genes
+even if their p-value is below the threshold. To do so, use the
+argument \code{do_not_highlight}: character vectors are appropriate for specific
+genes that are to be excluded, expressions or lambdas allow a finer control.
+For example we can supply:\if{html}{\out{<div class="sourceCode r">}}\preformatted{expr <- rlang::expr(!stringr::str_starts(GeneName, "MIR") &
+                      average_TxLen_1 >= 300)
+}\if{html}{\out{</div>}}
+
+with this expression, genes that have a p-value < threshold and start with
+"MIR" or have an average_TxLen_1 lower than 300 are excluded from the
+highlighted points.
+NOTE: keep in mind that expressions are evaluated inside a \code{dplyr::filter}
+context.
+
+Similarly, lambdas are passed to the filtering function but only operate
+on the column containing the gene symbol.\if{html}{\out{<div class="sourceCode r">}}\preformatted{lambda <- ~ stringr::str_starts(.x, "MIR")
+}\if{html}{\out{</div>}}
+}
 }
 \examples{
 data("integration_matrices", package = "ISAnalytics")
