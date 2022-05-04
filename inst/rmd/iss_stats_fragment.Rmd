@@ -6,7 +6,6 @@ output: html_document
 ```{r include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 options(DT.warn.size = FALSE)
-utils::globalVariables("where")
 ```
 
 VISPA2 stats info {data-orientation=rows}
@@ -62,7 +61,8 @@ cat("*Nothing to report*")
 
 ```{r eval=!is.null(iss_stats_miss) && nrow(iss_stats_miss) > 0, echo=FALSE}
 iss_stats_miss <- iss_stats_miss %>%
-  dplyr::mutate(dplyr::across(where(is.character), as.factor))
+  dplyr::mutate(dplyr::across(
+    tidyselect::vars_select_helpers$where(is.character), as.factor))
 
 datatable(iss_stats_miss,
           class = "stripe",

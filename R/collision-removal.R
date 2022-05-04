@@ -146,11 +146,14 @@ remove_collisions <- function(x,
     replicate_n_col <- req_tag_cols[eval(sym("tag")) ==
         "pcr_replicate"][["names"]]
     pool_col <- req_tag_cols[eval(sym("tag")) == "pool_id"][["names"]]
-    joined <- association_file[pre_process, on = pcr_col]
-    joined <- joined[, mget(c(
-        colnames(pre_process), date_col,
-        replicate_n_col, independent_sample_id, pool_col
-    ))]
+    joined <- pre_process %>%
+      dplyr::left_join(association_file, by = pcr_col) %>%
+      dplyr::select(dplyr::all_of(
+        c(
+          colnames(pre_process), date_col,
+          replicate_n_col, independent_sample_id, pool_col
+        )
+      ))
     if (verbose) {
         rlang::inform("Identifying collisions...")
     }

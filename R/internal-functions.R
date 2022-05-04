@@ -2893,7 +2893,8 @@
     distinct_is <- purrr::map2_int(matrices, correct, ~ {
         if (.y) {
             .x %>%
-                dplyr::distinct(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
+                dplyr::distinct(dplyr::across(
+                  dplyr::all_of(mandatory_IS_vars()))) %>%
                 nrow()
         } else {
             NA_integer_
@@ -3102,17 +3103,19 @@
 #' @importFrom rlang .data sym
 .check_same_info <- function(association_file, df, req_tag_cols,
     indep_sample_id) {
-    association_file <- data.table::setDT(association_file)
-    df <- data.table::setDT(df)
-    req_tag_cols <- data.table::setDT(req_tag_cols)
-    joined <- df[association_file, on = pcr_id_column()]
-    predicate <- purrr::map(mandatory_IS_vars(), ~ {
-        rlang::expr(!is.na(!!sym(.x)))
-    }) %>% purrr::reduce(~ rlang::expr(!!.x & !!.y))
+    data.table::setDT(req_tag_cols)
+    joined <- association_file %>%
+      dplyr::left_join(df, by = pcr_id_column())
     proj_col_name <- req_tag_cols[eval(rlang::expr(
         !!sym("tag") == "project_id"
     ))][["names"]]
-    projects <- unique(joined[eval(predicate), ][[proj_col_name]])
+    projects <- joined %>%
+      dplyr::filter(!dplyr::if_all(
+        .cols = dplyr::all_of(mandatory_IS_vars()),
+        .fns = is.na
+      )) %>%
+      dplyr::distinct(.data[[proj_col_name]]) %>%
+      dplyr::pull(.data[[proj_col_name]])
     wanted_tags <- c(
         "subject", "tissue", "cell_marker", "tp_days"
     )
@@ -3121,15 +3124,22 @@
     wanted <- wanted[eval(sym("tag")) %in% wanted_tags &
         eval(sym("names")) %in% colnames(association_file), ]
     wanted <- data.table::rbindlist(list(req_tag_cols, wanted))
-    predicate <- purrr::map(mandatory_IS_vars(), ~ {
-        rlang::expr(is.na(!!sym(.x)))
-    }) %>% purrr::reduce(~ rlang::expr(!!.x & !!.y))
-    predicate <- rlang::expr(!!predicate & !!sym(proj_col_name) %in% projects)
-    missing_in_df <- unique(joined[
-        eval(predicate),
-        mget(unique(c(wanted$names, indep_sample_id)))
-    ])
-    reduced_af <- association_file[eval(sym(proj_col_name)) %in% projects]
+    missing_in_df <- joined %>%
+      dplyr::filter(
+        dplyr::if_all(
+          .cols = dplyr::all_of(mandatory_IS_vars()),
+          .fns = is.na
+          ) & .data[[proj_col_name]] %in% projects
+      ) %>%
+      dplyr::distinct(dplyr::across(
+        dplyr::all_of(c(wanted$names, indep_sample_id))
+        ))
+    reduced_af <- association_file %>%
+      dplyr::filter(
+        .data[[proj_col_name]] %in% projects
+      )
+    data.table::setDT(reduced_af)
+    data.table::setDT(missing_in_df)
     list(miss = missing_in_df, reduced_af = reduced_af)
 }
 
@@ -3141,14 +3151,21 @@
 # @return A named list containing the splitted joined_df for collisions and
 # non-collisions
 .identify_independent_samples <- function(joined, indep_sample_id) {
-    temp <- joined[, mget(c(mandatory_IS_vars(), indep_sample_id))]
-    temp <- temp[, unique(.SD, by = indep_sample_id),
-        by = eval(mandatory_IS_vars())
-    ]
-    temp <- temp[, .N, by = eval(mandatory_IS_vars())]
-    temp <- temp[eval(sym("N")) > 1, mget(mandatory_IS_vars())]
-    non_collisions <- joined[!temp, on = mandatory_IS_vars()]
-    collisions <- joined[temp, on = mandatory_IS_vars()]
+    indep_syms <- purrr::map(indep_sample_id, rlang::sym)
+    temp <- joined %>%
+      dplyr::select(dplyr::all_of(
+        c(mandatory_IS_vars(), indep_sample_id)
+      )) %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
+      dplyr::summarise(N = dplyr::n_distinct(!!!indep_syms),
+                       .groups = "drop") %>%
+      dplyr::filter(.data$N > 1)
+    non_collisions <- joined %>%
+      dplyr::anti_join(temp, by = mandatory_IS_vars())
+    collisions <- joined %>%
+      dplyr::semi_join(temp, by = mandatory_IS_vars())
+    data.table::setDT(non_collisions)
+    data.table::setDT(collisions)
     list(collisions = collisions, non_collisions = non_collisions)
 }
 
@@ -3183,7 +3200,9 @@
     }
     winning_sample <- x[1, mget(ind_sample_key)]
     # Filter the winning rows
-    x <- x[winning_sample, on = ind_sample_key]
+    x <- x %>%
+      dplyr::semi_join(winning_sample, by = ind_sample_key)
+    data.table::setDT(x)
     return(list(data = x, check = TRUE))
 }
 
@@ -3207,14 +3226,18 @@
 # * $check: a logical value indicating whether the analysis was successful or
 # not (and therefore there is the need to perform the next step)
 .discriminate_by_replicate <- function(x, repl_col, ind_sample_key) {
-    temp <- x[, .N, by = eval(ind_sample_key)]
-    temp <- dplyr::arrange(temp, dplyr::desc(.data$N))
-
+    temp <- x %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) %>%
+      dplyr::summarise(N = dplyr::n(), .groups = "drop") %>%
+      dplyr::arrange(dplyr::desc(.data$N))
+    data.table::setDT(temp)
     if (length(temp$N) != 1 & !temp$N[1] > temp$N[2]) {
         return(list(data = x, check = FALSE))
     }
     temp <- temp[1, mget(ind_sample_key)]
-    x <- x[temp, on = ind_sample_key]
+    x <- x %>%
+      dplyr::semi_join(temp, by = ind_sample_key)
+    data.table::setDT(x)
     return(list(data = x, check = TRUE))
 }
 
@@ -3243,14 +3266,19 @@
     reads_ratio,
     seqCount_col,
     ind_sample_key) {
-    temp <- x[, list(sum = sum(.SD[[seqCount_col]])), by = eval(ind_sample_key)]
-    temp <- dplyr::arrange(temp, dplyr::desc(.data$sum))
+    temp <- x %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) %>%
+      dplyr::summarise(sum = sum(.data[[seqCount_col]]), .groups = "drop") %>%
+      dplyr::arrange(dplyr::desc(.data$sum))
+    data.table::setDT(temp)
     ratio <- temp$sum[1] / temp$sum[2]
     if (!ratio > reads_ratio) {
         return(list(data = x, check = FALSE))
     }
     temp <- temp[1, mget(ind_sample_key)]
-    x <- x[temp, on = ind_sample_key]
+    x <- x %>%
+      dplyr::semi_join(temp, by = ind_sample_key)
+    data.table::setDT(x)
     return(list(data = x, check = TRUE))
 }
 

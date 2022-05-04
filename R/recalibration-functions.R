@@ -324,7 +324,7 @@ compute_near_integrations <- function(x,
             maps <- data.table::rbindlist(list(maps, map_fine))
         }
     }
-    if (map_as_file) {
+    if (map_as_file & !is.null(file_path)) {
         ### Manage file
         withCallingHandlers(
             {

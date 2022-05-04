@@ -137,7 +137,12 @@ outlier_filter <- function(metadata,
         call_test <- function(test, vargs, df, test_name) {
             test_args_names <- do.call(rlang::fn_fmls_names, args = list(test))
             test_args_names <- test_args_names[test_args_names != "metadata"]
-            test_args <- vargs[names(vargs) %in% test_args_names]
+            test_args <- if ("report_path" %in% test_args_names) {
+              append(vargs[names(vargs) %in% test_args_names],
+                     list(report_path = report_path))
+            } else {
+              vargs[names(vargs) %in% test_args_names]
+            }
             f_call <- rlang::call2(test, metadata = metadata, !!!test_args)
             result <- rlang::eval_tidy(f_call)
             .validate_outlier_output_format(
