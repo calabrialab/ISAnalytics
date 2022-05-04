@@ -14,7 +14,7 @@ gene_frequency_fisher() as a scatterplot."><meta property="og:image" content="ht
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.6.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,7 +85,9 @@ Plots results of Fisher's exact test on gene frequency obtained via
   p_value_col <span class="op">=</span> <span class="st">"Fisher_p_value_fdr"</span>,
   annot_threshold <span class="op">=</span> <span class="fl">0.05</span>,
   annot_color <span class="op">=</span> <span class="st">"red"</span>,
-  gene_sym_col <span class="op">=</span> <span class="st">"GeneName"</span>
+  gene_sym_col <span class="op">=</span> <span class="st">"GeneName"</span>,
+  do_not_highlight <span class="op">=</span> <span class="cn">NULL</span>,
+  keep_not_highlighted <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -103,10 +105,43 @@ the significance threshold. Single numerical value.</p></dd>
 annotated</p></dd>
 <dt>gene_sym_col</dt>
 <dd><p>The name of the column containing the gene symbol</p></dd>
+<dt>do_not_highlight</dt>
+<dd><p>Either <code>NULL</code>, a character vector, an expression
+or a purrr-style lambda. Tells the function to ignore the highlighting
+and labeling of these genes even if their p-value is below the threshold.
+See details.</p></dd>
+<dt>keep_not_highlighted</dt>
+<dd><p>If present, how should not highlighted genes
+be treated? If set to <code>TRUE</code> points are plotted and colored with the
+chosen color scale. If set to <code>FALSE</code> the points are removed entirely from
+the plot.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A plot</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    
+<div class="section">
+<h3 id="specifying-genes-to-avoid-highlighting">Specifying genes to avoid highlighting<a class="anchor" aria-label="anchor" href="#specifying-genes-to-avoid-highlighting"></a></h3>
+
+
+<p>In some cases, users might want to avoid highlighting certain genes
+even if their p-value is below the threshold. To do so, use the
+argument <code>do_not_highlight</code>: character vectors are appropriate for specific
+genes that are to be excluded, expressions or lambdas allow a finer control.
+For example we can supply:</p><div class="sourceCode r"><pre><code><span class="va">expr</span> <span class="op">&lt;-</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/expr.html" class="external-link">expr</a></span><span class="op">(</span><span class="op">!</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_starts.html" class="external-link">str_starts</a></span><span class="op">(</span><span class="va">GeneName</span>, <span class="st">"MIR"</span><span class="op">)</span> <span class="op">&amp;</span>
+                      <span class="va">average_TxLen_1</span> <span class="op">&gt;=</span> <span class="fl">300</span><span class="op">)</span></code></pre><p></p></div>
+<p>with this expression, genes that have a p-value &lt; threshold and start with
+"MIR" or have an average_TxLen_1 lower than 300 are excluded from the
+highlighted points.
+NOTE: keep in mind that expressions are evaluated inside a <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter</a></code>
+context.</p>
+<p>Similarly, lambdas are passed to the filtering function but only operate
+on the column containing the gene symbol.</p><div class="sourceCode r"><pre><code><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_starts.html" class="external-link">str_starts</a></span><span class="op">(</span><span class="va">.x</span>, <span class="st">"MIR"</span><span class="op">)</span></code></pre><p></p></div>
+</div>
+
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
