@@ -354,11 +354,13 @@ import_association_file <- function(path,
         tp_col <- tags_to_cols %>%
             dplyr::filter(.data$tag == "tp_days") %>%
             dplyr::pull(.data$names)
-        as_file <- as_file %>%
+        if (!purrr::is_empty(tp_col) && tp_col %in% colnames(as_file)) {
+          as_file <- as_file %>%
             dplyr::mutate(
-                TimepointMonths = .timepoint_to_months(.data[[tp_col]]),
-                TimepointYears = .timepoint_to_years(.data[[tp_col]])
+              TimepointMonths = .timepoint_to_months(.data[[tp_col]]),
+              TimepointYears = .timepoint_to_years(.data[[tp_col]])
             )
+        }
     }
     import_stats_rep <- NULL
     missing_stats_rep <- NULL
