@@ -1249,6 +1249,8 @@
                 true = date_format,
                 false = .data$types
             ))
+        dates <- dates %>%
+          dplyr::filter(.data$names %in% colnames(as_file))
         date_failures <- NULL
         if (nrow(dates) > 0) {
             before <- as_file %>%
