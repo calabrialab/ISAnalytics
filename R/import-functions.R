@@ -326,7 +326,7 @@ import_association_file <- function(path,
     parsing_problems <- af_checks$parsing_probs
     date_problems <- af_checks$date_probs
     checks <- af_checks$check
-    if (nrow(parsing_problems) == 0) {
+    if (is.null(parsing_problems) || nrow(parsing_problems) == 0) {
         parsing_problems <- NULL
     }
     if (is.null(date_problems) || nrow(date_problems) == 0) {
