@@ -57,8 +57,10 @@ A tableGrob object
 Produce summary tableGrobs as R graphics. For this functionality
 the suggested package
 \href{https://cran.r-project.org/web/packages/gridExtra/index.html}{gridExtra}
-is required. To visualize the resulting object:\preformatted{gridExtra::grid.arrange(tableGrob)
-}
+is required. To visualize the resulting object:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{gridExtra::grid.arrange(tableGrob)
+}\if{html}{\out{</div>}}
 }
 \examples{
 data("integration_matrices", package = "ISAnalytics")

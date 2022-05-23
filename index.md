@@ -1,7 +1,6 @@
 # ISAnalytics <img src='man/figures/logo.png' align="right"/>
 
 <!-- badges: start -->
-[![Build Status](https://app.travis-ci.com/calabrialab/ISAnalytics.svg?branch=master)](https://app.travis-ci.com/calabrialab/ISAnalytics)
 [![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
 [![R build status - bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
 [![BioC status](http://www.bioconductor.org/shields/build/devel/bioc/ISAnalytics.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/ISAnalytics)

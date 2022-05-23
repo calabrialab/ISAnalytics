@@ -1047,7 +1047,7 @@ as_sparse_matrix <- function(x,
                         c(id_cols, .x)
                     )) %>%
                     tidyr::pivot_wider(
-                        names_from = .data[[key]],
+                        names_from = key,
                         values_from = .data[[.x]]
                     )
                 return(pivoted)

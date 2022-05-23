@@ -44,7 +44,9 @@ for the corresponding key.
 For this reason it's required that both \code{x} and \code{metadata} have the
 same sample key, and it's particularly important if the user is
 working with previously aggregated data.
-For example:\if{html}{\out{<div class="sourceCode r">}}\preformatted{data("integration_matrices", package = "ISAnalytics")
+For example:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
  x = integration_matrices,

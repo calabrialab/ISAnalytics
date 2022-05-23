@@ -1,6 +1,16 @@
 NEWS
 ================
 
+# ISAnalytics 1.6.2 (2022-05-23)
+
+## BUG FIXES AND MINOR CHANGES
+
+-   Fixed minor issues in `import_association_file()` - function had
+    minor issues when importing \*.xlsx files and missing optional
+    columns threw errors
+-   Fixed bug in `as_sparse_matrix()` - function failed when trying to
+    process an aggregated matrix
+
 # ISAnalytics 1.6.1 (2022-05-04)
 
 ## BUG FIXES AND MINOR CHANGES

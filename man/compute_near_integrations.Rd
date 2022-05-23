@@ -95,9 +95,7 @@ is based on a sliding window mechanism, on which groups of IS should we
 set and slide the window?
 
 By default, we have 3 fields in the \code{mandatory_IS_vars()}:
-chr
-integration_locus
-strand, and we assume that all the fields
+chr, integration_locus, strand, and we assume that all the fields
 contribute to the identity of the IS. This means that IS1 and IS2 can be
 compared only if they have the same chromosome and the same strand.
 However, if we would like to exclude the strand of the integration from
@@ -141,7 +139,9 @@ of aggregating operation, aka they must take a vector as input and return
 a single value. The type of the output should match the type of the
 target column. If you specify custom lambdas, provide defaults in the
 special element \code{.defaults}.
-Example:\if{html}{\out{<div class="sourceCode r">}}\preformatted{list(
+Example:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{list(
   numeric_col = ~ sum(.x),
   char_col = ~ paste0(.x, collapse = ", "),
   .defaults = default_rec_agg_lambdas()

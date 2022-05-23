@@ -80,7 +80,9 @@ as a unique layer in the column, colored as specified by the argument
 
 The returned plots are ggplot2 objects and can therefore further modified
 as any other ggplot2 object. For example, if the user decides to change the
-fill scale it is sufficient to do\if{html}{\out{<div class="sourceCode r">}}\preformatted{plot +
+fill scale it is sufficient to do
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{plot +
   ggplot2::scale_fill_viridis_d(...) + # or any other discrete fill scale
   ggplot2::theme(...) # change theme options
 }\if{html}{\out{</div>}}
