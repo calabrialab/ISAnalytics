@@ -112,6 +112,9 @@
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/default_stats.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/export_ISA_settings.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/fisher_scatterplot.html</loc>
   </url>
   <url>
@@ -125,6 +128,9 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/generate_default_folder_structure.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/import_ISA_settings.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/import_Vispa2_stats.html</loc>

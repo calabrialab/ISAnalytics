@@ -18,7 +18,7 @@ vignette("workflow_start", package = "ISAnalytics")'><meta property="og:image" c
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.1</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -137,14 +137,17 @@ the specified arguments</p>
 <p>The lambda parameter should always contain a named list of either
 functions or purrr-style lambdas.
 It is also possible to specify the namespace of the function in both
-ways, for example:</p><div class="sourceCode r"><pre><code><span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sum <span class="op">=</span> <span class="va">sum</span>, desc <span class="op">=</span> <span class="fu">psych</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/psych/man/describe.html" class="external-link">describe</a></span><span class="op">)</span></code></pre><p></p></div>
+ways, for example:</p>
+<p></p><div class="sourceCode r"><pre><code><span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sum <span class="op">=</span> <span class="va">sum</span>, desc <span class="op">=</span> <span class="fu">psych</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/psych/man/describe.html" class="external-link">describe</a></span><span class="op">)</span></code></pre><p></p></div>
 <p>Using purrr-style lambdas allows to specify arguments for the functions,
-keeping in mind that the first parameter should always be <code>.x</code>:</p><div class="sourceCode r"><pre><code><span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sum <span class="op">=</span> <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">.x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></code></pre><p></p></div>
+keeping in mind that the first parameter should always be <code>.x</code>:</p>
+<p></p><div class="sourceCode r"><pre><code><span class="va">lambda</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sum <span class="op">=</span> <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">.x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></code></pre><p></p></div>
 <p>It is also possible to use custom user-defined functions, keeping in
 mind that the symbol will be evaluated in the calling environment,
 for example if the function is called in the global environment
 and lambda contains "foo" as a function, "foo" will be evaluated in
-the global environment.</p><div class="sourceCode r"><pre><code><span class="va">foo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
+the global environment.</p>
+<p></p><div class="sourceCode r"><pre><code><span class="va">foo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
   <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
 <span class="op">}</span>
 
