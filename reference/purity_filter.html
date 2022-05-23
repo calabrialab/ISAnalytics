@@ -14,7 +14,7 @@ a numeric quantification (likely abundance or sequence count)."><meta property="
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.6.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.6.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -166,14 +166,8 @@ the group key has length 1 (and there is no need to filter on time point).
 If the group key is longer than 1 then the filter is applied only on the
 first element of the key.</p>
 <p>If a more refined selection on groups is needed, a data frame can
-be provided instead:</p><div class="sourceCode"><pre><code><span class="va">group_key</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span>
-<span class="va">selected_groups</span> <span class="op">=</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span>
-<span class="op">~</span> <span class="va">CellMarker</span>, <span class="op">~</span> <span class="va">Tissue</span>,
-<span class="st">"CD34"</span>, <span class="st">"BM"</span>,
-<span class="st">"CD14"</span>, <span class="st">"BM"</span>,
-<span class="st">"CD14"</span>, <span class="st">"PB"</span>
-<span class="op">)</span></code></pre></div>
-
+be provided instead:</p>
+<p></p><div class="sourceCode"><pre><code></code></pre><p></p></div>
 <p>Columns in the data frame should be the same as group key (plus,
 eventually, the time point column). In this example only those groups
 identified by the rows in the provided data frame are processed.</p>
