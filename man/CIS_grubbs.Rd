@@ -68,18 +68,7 @@ If for any reason the user is performing an analysis on another genome,
 this file needs to be changed respecting the USCS Genome Browser
 format, meaning the input file headers should include:
 
-name2
-chrom
-strand
-min_txStart
-max_txEnd
-minmax_TxLen
-average_TxLen
-name
-min_cdsStart
-max_cdsEnd
-minmax_CdsLen
-average_CdsLen
+name2, chrom, strand, min_txStart, max_txEnd, minmax_TxLen, average_TxLen, name, min_cdsStart, max_cdsEnd, minmax_CdsLen, average_CdsLen
 }
 }
 \section{Required tags}{

@@ -54,18 +54,24 @@ function:
 The lambda parameter should always contain a named list of either
 functions or purrr-style lambdas.
 It is also possible to specify the namespace of the function in both
-ways, for example:\if{html}{\out{<div class="sourceCode r">}}\preformatted{lambda = list(sum = sum, desc = psych::describe)
+ways, for example:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{lambda = list(sum = sum, desc = psych::describe)
 }\if{html}{\out{</div>}}
 
 Using purrr-style lambdas allows to specify arguments for the functions,
-keeping in mind that the first parameter should always be \code{.x}:\if{html}{\out{<div class="sourceCode r">}}\preformatted{lambda = list(sum = ~sum(.x, na.rm = TRUE))
+keeping in mind that the first parameter should always be \code{.x}:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{lambda = list(sum = ~sum(.x, na.rm = TRUE))
 }\if{html}{\out{</div>}}
 
 It is also possible to use custom user-defined functions, keeping in
 mind that the symbol will be evaluated in the calling environment,
 for example if the function is called in the global environment
 and lambda contains "foo" as a function, "foo" will be evaluated in
-the global environment.\if{html}{\out{<div class="sourceCode r">}}\preformatted{foo <- function(x) \{
+the global environment.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{foo <- function(x) \{
   sum(x)
 \}
 

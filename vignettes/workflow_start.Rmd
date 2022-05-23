@@ -339,10 +339,13 @@ use the function `reset_dyn_vars_config()`, which reverts all changes.
 
 ### Do I have to do this every time the package loads?
 
-At the moment yes, but it is just temporary, so we suggest to save a script
-with the necessary configurations and execute it before proceeding with the
-analyses. In future updates we will add the possibility to export and
-import configurations. Stay tuned!
+No, if you frequently have to work with a non-standard settings profile,
+you can use the functions `export_ISA_settings()` and `import_ISA_settings()`:
+these functions allow the import/export of setting profiles in *.json format.
+
+Once you set your variables for the first time through the procedure described
+before, simply call the export function and all will be saved to a json file,
+which can then be imported for the next workflow.
 
 # Introduction to `ISAnalytics` import functions family
 

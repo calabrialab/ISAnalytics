@@ -86,14 +86,16 @@ If the group key is longer than 1 then the filter is applied only on the
 first element of the key.
 
 If a more refined selection on groups is needed, a data frame can
-be provided instead:\preformatted{group_key = c("CellMarker", "Tissue")
+be provided instead:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{group_key = c("CellMarker", "Tissue")
 selected_groups = tibble::tribble(
 ~ CellMarker, ~ Tissue,
 "CD34", "BM",
 "CD14", "BM",
 "CD14", "PB"
 )
-}
+}\if{html}{\out{</div>}}
 
 Columns in the data frame should be the same as group key (plus,
 eventually, the time point column). In this example only those groups

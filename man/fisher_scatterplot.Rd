@@ -52,7 +52,9 @@ In some cases, users might want to avoid highlighting certain genes
 even if their p-value is below the threshold. To do so, use the
 argument \code{do_not_highlight}: character vectors are appropriate for specific
 genes that are to be excluded, expressions or lambdas allow a finer control.
-For example we can supply:\if{html}{\out{<div class="sourceCode r">}}\preformatted{expr <- rlang::expr(!stringr::str_starts(GeneName, "MIR") &
+For example we can supply:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{expr <- rlang::expr(!stringr::str_starts(GeneName, "MIR") &
                       average_TxLen_1 >= 300)
 }\if{html}{\out{</div>}}
 
@@ -63,7 +65,9 @@ NOTE: keep in mind that expressions are evaluated inside a \code{dplyr::filter}
 context.
 
 Similarly, lambdas are passed to the filtering function but only operate
-on the column containing the gene symbol.\if{html}{\out{<div class="sourceCode r">}}\preformatted{lambda <- ~ stringr::str_starts(.x, "MIR")
+on the column containing the gene symbol.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{lambda <- ~ stringr::str_starts(.x, "MIR")
 }\if{html}{\out{</div>}}
 }
 }

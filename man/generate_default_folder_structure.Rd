@@ -51,8 +51,10 @@ fs_path
 Other Utilities: 
 \code{\link{as_sparse_matrix}()},
 \code{\link{comparison_matrix}()},
+\code{\link{export_ISA_settings}()},
 \code{\link{generate_Vispa2_launch_AF}()},
 \code{\link{generate_blank_association_file}()},
+\code{\link{import_ISA_settings}()},
 \code{\link{separate_quant_matrices}()},
 \code{\link{transform_columns}()}
 }

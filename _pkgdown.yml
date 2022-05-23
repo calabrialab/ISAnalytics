@@ -107,6 +107,8 @@ reference:
     - set_matrix_file_suffixes
     - reset_matrix_file_suffixes
     - reset_dyn_vars_config
+    - export_ISA_settings
+    - import_ISA_settings
     - pcr_id_column
     - transform_columns
     - comparison_matrix

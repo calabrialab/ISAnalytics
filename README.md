@@ -5,8 +5,6 @@
 
 <!-- badges: start -->
 
-[![Build
-Status](https://app.travis-ci.com/calabrialab/ISAnalytics.svg?branch=master)](https://app.travis-ci.com/calabrialab/ISAnalytics)
 [![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
 [![R build status -
 bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
@@ -136,6 +134,21 @@ options("ISAnalytics.reports" = TRUE)
 <summary>
 Show more
 </summary>
+
+# ISAnalytics 1.7.2 (2022-05-23)
+
+## BUG FIXES AND MINOR CHANGES
+
+-   Fixed minor issues in `import_association_file()` - function had
+    minor issues when importing \*.xlsx files and missing optional
+    columns threw errors
+-   Fixed bug in `as_sparse_matrix()` - function failed when trying to
+    process an aggregated matrix
+
+## NEW
+
+-   Added 2 new utility functions `export_ISA_settings()` and
+    `import_ISA_settings()` that allow a faster workflow setup
 
 # ISAnalytics 1.7.1 (2022-05-04)
 

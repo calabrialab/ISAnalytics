@@ -22,7 +22,9 @@ This file was obtained following this steps:
 the refGene.sql, knownGene.sql, knownToRefSeq.sql, kgXref.sql tables
 \item Import everything it in mysql
 \item Generate views for annotation:
-}\preformatted{SELECT kg.`chrom`, min(kg.cdsStart) as CDS_minStart,
+}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{SELECT kg.`chrom`, min(kg.cdsStart) as CDS_minStart,
 max(kg.`cdsEnd`) as CDS_maxEnd, k2a.geneSymbol,
 kg.`strand` as GeneStrand, min(kg.txStart) as TSS_minStart,
 max(kg.txEnd) as TSS_maxStart,
@@ -36,7 +38,7 @@ WHERE (k2a.spDisplayID IS NOT NULL or k2a.spDisplayID NOT LIKE '')
 and k2a.`geneSymbol` LIKE 'Tcra\%'
 group by kg.`chrom`, k2a.geneSymbol
 ORDER BY kg.chrom ASC , kg.txStart ASC
-}
+}\if{html}{\out{</div>}}
 }
 \section{Functions}{
 \itemize{

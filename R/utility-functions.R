@@ -1047,7 +1047,7 @@ as_sparse_matrix <- function(x,
                         c(id_cols, .x)
                     )) %>%
                     tidyr::pivot_wider(
-                        names_from = .data[[key]],
+                        names_from = key,
                         values_from = .data[[.x]]
                     )
                 return(pivoted)
@@ -1194,6 +1194,112 @@ generate_default_folder_structure <- function(type = "correct",
     return(list(af = af_tmp_file, root = root))
 }
 
+#' Export a dynamic vars settings profile.
+#'
+#' @description This function allows exporting the currently set dynamic
+#' vars in json format so it can be quickly imported later. Dynamic
+#' variables need to be properly set via the setter functions before calling
+#' the function. For more details, refer to the dedicated vignette
+#' `vignette("workflow_start", package="ISAnalytics")`.
+#'
+#' @param folder The path to the folder where the file should be saved. If
+#' the folder doesn't exist, it gets created automatically
+#' @param setting_profile_name A name for the settings profile
+#'
+#' @return `NULL`
+#' @family Utilities
+#' @export
+#'
+#' @examples
+#' tmp_folder <- tempdir()
+#' export_ISA_settings(tmp_folder, "DEFAULT")
+export_ISA_settings <- function(folder, setting_profile_name) {
+  if (!requireNamespace("jsonlite", quietly = TRUE)) {
+    rlang::abort(.missing_pkg_error("jsonlite"))
+  }
+  jsonify <- function(df) {
+    tmp <- df %>%
+      dplyr::mutate(transform = purrr::map(.data$transform, ~ {
+        if (is.null(.x)) {
+          "NULL"
+        } else {
+          rlang::f_text(.x)
+        }
+      }))
+    tmp %>%
+      jsonlite::toJSON(pretty = TRUE)
+  }
+  all_specs_json <- paste0('{',
+    '"mandatory_IS_vars":', jsonify(mandatory_IS_vars(TRUE)), ',',
+    '"annotation_IS_vars":', jsonify(annotation_IS_vars(TRUE)), ',',
+    '"association_file_columns":', jsonify(association_file_columns(TRUE)), ',',
+    '"iss_stats_specs":', jsonify(iss_stats_specs(TRUE)), ',',
+    '"matrix_file_suffixes":', jsonlite::toJSON(matrix_file_suffixes(),
+                                                pretty = TRUE),
+  '}')
+  fs::dir_create(folder)
+  file_name <- paste0(setting_profile_name, "_ISAsettings.json")
+  all_specs_json %>%
+    jsonlite::write_json(path = fs::path(folder, file_name))
+  if (getOption("ISAnalytics.verbose") == TRUE) {
+    success_msg <- c("Settings profile correctly saved",
+                     i = paste("Saved at:", fs::path(folder, file_name)))
+    rlang::inform(success_msg)
+  }
+}
+
+#' Import a dynamic vars settings profile.
+#'
+#' @description The function allows the import of an existing dynamic vars
+#' profile in json format. This is a quick and convenient way to set up
+#' the workflow, alternative to specifying lookup tables manually through
+#' the corresponding setter functions. For more details,
+#' refer to the dedicated vignette
+#' `vignette("workflow_start", package="ISAnalytics")`.
+#'
+#' @param path The path to the json file on disk
+#'
+#' @return `NULL`
+#' @family Utilities
+#' @export
+#'
+#' @examples
+#' tmp_folder <- tempdir()
+#' export_ISA_settings(tmp_folder, "DEFAULT")
+#' import_ISA_settings(fs::path(tmp_folder, "DEFAULT_ISAsettings.json"))
+#' reset_dyn_vars_config()
+import_ISA_settings <- function(path) {
+  if (!requireNamespace("jsonlite", quietly = TRUE)) {
+    rlang::abort(.missing_pkg_error("jsonlite"))
+  }
+  parsed_json <- jsonlite::read_json(path)
+  lookup_tbls <- jsonlite::fromJSON(parsed_json[[1]])
+  unjsonify <- function(df, tbl_name) {
+    tmp <- df %>%
+      tibble::as_tibble() %>%
+      mutate(transform = purrr::map(.data$transform, ~ {
+        if (.x == "NULL") {
+          return(NULL)
+        } else {
+          return(rlang::new_formula(NULL, rlang::parse_expr(.x)))
+        }
+      }))
+    if (tbl_name == "association_file_columns") {
+      set_af_columns_def(tmp)
+    } else {
+      function_name <- paste0("set_", tbl_name)
+      rlang::exec(function_name, specs = tmp)
+    }
+  }
+  matrix_suffixes_tbl <- lookup_tbls$matrix_file_suffixes
+  lookup_tbls <- lookup_tbls[names(lookup_tbls) != "matrix_file_suffixes"]
+  purrr::walk2(lookup_tbls, names(lookup_tbls), unjsonify)
+  options(ISAnalytics.matrix_file_suffix = tibble::as_tibble(
+    matrix_suffixes_tbl))
+  if (getOption("ISAnalytics.verbose")) {
+    rlang::inform("Matrix suffixes specs successfully changed")
+  }
+}
 
 #' Launch the shiny application NGSdataExplorer.
 #'
