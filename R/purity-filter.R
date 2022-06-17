@@ -213,7 +213,7 @@ purity_filter <- function(x,
         }
     }
     if (nrow(pre_filt$process) == 0) {
-        if (getOption("ISAnalytics.verbose")) {
+        if (getOption("ISAnalytics.verbose", TRUE)) {
             rlang::inform("No iss to process, done")
         }
         return(filtered_value)

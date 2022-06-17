@@ -262,14 +262,14 @@ compute_near_integrations <- function(x,
         if (.Platform$OS.type == "windows") {
             p <- BiocParallel::SnowParam(
                 workers = max_workers,
-                progressbar = getOption("ISAnalytics.verbose"),
+                progressbar = getOption("ISAnalytics.verbose", TRUE),
                 tasks = length(split_to_process),
                 exportglobals = TRUE
             )
         } else {
             p <- BiocParallel::MulticoreParam(
                 workers = max_workers,
-                progressbar = getOption("ISAnalytics.verbose"),
+                progressbar = getOption("ISAnalytics.verbose", TRUE),
                 tasks = length(split_to_process),
                 exportglobals = FALSE
             )

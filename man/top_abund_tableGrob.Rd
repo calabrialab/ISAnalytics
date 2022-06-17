@@ -82,6 +82,7 @@ Other Plotting functions:
 \code{\link{fisher_scatterplot}()},
 \code{\link{integration_alluvial_plot}()},
 \code{\link{sharing_heatmap}()},
-\code{\link{sharing_venn}()}
+\code{\link{sharing_venn}()},
+\code{\link{top_cis_overtime_heatmap}()}
 }
 \concept{Plotting functions}

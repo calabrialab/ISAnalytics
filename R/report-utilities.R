@@ -59,10 +59,10 @@
 
 # Renders the report with the appropriate parameters
 .produce_report <- function(report_type, params, path) {
-    if (!getOption("ISAnalytics.reports") == TRUE || is.null(path)) {
+    if (!getOption("ISAnalytics.reports", TRUE) == TRUE || is.null(path)) {
         return(NULL)
     }
-    if (getOption("ISAnalytics.verbose") == TRUE) {
+    if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform("Producing report...")
     }
     if (!requireNamespace("rmarkdown")) {

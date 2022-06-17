@@ -95,7 +95,7 @@ remove_collisions <- function(x,
     seq_count_col <- quant_cols["seqCount"]
     ## Check if association file contains all info relative to content the of
     ## the matrix
-    verbose <- getOption("ISAnalytics.verbose")
+    verbose <- getOption("ISAnalytics.verbose", TRUE)
     pcr_col <- pcr_id_column()
     ### - Are all sample in the matrix present in the AF?
     missing_ind <- if (!all(x[[pcr_col]] %in%
@@ -147,13 +147,13 @@ remove_collisions <- function(x,
         "pcr_replicate"][["names"]]
     pool_col <- req_tag_cols[eval(sym("tag")) == "pool_id"][["names"]]
     joined <- pre_process %>%
-      dplyr::left_join(association_file, by = pcr_col) %>%
-      dplyr::select(dplyr::all_of(
-        c(
-          colnames(pre_process), date_col,
-          replicate_n_col, independent_sample_id, pool_col
-        )
-      ))
+        dplyr::left_join(association_file, by = pcr_col) %>%
+        dplyr::select(dplyr::all_of(
+            c(
+                colnames(pre_process), date_col,
+                replicate_n_col, independent_sample_id, pool_col
+            )
+        ))
     if (verbose) {
         rlang::inform("Identifying collisions...")
     }
@@ -196,7 +196,8 @@ remove_collisions <- function(x,
     final_matr <- final_matr[, mget(colnames(pre_process))]
 
     ## ---- REPORT PRODUCTION
-    if (getOption("ISAnalytics.reports") == TRUE & !is.null(report_path)) {
+    if (getOption("ISAnalytics.reports", TRUE) == TRUE &
+        !is.null(report_path)) {
         post_joined <- association_file[final_matr, on = pcr_col]
         post_joined <- post_joined[, mget(c(
             colnames(final_matr), date_col,

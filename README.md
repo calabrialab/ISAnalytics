@@ -135,6 +135,21 @@ options("ISAnalytics.reports" = TRUE)
 Show more
 </summary>
 
+# ISAnalytics 1.7.3 (2022-06-17)
+
+## BUG FIXES AND MINOR CHANGES
+
+-   All functions that check for options now have a default value if
+    option is not set
+-   `CIS_grubbs` function is now faster (removed dependency from
+    `psych::describe`)
+
+## NEW
+
+-   New functions `CIS_grubbs_overtime()` and associated plotting
+    function `top_cis_overtime_heatmap()` to compute CIS_grubbs test
+    over time
+
 # ISAnalytics 1.7.2 (2022-05-23)
 
 ## BUG FIXES AND MINOR CHANGES

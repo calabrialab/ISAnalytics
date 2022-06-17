@@ -68,6 +68,7 @@ reference:
     - top_targeted_genes
     - sample_statistics
     - CIS_grubbs
+    - CIS_grubbs_overtime
     - gene_frequency_fisher
     - cumulative_is
     - is_sharing
@@ -77,6 +78,7 @@ reference:
   - title: "Plotting functions"
   - contents:
     - CIS_volcano_plot
+    - top_cis_overtime_heatmap
     - HSC_population_plot
     - integration_alluvial_plot
     - top_abund_tableGrob

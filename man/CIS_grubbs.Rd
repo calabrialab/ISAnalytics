@@ -34,7 +34,7 @@ CIS will be computed for each distinct SubjectID found in the table
 \item{return_missing_as_df}{Returns those genes present in the input df
 but not in the refgenes as a data frame?}
 
-\item{results_as_list}{Relevant only if \code{by} is not \code{NULL} - if \code{TRUE}
+\item{results_as_list}{If \code{TRUE}
 return the group computations as a named list, otherwise return a single
 df with an additional column containing the group id}
 }

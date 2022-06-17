@@ -87,7 +87,7 @@ set_mandatory_IS_vars <- function(specs) {
     )
     new_vars <- .new_IS_vars_checks(specs, err, "mand_vars")
     options(ISAnalytics.mandatory_is_vars = new_vars)
-    if (getOption("ISAnalytics.verbose")) {
+    if (getOption("ISAnalytics.verbose", TRUE)) {
         rlang::inform("Mandatory IS vars successfully changed")
     }
 }
@@ -112,7 +112,7 @@ set_mandatory_IS_vars <- function(specs) {
 #'
 reset_mandatory_IS_vars <- function() {
     options(ISAnalytics.mandatory_is_vars = "default")
-    if (getOption("ISAnalytics.verbose")) {
+    if (getOption("ISAnalytics.verbose", TRUE)) {
         rlang::inform("Mandatory IS vars reset to default")
     }
 }
@@ -143,7 +143,7 @@ reset_mandatory_IS_vars <- function() {
 #' mandatory_IS_vars(TRUE)
 #'
 mandatory_IS_vars <- function(include_types = FALSE) {
-    opt <- getOption("ISAnalytics.mandatory_is_vars")
+    opt <- getOption("ISAnalytics.mandatory_is_vars", "default")
     if (!include_types) {
         if (all(opt == "default")) {
             default_vars <- .default_mandatory_IS_vars()
@@ -187,7 +187,7 @@ set_annotation_IS_vars <- function(specs) {
     )
     new_vars <- .new_IS_vars_checks(specs, err, "annot_vars")
     options(ISAnalytics.genomic_annotation_vars = new_vars)
-    if (getOption("ISAnalytics.verbose")) {
+    if (getOption("ISAnalytics.verbose", TRUE)) {
         rlang::inform("Annotation IS vars successfully changed")
     }
 }
@@ -202,7 +202,7 @@ set_annotation_IS_vars <- function(specs) {
 #'
 reset_annotation_IS_vars <- function() {
     options(ISAnalytics.genomic_annotation_vars = "default")
-    if (getOption("ISAnalytics.verbose")) {
+    if (getOption("ISAnalytics.verbose", TRUE)) {
         rlang::inform("Annotation IS vars reset to default")
     }
 }
@@ -221,7 +221,7 @@ reset_annotation_IS_vars <- function() {
 #' annotation_IS_vars(TRUE)
 #'
 annotation_IS_vars <- function(include_types = FALSE) {
-    opt <- getOption("ISAnalytics.genomic_annotation_vars")
+    opt <- getOption("ISAnalytics.genomic_annotation_vars", "default")
     if (!include_types) {
         if (all(opt == "default")) {
             default_vars <- .default_annotation_IS_vars()
@@ -266,7 +266,7 @@ set_af_columns_def <- function(specs) {
     )
     new_vars <- .new_IS_vars_checks(specs, err, "af_vars")
     options(ISAnalytics.af_specs = new_vars)
-    if (getOption("ISAnalytics.verbose")) {
+    if (getOption("ISAnalytics.verbose", TRUE)) {
         rlang::inform("Association file columns specs successfully changed")
     }
 }
@@ -282,7 +282,7 @@ set_af_columns_def <- function(specs) {
 #'
 reset_af_columns_def <- function() {
     options(ISAnalytics.genomic_annotation_vars = "default")
-    if (getOption("ISAnalytics.verbose")) {
+    if (getOption("ISAnalytics.verbose", TRUE)) {
         rlang::inform("Association file columns specs reset to default")
     }
 }
@@ -301,7 +301,7 @@ reset_af_columns_def <- function() {
 #' association_file_columns(TRUE)
 #'
 association_file_columns <- function(include_types = FALSE) {
-    opt <- getOption("ISAnalytics.af_specs")
+    opt <- getOption("ISAnalytics.af_specs", "default")
     if (!include_types) {
         if (all(opt == "default")) {
             default_vars <- .default_af_cols()
@@ -344,7 +344,7 @@ set_iss_stats_specs <- function(specs) {
     )
     new_vars <- .new_IS_vars_checks(specs, err, "iss_vars")
     options(ISAnalytics.iss_stats_specs = new_vars)
-    if (getOption("ISAnalytics.verbose")) {
+    if (getOption("ISAnalytics.verbose", TRUE)) {
         rlang::inform("ISS stats specs successfully changed")
     }
 }
@@ -360,7 +360,7 @@ set_iss_stats_specs <- function(specs) {
 #'
 reset_iss_stats_specs <- function() {
     options(ISAnalytics.iss_stats_specs = "default")
-    if (getOption("ISAnalytics.verbose")) {
+    if (getOption("ISAnalytics.verbose", TRUE)) {
         rlang::inform("ISS stats specs reset to default")
     }
 }
@@ -381,7 +381,7 @@ reset_iss_stats_specs <- function() {
 #' iss_stats_specs(TRUE)
 #'
 iss_stats_specs <- function(include_types = FALSE) {
-    opt <- getOption("ISAnalytics.iss_stats_specs")
+    opt <- getOption("ISAnalytics.iss_stats_specs", "default")
     if (!include_types) {
         if (all(opt == "default")) {
             default_vars <- .default_iss_stats_specs()
@@ -410,7 +410,7 @@ iss_stats_specs <- function(include_types = FALSE) {
 #' matrix_file_suffixes()
 #'
 matrix_file_suffixes <- function() {
-    opt <- getOption("ISAnalytics.matrix_file_suffix")
+    opt <- getOption("ISAnalytics.matrix_file_suffix", "default")
 
     if (all(opt == "default")) {
         defaults_params <- as.list(formals(set_matrix_file_suffixes))
@@ -512,7 +512,7 @@ set_matrix_file_suffixes <- function(quantification_suffix = list(
     )
 
     options(ISAnalytics.matrix_file_suffix = final_specs)
-    if (getOption("ISAnalytics.verbose")) {
+    if (getOption("ISAnalytics.verbose", TRUE)) {
         rlang::inform("Matrix suffixes specs successfully changed")
     }
 }
@@ -528,7 +528,7 @@ set_matrix_file_suffixes <- function(quantification_suffix = list(
 #'
 reset_matrix_file_suffixes <- function() {
     options(ISAnalytics.matrix_file_suffix = "default")
-    if (getOption("ISAnalytics.verbose")) {
+    if (getOption("ISAnalytics.verbose", TRUE)) {
         rlang::inform("Matrix suffixes specs reset to default")
     }
 }
@@ -633,7 +633,7 @@ transform_columns <- function(df, transf_list) {
                     ),
                     i = paste("Your input: ", string_list)
                     )
-                    if (getOption("ISAnalytics.verbose")) {
+                    if (getOption("ISAnalytics.verbose", TRUE)) {
                         rlang::inform(err_msg, class = "skip_col_transform")
                     }
                     return(df)
@@ -732,7 +732,7 @@ comparison_matrix <- function(x,
     na_introduced <- purrr::map_lgl(param_names, function(p) {
         any(is.na(result[[p]]))
     })
-    if (any(na_introduced) & getOption("ISAnalytics.verbose") == TRUE) {
+    if (any(na_introduced) & getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform(.nas_introduced_msg(), class = "comp_nas")
     }
     result
@@ -810,7 +810,8 @@ separate_quant_matrices <- function(x,
         num_cols[!num_cols %in% param_col]
     }
     num_cols <- param_col[param_col %in% num_cols]
-    if (!purrr::is_empty(to_copy) & getOption("ISAnalytics.verbose") == TRUE) {
+    if (!purrr::is_empty(to_copy) &
+        getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform(.non_quant_cols_msg(to_copy))
     }
     separated <- purrr::map(num_cols, function(quant) {
@@ -1166,7 +1167,7 @@ generate_default_folder_structure <- function(type = "correct",
     # Process VISPA stats
     sep_stats <- .process_iss_for_gen(association_file, tag_list)
 
-    if (is.null(sep_stats) & getOption("ISAnalytics.verbose") == TRUE) {
+    if (is.null(sep_stats) & getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         no_stats_msg <- c(paste("No VISPA2 stats column found in af,
                               skipping this step"))
         rlang::inform(no_stats_msg, class = "no_stats_warn")
@@ -1214,38 +1215,42 @@ generate_default_folder_structure <- function(type = "correct",
 #' tmp_folder <- tempdir()
 #' export_ISA_settings(tmp_folder, "DEFAULT")
 export_ISA_settings <- function(folder, setting_profile_name) {
-  if (!requireNamespace("jsonlite", quietly = TRUE)) {
-    rlang::abort(.missing_pkg_error("jsonlite"))
-  }
-  jsonify <- function(df) {
-    tmp <- df %>%
-      dplyr::mutate(transform = purrr::map(.data$transform, ~ {
-        if (is.null(.x)) {
-          "NULL"
-        } else {
-          rlang::f_text(.x)
-        }
-      }))
-    tmp %>%
-      jsonlite::toJSON(pretty = TRUE)
-  }
-  all_specs_json <- paste0('{',
-    '"mandatory_IS_vars":', jsonify(mandatory_IS_vars(TRUE)), ',',
-    '"annotation_IS_vars":', jsonify(annotation_IS_vars(TRUE)), ',',
-    '"association_file_columns":', jsonify(association_file_columns(TRUE)), ',',
-    '"iss_stats_specs":', jsonify(iss_stats_specs(TRUE)), ',',
-    '"matrix_file_suffixes":', jsonlite::toJSON(matrix_file_suffixes(),
-                                                pretty = TRUE),
-  '}')
-  fs::dir_create(folder)
-  file_name <- paste0(setting_profile_name, "_ISAsettings.json")
-  all_specs_json %>%
-    jsonlite::write_json(path = fs::path(folder, file_name))
-  if (getOption("ISAnalytics.verbose") == TRUE) {
-    success_msg <- c("Settings profile correctly saved",
-                     i = paste("Saved at:", fs::path(folder, file_name)))
-    rlang::inform(success_msg)
-  }
+    if (!requireNamespace("jsonlite", quietly = TRUE)) {
+        rlang::abort(.missing_pkg_error("jsonlite"))
+    }
+    jsonify <- function(df) {
+        tmp <- df %>%
+            dplyr::mutate(transform = purrr::map(.data$transform, ~ {
+                if (is.null(.x)) {
+                    "NULL"
+                } else {
+                    rlang::f_text(.x)
+                }
+            }))
+        tmp %>%
+            jsonlite::toJSON(pretty = TRUE)
+    }
+    all_specs_json <- paste0(
+        "{",
+        '"mandatory_IS_vars":', jsonify(mandatory_IS_vars(TRUE)), ",",
+        '"annotation_IS_vars":', jsonify(annotation_IS_vars(TRUE)), ",",
+        '"association_file_columns":', jsonify(association_file_columns(TRUE)), ",",
+        '"iss_stats_specs":', jsonify(iss_stats_specs(TRUE)), ",",
+        '"matrix_file_suffixes":', jsonlite::toJSON(matrix_file_suffixes(),
+            pretty = TRUE
+        ),
+        "}"
+    )
+    fs::dir_create(folder)
+    file_name <- paste0(setting_profile_name, "_ISAsettings.json")
+    all_specs_json %>%
+        jsonlite::write_json(path = fs::path(folder, file_name))
+    if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
+        success_msg <- c("Settings profile correctly saved",
+            i = paste("Saved at:", fs::path(folder, file_name))
+        )
+        rlang::inform(success_msg)
+    }
 }
 
 #' Import a dynamic vars settings profile.
@@ -1269,36 +1274,37 @@ export_ISA_settings <- function(folder, setting_profile_name) {
 #' import_ISA_settings(fs::path(tmp_folder, "DEFAULT_ISAsettings.json"))
 #' reset_dyn_vars_config()
 import_ISA_settings <- function(path) {
-  if (!requireNamespace("jsonlite", quietly = TRUE)) {
-    rlang::abort(.missing_pkg_error("jsonlite"))
-  }
-  parsed_json <- jsonlite::read_json(path)
-  lookup_tbls <- jsonlite::fromJSON(parsed_json[[1]])
-  unjsonify <- function(df, tbl_name) {
-    tmp <- df %>%
-      tibble::as_tibble() %>%
-      mutate(transform = purrr::map(.data$transform, ~ {
-        if (.x == "NULL") {
-          return(NULL)
-        } else {
-          return(rlang::new_formula(NULL, rlang::parse_expr(.x)))
-        }
-      }))
-    if (tbl_name == "association_file_columns") {
-      set_af_columns_def(tmp)
-    } else {
-      function_name <- paste0("set_", tbl_name)
-      rlang::exec(function_name, specs = tmp)
+    if (!requireNamespace("jsonlite", quietly = TRUE)) {
+        rlang::abort(.missing_pkg_error("jsonlite"))
     }
-  }
-  matrix_suffixes_tbl <- lookup_tbls$matrix_file_suffixes
-  lookup_tbls <- lookup_tbls[names(lookup_tbls) != "matrix_file_suffixes"]
-  purrr::walk2(lookup_tbls, names(lookup_tbls), unjsonify)
-  options(ISAnalytics.matrix_file_suffix = tibble::as_tibble(
-    matrix_suffixes_tbl))
-  if (getOption("ISAnalytics.verbose")) {
-    rlang::inform("Matrix suffixes specs successfully changed")
-  }
+    parsed_json <- jsonlite::read_json(path)
+    lookup_tbls <- jsonlite::fromJSON(parsed_json[[1]])
+    unjsonify <- function(df, tbl_name) {
+        tmp <- df %>%
+            tibble::as_tibble() %>%
+            mutate(transform = purrr::map(.data$transform, ~ {
+                if (.x == "NULL") {
+                    return(NULL)
+                } else {
+                    return(rlang::new_formula(NULL, rlang::parse_expr(.x)))
+                }
+            }))
+        if (tbl_name == "association_file_columns") {
+            set_af_columns_def(tmp)
+        } else {
+            function_name <- paste0("set_", tbl_name)
+            rlang::exec(function_name, specs = tmp)
+        }
+    }
+    matrix_suffixes_tbl <- lookup_tbls$matrix_file_suffixes
+    lookup_tbls <- lookup_tbls[names(lookup_tbls) != "matrix_file_suffixes"]
+    purrr::walk2(lookup_tbls, names(lookup_tbls), unjsonify)
+    options(ISAnalytics.matrix_file_suffix = tibble::as_tibble(
+        matrix_suffixes_tbl
+    ))
+    if (getOption("ISAnalytics.verbose", TRUE)) {
+        rlang::inform("Matrix suffixes specs successfully changed")
+    }
 }
 
 #' Launch the shiny application NGSdataExplorer.

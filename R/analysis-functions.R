@@ -700,7 +700,7 @@ gene_frequency_fisher <- function(cis_x,
         purrr::reduce(cis_mod, ~ dplyr::inner_join(.x, .y, by = cols_for_join))
     }
     if (nrow(merged) == 0) {
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             msg <- c("Data frame empty after filtering",
                 i = paste(
                     "Data frame is empty after applying filter on IS,",
@@ -778,7 +778,7 @@ gene_frequency_fisher <- function(cis_x,
             dplyr::filter(.data$to_exclude_from_test == FALSE) %>%
             dplyr::select(-.data$to_exclude_from_test)
         if (nrow(merged) == 0) {
-            if (getOption("ISAnalytics.verbose") == TRUE) {
+            if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                 msg <- c("Data frame empty after filtering",
                     i = paste(
                         "Data frame is after removing unbalanced IS,",
@@ -951,7 +951,7 @@ sample_statistics <- function(x,
             result <- result %>%
                 dplyr::left_join(nIS, by = sample_key)
         } else {
-            if (getOption("ISAnalytics.verbose")) {
+            if (getOption("ISAnalytics.verbose", TRUE)) {
                 rlang::inform(.inform_skip_count_is())
             }
         }
@@ -1015,7 +1015,7 @@ sample_statistics <- function(x,
 #' ("SubjectID" column must be included in the input data frame).
 #' @param return_missing_as_df Returns those genes present in the input df
 #' but not in the refgenes as a data frame?
-#' @param results_as_list Relevant only if `by` is not `NULL` - if `TRUE`
+#' @param results_as_list If `TRUE`
 #' return the group computations as a named list, otherwise return a single
 #' df with an additional column containing the group id
 #'
@@ -1037,172 +1037,229 @@ CIS_grubbs <- function(x,
     by = NULL,
     return_missing_as_df = TRUE,
     results_as_list = TRUE) {
-    ## Check x has the correct structure
-    stopifnot(is.data.frame(x))
-    ## Check dyn vars for required tags
-    req_mand_vars <- .check_required_cols(c("chromosome", "locus"),
-        vars_df = mandatory_IS_vars(TRUE),
-        duplicate_politic = "error"
+    res_checks <- .cis_param_check(
+        x, genomic_annotation_file,
+        grubbs_flanking_gene_bp,
+        threshold_alpha,
+        return_missing_as_df
     )
-    chrom_col <- req_mand_vars %>%
-        dplyr::filter(.data$tag == "chromosome") %>%
-        dplyr::pull(.data$names)
-    locus_col <- req_mand_vars %>%
-        dplyr::filter(.data$tag == "locus") %>%
-        dplyr::pull(.data$names)
-    strand_col <- if ("is_strand" %in% mandatory_IS_vars(TRUE)$tag) {
-        col <- mandatory_IS_vars(TRUE) %>%
-            dplyr::filter(.data$tag == "is_strand") %>%
-            dplyr::pull(.data$names)
-        if (col %in% colnames(x)) {
-            col
-        } else {
-            NULL
-        }
-    } else {
-        NULL
-    }
-    req_annot_col <- .check_required_cols(
-        list(gene_symbol = "char", gene_strand = "char"),
-        vars_df = annotation_IS_vars(TRUE),
-        "error"
-    )
-    gene_symbol_col <- req_annot_col %>%
-        dplyr::filter(.data$tag == "gene_symbol") %>%
-        dplyr::pull(.data$names)
-    gene_strand_col <- req_annot_col %>%
-        dplyr::filter(.data$tag == "gene_strand") %>%
-        dplyr::pull(.data$names)
-    cols_required <- c(chrom_col, locus_col, gene_symbol_col, gene_strand_col)
-    if (!all(cols_required %in% colnames(x))) {
-        rlang::abort(.missing_user_cols_error(
-            cols_required[!cols_required %in% colnames(x)]
-        ))
-    }
-    # Check other parameters
-    stopifnot(is.data.frame(genomic_annotation_file) ||
-        is.character(genomic_annotation_file))
-    genomic_annotation_file <- genomic_annotation_file[1]
-    if (is.character(genomic_annotation_file) &&
-        !genomic_annotation_file %in% c("hg19", "mm9")) {
-        err_msg <- c("Genomic annotation file unknown",
-            x = paste(
-                "Since ISAnalytics 1.5.4, if provided as",
-                "character vector, `genomic_annotation_file`",
-                "parameter must be one of 'hg19' or 'mm9'"
-            ),
-            i = paste(
-                "For using other genome reference files",
-                "import them in the R environment and pass",
-                "them to the function"
-            )
-        )
-        rlang::abort(err_msg, class = "genomic_file_char")
-    }
-    if (is.character(genomic_annotation_file)) {
-        gen_file <- paste0("refGenes_", genomic_annotation_file)
-        utils::data(list = gen_file, envir = rlang::current_env())
-        refgenes <- rlang::eval_tidy(rlang::sym(gen_file))
-    } else {
-        # Check annotation file format
-        refgenes <- genomic_annotation_file
-        if (!all(refGene_table_cols() %in% colnames(refgenes))) {
-            rlang::abort(.non_standard_annotation_structure())
-        }
-        refgenes <- tibble::as_tibble(refgenes) %>%
-            dplyr::mutate(chrom = stringr::str_replace_all(
-                .data$chrom,
-                "chr", ""
-            ))
-    }
-    stopifnot(is.numeric(grubbs_flanking_gene_bp) ||
-        is.integer(grubbs_flanking_gene_bp))
-    grubbs_flanking_gene_bp <- grubbs_flanking_gene_bp[1]
-    stopifnot(is.numeric(threshold_alpha))
-    threshold_alpha <- threshold_alpha[1]
     stopifnot(is.null(by) || is.character(by))
     if (!all(by %in% colnames(x))) {
         rlang::abort(.missing_user_cols_error(by[!by %in% colnames(x)]))
     }
-    stopifnot(is.logical(return_missing_as_df))
-    return_missing_as_df <- return_missing_as_df[1]
+    result <- list()
+    join_ref_res <- .cis_join_ref(x, res_checks)
+    result <- append(result, join_ref_res[
+        names(join_ref_res) %in% c("missing_genes", "missing_is")
+    ])
     if (is.null(by)) {
-        result <- .cis_grubb_calc(
-            x = x,
-            refgenes = refgenes,
-            grubbs_flanking_gene_bp = grubbs_flanking_gene_bp,
-            threshold_alpha = threshold_alpha,
-            gene_symbol_col = gene_symbol_col,
-            gene_strand_col = gene_strand_col,
-            chr_col = chrom_col, locus_col = locus_col,
-            strand_col = strand_col
+        cis <- .cis_grubb_calc(
+            x = join_ref_res$joint_ref,
+            grubbs_flanking_gene_bp = res_checks$grubbs_flanking_gene_bp,
+            threshold_alpha = res_checks$threshold_alpha,
+            gene_symbol_col = res_checks$gene_symbol_col,
+            gene_strand_col = res_checks$gene_strand_col,
+            chr_col = res_checks$chrom_col, locus_col = res_checks$locus_col,
+            strand_col = res_checks$strand_col
         )
-        missing_df <- result$missing
     } else {
-        grouped <- x %>%
+        grouped <- join_ref_res$joint_ref %>%
             dplyr::group_by(dplyr::across(dplyr::all_of(by)))
-        group_keys <- grouped %>%
+        group_ks <- grouped %>%
             dplyr::group_keys() %>%
             tidyr::unite(col = "id", dplyr::everything()) %>%
             dplyr::pull(.data$id)
-        split <- x %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of(by))) %>%
+        split <- grouped %>%
             dplyr::group_split() %>%
-            purrr::set_names(group_keys)
-        result <- purrr::map(split, ~ .cis_grubb_calc(
+            purrr::set_names(group_ks)
+        cis <- purrr::map(split, ~ .cis_grubb_calc(
             x = .x,
-            refgenes = refgenes,
-            grubbs_flanking_gene_bp = grubbs_flanking_gene_bp,
-            threshold_alpha = threshold_alpha,
-            gene_symbol_col = gene_symbol_col,
-            gene_strand_col = gene_strand_col,
-            chr_col = chrom_col, locus_col = locus_col,
-            strand_col = strand_col
+            grubbs_flanking_gene_bp = res_checks$grubbs_flanking_gene_bp,
+            threshold_alpha = res_checks$threshold_alpha,
+            gene_symbol_col = res_checks$gene_symbol_col,
+            gene_strand_col = res_checks$gene_strand_col,
+            chr_col = res_checks$chrom_col, locus_col = res_checks$locus_col,
+            strand_col = res_checks$strand_col
         ))
-        missing_df <- purrr::map(result, ~ .x$missing) %>%
-            purrr::reduce(dplyr::bind_rows) %>%
-            dplyr::distinct()
-    }
-    if (nrow(missing_df) > 0 & getOption("ISAnalytics.verbose") == TRUE) {
-        warn_miss <- c("Warning: missing genes in refgenes table",
-            i = paste(paste(
-                "A total of", nrow(missing_df),
-                "genes",
-                "were found in the input data but not",
-                "in the refgene table. This may be caused by",
-                "a mismatch in the annotation phase of",
-                "the matrix. Here is a summary: "
-            ),
-            paste0(utils::capture.output({
-                print(missing_df, n = Inf)
-            }), collapse = "\n"),
-            sep = "\n"
-            ),
-            i = paste(
-                "NOTE: missing genes will be removed from",
-                "the final output! Review results carefully"
-            )
-        )
-        rlang::inform(warn_miss, class = "warn_miss_genes")
-    }
-    if (!is.null(by)) {
-        result <- if (results_as_list) {
-            purrr::map(result, ~ .x$df)
-        } else {
-            purrr::map2(result, names(result), ~ {
-                .x$df %>%
+        if (!results_as_list) {
+            cis <- purrr::map2(cis, names(cis), ~ {
+                .x %>%
                     dplyr::mutate(group = .y)
             }) %>% purrr::reduce(dplyr::bind_rows)
         }
-        if (return_missing_as_df) {
-            return(list(cis = result, missing_genes = missing_df))
+    }
+    result$cis <- cis
+    return(result)
+}
+
+
+#' Compute CIS and Grubbs test over different time points and groups.
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' Computes common insertion sites and Grubbs test for each separate group
+#' and separating different time points among the same group. The logic
+#' applied is the same as the function `CIS_grubbs()`.
+#'
+#' @inherit CIS_grubbs details
+#'
+#' @inheritParams CIS_grubbs
+#' @param group A character vector of column names that identifies a group.
+#' Each group must contain one or more time points.
+#' @param timepoint_col What is the name of the column containing time points?
+#' @param as_df Choose the result format: if `TRUE` the results are returned
+#' as a single data frame containing a column for the group id and a column
+#' for the time point, if `FALSE` results are returned in the form of nested
+#' lists (one table for each time point and for each group), if `"group"`
+#' results are returned as a list separated for each group but containing a
+#' single table with all time points.
+#' @param max_workers Maximum number of parallel workers. If `NULL` the
+#' maximum number of workers is calculated automatically.
+#'
+#' @return A list with results and optionally missing genes info
+#' @export
+#'
+#' @examples
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
+#'     association_file = association_file,
+#'     value_cols = c("seqCount", "fragmentEstimate")
+#' )
+#' cis_overtime <- CIS_grubbs_overtime(aggreg)
+#' cis_overtime
+CIS_grubbs_overtime <- function(x,
+    genomic_annotation_file = "hg19",
+    grubbs_flanking_gene_bp = 100000,
+    threshold_alpha = 0.05,
+    group = "SubjectID",
+    timepoint_col = "TimePoint",
+    as_df = TRUE,
+    return_missing_as_df = TRUE,
+    max_workers = NULL) {
+    result <- list()
+    res_checks <- .cis_param_check(
+        x, genomic_annotation_file,
+        grubbs_flanking_gene_bp, threshold_alpha,
+        return_missing_as_df
+    )
+    stopifnot(is.character(group))
+    stopifnot(is.character(timepoint_col))
+    stopifnot(is.null(max_workers) || is.numeric(max_workers))
+    timepoint_col <- timepoint_col[1]
+    if (!all(c(group, timepoint_col) %in% colnames(x))) {
+        rlang::abort(.missing_user_cols_error(
+            c(group, timepoint_col)[!c(group, timepoint_col) %in% colnames(x)]
+        ))
+    }
+    # Manage workers
+    if (.Platform$OS.type == "windows" & is.null(max_workers)) {
+        max_workers <- BiocParallel::snowWorkers()
+    } else if (.Platform$OS.type != "windows" & is.null(max_workers)) {
+        max_workers <- BiocParallel::multicoreWorkers()
+    }
+    stopifnot(is.logical(as_df) || is.character(as_df))
+    result_as_df <- if (is.logical(as_df)) {
+        if (as_df[1] == TRUE) {
+            1
+        } else {
+            0
         }
-        return(result)
+    } else if (is.character(as_df) & as_df[1] == "group") {
+        2
+    } else {
+        err_as_df <- c("The argument `as_df` must be one of the allowed values",
+            x = paste(
+                "Arg can be either logical (T/F) or",
+                "equal to 'group'"
+            ),
+            i = paste("See `?CIS_grubbs_overtime`")
+        )
+        rlang::abort(err_as_df)
     }
-    if (return_missing_as_df) {
-        return(list(cis = result$df, missing_genes = missing_df))
+    join_ref_res <- .cis_join_ref(x, res_checks)
+    result <- append(result, join_ref_res[
+        names(join_ref_res) %in% c("missing_genes", "missing_is")
+    ])
+    # --- Split according to group
+    split <- join_ref_res$joint_ref %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(group)))
+    keys_g <- split %>%
+        dplyr::group_keys() %>%
+        tidyr::unite(col = "id") %>%
+        dplyr::pull(.data$id)
+    split <- split %>%
+        dplyr::group_split() %>%
+        purrr::set_names(keys_g)
+
+    # --- Calculate for each group and each tp
+    tp_slice_cis <- function(df, timepoint_col, res_checks, result_as_df) {
+        tmp <- df %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(timepoint_col)))
+        g_keys <- tmp %>%
+            dplyr::group_keys() %>%
+            dplyr::pull(!!timepoint_col)
+        tmp <- tmp %>%
+            dplyr::group_split() %>%
+            purrr::set_names(g_keys)
+        res <- if (result_as_df == 0) {
+            purrr::map(tmp, ~ .cis_grubb_calc(
+                x = .x,
+                grubbs_flanking_gene_bp = res_checks$grubbs_flanking_gene_bp,
+                threshold_alpha = res_checks$threshold_alpha,
+                gene_symbol_col = res_checks$gene_symbol_col,
+                gene_strand_col = res_checks$gene_strand_col,
+                chr_col = res_checks$chrom_col, locus_col = res_checks$locus_col,
+                strand_col = res_checks$strand_col
+            ))
+        } else {
+            purrr::map2_df(tmp, names(tmp), ~ .cis_grubb_calc(
+                x = .x,
+                grubbs_flanking_gene_bp = res_checks$grubbs_flanking_gene_bp,
+                threshold_alpha = res_checks$threshold_alpha,
+                gene_symbol_col = res_checks$gene_symbol_col,
+                gene_strand_col = res_checks$gene_strand_col,
+                chr_col = res_checks$chrom_col, locus_col = res_checks$locus_col,
+                strand_col = res_checks$strand_col
+            ) %>% dplyr::mutate(!!timepoint_col := .y))
+        }
+        return(res)
     }
-    return(result$df)
+
+    if (.Platform$OS.type == "windows") {
+        p <- BiocParallel::SnowParam(
+            stop.on.error = TRUE,
+            progressbar = getOption("ISAnalytics.verbose", TRUE),
+            tasks = length(split),
+            workers = max_workers
+        )
+    } else {
+        p <- BiocParallel::MulticoreParam(
+            stop.on.error = TRUE,
+            progressbar = getOption("ISAnalytics.verbose", TRUE),
+            tasks = length(split),
+            workers = max_workers
+        )
+    }
+    cis_overtime <- BiocParallel::bplapply(split,
+        FUN = tp_slice_cis,
+        timepoint_col = timepoint_col,
+        res_checks = res_checks,
+        result_as_df = result_as_df,
+        BPPARAM = p
+    )
+    BiocParallel::bpstop(p)
+
+    if (result_as_df == 1) {
+        cis_overtime <- purrr::map2_df(
+            cis_overtime, names(cis_overtime),
+            ~ .x %>%
+                dplyr::mutate(group = .y)
+        )
+    }
+    result$cis <- cis_overtime
+    return(result)
 }
 
 #' Integrations cumulative count in time by sample
@@ -1500,7 +1557,7 @@ is_sharing <- function(...,
             rlang::abort(.keys_not_char_err())
         }
         if (length(unique(group_keys)) == 1) {
-            if (getOption("ISAnalytics.verbose") == TRUE) {
+            if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                 one_key_list <- c("Single key in list",
                     i = paste(
                         "Provided a single key in list,",
@@ -1670,7 +1727,7 @@ is_sharing <- function(...,
             venn = table_for_venn
         )
     }
-    if (getOption("ISAnalytics.verbose") == TRUE) {
+    if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform("Done!")
     }
     return(sharing)

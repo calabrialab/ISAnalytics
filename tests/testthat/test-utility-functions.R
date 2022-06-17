@@ -583,28 +583,31 @@ test_that("as_sparse_matrix works with list of matrices", {
 })
 
 test_that("as_sparse_matrix works with aggreg matrix", {
-  smpl_agg <-  tibble::tibble(
-    chr = c(1, 2, 3),
-    integration_locus = c(1354, 5634, 4765),
-    strand = c("+", "+", "+"),
-    GeneName = c("GENE1", "GENE2", "GENE3"),
-    GeneStrand = c("+", "+", "+"),
-    SubjectID = c("S1", "S2", "S2"),
-    CellMarker = c("C1", "C1", "C2"),
-    Value_sum = c(46, 546, 587)
-  )
-  sparse <- as_sparse_matrix(smpl_agg,
-                             single_value_col = "Value_sum",
-                             key = c("SubjectID", "CellMarker"))
-  expected <- tibble::tibble(chr = c(1, 2, 3),
-                       integration_locus = c(1354, 5634, 4765),
-                       strand = c('+', '+', '+'),
-                       GeneName = c('GENE1', 'GENE2', 'GENE3'),
-                       GeneStrand = c('+', '+', '+'),
-                       S1_C1 = c(46, NA, NA),
-                       S2_C1 = c(NA, 546, NA),
-                       S2_C2 = c(NA, NA, 587))
-  expect_equal(sparse, expected)
+    smpl_agg <- tibble::tibble(
+        chr = c(1, 2, 3),
+        integration_locus = c(1354, 5634, 4765),
+        strand = c("+", "+", "+"),
+        GeneName = c("GENE1", "GENE2", "GENE3"),
+        GeneStrand = c("+", "+", "+"),
+        SubjectID = c("S1", "S2", "S2"),
+        CellMarker = c("C1", "C1", "C2"),
+        Value_sum = c(46, 546, 587)
+    )
+    sparse <- as_sparse_matrix(smpl_agg,
+        single_value_col = "Value_sum",
+        key = c("SubjectID", "CellMarker")
+    )
+    expected <- tibble::tibble(
+        chr = c(1, 2, 3),
+        integration_locus = c(1354, 5634, 4765),
+        strand = c("+", "+", "+"),
+        GeneName = c("GENE1", "GENE2", "GENE3"),
+        GeneStrand = c("+", "+", "+"),
+        S1_C1 = c(46, NA, NA),
+        S2_C1 = c(NA, 546, NA),
+        S2_C2 = c(NA, NA, 587)
+    )
+    expect_equal(sparse, expected)
 })
 
 #------------------------------------------------------------------------------#

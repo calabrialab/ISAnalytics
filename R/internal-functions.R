@@ -95,7 +95,7 @@
                     inspect_cmd, "`"
                 )
             )
-            rlang::inform(warn, class = "missing_crit_tags")
+            rlang::warn(warn, class = "missing_crit_tags")
         }
     }
     new_vars
@@ -412,7 +412,7 @@
                         na = ""
                     )
                 } else {
-                    if (getOption("ISAnalytics.verbose") == TRUE) {
+                    if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                         warn_empty_iss <- c(paste0(
                             "Warning: empty stats for project '",
                             proj, "', pool '", .y, "'"
@@ -519,7 +519,7 @@
                             na = ""
                         )
                     } else {
-                        if (getOption("ISAnalytics.verbose") == TRUE) {
+                        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                             warn_empty_iss <- c(paste0(
                                 "Warning: empty stats for project '",
                                 proj, "', pool '", .y, "'"
@@ -890,7 +890,7 @@
         verbose = FALSE,
         drop = to_drop,
         colClasses = col_types,
-        showProgress = getOption("ISAnalytics.verbose"),
+        showProgress = getOption("ISAnalytics.verbose", TRUE),
         data.table = TRUE
     )
 
@@ -951,7 +951,7 @@
         col_types = do.call(readr::cols, col_types),
         na = c("NONE", "NA", "NULL", "NaN", ""),
         trim_ws = TRUE,
-        progress = getOption("ISAnalytics.verbose")
+        progress = getOption("ISAnalytics.verbose", TRUE)
     )
     vars <- mandatory_IS_vars(TRUE)
     if (annotated) {
@@ -1019,7 +1019,8 @@
         if (!compression_type %in% .supported_fread_compression_formats()) {
             ### If not, switch to classic for reading
             mode <- "classic"
-            if (call_mode == "EXTERNAL" && getOption("ISAnalytics.verbose") == TRUE) {
+            if (call_mode == "EXTERNAL" &&
+                getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                 rlang::inform(.unsupported_comp_format_inf(),
                     class = "unsup_comp_format"
                 )
@@ -1043,7 +1044,8 @@
     additional_cols <- additional_cols[names(additional_cols) %in%
         colnames(peek_headers)]
     ## - Start reading
-    if (call_mode == "EXTERNAL" && getOption("ISAnalytics.verbose") == TRUE) {
+    if (call_mode == "EXTERNAL" &&
+        getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform(c("Reading file...", i = paste0("Mode: ", mode)))
     }
     df <- if (mode == "fread") {
@@ -1075,7 +1077,8 @@
             verbose = FALSE
         )
     }
-    if (call_mode == "EXTERNAL" && getOption("ISAnalytics.verbose") == TRUE) {
+    if (call_mode == "EXTERNAL" &&
+        getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform("Reshaping...")
     }
     max_workers <- trunc(BiocParallel::snowWorkers() / 3)
@@ -1087,7 +1090,7 @@
             BiocParallel::SnowParam(
                 workers = max_workers,
                 tasks = trunc(nrow(df) / max_workers),
-                progressbar = getOption("ISAnalytics.verbose"),
+                progressbar = getOption("ISAnalytics.verbose", TRUE),
                 exportglobals = TRUE,
                 stop.on.error = TRUE
             )
@@ -1095,7 +1098,7 @@
             BiocParallel::MulticoreParam(
                 workers = max_workers,
                 tasks = trunc(nrow(df) / max_workers),
-                progressbar = getOption("ISAnalytics.verbose"),
+                progressbar = getOption("ISAnalytics.verbose", TRUE),
                 exportglobals = FALSE,
                 stop.on.error = TRUE
             )
@@ -1130,7 +1133,7 @@
     tidy <- tidy[val_col_name > 0]
     ## Transform cols
     if (call_mode == "EXTERNAL" &&
-        getOption("ISAnalytics.verbose") == TRUE &&
+        getOption("ISAnalytics.verbose", TRUE) == TRUE &&
         !is.null(transformations)) {
         rlang::inform("Applying column transformations...")
     }
@@ -1138,7 +1141,8 @@
         tidy <- transform_columns(tidy, transf_list = transformations)
     }
     ## - Report summary
-    if (call_mode == "EXTERNAL" && getOption("ISAnalytics.verbose") == TRUE) {
+    if (call_mode == "EXTERNAL" &&
+        getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform(.summary_ism_import_msg(
             is_annotated,
             df_dim,
@@ -1184,7 +1188,7 @@
         if (!requireNamespace("readxl", quietly = TRUE)) {
             rlang::abort(.missing_pkg_error("readxl"))
         }
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform(.xls_file_warning(),
                 class = "xls_file"
             )
@@ -1226,7 +1230,7 @@
                 na = c("NONE", "NA", "NULL", "NaN", ""),
                 col_types = do.call(readr::cols, col_types),
                 trim_ws = TRUE,
-                progress = getOption("ISAnalytics.verbose")
+                progress = getOption("ISAnalytics.verbose", TRUE)
             )
             problems <- readr::problems(df)
             df
@@ -1235,7 +1239,7 @@
                 col_types = col_types,
                 na = c("NONE", "NA", "NULL", "NaN", ""),
                 trim_ws = TRUE,
-                progress = getOption("ISAnalytics.verbose")
+                progress = getOption("ISAnalytics.verbose", TRUE)
             )
             problems <- NULL
             df
@@ -1250,7 +1254,7 @@
                 false = .data$types
             ))
         dates <- dates %>%
-          dplyr::filter(.data$names %in% colnames(as_file))
+            dplyr::filter(.data$names %in% colnames(as_file))
         date_failures <- NULL
         if (nrow(dates) > 0) {
             before <- as_file %>%
@@ -1355,7 +1359,7 @@
                 fs::path(cur[[concat_pool_col]])
             ), "$")
         } else {
-            if (getOption("ISAnalytics.verbose") == TRUE) {
+            if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                 msg <- c(paste(
                     "Warning: found NA",
                     paste0(concat_pool_col, " field")
@@ -1447,7 +1451,7 @@
     if (!is.null(filter)) {
         # Pre-filtering of association file
         if (!all(names(filter) %in% colnames(association_file))) {
-            if (getOption("ISAnalytics.verbose") == TRUE) {
+            if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                 missing_filt <- c(
                     "Some or all the names in the filter not found",
                     i = paste(
@@ -1729,13 +1733,13 @@
         p <- BiocParallel::SnowParam(
             stop.on.error = FALSE,
             tasks = length(stats_paths$stats_files),
-            progressbar = getOption("ISAnalytics.verbose")
+            progressbar = getOption("ISAnalytics.verbose", TRUE)
         )
     } else {
         p <- BiocParallel::MulticoreParam(
             stop.on.error = FALSE,
             tasks = length(stats_paths$stats_files),
-            progressbar = getOption("ISAnalytics.verbose")
+            progressbar = getOption("ISAnalytics.verbose", TRUE)
         )
     }
     FUN <- function(x, req_cols) {
@@ -1872,7 +1876,7 @@
         # Keep asking user until the choice is valid
         repeat {
             cat("Your choice: ")
-            connection <- getOption("ISAnalytics.connection")
+            connection <- getOption("ISAnalytics.connection", stdin())
             if (length(connection) > 1) {
                 con <- connection[1]
             } else {
@@ -2012,7 +2016,7 @@
     cat("[1] ALL", "[2] ONLY SOME", "[0] QUIT", sep = "\n")
     repeat {
         cat("Your choice: ")
-        connection <- getOption("ISAnalytics.connection")
+        connection <- getOption("ISAnalytics.connection", stdin())
         if (length(connection) > 1) {
             connection <- connection[4]
         }
@@ -2044,7 +2048,7 @@
 .pool_choices_IN <- function(indexes) {
     repeat {
         cat("\nYour choice: ")
-        connection <- getOption("ISAnalytics.connection")
+        connection <- getOption("ISAnalytics.connection", stdin())
         if (length(connection) > 1) {
             connection <- connection[5]
         }
@@ -2134,7 +2138,7 @@
             print(pools_to_import)
             cat("\nConfirm your choices? [y/n]", sep = "")
             repeat {
-                connection <- getOption("ISAnalytics.connection")
+                connection <- getOption("ISAnalytics.connection", stdin())
                 if (length(connection) > 1) {
                     connection <- connection[6]
                 }
@@ -2167,7 +2171,7 @@
                 dplyr::distinct())
             cat("\nConfirm your choices? [y/n]", sep = "")
             repeat {
-                connection <- getOption("ISAnalytics.connection")
+                connection <- getOption("ISAnalytics.connection", stdin())
                 if (length(connection) > 1) {
                     connection <- connection[6]
                 }
@@ -2339,7 +2343,7 @@
         )
         repeat {
             cat("\n\nType the index number: ")
-            connection <- getOption("ISAnalytics.connection")
+            connection <- getOption("ISAnalytics.connection", stdin())
             if (length(connection) > 1) {
                 connection <- connection[7]
             }
@@ -2453,7 +2457,7 @@
         ), sep = "\n\n")
         cat("\nConfirm your choices? [y/n]", sep = "")
         repeat {
-            connection <- getOption("ISAnalytics.connection")
+            connection <- getOption("ISAnalytics.connection", stdin())
             if (length(connection) > 1) {
                 connection <- connection[8]
             }
@@ -2781,7 +2785,7 @@
     reported_anomalies <- purrr::map_df(files_to_import, ~ .x$reported)
     files_to_import <- purrr::map_df(files_to_import, ~ .x$to_import)
     # Report missing or duplicated
-    if (getOption("ISAnalytics.verbose") == TRUE &&
+    if (getOption("ISAnalytics.verbose", TRUE) == TRUE &&
         nrow(reported_anomalies) > 0) {
         if (any(reported_anomalies$Missing)) {
             missing_msg <- c("Some files are missing and will be ignored",
@@ -2896,7 +2900,8 @@
         if (.y) {
             .x %>%
                 dplyr::distinct(dplyr::across(
-                  dplyr::all_of(mandatory_IS_vars()))) %>%
+                    dplyr::all_of(mandatory_IS_vars())
+                )) %>%
                 nrow()
         } else {
             NA_integer_
@@ -2942,14 +2947,14 @@
         p <- BiocParallel::SnowParam(
             workers = workers,
             stop.on.error = FALSE,
-            progressbar = getOption("ISAnalytics.verbose"),
+            progressbar = getOption("ISAnalytics.verbose", TRUE),
             tasks = nrow(files_to_import)
         )
     } else {
         p <- BiocParallel::MulticoreParam(
             workers = workers,
             stop.on.error = FALSE,
-            progressbar = getOption("ISAnalytics.verbose"),
+            progressbar = getOption("ISAnalytics.verbose", TRUE),
             tasks = nrow(files_to_import)
         )
     }
@@ -3107,17 +3112,17 @@
     indep_sample_id) {
     data.table::setDT(req_tag_cols)
     joined <- association_file %>%
-      dplyr::left_join(df, by = pcr_id_column())
+        dplyr::left_join(df, by = pcr_id_column())
     proj_col_name <- req_tag_cols[eval(rlang::expr(
         !!sym("tag") == "project_id"
     ))][["names"]]
     projects <- joined %>%
-      dplyr::filter(!dplyr::if_all(
-        .cols = dplyr::all_of(mandatory_IS_vars()),
-        .fns = is.na
-      )) %>%
-      dplyr::distinct(.data[[proj_col_name]]) %>%
-      dplyr::pull(.data[[proj_col_name]])
+        dplyr::filter(!dplyr::if_all(
+            .cols = dplyr::all_of(mandatory_IS_vars()),
+            .fns = is.na
+        )) %>%
+        dplyr::distinct(.data[[proj_col_name]]) %>%
+        dplyr::pull(.data[[proj_col_name]])
     wanted_tags <- c(
         "subject", "tissue", "cell_marker", "tp_days"
     )
@@ -3127,19 +3132,19 @@
         eval(sym("names")) %in% colnames(association_file), ]
     wanted <- data.table::rbindlist(list(req_tag_cols, wanted))
     missing_in_df <- joined %>%
-      dplyr::filter(
-        dplyr::if_all(
-          .cols = dplyr::all_of(mandatory_IS_vars()),
-          .fns = is.na
-          ) & .data[[proj_col_name]] %in% projects
-      ) %>%
-      dplyr::distinct(dplyr::across(
-        dplyr::all_of(c(wanted$names, indep_sample_id))
+        dplyr::filter(
+            dplyr::if_all(
+                .cols = dplyr::all_of(mandatory_IS_vars()),
+                .fns = is.na
+            ) & .data[[proj_col_name]] %in% projects
+        ) %>%
+        dplyr::distinct(dplyr::across(
+            dplyr::all_of(c(wanted$names, indep_sample_id))
         ))
     reduced_af <- association_file %>%
-      dplyr::filter(
-        .data[[proj_col_name]] %in% projects
-      )
+        dplyr::filter(
+            .data[[proj_col_name]] %in% projects
+        )
     data.table::setDT(reduced_af)
     data.table::setDT(missing_in_df)
     list(miss = missing_in_df, reduced_af = reduced_af)
@@ -3155,17 +3160,19 @@
 .identify_independent_samples <- function(joined, indep_sample_id) {
     indep_syms <- purrr::map(indep_sample_id, rlang::sym)
     temp <- joined %>%
-      dplyr::select(dplyr::all_of(
-        c(mandatory_IS_vars(), indep_sample_id)
-      )) %>%
-      dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
-      dplyr::summarise(N = dplyr::n_distinct(!!!indep_syms),
-                       .groups = "drop") %>%
-      dplyr::filter(.data$N > 1)
+        dplyr::select(dplyr::all_of(
+            c(mandatory_IS_vars(), indep_sample_id)
+        )) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
+        dplyr::summarise(
+            N = dplyr::n_distinct(!!!indep_syms),
+            .groups = "drop"
+        ) %>%
+        dplyr::filter(.data$N > 1)
     non_collisions <- joined %>%
-      dplyr::anti_join(temp, by = mandatory_IS_vars())
+        dplyr::anti_join(temp, by = mandatory_IS_vars())
     collisions <- joined %>%
-      dplyr::semi_join(temp, by = mandatory_IS_vars())
+        dplyr::semi_join(temp, by = mandatory_IS_vars())
     data.table::setDT(non_collisions)
     data.table::setDT(collisions)
     list(collisions = collisions, non_collisions = non_collisions)
@@ -3203,7 +3210,7 @@
     winning_sample <- x[1, mget(ind_sample_key)]
     # Filter the winning rows
     x <- x %>%
-      dplyr::semi_join(winning_sample, by = ind_sample_key)
+        dplyr::semi_join(winning_sample, by = ind_sample_key)
     data.table::setDT(x)
     return(list(data = x, check = TRUE))
 }
@@ -3229,16 +3236,16 @@
 # not (and therefore there is the need to perform the next step)
 .discriminate_by_replicate <- function(x, repl_col, ind_sample_key) {
     temp <- x %>%
-      dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) %>%
-      dplyr::summarise(N = dplyr::n(), .groups = "drop") %>%
-      dplyr::arrange(dplyr::desc(.data$N))
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) %>%
+        dplyr::summarise(N = dplyr::n(), .groups = "drop") %>%
+        dplyr::arrange(dplyr::desc(.data$N))
     data.table::setDT(temp)
     if (length(temp$N) != 1 & !temp$N[1] > temp$N[2]) {
         return(list(data = x, check = FALSE))
     }
     temp <- temp[1, mget(ind_sample_key)]
     x <- x %>%
-      dplyr::semi_join(temp, by = ind_sample_key)
+        dplyr::semi_join(temp, by = ind_sample_key)
     data.table::setDT(x)
     return(list(data = x, check = TRUE))
 }
@@ -3269,9 +3276,9 @@
     seqCount_col,
     ind_sample_key) {
     temp <- x %>%
-      dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) %>%
-      dplyr::summarise(sum = sum(.data[[seqCount_col]]), .groups = "drop") %>%
-      dplyr::arrange(dplyr::desc(.data$sum))
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) %>%
+        dplyr::summarise(sum = sum(.data[[seqCount_col]]), .groups = "drop") %>%
+        dplyr::arrange(dplyr::desc(.data$sum))
     data.table::setDT(temp)
     ratio <- temp$sum[1] / temp$sum[2]
     if (!ratio > reads_ratio) {
@@ -3279,7 +3286,7 @@
     }
     temp <- temp[1, mget(ind_sample_key)]
     x <- x %>%
-      dplyr::semi_join(temp, by = ind_sample_key)
+        dplyr::semi_join(temp, by = ind_sample_key)
     data.table::setDT(x)
     return(list(data = x, check = TRUE))
 }
@@ -3367,14 +3374,14 @@
     if (.Platform$OS.type == "windows") {
         p <- BiocParallel::SnowParam(
             stop.on.error = TRUE,
-            progressbar = getOption("ISAnalytics.verbose"),
+            progressbar = getOption("ISAnalytics.verbose", TRUE),
             tasks = length(split_data),
             workers = max_workers
         )
     } else {
         p <- BiocParallel::MulticoreParam(
             stop.on.error = TRUE,
-            progressbar = getOption("ISAnalytics.verbose"),
+            progressbar = getOption("ISAnalytics.verbose", TRUE),
             tasks = length(split_data),
             workers = max_workers
         )
@@ -4078,7 +4085,7 @@
                 "csv", paste("csv", .compressed_formats(), sep = "."),
                 "txt", paste("txt", .compressed_formats(), sep = ".")
             )) {
-                if (getOption("ISAnalytics.verbose") == TRUE) {
+                if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                     warn <- c("Recalibration file format unsupported",
                         i = "Writing file in 'tsv.gz' format"
                     )
@@ -4102,7 +4109,7 @@
                 "Recalibration map saved to: ",
                 tmp_filename
             )
-            if (getOption("ISAnalytics.verbose") == TRUE) {
+            if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                 rlang::inform(saved_msg)
             }
         },
@@ -4518,10 +4525,182 @@
     count_by_gene
 }
 
-#---- USED IN : CIS_grubbs ----
+#---- USED IN : CIS_grubbs, CIS_grubbs_overtime ----
+# Param check for CIS functions
+.cis_param_check <- function(x, genomic_annotation_file,
+    grubbs_flanking_gene_bp,
+    threshold_alpha,
+    return_missing_as_df) {
+    ## Check x has the correct structure
+    stopifnot(is.data.frame(x))
+    check_res <- list()
+    ## Check dyn vars for required tags
+    check_res$req_mand_vars <- .check_required_cols(c("chromosome", "locus"),
+        vars_df = mandatory_IS_vars(TRUE),
+        duplicate_politic = "error"
+    )
+    check_res$chrom_col <- check_res$req_mand_vars %>%
+        dplyr::filter(.data$tag == "chromosome") %>%
+        dplyr::pull(.data$names)
+    check_res$locus_col <- check_res$req_mand_vars %>%
+        dplyr::filter(.data$tag == "locus") %>%
+        dplyr::pull(.data$names)
+    check_res$strand_col <- if ("is_strand" %in% mandatory_IS_vars(TRUE)$tag) {
+        col <- mandatory_IS_vars(TRUE) %>%
+            dplyr::filter(.data$tag == "is_strand") %>%
+            dplyr::pull(.data$names)
+        if (col %in% colnames(x)) {
+            col
+        } else {
+            NULL
+        }
+    } else {
+        NULL
+    }
+    check_res$req_annot_col <- .check_required_cols(
+        list(gene_symbol = "char", gene_strand = "char"),
+        vars_df = annotation_IS_vars(TRUE),
+        "error"
+    )
+    check_res$gene_symbol_col <- check_res$req_annot_col %>%
+        dplyr::filter(.data$tag == "gene_symbol") %>%
+        dplyr::pull(.data$names)
+    check_res$gene_strand_col <- check_res$req_annot_col %>%
+        dplyr::filter(.data$tag == "gene_strand") %>%
+        dplyr::pull(.data$names)
+    check_res$cols_required <- c(
+        check_res$chrom_col, check_res$locus_col,
+        check_res$gene_symbol_col,
+        check_res$gene_strand_col
+    )
+    if (!all(check_res$cols_required %in% colnames(x))) {
+        rlang::abort(.missing_user_cols_error(
+            check_res$cols_required[!check_res$cols_required %in% colnames(x)]
+        ))
+    }
+    # Check other parameters
+    stopifnot(is.data.frame(genomic_annotation_file) ||
+        is.character(genomic_annotation_file))
+    genomic_annotation_file <- genomic_annotation_file[1]
+    if (is.character(genomic_annotation_file) &&
+        !genomic_annotation_file %in% c("hg19", "mm9")) {
+        err_msg <- c("Genomic annotation file unknown",
+            x = paste(
+                "Since ISAnalytics 1.5.4, if provided as",
+                "character vector, `genomic_annotation_file`",
+                "parameter must be one of 'hg19' or 'mm9'"
+            ),
+            i = paste(
+                "For using other genome reference files",
+                "import them in the R environment and pass",
+                "them to the function"
+            )
+        )
+        rlang::abort(err_msg, class = "genomic_file_char")
+    }
+    if (is.character(genomic_annotation_file)) {
+        gen_file <- paste0("refGenes_", genomic_annotation_file)
+        utils::data(list = gen_file, envir = rlang::current_env())
+        check_res$refgenes <- rlang::eval_tidy(rlang::sym(gen_file))
+    } else {
+        # Check annotation file format
+        refgenes <- genomic_annotation_file
+        if (!all(refGene_table_cols() %in% colnames(refgenes))) {
+            rlang::abort(.non_standard_annotation_structure())
+        }
+        check_res$refgenes <- tibble::as_tibble(refgenes) %>%
+            dplyr::mutate(chrom = stringr::str_replace_all(
+                .data$chrom,
+                "chr", ""
+            ))
+    }
+    stopifnot(is.numeric(grubbs_flanking_gene_bp) ||
+        is.integer(grubbs_flanking_gene_bp))
+    check_res$grubbs_flanking_gene_bp <- grubbs_flanking_gene_bp[1]
+    stopifnot(is.numeric(threshold_alpha))
+    check_res$threshold_alpha <- threshold_alpha[1]
+    stopifnot(is.logical(return_missing_as_df))
+    check_res$return_missing_as_df <- return_missing_as_df[1]
+    return(check_res)
+}
+
+# Join with refgenes
+.cis_join_ref <- function(x, res_checks) {
+    result <- list()
+    # Join input with refgenes - inner join only
+    result$joint_ref <- x %>%
+        dplyr::inner_join(res_checks$refgenes %>%
+            dplyr::select(
+                dplyr::all_of(
+                    c("name2", "chrom", "strand", "average_TxLen")
+                )
+            ), by = setNames(
+            object = c("chrom", "strand", "name2"),
+            nm = c(
+                res_checks$chrom_col,
+                res_checks$gene_strand_col,
+                res_checks$gene_symbol_col
+            )
+        ))
+    # Retrieve eventual missing genes
+    missing_genes <- x %>%
+        dplyr::anti_join(result$joint_ref,
+            by = c(
+                res_checks$gene_symbol_col,
+                res_checks$gene_strand_col, res_checks$chrom_col
+            )
+        )
+    missing_is_tot <- nrow(missing_genes)
+    missing_genes <- missing_genes %>%
+        dplyr::distinct(dplyr::across(dplyr::all_of(
+            c(
+                res_checks$gene_symbol_col, res_checks$gene_strand_col,
+                res_checks$chrom_col
+            )
+        )))
+    if (nrow(missing_genes) > 0 &
+        getOption("ISAnalytics.verbose", TRUE) == TRUE) {
+        warn_miss <- c("Warning: missing genes in refgenes table",
+            i = paste(paste(
+                "A total of", nrow(missing_genes),
+                "genes",
+                "were found in the input data but not",
+                "in the refgene table. This may be caused by",
+                "a mismatch in the annotation phase of",
+                "the matrix. Here is a summary: "
+            ),
+            paste0(utils::capture.output({
+                print(missing_genes, n = Inf)
+            }), collapse = "\n"),
+            sep = "\n"
+            ),
+            i = paste(
+                "NOTE: missing genes will be removed from",
+                "the final output! Review results carefully"
+            ),
+            i = paste(
+                "A total of", missing_is_tot,
+                "IS will be removed because of missing genes (",
+                round((missing_is_tot / nrow(x)) * 100, 2), "% of",
+                "total IS in input)"
+            )
+        )
+        rlang::warn(warn_miss, class = "warn_miss_genes")
+    }
+    if (res_checks$return_missing_as_df) {
+        result$missing_genes <- missing_genes
+        result$missing_is <- list(
+            absolute = missing_is_tot,
+            perc = round(
+                (missing_is_tot / nrow(x)) * 100, 2
+            )
+        )
+    }
+    return(result)
+}
+
 # Internal computation of CIS_grubbs test
 .cis_grubb_calc <- function(x,
-    refgenes,
     grubbs_flanking_gene_bp,
     threshold_alpha,
     gene_symbol_col,
@@ -4530,73 +4709,90 @@
     locus_col,
     strand_col) {
     ## -- Grouping by gene
-    df_by_gene <- x %>%
-        dplyr::group_by(
-            dplyr::across(
-                dplyr::all_of(c(gene_symbol_col, gene_strand_col, chr_col))
-            )
-        ) %>%
-        dplyr::summarise(
-            n_IS_perGene = dplyr::n_distinct(
-                .data[[locus_col]]
-            ),
-            min_bp_integration_locus =
-                min(.data[[locus_col]]),
-            max_bp_integration_locus =
-                max(.data[[locus_col]]),
-            IS_span_bp = (max(.data[[locus_col]]) -
-                min(.data[[locus_col]])),
-            avg_bp_integration_locus =
-                mean(.data[[locus_col]]),
-            median_bp_integration_locus =
-                stats::median(.data[[locus_col]]),
-            distinct_orientations = dplyr::if_else(
-                condition = is.null(strand_col),
-                true = NA_integer_,
-                false = dplyr::n_distinct(.data[[strand_col]])
-            ),
-            .groups = "drop"
-        )
-    ## --- Add describe if package available
-    if (requireNamespace("psych", quietly = TRUE)) {
-        desc <- x %>%
+    df_by_gene <- if (requireNamespace("psych", quietly = TRUE)) {
+        x %>%
             dplyr::group_by(
                 dplyr::across(
                     dplyr::all_of(c(gene_symbol_col, gene_strand_col, chr_col))
                 )
             ) %>%
             dplyr::summarise(
-                describe = list(tibble::as_tibble(
-                    psych::describe(.data[[locus_col]])
-                )), .groups = "drop"
+                n = dplyr::n(),
+                mean = mean(.data[[locus_col]]),
+                sd = stats::sd(.data[[locus_col]], na.rm = TRUE),
+                median = stats::median(.data[[locus_col]]),
+                trimmed = mean(.data[[locus_col]], trim = .1),
+                mad = stats::mad(.data[[locus_col]]),
+                min = min(.data[[locus_col]]),
+                max = max(.data[[locus_col]]),
+                range = max(.data[[locus_col]]) - min(.data[[locus_col]]),
+                skew = psych::skew(.data[[locus_col]]),
+                kurtosis = psych::kurtosi(.data[[locus_col]]),
+                n_IS_perGene = dplyr::n_distinct(
+                    .data[[locus_col]]
+                ),
+                min_bp_integration_locus =
+                    min(.data[[locus_col]]),
+                max_bp_integration_locus =
+                    max(.data[[locus_col]]),
+                IS_span_bp = (max(.data[[locus_col]]) -
+                    min(.data[[locus_col]])),
+                avg_bp_integration_locus =
+                    mean(.data[[locus_col]]),
+                median_bp_integration_locus =
+                    stats::median(.data[[locus_col]]),
+                distinct_orientations = dplyr::if_else(
+                    condition = is.null(strand_col),
+                    true = NA_integer_,
+                    false = dplyr::n_distinct(.data[[strand_col]])
+                ),
+                average_TxLen = .data$average_TxLen[1],
+                .groups = "drop"
+            )
+    } else {
+        x %>%
+            dplyr::group_by(
+                dplyr::across(
+                    dplyr::all_of(c(gene_symbol_col, gene_strand_col, chr_col))
+                )
             ) %>%
-            tidyr::unnest(cols = .data$describe)
-        df_by_gene <- df_by_gene %>%
-            dplyr::left_join(desc,
-                by = c(gene_symbol_col, gene_strand_col, chr_col)
+            dplyr::summarise(
+                n = dplyr::n(),
+                mean = mean(.data[[locus_col]]),
+                sd = stats::sd(.data[[locus_col]], na.rm = TRUE),
+                median = stats::median(.data[[locus_col]]),
+                trimmed = mean(.data[[locus_col]], trim = .1),
+                mad = stats::mad(.data[[locus_col]]),
+                min = min(.data[[locus_col]]),
+                max = max(.data[[locus_col]]),
+                range = max(.data[[locus_col]]) - min(.data[[locus_col]]),
+                n_IS_perGene = dplyr::n_distinct(
+                    .data[[locus_col]]
+                ),
+                min_bp_integration_locus =
+                    min(.data[[locus_col]]),
+                max_bp_integration_locus =
+                    max(.data[[locus_col]]),
+                IS_span_bp = (max(.data[[locus_col]]) -
+                    min(.data[[locus_col]])),
+                avg_bp_integration_locus =
+                    mean(.data[[locus_col]]),
+                median_bp_integration_locus =
+                    stats::median(.data[[locus_col]]),
+                distinct_orientations = dplyr::if_else(
+                    condition = is.null(strand_col),
+                    true = NA_integer_,
+                    false = dplyr::n_distinct(.data[[strand_col]])
+                ),
+                average_TxLen = .data$average_TxLen[1],
+                .groups = "drop"
             )
     }
-    df_bygene_withannotation <- df_by_gene %>%
-        dplyr::inner_join(refgenes, by = setNames(
-            object = c("chrom", "strand", "name2"),
-            nm = c(chr_col, gene_strand_col, gene_symbol_col)
-        )) %>%
-        dplyr::select(c(
-            dplyr::all_of(colnames(df_by_gene)),
-            .data$average_TxLen
-        ))
-    missing_genes <- df_by_gene %>%
-        dplyr::anti_join(df_bygene_withannotation,
-            by = c(gene_symbol_col, gene_strand_col, chr_col)
-        ) %>%
-        dplyr::distinct(dplyr::across(dplyr::all_of(
-            c(gene_symbol_col, gene_strand_col, chr_col)
-        )))
 
-    n_elements <- nrow(df_bygene_withannotation)
+    n_elements <- nrow(df_by_gene)
     ### Grubbs test
     ### --- Gene Frequency
-    df_bygene_withannotation <- df_bygene_withannotation %>%
+    df_bygene_withannotation <- df_by_gene %>%
         dplyr::mutate(
             raw_gene_integration_frequency =
                 .data$n_IS_perGene / .data$average_TxLen,
@@ -4683,7 +4879,7 @@
                     NA
                 )
         )
-    return(list(df = df_bygene_withannotation, missing = missing_genes))
+    return(df_bygene_withannotation)
 }
 
 #---- USED IN : CIS_volcano_plot ----
@@ -4736,7 +4932,7 @@
             "Mus musculus (Mouse)"
         )
     )
-    if (getOption("ISAnalytics.verbose") == TRUE) {
+    if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         load_onco_msg <- c(
             "Loading annotated genes -  species selected: ",
             paste(c(specie_name), collapse = ", ")
@@ -4747,7 +4943,7 @@
     onco_df <- .filter_db(onco_db, specie_name, "OncoGene")
     tumsup_df <- .filter_db(tumsup_db, specie_name, "TumorSuppressor")
     oncots_df_to_use <- .merge_onco_tumsup(onco_df, tumsup_df)
-    if (getOption("ISAnalytics.verbose") == TRUE) {
+    if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform(c(
             "Loading annotated genes -  done"
         ))
@@ -4886,7 +5082,7 @@
                 env = rlang::caller_env(), nm = symbol_name,
                 value = flag_logic_new
             )
-            if (getOption("ISAnalytics.verbose") == TRUE) {
+            if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                 flag_msg <- c(paste0(
                     "'", symbol_name,
                     "' has more elements than expected"
@@ -4906,7 +5102,7 @@
                 env = rlang::caller_env(), nm = symbol_name,
                 value = flag_logic_new
             )
-            if (getOption("ISAnalytics.verbose") == TRUE) {
+            if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                 flag_logic_err <- c(paste(
                     "'", symbol_name, "' has an incorrect",
                     "amount of elements"
@@ -4957,7 +5153,7 @@
     log2_removed_report <- NULL
     if (log2) {
         ## discard values < = 0 and report removed
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform("Log2 transformation, removing values <= 0")
         }
         old_meta <- meta
@@ -5832,7 +6028,7 @@
     # Check n and k
     if (nrow(temp) < n_comp) {
         n_comp <- nrow(temp)
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             warn_msg <- c("Number of requested comparisons too big",
                 i = paste(
                     "The number of requested comparisons",
@@ -5844,7 +6040,7 @@
             rlang::inform(warn_msg)
         }
     }
-    if (getOption("ISAnalytics.verbose") == TRUE) {
+    if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform("Calculating combinations...")
     }
     group_comb <- gtools::combinations(
@@ -5878,7 +6074,7 @@
 
     if (include_self_comp) {
         ## Calculate groups with equal components
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform("Calculating self groups (requested)...")
         }
         self_rows <- purrr::map2_df(
@@ -5928,7 +6124,7 @@
         )
     }
     if (!minimal) {
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform("Calculating permutations (requested)...")
         }
         sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
@@ -6023,7 +6219,7 @@
         )
     }
     if (!minimal) {
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform("Calculating permutations (requested)...")
         }
         sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
@@ -6114,7 +6310,7 @@
         )
     }
     if (!minimal) {
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform("Calculating permutations (requested)...")
         }
         sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
@@ -6201,7 +6397,7 @@
         )
     }
     if (!minimal) {
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform("Calculating permutations (requested)...")
         }
         sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
@@ -6290,7 +6486,7 @@
             )
             rlang::abort(no_common_err)
         }
-        if (getOption("ISAnalytics.verbose") == TRUE &&
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE &&
             (length(common_names) < length(names(ref)) ||
                 length(common_names) < length(names(sel)))) {
             all_names <- union(names(ref), names(sel))
@@ -6313,13 +6509,13 @@
         if (.Platform$OS.type == "windows") {
             p <- BiocParallel::SnowParam(
                 tasks = length(common_names),
-                progressbar = getOption("ISAnalytics.verbose"),
+                progressbar = getOption("ISAnalytics.verbose", TRUE),
                 exportglobals = TRUE
             )
         } else {
             p <- BiocParallel::MulticoreParam(
                 tasks = length(common_names),
-                progressbar = getOption("ISAnalytics.verbose"),
+                progressbar = getOption("ISAnalytics.verbose", TRUE),
                 exportglobals = FALSE
             )
         }

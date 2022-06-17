@@ -195,7 +195,7 @@ HSC_population_size_estimate <- function(x,
     stable_timepoints <- sort(stable_timepoints)
     ## Check presence of NumIS column
     if (!"NumIS" %in% colnames(metadata)) {
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform(c("Calculating number of IS for each group..."))
         }
         numIs <- x %>%
@@ -245,14 +245,14 @@ HSC_population_size_estimate <- function(x,
         p <- BiocParallel::SnowParam(
             stop.on.error = FALSE,
             tasks = length(x_subj_split),
-            progressbar = getOption("ISAnalytics.verbose"),
+            progressbar = getOption("ISAnalytics.verbose", TRUE),
             exportglobals = TRUE
         )
     } else {
         p <- BiocParallel::MulticoreParam(
             stop.on.error = FALSE,
             tasks = length(x_subj_split),
-            progressbar = getOption("ISAnalytics.verbose"),
+            progressbar = getOption("ISAnalytics.verbose", TRUE),
             exportglobals = FALSE
         )
     }

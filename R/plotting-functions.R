@@ -97,10 +97,10 @@ CIS_volcano_plot <- function(x,
         "neg_zscore_minus_log2_int_freq_tolerance"
     )
     cis_grubbs_df <- if (!all(min_cis_col %in% colnames(x))) {
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform("Calculating CIS_grubbs for x...")
         }
-        CIS_grubbs(x, return_missing_as_df = FALSE)
+        (CIS_grubbs(x, return_missing_as_df = FALSE))$cis
     } else {
         x
     }
@@ -274,6 +274,540 @@ clinical_relevant_suspicious_genes <- function() {
     )
 }
 
+#' Heatmaps for the top N common insertion sites over time.
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#' This function computes the visualization of the results of the function
+#' `CIS_grubbs_overtime()` in the form of heatmaps for the top N selected
+#' genes over time.
+#'
+#' @template genes_db
+#' @family Plotting functions
+#'
+#' @inheritParams CIS_volcano_plot
+#' @param x Output of the function `CIS_grubbs_overtime()`, either in single
+#' data frame form or nested lists
+#' @param n_genes Number of top genes to consider
+#' @param timepoint_col The name of the time point column in `x`
+#' @param group_col The name of the group column in `x`
+#' @param plot_values Which kind of values should be plotted? Can either be
+#' `"p"` for the p-value or `"minus_log_p"` for a scaled p-value of the
+#' Grubbs test
+#' @param p_value_correction One among `"bonferroni"` and `"fdr"`
+#' @param prune_tp_treshold Minimum number of genes to retain a time point.
+#' See details.
+#' @param gene_selection_param The descriptive statistic measure to decide
+#' which genes to plot, possible choices are
+#' `"trimmed", "n", "mean", "sd", "median","mad", "min", "max"`. See details.
+#' @param fill_0_selection Fill NA values with 0s before computing statistics
+#' for each gene? (TRUE/FALSE)
+#' @param fill_NA_in_heatmap Fill NA values with 0 when plotting the heatmap?
+#' (TRUE/FALSE)
+#' @param heatmap_color_palette Colors for values in the heatmaps,
+#' either `"default"` or a function producing
+#' a color palette, obtainable via `grDevices::colorRampPalette`.
+#' @param title_generator Either `NULL` or a function. See details.
+#' @param save_as_files Should heatmaps be saved to files on disk? (TRUE/FALSE)
+#' @param files_format The extension of the files produced, supported
+#' formats are `"pdf", "png", "tiff", "bmp", "jpg"`. Relevant only if
+#' `files_format = TRUE`
+#' @param folder_path Path to the folder where files will be saved
+#' @param ... Other params to pass to `pheatmap::pheatmap`
+#'
+#' @details
+#' ## Top N gene selection
+#' Since the genes present in different time point slices are likely different,
+#' the decision process to select the final top N genes to represent in the
+#' heatmap follows this logic:
+#'
+#' * Each time point slice is arranged either in ascending order (if we want to
+#' plot the p-value) or in descending order (if we want to plot the scaled
+#' p-value) and the top n genes are selected
+#' * A series of statistics are computed over the union set of genes on ALL
+#' time points (min, max, mean, ...)
+#' * A decision is taken by considering the ordered `gene_selection_param`
+#' (order depends once again if the values are scaled or not), and the first
+#' N genes are selected for plotting.
+#'
+#' ### Filling NA values prior calculations
+#' It is possible to fill NA values (aka missing combinations of GENE/TP) with
+#' 0s prior computing the descriptive statistics on which gene selection is
+#' based. Please keep in mind that this has an impact on the final result,
+#' since for computing metrics such as the mean, NA values are usually removed,
+#' decreasing the overall number of values considered - this does not hold
+#' when NA values are substituted with 0s.
+#'
+#' ### The statistics
+#' Statistics are computed for each gene over all time points of each group.
+#' More in detail, `n`: counts the number of instances (rows)
+#' in which the genes appears, aka it counts the time points in which the gene
+#' is present. NOTE: if
+#' `fill_0_selection` option is set to `TRUE` this value will be equal for
+#' all genes! All other statistics as per the argument `gene_selection_param`
+#' map to the corresponding R functions with the exception of `trimmed` which
+#' is a simple call to the `mean` function with the argument `trimmed = 0.1`.
+#'
+#' ## Aesthetics
+#' It is possible to customise the appearence of the plot through different
+#' parameters.
+#'
+#' * `fill_NA_in_heatmap` tells the function whether missing combinations of
+#' GENE/TP should be plotted as NA or filled with a value (1 if p-value, 0
+#' if scaled p-value)
+#' * A title generator function can be provided to dynamically create a title
+#' for the plots: the function can accept two positional arguments for
+#' the group identifier and the number of selected genes respectively. If one or
+#' none of the arguments are of interest, they can be absorbed with `...`.
+#' * `heatmap_color_palette` can be used to specify a function from which
+#' colors are sampled (refers to the colors of values only)
+#' * To change the colors associated with annotations instead, use the
+#' argument `annotation_colors` of `pheatmap::pheatmap()` - it must be set to a
+#' list with this format:
+#' ```
+#' list(
+#'   KnownGeneClass = c("OncoGene" = color_spec,
+#'                      "Other" = color_spec,
+#'                      "TumSuppressor" = color_spec),
+#'   ClinicalRelevance = c("TRUE" = color_spec,
+#'                         "FALSE" = color_spec),
+#'   CriticalForInsMut = c("TRUE" = color_spec,
+#'                         "FALSE" = color_spec)
+#' )
+#' ```
+#'
+#' @return Either a list of graphical objects or a list of paths where
+#' plots were saved
+#' @export
+#'
+#' @examples
+#' data("integration_matrices", package = "ISAnalytics")
+#' data("association_file", package = "ISAnalytics")
+#' aggreg <- aggregate_values_by_key(
+#'     x = integration_matrices,
+#'     association_file = association_file,
+#'     value_cols = c("seqCount", "fragmentEstimate")
+#' )
+#' cis_overtime <- CIS_grubbs_overtime(aggreg)
+#' hmaps <- top_cis_overtime_heatmap(cis_overtime$cis,
+#'     fill_NA_in_heatmap = TRUE
+#' )
+#'
+#' # To re-plot:
+#' # grid::grid.newpage()
+#' # grid::grid.draw(hmaps$PT001$gtable)
+top_cis_overtime_heatmap <- function(x,
+    n_genes = 20,
+    timepoint_col = "TimePoint",
+    group_col = "group",
+    onco_db_file = "proto_oncogenes",
+    tumor_suppressors_db_file = "tumor_suppressors",
+    species = "human",
+    known_onco = known_clinical_oncogenes(),
+    suspicious_genes =
+        clinical_relevant_suspicious_genes(),
+    significance_threshold = 0.05,
+    plot_values = c("minus_log_p", "p"),
+    p_value_correction = c("fdr", "bonferroni"),
+    prune_tp_treshold = 20,
+    gene_selection_param = c(
+        "trimmed", "n", "mean", "sd", "median",
+        "mad", "min", "max"
+    ),
+    fill_0_selection = TRUE,
+    fill_NA_in_heatmap = FALSE,
+    heatmap_color_palette = "default",
+    title_generator = NULL,
+    save_as_files = FALSE,
+    files_format = c("pdf", "png", "tiff", "bmp", "jpg"),
+    folder_path = NULL,
+    ...) {
+    # --- Preliminary checks
+    if (!requireNamespace("pheatmap", quietly = TRUE)) {
+        rlang::abort(.missing_pkg_error("pheatmap"))
+    }
+    stopifnot(is.list(x))
+    stopifnot(is.numeric(n_genes))
+    if (is.list(x) & !is.data.frame(x) & is.null(names(x))) {
+        err_named <- c("Input list must have names",
+            x = paste(
+                "Input should follow the output format of",
+                "`CIS_grubbs_overtime()`"
+            )
+        )
+        rlang::abort(err_named)
+    } else if (is.data.frame(x) &
+        !all(c(timepoint_col, group_col) %in% colnames(x))) {
+        err_df <- c("Input df is missing columns",
+            x = paste(
+                "Input should follow the output format of",
+                "`CIS_grubbs_overtime()`"
+            ),
+            x = paste(
+                "Time point column ('", timepoint_col,
+                "') and/or group column ('", group_col,
+                "') are missing"
+            )
+        )
+        rlang::abort(err_df)
+    }
+    p_value_correction <- rlang::arg_match(p_value_correction)
+    plot_values <- rlang::arg_match(plot_values)
+    values_to_plot <- if (plot_values == "p") {
+        paste0("tdist_", p_value_correction)
+    } else {
+        paste0("minus_log_p_", p_value_correction)
+    }
+    gene_selection_param <- rlang::arg_match(gene_selection_param)
+    stopifnot(is.numeric(prune_tp_treshold))
+    stopifnot(is.logical(fill_0_selection))
+    fill_0_selection <- fill_0_selection[1]
+    stopifnot(is.logical(fill_NA_in_heatmap))
+    fill_NA_in_heatmap <- fill_NA_in_heatmap[1]
+    stopifnot(is.logical(save_as_files))
+    save_as_files <- save_as_files[1]
+    stopifnot(is.null(folder_path) || is.character(folder_path))
+    if (is.character(folder_path[1])) {
+        fs::dir_create(folder_path[1])
+    }
+    stopifnot(
+        (is.character(heatmap_color_palette) &
+            heatmap_color_palette == "default") ||
+            is.function(heatmap_color_palette)
+    )
+    files_format <- rlang::arg_match(files_format)
+    if (save_as_files == TRUE & is.null(folder_path) &
+        getOption("ISAnalytics.verbose", TRUE) == TRUE) {
+        warn_msg <- c("Warning: you did not set a folder for saving files",
+            i = "Returning heatmaps as a list in R env"
+        )
+        rlang::inform(warn_msg, class = "no_fold_files")
+    }
+    stopifnot(is.null(title_generator) || is.function(title_generator))
+    dots <- rlang::dots_list(..., .named = TRUE)
+    # --- If input is in list form, convert in single df
+    if (is.list(x) & !is.data.frame(x)) {
+        x <- purrr::map2_df(x, names(x), ~ {
+            tmp <- .x
+            if (is.list(tmp) & !is.data.frame(tmp)) {
+                purrr::map2_df(
+                    tmp, names(tmp),
+                    ~ .x %>% dplyr::mutate(!!timepoint_col := .y)
+                ) %>%
+                    dplyr::mutate(!!group_col := .y)
+            } else if (is.data.frame(tmp)) {
+                temp %>% dplyr::mutate(!!group_col := .y)
+            } else {
+                non_list_el <- c("Element is not list or df",
+                    x = paste(
+                        "Element", .y, "in x is not a list or a",
+                        "data frame"
+                    )
+                )
+                rlang::abort(non_list_el)
+            }
+        })
+    }
+    gene_sym_col <- annotation_IS_vars(TRUE) %>%
+        dplyr::filter(.data$tag == "gene_symbol") %>%
+        dplyr::pull(.data$names)
+    # --- Expand the df with gene info
+    expanded <- .expand_cis_df(
+        x, gene_sym_col,
+        onco_db_file, tumor_suppressors_db_file,
+        species, known_onco, suspicious_genes
+    )
+    # --- Add log conversions if needed
+    if (plot_values == "minus_log_p") {
+        expanded <- expanded %>%
+            dplyr::mutate(
+                minus_log_p_bonferroni = -log(.data$tdist_bonferroni,
+                    base = 10
+                ),
+                minus_log_p_fdr = -log(.data$tdist_fdr, base = 10)
+            )
+    }
+    # --- For each combo (group, tp) arrange and slice the top n
+    arrange_slice_top <- function(group_df, ...) {
+        if (nrow(group_df) < prune_tp_treshold) {
+            return(NULL)
+        }
+        if (plot_values == "p") {
+            return(
+                group_df %>%
+                    dplyr::arrange(.data[[values_to_plot]]) %>%
+                    dplyr::slice_head(n = n_genes)
+            )
+        } else {
+            return(
+                group_df %>%
+                    dplyr::arrange(dplyr::desc(.data[[values_to_plot]])) %>%
+                    dplyr::slice_head(n = n_genes)
+            )
+        }
+    }
+    slice_groups_tps <- expanded %>%
+        dplyr::select(
+            dplyr::all_of(c(
+                gene_sym_col, timepoint_col,
+                group_col, values_to_plot
+            ))
+        ) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(
+            c(group_col, timepoint_col)
+        ))) %>%
+        dplyr::group_modify(.f = arrange_slice_top) %>%
+        dplyr::ungroup()
+
+    groups <- unique(slice_groups_tps[[group_col]])
+
+    # --- Evaluate statistics for genes in top n slices
+    eval_candidates <- function(group_id) {
+        df <- slice_groups_tps %>%
+            dplyr::filter(.data[[group_col]] == group_id) %>%
+            dplyr::select(-.data[[group_col]])
+        if (fill_0_selection == TRUE) {
+            value_fill <- list(0)
+            names(value_fill) <- values_to_plot
+            df <- df %>%
+                tidyr::complete(.data[[timepoint_col]], .data[[gene_sym_col]],
+                    fill = value_fill
+                )
+        }
+        df %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(gene_sym_col))) %>%
+            dplyr::summarise(
+                n = dplyr::n(),
+                mean = mean(.data[[values_to_plot]], na.rm = TRUE),
+                sd = stats::sd(.data[[values_to_plot]], na.rm = TRUE),
+                median = stats::median(.data[[values_to_plot]], na.rm = TRUE),
+                trimmed = mean(.data[[values_to_plot]],
+                    na.rm = TRUE,
+                    trim = 0.1
+                ),
+                mad = stats::mad(.data[[values_to_plot]], na.rm = TRUE),
+                min = min(.data[[values_to_plot]], na.rm = TRUE),
+                max = max(.data[[values_to_plot]], na.rm = TRUE),
+                .groups = "drop"
+            )
+    }
+    candidates <- purrr::map(groups, eval_candidates) %>%
+        purrr::set_names(groups)
+
+    # --- Select from candidates according to gene_selection_param
+    select_from_candidates <- function(group_df) {
+        if (gene_selection_param == "n") {
+            return(
+                group_df %>%
+                    dplyr::arrange(dplyr::desc(.data$n)) %>%
+                    dplyr::slice_head(n = n_genes) %>%
+                    dplyr::pull(.data[[gene_sym_col]])
+            )
+        }
+        if (plot_values == "p") {
+            ## Order ascending
+            return(
+                group_df %>%
+                    dplyr::arrange(.data[[gene_selection_param]]) %>%
+                    dplyr::slice_head(n = n_genes) %>%
+                    dplyr::pull(.data[[gene_sym_col]])
+            )
+        } else {
+            ## Order descending
+            return(
+                group_df %>%
+                    dplyr::arrange(dplyr::desc(
+                        .data[[gene_selection_param]]
+                    )) %>%
+                    dplyr::slice_head(n = n_genes) %>%
+                    dplyr::pull(.data[[gene_sym_col]])
+            )
+        }
+    }
+    gene_selection <- purrr::map(candidates, select_from_candidates)
+
+    # --- Extract only relevant genes from input
+    genes_to_map <- purrr::map(groups, ~ expanded %>%
+        dplyr::filter(group == .x) %>%
+        dplyr::filter(.data[[timepoint_col]] %in%
+            unique((slice_groups_tps %>%
+                dplyr::filter(group == .x))[[timepoint_col]])) %>%
+        dplyr::filter(.data[[gene_sym_col]] %in%
+            gene_selection[[.x]]) %>%
+        dplyr::select(
+            dplyr::all_of(c(
+                gene_sym_col, timepoint_col,
+                group_col, values_to_plot
+            )),
+            .data$CriticalForInsMut, .data$KnownGeneClass,
+            .data$ClinicalRelevance
+        )) %>%
+        purrr::set_names(groups)
+
+    # --- Obtain heatmaps
+    ## --- Define global defaults
+    if (is.character(heatmap_color_palette)) {
+        heatmap_color_palette <- if (plot_values == "minus_log_p") {
+            grDevices::colorRampPalette(
+                c(
+                    "steelblue", "white", "red", "firebrick", "firebrick", "darkred",
+                    "darkred", "violet", "violet"
+                )
+            )
+        } else {
+            grDevices::colorRampPalette(
+                rev(c(
+                    "steelblue", "white", "red", "firebrick", "darkred",
+                    "violet"
+                )),
+                bias = 10
+            )
+        }
+    }
+    annotation_palette <- if ("annotation_colors" %in% names(dots)) {
+        dots$annotation_colors
+    } else {
+        list(
+            KnownGeneClass = c(
+                "OncoGene" = "red2",
+                "Other" = "palegreen",
+                "TumSuppressor" = "dodgerblue4"
+            ),
+            ClinicalRelevance = c(
+                "TRUE" = "gold",
+                "FALSE" = "gray90"
+            ),
+            CriticalForInsMut = c(
+                "TRUE" = "red2",
+                "FALSE" = "gray90"
+            )
+        )
+    }
+    plotting_step <- if (plot_values == "minus_log_p") {
+        round((-log(0.05, base = 10) / 3), 3)
+    } else {
+        round(1 / 100, 3)
+    }
+
+    trace_heatmap <- function(data_df) {
+        ## --- Fix annotations (fill na, convert to char)
+        data_df <- data_df %>%
+            tidyr::replace_na(list(ClinicalRelevance = FALSE)) %>%
+            dplyr::mutate(
+                CriticalForInsMut = as.character(.data$CriticalForInsMut),
+                ClinicalRelevance = as.character(.data$ClinicalRelevance)
+            )
+        ## --- Obtain data matrix and annotations
+        wide <- if (fill_NA_in_heatmap == TRUE) {
+            data_df %>%
+                tidyr::pivot_wider(
+                    names_from = timepoint_col,
+                    values_from = values_to_plot,
+                    values_fill = dplyr::if_else(plot_values == "p",
+                        1, 0
+                    )
+                )
+        } else {
+            data_df %>%
+                tidyr::pivot_wider(
+                    names_from = timepoint_col,
+                    values_from = values_to_plot
+                )
+        }
+        matrix <- wide %>%
+            dplyr::select(dplyr::all_of(unique(data_df[[timepoint_col]]))) %>%
+            as.matrix()
+        rownames(matrix) <- wide[[gene_sym_col]]
+        annotations <- wide %>%
+            dplyr::select(
+                .data$CriticalForInsMut, .data$KnownGeneClass,
+                .data$ClinicalRelevance
+            ) %>%
+            as.data.frame()
+        rownames(annotations) <- wide[[gene_sym_col]]
+        ## --- Obtain other params
+        plot_breaks <- if (plot_values == "minus_log_p") {
+            seq(
+                0, ceiling(max(data_df[[values_to_plot]], na.rm = TRUE)),
+                plotting_step
+            )
+        } else {
+            seq(0, 1, plotting_step)
+        }
+        params_to_pass <- list()
+        params_to_pass$color <- heatmap_color_palette(length(plot_breaks) + 1)
+        params_to_pass$annotation_colors <- annotation_palette
+        params_to_pass$annotation_row <- annotations
+        params_to_pass$breaks <- plot_breaks
+        if (save_as_files == TRUE & !is.null(folder_path)) {
+            file_name <- paste0(
+                data_df$group[1], ".", lubridate::today(),
+                "_top", n_genes, "-CIS-overtime_using-",
+                gene_selection_param, ".", files_format
+            )
+            params_to_pass$filename <- fs::path(folder_path[1], file_name)
+        }
+        params_to_pass$cluster_rows <- if ("cluster_rows" %in% names(dots)) {
+            dots$cluster_rows
+        } else {
+            TRUE
+        }
+        params_to_pass$cluster_cols <- if ("cluster_cols" %in% names(dots)) {
+            dots$cluster_cols
+        } else {
+            FALSE
+        }
+        params_to_pass$scale <- if ("scale" %in% names(dots)) {
+            dots$scale
+        } else {
+            "none"
+        }
+        params_to_pass$display_numbers <- if ("display_numbers" %in%
+            names(dots)) {
+            dots$display_numbers
+        } else {
+            TRUE
+        }
+        params_to_pass$number_format <- if ("number_format" %in% names(dots)) {
+            dots$number_format
+        } else {
+            "%.2f"
+        }
+        params_to_pass$main <- if (!is.null(title_generator)) {
+            title_generator(data_df$group[1], n_genes)
+        } else {
+            method_str <- if (plot_values == "minus_log_p") {
+                paste0(
+                    "-log(p-value/", p_value_correction, ")\n",
+                    "[CIS iif p-value < 0.05; -log(0.05) = ",
+                    (round(-log(0.05, base = 10), 3)), "]"
+                )
+            } else {
+                paste(
+                    "p-value/", p_value_correction, "\n",
+                    "[CIS iif p-value < 0.05]"
+                )
+            }
+            paste0(
+                "Patient ", data_df$group[1],
+                " - Top ", n_genes,
+                " hotspot genes\nAnalysis over time, ",
+                method_str
+            )
+        }
+        dots <- dots[!names(dots) %in% c(names(params_to_pass), "mat")]
+        params_to_pass <- append(params_to_pass, dots)
+        ## --- Plot
+        map <- rlang::exec(pheatmap::pheatmap, mat = matrix, !!!params_to_pass)
+        if ("filename" %in% names(params_to_pass)) {
+            map <- params_to_pass[["filename"]]
+        }
+        return(map)
+    }
+
+    purrr::map(genes_to_map, trace_heatmap)
+}
+
 #' Plot results of gene frequency Fisher's exact test.
 #'
 #' @description
@@ -346,47 +880,47 @@ fisher_scatterplot <- function(fisher_df,
     gene_sym_col = "GeneName",
     do_not_highlight = NULL,
     keep_not_highlighted = TRUE) {
-    stopifnot(is.null(do_not_highlight) || is.character(do_not_highlight)
-              || rlang::is_expression(do_not_highlight))
+    stopifnot(is.null(do_not_highlight) || is.character(do_not_highlight) ||
+        rlang::is_expression(do_not_highlight))
     if (is.null(do_not_highlight)) {
-      below_threshold <- fisher_df %>%
-        dplyr::filter(.data[[p_value_col]] < annot_threshold)
-      above_threshold <- fisher_df %>%
-        dplyr::filter(.data[[p_value_col]] >= annot_threshold)
+        below_threshold <- fisher_df %>%
+            dplyr::filter(.data[[p_value_col]] < annot_threshold)
+        above_threshold <- fisher_df %>%
+            dplyr::filter(.data[[p_value_col]] >= annot_threshold)
     } else if (is.character(do_not_highlight)) {
-      below_threshold <- fisher_df %>%
-        dplyr::filter(.data[[p_value_col]] < annot_threshold &
-                        !.data[[gene_sym_col]] %in% do_not_highlight)
-      if (keep_not_highlighted) {
-        above_threshold <- fisher_df %>%
-          dplyr::anti_join(below_threshold, by = gene_sym_col)
-      } else {
-        above_threshold <- fisher_df %>%
-          dplyr::filter(.data[[p_value_col]] >= annot_threshold)
-      }
+        below_threshold <- fisher_df %>%
+            dplyr::filter(.data[[p_value_col]] < annot_threshold &
+                !.data[[gene_sym_col]] %in% do_not_highlight)
+        if (keep_not_highlighted) {
+            above_threshold <- fisher_df %>%
+                dplyr::anti_join(below_threshold, by = gene_sym_col)
+        } else {
+            above_threshold <- fisher_df %>%
+                dplyr::filter(.data[[p_value_col]] >= annot_threshold)
+        }
     } else if (rlang::is_formula(do_not_highlight)) {
-      below_threshold <- fisher_df %>%
-        dplyr::filter(.data[[p_value_col]] < annot_threshold &
-                        !rlang::as_function(do_not_highlight)(
-                          .data[[gene_sym_col]]))
-      if (keep_not_highlighted) {
-        above_threshold <- fisher_df %>%
-          dplyr::anti_join(below_threshold, by = gene_sym_col)
-      } else {
-        above_threshold <- fisher_df %>%
-          dplyr::filter(.data[[p_value_col]] >= annot_threshold)
-      }
+        below_threshold <- fisher_df %>%
+            dplyr::filter(.data[[p_value_col]] < annot_threshold &
+                !rlang::as_function(do_not_highlight)(
+                    .data[[gene_sym_col]]))
+        if (keep_not_highlighted) {
+            above_threshold <- fisher_df %>%
+                dplyr::anti_join(below_threshold, by = gene_sym_col)
+        } else {
+            above_threshold <- fisher_df %>%
+                dplyr::filter(.data[[p_value_col]] >= annot_threshold)
+        }
     } else {
-      below_threshold <- fisher_df %>%
-        dplyr::filter(.data[[p_value_col]] < annot_threshold &
-                        (rlang::eval_tidy(do_not_highlight)))
-      if (keep_not_highlighted) {
-        above_threshold <- fisher_df %>%
-          dplyr::anti_join(below_threshold, by = gene_sym_col)
-      } else {
-        above_threshold <- fisher_df %>%
-          dplyr::filter(.data[[p_value_col]] >= annot_threshold)
-      }
+        below_threshold <- fisher_df %>%
+            dplyr::filter(.data[[p_value_col]] < annot_threshold &
+                (rlang::eval_tidy(do_not_highlight)))
+        if (keep_not_highlighted) {
+            above_threshold <- fisher_df %>%
+                dplyr::anti_join(below_threshold, by = gene_sym_col)
+        } else {
+            above_threshold <- fisher_df %>%
+                dplyr::filter(.data[[p_value_col]] >= annot_threshold)
+        }
     }
     plot <- ggplot2::ggplot(
         above_threshold,
@@ -952,7 +1486,7 @@ top_abund_tableGrob <- function(df,
     tops_by_x <- purrr::map(distinct_x, function(x) {
         tmp <- top %>%
             dplyr::filter(
-              dplyr::if_all(.cols = dplyr::all_of(by), .fns = ~ .x == x)
+                dplyr::if_all(.cols = dplyr::all_of(by), .fns = ~ .x == x)
             ) %>%
             dplyr::select(-dplyr::all_of(by))
         if (nrow(tmp) < top_n) {

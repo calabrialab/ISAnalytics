@@ -66,7 +66,7 @@ server <- shinyServer(function(input, output, session) {
         }
     })
     output$loaded_data <- DT::renderDT({
-      DT::datatable(values$loaded_data,
+        DT::datatable(values$loaded_data,
             options = list(
                 autoWidth = TRUE,
                 class = "stripe",
@@ -299,7 +299,7 @@ server <- shinyServer(function(input, output, session) {
                 column(
                     width = 12,
                     dropdown(
-                      up = TRUE,
+                        up = TRUE,
                         pickerInput("device", "Device",
                             choices = c(
                                 "pdf", "jpeg", "tiff", "png",

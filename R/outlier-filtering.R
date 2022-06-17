@@ -138,10 +138,12 @@ outlier_filter <- function(metadata,
             test_args_names <- do.call(rlang::fn_fmls_names, args = list(test))
             test_args_names <- test_args_names[test_args_names != "metadata"]
             test_args <- if ("report_path" %in% test_args_names) {
-              append(vargs[names(vargs) %in% test_args_names],
-                     list(report_path = report_path))
+                append(
+                    vargs[names(vargs) %in% test_args_names],
+                    list(report_path = report_path)
+                )
             } else {
-              vargs[names(vargs) %in% test_args_names]
+                vargs[names(vargs) %in% test_args_names]
             }
             f_call <- rlang::call2(test, metadata = metadata, !!!test_args)
             result <- rlang::eval_tidy(f_call)
@@ -228,7 +230,8 @@ outlier_filter <- function(metadata,
             !c("to_remove")
         ]
     }
-    if (getOption("ISAnalytics.reports") == TRUE && !is.null(report_path)) {
+    if (getOption("ISAnalytics.reports", TRUE) == TRUE &&
+        !is.null(report_path)) {
         withCallingHandlers(
             {
                 .produce_report(
@@ -352,7 +355,7 @@ outliers_by_pool_fragments <- function(metadata,
     )
     .outlier_test_verify_logiop(key, flag_logic, "flag_logic")
     ## Cleaning
-    if (getOption("ISAnalytics.verbose") == TRUE) {
+    if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform("Removing NAs from data...")
     }
     metadata <- data.table::setDT(metadata)
@@ -419,7 +422,8 @@ outliers_by_pool_fragments <- function(metadata,
     }
     calc_res[, c("to_remove") := to_rem]
     ## Produce report
-    if (getOption("ISAnalytics.reports") == TRUE && !is.null(report_path)) {
+    if (getOption("ISAnalytics.reports", TRUE) == TRUE &&
+        !is.null(report_path)) {
         withCallingHandlers(
             {
                 af_cols_specs <- data.table::setDT(

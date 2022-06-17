@@ -516,7 +516,7 @@ test_that("set_mandatory_IS_vars signals missing tags", {
     )
     before <- getOption("ISAnalytics.mandatory_is_vars")
     expect_message(
-        expect_message(
+        expect_warning(
             {
                 set_mandatory_IS_vars(temp_specs)
             },

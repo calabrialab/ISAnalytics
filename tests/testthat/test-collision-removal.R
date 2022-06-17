@@ -114,12 +114,13 @@ test_that(".check_same_info reports only projects of interest", {
 #------------------------------------------------------------------------------#
 test_that(".identify_independent_samples splits joined_df", {
     joined <- minimal_test_coll %>%
-      dplyr::left_join(minimal_test_coll_meta,
-                       by = "CompleteAmplificationID") %>%
-      dplyr::select(dplyr::all_of(c(
-        colnames(minimal_test_coll), "SequencingDate",
-        "ReplicateNumber", "ProjectID", "SubjectID"
-      )))
+        dplyr::left_join(minimal_test_coll_meta,
+            by = "CompleteAmplificationID"
+        ) %>%
+        dplyr::select(dplyr::all_of(c(
+            colnames(minimal_test_coll), "SequencingDate",
+            "ReplicateNumber", "ProjectID", "SubjectID"
+        )))
 
     split <- .identify_independent_samples(joined,
         indep_sample_id = c(
@@ -796,7 +797,8 @@ test_that(".collisions_check_input_af works as expected", {
         {
             checks <- .collisions_check_input_af(minimal_test_coll_meta %>%
                 dplyr::mutate(SequencingDate = as.character(
-                  .data$SequencingDate)),
+                    .data$SequencingDate
+                )),
             date_col = "SequencingDate",
             independent_sample_id = c("SubjectID")
             )

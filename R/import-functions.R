@@ -355,11 +355,11 @@ import_association_file <- function(path,
             dplyr::filter(.data$tag == "tp_days") %>%
             dplyr::pull(.data$names)
         if (!purrr::is_empty(tp_col) && tp_col %in% colnames(as_file)) {
-          as_file <- as_file %>%
-            dplyr::mutate(
-              TimepointMonths = .timepoint_to_months(.data[[tp_col]]),
-              TimepointYears = .timepoint_to_years(.data[[tp_col]])
-            )
+            as_file <- as_file %>%
+                dplyr::mutate(
+                    TimepointMonths = .timepoint_to_months(.data[[tp_col]]),
+                    TimepointYears = .timepoint_to_years(.data[[tp_col]])
+                )
         }
     }
     import_stats_rep <- NULL
@@ -452,7 +452,8 @@ import_association_file <- function(path,
             invokeRestart(rest, cnd)
         }
     )
-    if (!getOption("ISAnalytics.reports") & getOption("ISAnalytics.verbose")) {
+    if (!getOption("ISAnalytics.reports", TRUE) &
+        getOption("ISAnalytics.verbose", TRUE)) {
         summary_report <- .summary_af_import_msg(
             pars_prob = parsing_problems, dates_prob = date_problems,
             cols_prob = col_probs[[!is.null(col_probs)]],
@@ -576,7 +577,7 @@ import_Vispa2_stats <- function(association_file,
     stats <- stats$stats
     ## - IF NO STATS IMPORTED (STATS ARE NULL)
     if (is.null(stats)) {
-        if (getOption("ISAnalytics.verbose") == TRUE) {
+        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform(.no_stat_files_imported())
         }
         if (!is.null(report_path) && report_path == "INTERNAL") {
@@ -920,7 +921,7 @@ import_parallel_Vispa2Matrices <- function(association_file,
             !!!mult_args
         ))
     }
-    annotation_problems <- if (getOption("ISAnalytics.reports") == TRUE &
+    annotation_problems <- if (getOption("ISAnalytics.reports", TRUE) == TRUE &
         !is.null(report_path)) {
         tmp <- if (!multi_quant_matrix) {
             comparison_matrix(matrices)
@@ -1098,13 +1099,13 @@ annotation_issues <- function(matrix) {
     }
     if (is.data.frame(matrix)) {
         probs <- find_probs(matrix)
-        if (is.null(probs) & getOption("ISAnalytics.verbose") == TRUE) {
+        if (is.null(probs) & getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform("No annotation issues found")
         }
         return(probs)
     }
     probs <- purrr::map(matrix, find_probs)
-    if (all(is.null(probs)) & getOption("ISAnalytics.verbose") == TRUE) {
+    if (all(is.null(probs)) & getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform("No annotation issues found")
     }
     return(probs)
