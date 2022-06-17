@@ -496,7 +496,7 @@ top_cis_overtime_heatmap <- function(x,
                 ) %>%
                     dplyr::mutate(!!group_col := .y)
             } else if (is.data.frame(tmp)) {
-                temp %>% dplyr::mutate(!!group_col := .y)
+                tmp %>% dplyr::mutate(!!group_col := .y)
             } else {
                 non_list_el <- c("Element is not list or df",
                     x = paste(
