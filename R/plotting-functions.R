@@ -556,8 +556,8 @@ top_cis_overtime_heatmap <- function(x,
         dplyr::group_by(dplyr::across(dplyr::all_of(
             c(group_col, timepoint_col)
         ))) %>%
-        dplyr::group_modify(.f = arrange_slice_top) %>%
-        dplyr::ungroup()
+        dplyr::group_map(.f = arrange_slice_top, .keep = TRUE) %>%
+        purrr::reduce(dplyr::bind_rows)
 
     groups <- unique(slice_groups_tps[[group_col]])
 
