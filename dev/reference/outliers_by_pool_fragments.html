@@ -12,7 +12,7 @@ Identify and flag outliers based on expected number of raw reads per pool."><met
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,44 +97,71 @@ Identify and flag outliers based on expected number of raw reads per pool.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>metadata</dt>
 <dd><p>The metadata data frame</p></dd>
+
+
 <dt>key</dt>
 <dd><p>A character vector of numeric column names</p></dd>
+
+
 <dt>outlier_p_value_threshold</dt>
 <dd><p>The p value threshold for a read to be
 considered an outlier</p></dd>
+
+
 <dt>normality_test</dt>
 <dd><p>Perform normality test? Normality is assessed for
 each column in the key using Shapiro-Wilk test and if the values do not
 follow a normal distribution, other calculations are skipped</p></dd>
+
+
 <dt>normality_p_value_threshold</dt>
 <dd><p>Normality threshold</p></dd>
+
+
 <dt>transform_log2</dt>
 <dd><p>Perform a log2 trasformation on values prior the
 actual calculations?</p></dd>
+
+
 <dt>per_pool_test</dt>
 <dd><p>Perform the test for each pool?</p></dd>
+
+
 <dt>pool_col</dt>
 <dd><p>A character vector of the names of the columns that
 uniquely identify a pool</p></dd>
+
+
 <dt>min_samples_per_pool</dt>
 <dd><p>The minimum number of samples that a pool
 needs to contain in order to be processed - relevant only if
 <code>per_pool_test = TRUE</code></p></dd>
+
+
 <dt>flag_logic</dt>
 <dd><p>A character vector of logic operators to obtain a
 global flag formula - only relevant if the key is longer than one.
 All operators must be chosen between:
 AND, OR, XOR, NAND, NOR, XNOR</p></dd>
+
+
 <dt>keep_calc_cols</dt>
 <dd><p>Keep the calculation columns in the output data frame?</p></dd>
+
+
 <dt>report_path</dt>
 <dd><p>The path where the report file should be saved.
 Can be a folder, a file or NULL if no report should be produced.
 Defaults to <code>{user_home}/ISAnalytics_reports</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame of metadata with the column <code>to_remove</code></p>
+    
+
+<p>A data frame of metadata with the column <code>to_remove</code></p>
+
+
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -343,7 +370,7 @@ in sequence.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

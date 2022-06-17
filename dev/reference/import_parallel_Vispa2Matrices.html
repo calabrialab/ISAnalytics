@@ -18,7 +18,7 @@ vignette("workflow_start", package = "ISAnalytics")'><meta property="og:image" c
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,43 +106,64 @@ For more details see the "How to use import functions" vignette:
 <dd><p>Data frame imported via
 <a href="import_association_file.html">import_association_file</a> (with file system alignment) or
 a string containing the path to the association file on disk.</p></dd>
+
+
 <dt>quantification_type</dt>
 <dd><p>A vector of requested quantification_types.
 Possible choices are <a href="quantification_types.html">quantification_types</a></p></dd>
+
+
 <dt>matrix_type</dt>
 <dd><p>A single string representing the type of matrices
 to be imported. Can only be one in "annotated" or "not_annotated".</p></dd>
+
+
 <dt>workers</dt>
 <dd><p>A single integer representing the number of parallel
 workers to use for the import</p></dd>
+
+
 <dt>multi_quant_matrix</dt>
 <dd><p>If set to <code>TRUE</code> will produce a
 multi-quantification matrix through <a href="comparison_matrix.html">comparison_matrix</a>
 instead of a list.</p></dd>
+
+
 <dt>report_path</dt>
 <dd><p>The path where the report file should be saved.
 Can be a folder or <code>NULL</code> if no report should be produced.
 Defaults to <code>{user_home}/ISAnalytics_reports</code>.</p></dd>
+
+
 <dt>patterns</dt>
 <dd><p>Relevant only if argument <code>mode</code> is set to <code>AUTO</code>.
 A character vector of additional patterns to match on file
 names. Please note that patterns must be regular expressions. Can be <code>NULL</code>
 if no patterns need to be matched.</p></dd>
+
+
 <dt>matching_opt</dt>
 <dd><p>Relevant only if argument <code>mode</code> is set to <code>AUTO</code>.
 A single value between <a href="matching_options.html">matching_options</a></p></dd>
+
+
 <dt>mode</dt>
 <dd><p>A single value between <code>AUTO</code> and <code>INTERACTIVE</code>. If
 <code>INTERACTIVE</code>, the function will ask for input from the user on console,
 otherwise the process is fully automated (with limitations, see vignette).</p></dd>
+
+
 <dt>...</dt>
 <dd><p>&lt;<code><a href="https://rlang.r-lib.org/reference/dyn-dots.html" class="external-link">dynamic-dots</a></code>&gt; Additional named arguments
 to pass to <code>ìmport_association_file</code>, <code>comparison_matrix</code> and
 <code>import_single_Vispa2_matrix</code></p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Either a multi-quantification matrix or a list of integration
+    
+
+<p>Either a multi-quantification matrix or a list of integration
 matrices</p>
     </div>
     <div class="section level2">
@@ -208,7 +229,7 @@ matrices</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

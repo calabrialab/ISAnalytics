@@ -12,7 +12,7 @@ Displays the IS sharing calculated via is_sharing as heatmaps."><meta property="
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,33 +94,52 @@ Displays the IS sharing calculated via <a href="is_sharing.html">is_sharing</a> 
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>sharing_df</dt>
 <dd><p>The data frame containing the IS sharing data</p></dd>
+
+
 <dt>show_on_x</dt>
 <dd><p>Name of the column to plot on the x axis</p></dd>
+
+
 <dt>show_on_y</dt>
 <dd><p>Name of the column to plot on the y axis</p></dd>
+
+
 <dt>absolute_sharing_col</dt>
 <dd><p>Name of the column that contains the absolute
 values of IS sharing</p></dd>
+
+
 <dt>title_annot</dt>
 <dd><p>Additional text to display in the title</p></dd>
+
+
 <dt>plot_relative_sharing</dt>
 <dd><p>Logical. Compute heatmaps also for relative
 sharing?</p></dd>
+
+
 <dt>rel_sharing_col</dt>
 <dd><p>Names of the columns to consider as relative sharing.
 The function is going to plot one heatmap per column in this argument.</p></dd>
+
+
 <dt>show_perc_symbol_rel</dt>
 <dd><p>Logical. Only relevant if <code>plot_relative_sharing</code>
 is set to TRUE, should the percentage symbol be displayed in relative
 heatmaps?</p></dd>
+
+
 <dt>interactive</dt>
 <dd><p>Logical. Requires the package
 <a href="https://plotly.com/r/getting-started/" class="external-link">plotly</a> is required for this
 functionality. Returns the heatmaps as interactive HTML widgets.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list of plots or widgets</p>
+    
+
+<p>A list of plots or widgets</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -132,7 +151,8 @@ functionality. Returns the heatmaps as interactive HTML widgets.</p></dd>
 <code><a href="fisher_scatterplot.html">fisher_scatterplot</a>()</code>,
 <code><a href="integration_alluvial_plot.html">integration_alluvial_plot</a>()</code>,
 <code><a href="sharing_venn.html">sharing_venn</a>()</code>,
-<code><a href="top_abund_tableGrob.html">top_abund_tableGrob</a>()</code></p></div>
+<code><a href="top_abund_tableGrob.html">top_abund_tableGrob</a>()</code>,
+<code><a href="top_cis_overtime_heatmap.html">top_cis_overtime_heatmap</a>()</code></p></div>
     </div>
 
     <div class="section level2">
@@ -170,7 +190,7 @@ functionality. Returns the heatmaps as interactive HTML widgets.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

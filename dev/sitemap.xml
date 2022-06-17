@@ -28,6 +28,9 @@
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/CIS_grubbs.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/CIS_grubbs_overtime.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/CIS_volcano_plot.html</loc>
   </url>
   <url>
@@ -236,6 +239,9 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/top_abund_tableGrob.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/top_cis_overtime_heatmap.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/dev/reference/top_integrations.html</loc>

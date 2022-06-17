@@ -16,7 +16,7 @@ all the data frame or by group."><meta property="og:image" content="https://cala
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,26 +97,39 @@ all the data frame or by group.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
 <dd><p>An integration matrix - must be annotated</p></dd>
+
+
 <dt>n</dt>
 <dd><p>Number of rows to slice</p></dd>
+
+
 <dt>key</dt>
 <dd><p>If slice has to be performed for each group, the character
 vector of column names that identify the groups. If <code>NULL</code> considers the
 whole input data frame.</p></dd>
+
+
 <dt>consider_chr</dt>
 <dd><p>Logical, should the chromosome be taken into account?
 See details.</p></dd>
+
+
 <dt>consider_gene_strand</dt>
 <dd><p>Logical, should the gene strand be taken into
 account? See details.</p></dd>
+
+
 <dt>as_df</dt>
 <dd><p>If computation is performed by group, <code>TRUE</code> returns all
 groups merged in a single data frame with a column containing the group id.
 If <code>FALSE</code> returns a named list.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame or a list of data frames</p>
+    
+
+<p>A data frame or a list of data frames</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -210,7 +223,7 @@ only if <code>consider_chr = TRUE</code> and/or <code>consider_gene_strand = TRU
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

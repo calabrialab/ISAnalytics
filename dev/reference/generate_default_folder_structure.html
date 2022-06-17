@@ -12,7 +12,7 @@ path that respects VISPA2 standards, with package-included data."><meta property
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,19 +91,28 @@ path that respects VISPA2 standards, with package-included data.</p>
 <dd><p>One value between <code>"correct"</code>, <code>"incorrect"</code> and <code>"both"</code>.
 Tells the function wheter to produce a correct structure or introduce some
 errors (mainly for testing purposes).</p></dd>
+
+
 <dt>dir</dt>
 <dd><p>Path to the folder in which the structure will be produced</p></dd>
+
+
 <dt>af</dt>
 <dd><p>Either <code>"default"</code> for the association file provided as example
 in the package or a custom association file as a data frame</p></dd>
+
+
 <dt>matrices</dt>
 <dd><p>Either <code>"default"</code> for integration matrices
 provided as example
 in the package or a custom multi-quantification matrix</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A named list containing the path to the association file and
+    
+
+<p>A named list containing the path to the association file and
 the path to the top level folder(s) of the structure</p>
     </div>
     <div class="section level2">
@@ -132,10 +141,10 @@ the path to the top level folder(s) of the structure</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">fs_path</span> <span class="op">&lt;-</span> <span class="fu">generate_default_folder_structure</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"correct"</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">fs_path</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $af</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/RtmpBERaV9/asso_file.tsv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> /tmp/Rtmp2h83Cj/asso_file.tsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $root</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB; font-weight: bold;">/tmp/RtmpBERaV9/fs</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB; font-weight: bold;">/tmp/Rtmp2h83Cj/fs</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
@@ -148,7 +157,7 @@ the path to the top level folder(s) of the structure</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

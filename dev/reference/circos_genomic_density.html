@@ -26,7 +26,7 @@ Circular Visualization in R"><meta property="og:image" content="https://calabria
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -116,33 +116,52 @@ additional arguments please refer to the official documentation
 <dd><p>Either a single integration matrix or a list of integration
 matrices. If a list is provided, a separate density track for each
 data frame is plotted.</p></dd>
+
+
 <dt>gene_labels</dt>
 <dd><p>Either <code>NULL</code> or a data frame in bed format. See details.</p></dd>
+
+
 <dt>label_col</dt>
 <dd><p>Numeric index of the column of <code>gene_labels</code> that contains
 the actual labels. Relevant only if <code>gene_labels</code> is not set to <code>NULL</code>.</p></dd>
+
+
 <dt>cytoband_specie</dt>
 <dd><p>Specie for initializing the cytoband</p></dd>
+
+
 <dt>track_colors</dt>
 <dd><p>Colors to give to density tracks. If more than one
 integration matrix is provided as <code>data</code> should be of the same length.
 Values are recycled if length of <code>track_colors</code> is smaller than the length
 of the input data.</p></dd>
+
+
 <dt>grDevice</dt>
 <dd><p>The graphical device where the plot should be traced.
 <code>default</code>, if executing from RStudio is the viewer.</p></dd>
+
+
 <dt>file_path</dt>
 <dd><p>If a device other than <code>default</code> is chosen, the path on
 disk where the file should be saved. Defaults to
 <code>{current directory}/circos_plot.{device}</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Additional named arguments to pass on to chosen device,
 <code><a href="https://rdrr.io/pkg/circlize/man/circos.par.html" class="external-link">circlize::circos.par()</a></code>,
 <code><a href="https://rdrr.io/pkg/circlize/man/circos.genomicDensity.html" class="external-link">circlize::circos.genomicDensity()</a></code> and <code><a href="https://rdrr.io/pkg/circlize/man/circos.genomicLabels.html" class="external-link">circlize::circos.genomicLabels()</a></code></p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>NULL</code></p>
+    
+
+<p><code>NULL</code></p>
+
+
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -169,7 +188,8 @@ otherwise an error message is thrown.</p>
 <code><a href="integration_alluvial_plot.html">integration_alluvial_plot</a>()</code>,
 <code><a href="sharing_heatmap.html">sharing_heatmap</a>()</code>,
 <code><a href="sharing_venn.html">sharing_venn</a>()</code>,
-<code><a href="top_abund_tableGrob.html">top_abund_tableGrob</a>()</code></p></div>
+<code><a href="top_abund_tableGrob.html">top_abund_tableGrob</a>()</code>,
+<code><a href="top_cis_overtime_heatmap.html">top_cis_overtime_heatmap</a>()</code></p></div>
     </div>
 
     <div class="section level2">
@@ -202,7 +222,7 @@ otherwise an error message is thrown.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

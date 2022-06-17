@@ -16,7 +16,7 @@ format."><meta property="og:image" content="https://calabrialab.github.io/ISAnal
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,31 +99,48 @@ format.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>path</dt>
 <dd><p>The path to the file on disk</p></dd>
+
+
 <dt>separator</dt>
 <dd><p>The column delimiter used, defaults to <code>\t</code></p></dd>
+
+
 <dt>additional_cols</dt>
 <dd><p>Either <code>NULL</code>, a named character vector or a named
 list. See details.</p></dd>
+
+
 <dt>transformations</dt>
 <dd><p>Either <code>NULL</code> or a named list of purrr-style lambdas
 where names
 are column names the function should be applied to.</p></dd>
+
+
 <dt>sample_names_to</dt>
 <dd><p>Name of the output column holding the sample
 identifier. Defaults to <code><a href="pcr_id_column.html">pcr_id_column()</a></code></p></dd>
+
+
 <dt>values_to</dt>
 <dd><p>Name of the output column holding the quantification
 values. Defaults to <code>Value</code>.</p></dd>
+
+
 <dt>to_exclude</dt>
 <dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
 Deprecated. Use <code>additonal_cols</code> instead</p></dd>
+
+
 <dt>keep_excluded</dt>
 <dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
 Deprecated. Use <code>additonal_cols</code> instead</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data.table object in tidy format</p>
+    
+
+<p>A data.table object in tidy format</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -223,7 +240,7 @@ in the data frame, they are simply ignored.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

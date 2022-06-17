@@ -16,7 +16,7 @@ into single integration sites adjusting their values if needed.'><meta property=
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,6 +103,8 @@ into single integration sites adjusting their values if needed.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
 <dd><p>An integration matrix</p></dd>
+
+
 <dt>threshold</dt>
 <dd><p>A single integer that represents an absolute
 number of bases for which two integrations are considered distinct.
@@ -110,42 +112,65 @@ If the threshold is set to 3 it means, provided fields <code>chr</code>
 and <code>strand</code> are the same, integrations sites
 which have at least 3 bases in between them are
 considered distinct.</p></dd>
+
+
 <dt>is_identity_tags</dt>
 <dd><p>Character vector of tags that identify the
 integration event as distinct (except for <code>"locus"</code>). See details.</p></dd>
+
+
 <dt>keep_criteria</dt>
 <dd><p>While scanning, which integration should be kept?
 The 2 possible choices for this parameter are:</p><ul><li><p>"max_value": keep the integration site which has the highest value
 (and collapse other values on that integration).</p></li>
 <li><p>"keep_first": keeps the first integration</p></li>
 </ul></dd>
+
+
 <dt>value_columns</dt>
 <dd><p>Character vector, contains the names of the numeric
 experimental columns</p></dd>
+
+
 <dt>max_value_column</dt>
 <dd><p>The column that has to be considered for
 searching the maximum value</p></dd>
+
+
 <dt>sample_id_column</dt>
 <dd><p>The name of the column containing the sample
 identifier</p></dd>
+
+
 <dt>additional_agg_lambda</dt>
 <dd><p>A named list containing aggregating functions
 for additional columns. See details.</p></dd>
+
+
 <dt>max_workers</dt>
 <dd><p>Maximum parallel workers allowed</p></dd>
+
+
 <dt>map_as_file</dt>
 <dd><p>Produce recalibration map as a .tsv file?</p></dd>
+
+
 <dt>file_path</dt>
 <dd><p>String representing the path were the file will be
 saved. Must be a folder. Relevant only if <code>map_as_file</code> is
 <code>TRUE</code>.</p></dd>
+
+
 <dt>strand_specific</dt>
 <dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
 Deprecated, use <code>is_identity_tags</code></p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An integration matrix with same or less number of rows</p>
+    
+
+<p>An integration matrix with same or less number of rows</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -291,7 +316,7 @@ all quantification matrices.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

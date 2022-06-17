@@ -28,7 +28,7 @@ vignette("workflow_start", package = "ISAnalytics")'><meta property="og:image" c
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -118,36 +118,53 @@ For more details refer to the vignette "Collision removal functionality":
     <dl><dt>x</dt>
 <dd><p>Either a multi-quantification matrix (recommended) or a
 named list of matrices (names must be quantification types)</p></dd>
+
+
 <dt>association_file</dt>
 <dd><p>The association file imported via
 <code><a href="import_association_file.html">import_association_file()</a></code></p></dd>
+
+
 <dt>independent_sample_id</dt>
 <dd><p>A character vector of column names that
 identify independent samples</p></dd>
+
+
 <dt>date_col</dt>
 <dd><p>The date column that should be considered.</p></dd>
+
+
 <dt>reads_ratio</dt>
 <dd><p>A single numeric value that represents the ratio that has
 to be considered when deciding between <code>seqCount</code> value.</p></dd>
+
+
 <dt>quant_cols</dt>
 <dd><p>A named character vector where names are
 quantification types and
 values are the names of the corresponding columns. The quantification
 <code>seqCount</code> MUST be included in the vector.</p></dd>
+
+
 <dt>report_path</dt>
 <dd><p>The path where the report file should be saved.
 Can be a folder or <code>NULL</code> if no report should be produced.
 Defaults to <code>{user_home}/ISAnalytics_reports</code>.</p></dd>
+
+
 <dt>max_workers</dt>
 <dd><p>Maximum number of parallel workers to distribute the
 workload. If <code>NULL</code> (default) produces the maximum amount of workers allowed,
 a numeric value is requested otherwise. WARNING: a higher number of workers
 speeds up computation at the cost of memory consumption! Tune this parameter
 accordingly.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Either a multi-quantification matrix or a list of data frames</p>
+    
+
+<p>Either a multi-quantification matrix or a list of data frames</p>
     </div>
     <div class="section level2">
     <h2 id="required-tags">Required tags<a class="anchor" aria-label="anchor" href="#required-tags"></a></h2>
@@ -218,7 +235,7 @@ accordingly.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

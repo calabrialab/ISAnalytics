@@ -14,7 +14,7 @@ in the input data."><meta property="og:image" content="https://calabrialab.githu
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,36 +98,57 @@ in the input data.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>...</dt>
 <dd><p>One or more integration matrices</p></dd>
+
+
 <dt>group_key</dt>
 <dd><p>Character vector of column names which identify a
 single group. An associated group id will be derived by concatenating
 the values of these fields, separated by "_"</p></dd>
+
+
 <dt>group_keys</dt>
 <dd><p>A list of keys for asymmetric grouping.
 If not NULL the argument <code>group_key</code> is ignored</p></dd>
+
+
 <dt>n_comp</dt>
 <dd><p>Number of comparisons to compute. This argument is relevant
 only if provided a single data frame and a single key.</p></dd>
+
+
 <dt>is_count</dt>
 <dd><p>Logical, if <code>TRUE</code> returns also the count of IS for
 each group and the count for the union set</p></dd>
+
+
 <dt>relative_is_sharing</dt>
 <dd><p>Logical, if <code>TRUE</code> also returns the relative
 sharing.</p></dd>
+
+
 <dt>minimal</dt>
 <dd><p>Compute only combinations instead of all possible
 permutations? If <code>TRUE</code> saves time and excludes redundant comparisons.</p></dd>
+
+
 <dt>include_self_comp</dt>
 <dd><p>Include comparisons with the same group?</p></dd>
+
+
 <dt>keep_genomic_coord</dt>
 <dd><p>If <code>TRUE</code> keeps the genomic coordinates of the
 shared integration sites in a dedicated column (as a nested table)</p></dd>
+
+
 <dt>table_for_venn</dt>
 <dd><p>Add column with truth tables for venn plots?</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame</p>
+    
+
+<p>A data frame</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -224,7 +245,7 @@ function <code><a href="sharing_heatmap.html">sharing_heatmap</a></code> or via 
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

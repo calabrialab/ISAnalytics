@@ -14,7 +14,7 @@ between the single value and the total value for the given group."><meta propert
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,13 +95,21 @@ between the single value and the total value for the given group.</p>
 <dd><p>An integration matrix - aka a data frame that includes
 the <code><a href="mandatory_IS_vars.html">mandatory_IS_vars()</a></code> as columns. The matrix can either be aggregated
 (via <code><a href="aggregate_values_by_key.html">aggregate_values_by_key()</a></code>) or not.</p></dd>
+
+
 <dt>columns</dt>
 <dd><p>A character vector of column names to process,
 must be numeric or integer columns</p></dd>
+
+
 <dt>percentage</dt>
 <dd><p>Add abundance as percentage?</p></dd>
+
+
 <dt>key</dt>
 <dd><p>The key to group by when calculating totals</p></dd>
+
+
 <dt>keep_totals</dt>
 <dd><p>A value between <code>TRUE</code>, <code>FALSE</code> or <code>df</code>. If <code>TRUE</code>,
 the intermediate totals for each group will be kept in the output
@@ -109,10 +117,13 @@ data frame as a dedicated column with a trailing "_tot". If <code>FALSE</code>,
 totals won't be included in the output data frame. If <code>df</code>, the totals
 are returned to the user as a separate data frame, together with the
 abundance data frame.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Either a single data frame with computed abundance values or
+    
+
+<p>Either a single data frame with computed abundance values or
 a list of 2 data frames (abundance_df, quant_totals)</p>
     </div>
     <div class="section level2">
@@ -190,7 +201,7 @@ column) will be produced.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>

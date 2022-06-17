@@ -60,7 +60,7 @@ sample_key = c(&quot;SubjectID&quot;, &quot;CellMarker&quot;,&quot;Tissue&quot;,
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.7.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -161,24 +161,37 @@ sample_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
 <dd><p>A data frame</p></dd>
+
+
 <dt>metadata</dt>
 <dd><p>The metadata data frame</p></dd>
+
+
 <dt>sample_key</dt>
 <dd><p>Character vector representing the key for identifying
 a sample</p></dd>
+
+
 <dt>value_columns</dt>
 <dd><p>The name of the columns to be computed,
 must be numeric or integer</p></dd>
+
+
 <dt>functions</dt>
 <dd><p>A named list of function or purrr-style lambdas</p></dd>
+
+
 <dt>add_integrations_count</dt>
 <dd><p>Add the count of distinct integration sites
 for each group? Can be computed only if <code>x</code> contains the mandatory columns
 <code><a href="mandatory_IS_vars.html">mandatory_IS_vars()</a></code></p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list with modified x and metadata data frames</p>
+    
+
+<p>A list with modified x and metadata data frames</p>
     </div>
     <div class="section level2">
     <h2 id="required-tags">Required tags<a class="anchor" aria-label="anchor" href="#required-tags"></a></h2>
@@ -2061,7 +2074,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
     </footer></div>
