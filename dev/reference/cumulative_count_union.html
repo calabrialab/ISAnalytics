@@ -80,16 +80,16 @@ please use <code>cumulative_is</code> instead.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">cumulative_count_union</span><span class="op">(</span>
-  <span class="va">x</span>,
-  association_file <span class="op">=</span> <span class="cn">NULL</span>,
-  timepoint_column <span class="op">=</span> <span class="st">"TimePoint"</span>,
-  key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
-  include_tp_zero <span class="op">=</span> <span class="cn">FALSE</span>,
-  zero <span class="op">=</span> <span class="st">"0000"</span>,
-  aggregate <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cumulative_count_union</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  association_file <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  timepoint_column <span class="op">=</span> <span class="st">"TimePoint"</span>,</span>
+<span>  key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,</span>
+<span>  include_tp_zero <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  zero <span class="op">=</span> <span class="st">"0000"</span>,</span>
+<span>  aggregate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -136,20 +136,20 @@ is set to TRUE</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">aggreg</span> <span class="op">&lt;-</span> <span class="fu"><a href="aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
-<span class="r-in">    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
-<span class="r-in">    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
-<span class="r-in">    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">cumulative_count</span> <span class="op">&lt;-</span> <span class="fu">cumulative_count_union</span><span class="op">(</span><span class="va">aggreg</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">aggreg</span> <span class="op">&lt;-</span> <span class="fu"><a href="aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span></span>
+<span class="r-in"><span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span></span>
+<span class="r-in"><span>    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">cumulative_count</span> <span class="op">&lt;-</span> <span class="fu">cumulative_count_union</span><span class="op">(</span><span class="va">aggreg</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`cumulative_count_union()` was deprecated in ISAnalytics 1.5.4.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Please use `cumulative_is()` instead.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Use option `counts = TRUE`. Function will be likely dropped in the next release cycle</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</span></span>
-<span class="r-in"><span class="va">cumulative_count</span></span>
+<span class="r-in"><span><span class="va">cumulative_count</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $coordinates</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       SubjectID CellMarker Tissue TimePoint chr integration_locus strand</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    1:     PT001        MNC     BM        30   1           8464757      -</span>
@@ -210,7 +210,7 @@ is set to TRUE</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

@@ -146,15 +146,15 @@ used by automated import functions</p></li>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">mandatory_IS_vars</span><span class="op">(</span>include_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="fu">annotation_IS_vars</span><span class="op">(</span>include_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="fu">association_file_columns</span><span class="op">(</span>include_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="fu">iss_stats_specs</span><span class="op">(</span>include_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-
-<span class="fu">matrix_file_suffixes</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mandatory_IS_vars</span><span class="op">(</span>include_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">annotation_IS_vars</span><span class="op">(</span>include_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">association_file_columns</span><span class="op">(</span>include_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">iss_stats_specs</span><span class="op">(</span>include_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">matrix_file_suffixes</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -182,33 +182,33 @@ associated, otherwise returns only a character vector of names</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Names only</span></span>
-<span class="r-in"><span class="fu">mandatory_IS_vars</span><span class="op">(</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Names only</span></span></span>
+<span class="r-in"><span><span class="fu">mandatory_IS_vars</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "chr"               "integration_locus" "strand"           </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Names and types</span></span>
-<span class="r-in"><span class="fu">mandatory_IS_vars</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Names and types</span></span></span>
+<span class="r-in"><span><span class="fu">mandatory_IS_vars</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 5</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   names             types transform flag     tag       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> chr               char  <span style="color: #949494;">&lt;NULL&gt;</span>    required chromosome</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> integration_locus int   <span style="color: #949494;">&lt;NULL&gt;</span>    required locus     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> strand            char  <span style="color: #949494;">&lt;NULL&gt;</span>    required is_strand </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Names only</span></span>
-<span class="r-in"><span class="fu">annotation_IS_vars</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Names only</span></span></span>
+<span class="r-in"><span><span class="fu">annotation_IS_vars</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "GeneName"   "GeneStrand"</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Names and types</span></span>
-<span class="r-in"><span class="fu">annotation_IS_vars</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Names and types</span></span></span>
+<span class="r-in"><span><span class="fu">annotation_IS_vars</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 5</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   names      types transform flag     tag        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> GeneName   char  <span style="color: #949494;">&lt;NULL&gt;</span>    required gene_symbol</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> GeneStrand char  <span style="color: #949494;">&lt;NULL&gt;</span>    required gene_strand</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Names only</span></span>
-<span class="r-in"><span class="fu">association_file_columns</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Names only</span></span></span>
+<span class="r-in"><span><span class="fu">association_file_columns</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "ProjectID"                           "FUSIONID"                           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "PoolID"                              "TagSequence"                        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "SubjectID"                           "VectorType"                         </span>
@@ -245,9 +245,9 @@ associated, otherwise returns only a character vector of names</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [67] "SamplesNameCheck"                    "TimepointDays"                      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [69] "TimepointMonths"                     "TimepointYears"                     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [71] "ng DNA corrected"                   </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Names and types</span></span>
-<span class="r-in"><span class="fu">association_file_columns</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Names and types</span></span></span>
+<span class="r-in"><span><span class="fu">association_file_columns</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 71 × 5</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    names        types transform flag     tag       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
@@ -262,17 +262,17 @@ associated, otherwise returns only a character vector of names</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Tissue       char  <span style="color: #949494;">&lt;NULL&gt;</span>    required tissue    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> TimePoint    char  <span style="color: #949494;">&lt;formula&gt;</span> required tp_days   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 61 more rows</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Names only</span></span>
-<span class="r-in"><span class="fu">iss_stats_specs</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Names only</span></span></span>
+<span class="r-in"><span><span class="fu">iss_stats_specs</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "RUN_NAME"              "POOL"                  "TAG"                  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "RAW_READS"             "QUALITY_PASSED"        "PHIX_MAPPING"         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "PLASMID_MAPPED_BYPOOL" "BARCODE_MUX"           "LTR_IDENTIFIED"       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [10] "TRIMMING_FINAL_LTRLC"  "LV_MAPPED"             "BWA_MAPPED_OVERALL"   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [13] "ISS_MAPPED_OVERALL"    "ISS_MAPPED_PP"        </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Names and types</span></span>
-<span class="r-in"><span class="fu">iss_stats_specs</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Names and types</span></span></span>
+<span class="r-in"><span><span class="fu">iss_stats_specs</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 14 × 5</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    names                 types transform flag     tag              </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            </span>
@@ -290,9 +290,9 @@ associated, otherwise returns only a character vector of names</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> BWA_MAPPED_OVERALL    int   <span style="color: #949494;">&lt;NULL&gt;</span>    optional <span style="color: #BB0000;">NA</span>               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> ISS_MAPPED_OVERALL    int   <span style="color: #949494;">&lt;NULL&gt;</span>    optional <span style="color: #BB0000;">NA</span>               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> ISS_MAPPED_PP         int   <span style="color: #949494;">&lt;NULL&gt;</span>    optional <span style="color: #BB0000;">NA</span>               </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Names only</span></span>
-<span class="r-in"><span class="fu">matrix_file_suffixes</span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Names only</span></span></span>
+<span class="r-in"><span><span class="fu">matrix_file_suffixes</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    quantification   matrix_type   file_suffix                                 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>                                      </span>
@@ -306,7 +306,7 @@ associated, otherwise returns only a character vector of names</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> barcodeCount     not_annotated barcodeCount_matrix.tsv.gz                  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cellCount        not_annotated cellCount_matrix.tsv.gz                     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ShsCount         not_annotated ShsCount_matrix.tsv.gz                      </span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -318,7 +318,7 @@ associated, otherwise returns only a character vector of names</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

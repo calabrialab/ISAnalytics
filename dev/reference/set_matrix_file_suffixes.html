@@ -77,14 +77,14 @@ suffixes based on user input.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">set_matrix_file_suffixes</span><span class="op">(</span>
-  quantification_suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seqCount <span class="op">=</span> <span class="st">"seqCount"</span>, fragmentEstimate <span class="op">=</span>
-    <span class="st">"fragmentEstimate"</span>, barcodeCount <span class="op">=</span> <span class="st">"barcodeCount"</span>, cellCount <span class="op">=</span> <span class="st">"cellCount"</span>, ShsCount
-    <span class="op">=</span> <span class="st">"ShsCount"</span><span class="op">)</span>,
-  annotation_suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>annotated <span class="op">=</span> <span class="st">".no0.annotated"</span>, not_annotated <span class="op">=</span> <span class="st">""</span><span class="op">)</span>,
-  file_ext <span class="op">=</span> <span class="st">"tsv.gz"</span>,
-  glue_file_spec <span class="op">=</span> <span class="st">"{quantification_suffix}_matrix{annotation_suffix}.{file_ext}"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">set_matrix_file_suffixes</span><span class="op">(</span></span>
+<span>  quantification_suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seqCount <span class="op">=</span> <span class="st">"seqCount"</span>, fragmentEstimate <span class="op">=</span></span>
+<span>    <span class="st">"fragmentEstimate"</span>, barcodeCount <span class="op">=</span> <span class="st">"barcodeCount"</span>, cellCount <span class="op">=</span> <span class="st">"cellCount"</span>, ShsCount</span>
+<span>    <span class="op">=</span> <span class="st">"ShsCount"</span><span class="op">)</span>,</span>
+<span>  annotation_suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>annotated <span class="op">=</span> <span class="st">".no0.annotated"</span>, not_annotated <span class="op">=</span> <span class="st">""</span><span class="op">)</span>,</span>
+<span>  file_ext <span class="op">=</span> <span class="st">"tsv.gz"</span>,</span>
+<span>  glue_file_spec <span class="op">=</span> <span class="st">"{quantification_suffix}_matrix{annotation_suffix}.{file_ext}"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -134,18 +134,18 @@ The string should contain the reference to <code>quantification_suffix</code>,
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">set_matrix_file_suffixes</span><span class="op">(</span></span>
-<span class="r-in">    quantification_suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span class="r-in">        seqCount <span class="op">=</span> <span class="st">"sc"</span>,</span>
-<span class="r-in">        fragmentEstimate <span class="op">=</span> <span class="st">"fe"</span>,</span>
-<span class="r-in">        barcodeCount <span class="op">=</span> <span class="st">"barcodeCount"</span>,</span>
-<span class="r-in">        cellCount <span class="op">=</span> <span class="st">"cellCount"</span>,</span>
-<span class="r-in">        ShsCount <span class="op">=</span> <span class="st">"ShsCount"</span></span>
-<span class="r-in">    <span class="op">)</span>,</span>
-<span class="r-in">    annotation_suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>annotated <span class="op">=</span> <span class="st">"annot"</span>, not_annotated <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">set_matrix_file_suffixes</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    quantification_suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        seqCount <span class="op">=</span> <span class="st">"sc"</span>,</span></span>
+<span class="r-in"><span>        fragmentEstimate <span class="op">=</span> <span class="st">"fe"</span>,</span></span>
+<span class="r-in"><span>        barcodeCount <span class="op">=</span> <span class="st">"barcodeCount"</span>,</span></span>
+<span class="r-in"><span>        cellCount <span class="op">=</span> <span class="st">"cellCount"</span>,</span></span>
+<span class="r-in"><span>        ShsCount <span class="op">=</span> <span class="st">"ShsCount"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    annotation_suffix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>annotated <span class="op">=</span> <span class="st">"annot"</span>, not_annotated <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Matrix suffixes specs successfully changed</span>
-<span class="r-in"><span class="fu"><a href="mandatory_IS_vars.html">matrix_file_suffixes</a></span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="mandatory_IS_vars.html">matrix_file_suffixes</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    quantification   matrix_type   file_suffix                    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>                         </span>
@@ -159,7 +159,7 @@ The string should contain the reference to <code>quantification_suffix</code>,
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> barcodeCount     not_annotated barcodeCount_matrix.tsv.gz     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cellCount        not_annotated cellCount_matrix.tsv.gz        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ShsCount         not_annotated ShsCount_matrix.tsv.gz         </span>
-<span class="r-in"><span class="fu"><a href="reset_mandatory_IS_vars.html">reset_matrix_file_suffixes</a></span><span class="op">(</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="reset_mandatory_IS_vars.html">reset_matrix_file_suffixes</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Matrix suffixes specs reset to default</span>
 </code></pre></div>
     </div>
@@ -172,7 +172,7 @@ The string should contain the reference to <code>quantification_suffix</code>,
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

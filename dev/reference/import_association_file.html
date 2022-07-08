@@ -83,19 +83,19 @@ two.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">import_association_file</span><span class="op">(</span>
-  <span class="va">path</span>,
-  root <span class="op">=</span> <span class="cn">NULL</span>,
-  dates_format <span class="op">=</span> <span class="st">"ymd"</span>,
-  separator <span class="op">=</span> <span class="st">"\t"</span>,
-  filter_for <span class="op">=</span> <span class="cn">NULL</span>,
-  import_iss <span class="op">=</span> <span class="cn">FALSE</span>,
-  convert_tp <span class="op">=</span> <span class="cn">TRUE</span>,
-  report_path <span class="op">=</span> <span class="fu"><a href="default_report_path.html">default_report_path</a></span><span class="op">(</span><span class="op">)</span>,
-  transformations <span class="op">=</span> <span class="fu"><a href="default_af_transform.html">default_af_transform</a></span><span class="op">(</span><span class="va">convert_tp</span><span class="op">)</span>,
-  tp_padding <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">import_association_file</span><span class="op">(</span></span>
+<span>  <span class="va">path</span>,</span>
+<span>  root <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dates_format <span class="op">=</span> <span class="st">"ymd"</span>,</span>
+<span>  separator <span class="op">=</span> <span class="st">"\t"</span>,</span>
+<span>  filter_for <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  import_iss <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  convert_tp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  report_path <span class="op">=</span> <span class="fu"><a href="default_report_path.html">default_report_path</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  transformations <span class="op">=</span> <span class="fu"><a href="default_af_transform.html">default_af_transform</a></span><span class="op">(</span><span class="va">convert_tp</span><span class="op">)</span>,</span>
+<span>  tp_padding <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -238,12 +238,12 @@ will parse the generic date with the format in the <code>dates_format</code> arg
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">fs_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="generate_default_folder_structure.html">generate_default_folder_structure</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"correct"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">af</span> <span class="op">&lt;-</span> <span class="fu">import_association_file</span><span class="op">(</span><span class="va">fs_path</span><span class="op">$</span><span class="va">af</span>,</span>
-<span class="r-in">    root <span class="op">=</span> <span class="va">fs_path</span><span class="op">$</span><span class="va">root</span>,</span>
-<span class="r-in">    report_path <span class="op">=</span> <span class="cn">NULL</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">af</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">fs_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="generate_default_folder_structure.html">generate_default_folder_structure</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"correct"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">af</span> <span class="op">&lt;-</span> <span class="fu">import_association_file</span><span class="op">(</span><span class="va">fs_path</span><span class="op">$</span><span class="va">af</span>,</span></span>
+<span class="r-in"><span>    root <span class="op">=</span> <span class="va">fs_path</span><span class="op">$</span><span class="va">root</span>,</span></span>
+<span class="r-in"><span>    report_path <span class="op">=</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">af</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ProjectID  FUSIONID PoolID TagSequence SubjectID VectorType VectorID</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:      PJ01 ET#382.46 POOL01   LTR75LC38     PT001      lenti    GLOBE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:      PJ01 ET#381.40 POOL01   LTR53LC32     PT001      lenti    GLOBE</span>
@@ -350,26 +350,26 @@ will parse the generic date with the format in the <code>dates_format</code> arg
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:                 /PJ01             &lt;NA&gt;          0180              06</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:                 /PJ01             &lt;NA&gt;          0060              02</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    TimepointYears ng DNA corrected                    Path</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:             01            23.18 /tmp/Rtmpfxe6lw/fs/PJ01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:             01           181.44 /tmp/Rtmpfxe6lw/fs/PJ01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:             01           181.44 /tmp/Rtmpfxe6lw/fs/PJ01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:             01           181.44 /tmp/Rtmpfxe6lw/fs/PJ01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:             01            23.06 /tmp/Rtmpfxe6lw/fs/PJ01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:             01           171.36 /tmp/Rtmpfxe6lw/fs/PJ01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:             01            23.18 /tmp/RtmpMHmCLS/fs/PJ01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:             01           181.44 /tmp/RtmpMHmCLS/fs/PJ01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:             01           181.44 /tmp/RtmpMHmCLS/fs/PJ01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:             01           181.44 /tmp/RtmpMHmCLS/fs/PJ01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:             01            23.06 /tmp/RtmpMHmCLS/fs/PJ01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:             01           171.36 /tmp/RtmpMHmCLS/fs/PJ01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                         Path_quant</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: /tmp/Rtmpfxe6lw/fs/PJ01/quantification/POOL01-1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: /tmp/Rtmpfxe6lw/fs/PJ01/quantification/POOL01-1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: /tmp/Rtmpfxe6lw/fs/PJ01/quantification/POOL01-1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: /tmp/Rtmpfxe6lw/fs/PJ01/quantification/POOL01-1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: /tmp/Rtmpfxe6lw/fs/PJ01/quantification/POOL01-1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: /tmp/Rtmpfxe6lw/fs/PJ01/quantification/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: /tmp/RtmpMHmCLS/fs/PJ01/quantification/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: /tmp/RtmpMHmCLS/fs/PJ01/quantification/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: /tmp/RtmpMHmCLS/fs/PJ01/quantification/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: /tmp/RtmpMHmCLS/fs/PJ01/quantification/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: /tmp/RtmpMHmCLS/fs/PJ01/quantification/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: /tmp/RtmpMHmCLS/fs/PJ01/quantification/POOL01-1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                Path_iss</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: /tmp/Rtmpfxe6lw/fs/PJ01/iss/POOL01-1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: /tmp/Rtmpfxe6lw/fs/PJ01/iss/POOL01-1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: /tmp/Rtmpfxe6lw/fs/PJ01/iss/POOL01-1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: /tmp/Rtmpfxe6lw/fs/PJ01/iss/POOL01-1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: /tmp/Rtmpfxe6lw/fs/PJ01/iss/POOL01-1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: /tmp/Rtmpfxe6lw/fs/PJ01/iss/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: /tmp/RtmpMHmCLS/fs/PJ01/iss/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: /tmp/RtmpMHmCLS/fs/PJ01/iss/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: /tmp/RtmpMHmCLS/fs/PJ01/iss/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: /tmp/RtmpMHmCLS/fs/PJ01/iss/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: /tmp/RtmpMHmCLS/fs/PJ01/iss/POOL01-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: /tmp/RtmpMHmCLS/fs/PJ01/iss/POOL01-1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -381,7 +381,7 @@ will parse the generic date with the format in the <code>dates_format</code> arg
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

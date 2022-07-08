@@ -89,15 +89,15 @@ observed for the first time.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">iss_source</span><span class="op">(</span>
-  <span class="va">reference</span>,
-  <span class="va">selection</span>,
-  ref_group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
-  selection_group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,
-  timepoint_column <span class="op">=</span> <span class="st">"TimePoint"</span>,
-  by_subject <span class="op">=</span> <span class="cn">TRUE</span>,
-  subject_column <span class="op">=</span> <span class="st">"SubjectID"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">iss_source</span><span class="op">(</span></span>
+<span>  <span class="va">reference</span>,</span>
+<span>  <span class="va">selection</span>,</span>
+<span>  ref_group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,</span>
+<span>  selection_group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span><span class="op">)</span>,</span>
+<span>  timepoint_column <span class="op">=</span> <span class="st">"TimePoint"</span>,</span>
+<span>  by_subject <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  subject_column <span class="op">=</span> <span class="st">"SubjectID"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -160,21 +160,21 @@ Relevant only if <code>by_subject = TRUE</code></p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">aggreg</span> <span class="op">&lt;-</span> <span class="fu"><a href="aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
-<span class="r-in">    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
-<span class="r-in">    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
-<span class="r-in">    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">aggreg</span> <span class="op">%&gt;%</span></span>
-<span class="r-in">    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">df2</span> <span class="op">&lt;-</span> <span class="va">aggreg</span> <span class="op">%&gt;%</span></span>
-<span class="r-in">    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Tissue</span> <span class="op">==</span> <span class="st">"PB"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">source</span> <span class="op">&lt;-</span> <span class="fu">iss_source</span><span class="op">(</span><span class="va">df1</span>, <span class="va">df2</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">aggreg</span> <span class="op">&lt;-</span> <span class="fu"><a href="aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span></span>
+<span class="r-in"><span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span></span>
+<span class="r-in"><span>    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">aggreg</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="va">aggreg</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">Tissue</span> <span class="op">==</span> <span class="st">"PB"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">source</span> <span class="op">&lt;-</span> <span class="fu">iss_source</span><span class="op">(</span><span class="va">df1</span>, <span class="va">df2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================================================| 100%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="va">source</span></span>
+<span class="r-in"><span><span class="va">source</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $PT001</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 161 × 14</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    g1       g1_SubjectID g1_CellMarker g1_Tissue g1_TimePoint g2    g2_SubjectID</span>
@@ -211,15 +211,15 @@ Relevant only if <code>by_subject = TRUE</code></p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   g2_Tissue &lt;chr&gt;, g2_TimePoint &lt;int&gt;, chr &lt;chr&gt;, integration_locus &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   strand &lt;chr&gt;, sharing_perc &lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">source</span><span class="op">$</span><span class="va">PT001</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
-<span class="r-in">    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">g2_TimePoint</span><span class="op">)</span>,</span>
-<span class="r-in">    y <span class="op">=</span> <span class="va">sharing_perc</span>, fill <span class="op">=</span> <span class="va">g1</span></span>
-<span class="r-in"><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span class="r-in">    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span class="r-in">    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span class="r-in">        x <span class="op">=</span> <span class="st">"Time point"</span>, y <span class="op">=</span> <span class="st">"Shared IS % with MNC BM"</span>,</span>
-<span class="r-in">        title <span class="op">=</span> <span class="st">"Source of is MNC BM vs MNC PB"</span></span>
-<span class="r-in">    <span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">source</span><span class="op">$</span><span class="va">PT001</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">g2_TimePoint</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    y <span class="op">=</span> <span class="va">sharing_perc</span>, fill <span class="op">=</span> <span class="va">g1</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        x <span class="op">=</span> <span class="st">"Time point"</span>, y <span class="op">=</span> <span class="st">"Shared IS % with MNC BM"</span>,</span></span>
+<span class="r-in"><span>        title <span class="op">=</span> <span class="st">"Source of is MNC BM vs MNC PB"</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-plt img"><img src="iss_source-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
@@ -232,7 +232,7 @@ Relevant only if <code>by_subject = TRUE</code></p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>

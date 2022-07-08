@@ -77,17 +77,17 @@ Displays the IS sharing calculated via <a href="is_sharing.html">is_sharing</a> 
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">sharing_heatmap</span><span class="op">(</span>
-  <span class="va">sharing_df</span>,
-  show_on_x <span class="op">=</span> <span class="st">"g1"</span>,
-  show_on_y <span class="op">=</span> <span class="st">"g2"</span>,
-  absolute_sharing_col <span class="op">=</span> <span class="st">"shared"</span>,
-  title_annot <span class="op">=</span> <span class="cn">NULL</span>,
-  plot_relative_sharing <span class="op">=</span> <span class="cn">TRUE</span>,
-  rel_sharing_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"on_g1"</span>, <span class="st">"on_union"</span><span class="op">)</span>,
-  show_perc_symbol_rel <span class="op">=</span> <span class="cn">TRUE</span>,
-  interactive <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sharing_heatmap</span><span class="op">(</span></span>
+<span>  <span class="va">sharing_df</span>,</span>
+<span>  show_on_x <span class="op">=</span> <span class="st">"g1"</span>,</span>
+<span>  show_on_y <span class="op">=</span> <span class="st">"g2"</span>,</span>
+<span>  absolute_sharing_col <span class="op">=</span> <span class="st">"shared"</span>,</span>
+<span>  title_annot <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plot_relative_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rel_sharing_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"on_g1"</span>, <span class="st">"on_union"</span><span class="op">)</span>,</span>
+<span>  show_perc_symbol_rel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  interactive <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -157,27 +157,27 @@ functionality. Returns the heatmaps as interactive HTML widgets.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">aggreg</span> <span class="op">&lt;-</span> <span class="fu"><a href="aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
-<span class="r-in">    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
-<span class="r-in">    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
-<span class="r-in">    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">sharing</span> <span class="op">&lt;-</span> <span class="fu"><a href="is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">aggreg</span>,</span>
-<span class="r-in">    minimal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span class="r-in">    include_self_comp <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span class="r-in"><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">aggreg</span> <span class="op">&lt;-</span> <span class="fu"><a href="aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span></span>
+<span class="r-in"><span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span></span>
+<span class="r-in"><span>    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sharing</span> <span class="op">&lt;-</span> <span class="fu"><a href="is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">aggreg</span>,</span></span>
+<span class="r-in"><span>    minimal <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>    include_self_comp <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating combinations...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating self groups (requested)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating permutations (requested)...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Done!</span>
-<span class="r-in"><span class="va">sharing_heatmaps</span> <span class="op">&lt;-</span> <span class="fu">sharing_heatmap</span><span class="op">(</span>sharing_df <span class="op">=</span> <span class="va">sharing</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">sharing_heatmaps</span><span class="op">$</span><span class="va">absolute</span></span>
+<span class="r-in"><span><span class="va">sharing_heatmaps</span> <span class="op">&lt;-</span> <span class="fu">sharing_heatmap</span><span class="op">(</span>sharing_df <span class="op">=</span> <span class="va">sharing</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sharing_heatmaps</span><span class="op">$</span><span class="va">absolute</span></span></span>
 <span class="r-plt img"><img src="sharing_heatmap-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="va">sharing_heatmaps</span><span class="op">$</span><span class="va">on_g1</span></span>
+<span class="r-in"><span><span class="va">sharing_heatmaps</span><span class="op">$</span><span class="va">on_g1</span></span></span>
 <span class="r-plt img"><img src="sharing_heatmap-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="va">sharing_heatmaps</span><span class="op">$</span><span class="va">on_union</span></span>
+<span class="r-in"><span><span class="va">sharing_heatmaps</span><span class="op">$</span><span class="va">on_union</span></span></span>
 <span class="r-plt img"><img src="sharing_heatmap-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
@@ -190,7 +190,7 @@ functionality. Returns the heatmaps as interactive HTML widgets.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
     </footer></div>
