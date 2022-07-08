@@ -211,7 +211,7 @@ test_that(".discriminate_by_date returns as expected for all equal dates", {
         c("ProjectID", "SubjectID")
     )
     expect_true(result$check == FALSE)
-    expect_equal(result$data, df)
+    expect_null(result$data)
 })
 
 test_that(".discriminate_by_date returns as expected for paired equal dates", {
@@ -239,8 +239,7 @@ test_that(".discriminate_by_date returns as expected for paired equal dates", {
         c("ProjectID", "SubjectID")
     )
     expect_true(result$check == FALSE)
-    df <- df %>% dplyr::arrange(.data$SequencingDate)
-    expect_equal(result$data, df)
+    expect_null(result$data)
 })
 
 test_that(".discriminate_by_date returns as expected for single min date", {
@@ -330,7 +329,7 @@ test_that(".discriminate_by_replicate returns as expected for not max", {
         c("ProjectID", "SubjectID")
     )
     expect_true(result$check == FALSE)
-    expect_equal(result$data, df)
+    expect_null(result$data)
 })
 
 #------------------------------------------------------------------------------#
@@ -362,7 +361,7 @@ test_that(".discriminate_by_seqCount returns as expected for ratio < 10", {
         c("ProjectID", "SubjectID")
     )
     expect_true(result$check == FALSE)
-    expect_equal(result$data, df)
+    expect_null(result$data)
 })
 
 test_that(".discriminate_by_seqCount returns as expected for ratio > 10", {

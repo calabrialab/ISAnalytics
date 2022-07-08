@@ -281,7 +281,7 @@ set_af_columns_def <- function(specs) {
 #' reset_af_columns_def()
 #'
 reset_af_columns_def <- function() {
-    options(ISAnalytics.genomic_annotation_vars = "default")
+    options(ISAnalytics.af_specs = "default")
     if (getOption("ISAnalytics.verbose", TRUE)) {
         rlang::inform("Association file columns specs reset to default")
     }
@@ -1195,6 +1195,8 @@ generate_default_folder_structure <- function(type = "correct",
     return(list(af = af_tmp_file, root = root))
 }
 
+
+#### ---- Configurations and others ----####
 #' Export a dynamic vars settings profile.
 #'
 #' @description This function allows exporting the currently set dynamic
@@ -1227,19 +1229,14 @@ export_ISA_settings <- function(folder, setting_profile_name) {
                     rlang::f_text(.x)
                 }
             }))
-        tmp %>%
-            jsonlite::toJSON(pretty = TRUE)
+        tmp
     }
-    all_specs_json <- paste0(
-        "{",
-        '"mandatory_IS_vars":', jsonify(mandatory_IS_vars(TRUE)), ",",
-        '"annotation_IS_vars":', jsonify(annotation_IS_vars(TRUE)), ",",
-        '"association_file_columns":', jsonify(association_file_columns(TRUE)), ",",
-        '"iss_stats_specs":', jsonify(iss_stats_specs(TRUE)), ",",
-        '"matrix_file_suffixes":', jsonlite::toJSON(matrix_file_suffixes(),
-            pretty = TRUE
-        ),
-        "}"
+    all_specs_json <- list(
+      mandatory_IS_vars = jsonify(mandatory_IS_vars(TRUE)),
+      annotation_IS_vars = jsonify(annotation_IS_vars(TRUE)),
+      association_file_columns = jsonify(association_file_columns(TRUE)),
+      iss_stats_specs = jsonify(iss_stats_specs(TRUE)),
+      matrix_file_suffixes = matrix_file_suffixes()
     )
     fs::dir_create(folder)
     file_name <- paste0(setting_profile_name, "_ISAsettings.json")
@@ -1277,8 +1274,7 @@ import_ISA_settings <- function(path) {
     if (!requireNamespace("jsonlite", quietly = TRUE)) {
         rlang::abort(.missing_pkg_error("jsonlite"))
     }
-    parsed_json <- jsonlite::read_json(path)
-    lookup_tbls <- jsonlite::fromJSON(parsed_json[[1]])
+    lookup_tbls <- jsonlite::fromJSON(path)
     unjsonify <- function(df, tbl_name) {
         tmp <- df %>%
             tibble::as_tibble() %>%

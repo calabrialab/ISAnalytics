@@ -50,7 +50,8 @@ Imports:
     shiny,
     shinyWidgets,
     datamods,
-    bslib
+    bslib,
+    doParallel
 Encoding: UTF-8
 LazyData: false
 Roxygen: list(markdown = TRUE)
@@ -79,7 +80,8 @@ Suggests:
     eulerr,
     openxlsx,
     jsonlite,
-    pheatmap
+    pheatmap,
+    progressr
 VignetteBuilder: knitr
 RdMacros: 
     lifecycle

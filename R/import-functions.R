@@ -254,6 +254,7 @@ import_association_file <- function(path,
             )
         )
     }
+    dots <- rlang::dots_list(..., .named = TRUE)
     # Check filter
     stopifnot(is.null(filter_for) ||
         (is.list(filter_for) && !is.null(names(filter_for))))
@@ -365,11 +366,11 @@ import_association_file <- function(path,
     import_stats_rep <- NULL
     missing_stats_rep <- NULL
     if (import_iss) {
-        dots <- rlang::dots_list(..., .named = TRUE)
-        dots <- dots[!names(dots) %in% c(
+        dots_iss <- dots[!names(dots) %in% c(
             "association_file",
             "report_path",
-            "join_with_af"
+            "join_with_af",
+            "checks_env"
         )]
         stats <- NULL
         withCallingHandlers(
@@ -380,7 +381,7 @@ import_association_file <- function(path,
                             association_file = as_file,
                             report_path = "INTERNAL",
                             join_with_af = TRUE,
-                            !!!dots
+                            !!!dots_iss
                         )
                     },
                     fail_stats = function() {
@@ -388,7 +389,7 @@ import_association_file <- function(path,
                             "Issues in importing stats",
                             "files, skipping"
                         )
-                        rlang::inform(fail_stats_msg)
+                        rlang::inform(fail_stats_msg, class = "fail_stats_msg")
                     }
                 )
             },
@@ -434,6 +435,19 @@ import_association_file <- function(path,
     }
     withCallingHandlers(
         {
+            if ("checks_env" %in% names(dots) &&
+                rlang::is_environment(dots$checks_env)) {
+              rlang::env_bind(
+                dots$checks_env,
+                parsing_prob = parsing_problems,
+                dates_prob = date_problems,
+                col_prob = col_probs,
+                crit_nas = crit_nas,
+                fs_align = checks,
+                iss_stats = import_stats_rep,
+                iss_stats_miss = missing_stats_rep
+              )
+            }
             .produce_report("asso_file",
                 params = list(
                     parsing_prob = parsing_problems,

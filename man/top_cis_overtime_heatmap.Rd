@@ -204,7 +204,8 @@ aggreg <- aggregate_values_by_key(
 )
 cis_overtime <- CIS_grubbs_overtime(aggreg)
 hmaps <- top_cis_overtime_heatmap(cis_overtime$cis,
-fill_NA_in_heatmap = TRUE)
+    fill_NA_in_heatmap = TRUE
+)
 
 # To re-plot:
 # grid::grid.newpage()

@@ -36,15 +36,22 @@ all_proj_pools <- list(
 copy_path <- fs::path(tempdir(), "fs_dupl")
 ## Generate file system structure containing duplicates
 fs::dir_copy(fs_path$root_corr, copy_path, overwrite = TRUE)
-to_dupl <- fs::path(
+to_dupl_case1 <- fs::path(
     copy_path, "PJ01", "quantification", "POOL01-1",
     paste0(
         "PJ01_POOL01-1_fragmentEstimate_",
         "matrix.no0.annotated.tsv.gz"
     )
 )
+to_dupl_case2 <- fs::path(
+  copy_path, "PJ01", "quantification", "POOL02-1",
+  paste0(
+    "PJ01_POOL02-1_fragmentEstimate_",
+    "matrix.no0.annotated.tsv.gz"
+  )
+)
 fs::file_copy(
-    to_dupl,
+    to_dupl_case1,
     fs::path(
         copy_path, "PJ01", "quantification", "POOL01-1",
         paste0(
@@ -53,6 +60,17 @@ fs::file_copy(
         )
     ),
     overwrite = TRUE
+)
+fs::file_copy(
+  to_dupl_case2,
+  fs::path(
+    copy_path, "PJ01", "quantification", "POOL02-1",
+    paste0(
+      "PJ01_POOL02-1_fragmentEstimate_",
+      "matrix.tsv.gz"
+    )
+  ),
+  overwrite = TRUE
 )
 
 smpl_ff <- function() {
@@ -919,7 +937,7 @@ test_that(paste(func_name[9], "reports errors silently"), {
     }
     import_result <- .import_type(
         q_type = "seqCount",
-        files = sample_file_to_import,
+        files = sample_file_to_import, prog = NULL,
         cluster = p, import_matrix_args = list()
     )
     expect_true(is.null(import_result$matrix))
@@ -931,7 +949,7 @@ test_that(paste(func_name[9], "reports errors silently"), {
     withr::with_options(list(ISAnalytics.mandatory_is_vars = new_mand), {
         import_result <- .import_type(
             q_type = "seqCount",
-            files = sample_file_to_import,
+            files = sample_file_to_import, prog = NULL,
             cluster = p, import_matrix_args = list()
         )
         expect_true(!is.null(import_result$matrix))

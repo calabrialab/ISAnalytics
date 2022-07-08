@@ -192,7 +192,8 @@
 .process_af_for_gen <- function(af) {
     association_file <- if (!is.data.frame(af) && all(af == "default")) {
         af_sym <- "association_file"
-        utils::data(list = af_sym, envir = rlang::current_env())
+        utils::data(list = af_sym, envir = rlang::current_env(),
+                    package = "ISAnalytics")
         rlang::eval_tidy(rlang::sym(af_sym))
     } else {
         af
@@ -226,7 +227,8 @@
     integration_matrices <- if (!is.data.frame(matrices) &&
         all(matrices == "default")) {
         matrices_sym <- "integration_matrices"
-        utils::data(list = matrices_sym, envir = rlang::current_env())
+        utils::data(list = matrices_sym, envir = rlang::current_env(),
+                    package = "ISAnalytics")
         rlang::eval_tidy(rlang::sym(matrices_sym))
     } else {
         matrices
@@ -2244,7 +2246,7 @@
 # @return A tibble containing all found files, including duplicates and missing
 .lookup_matrices <- function(association_file,
     quantification_type,
-    matrix_type,
+    m_type,
     proj_col,
     pool_col) {
     path_col_names <- .path_cols_names()
@@ -2260,7 +2262,7 @@
     ## quantification
     suffixes <- matrix_file_suffixes() %>%
         dplyr::filter(
-            .data$matrix_type == matrix_type,
+            .data$matrix_type == m_type,
             .data$quantification %in% quantification_type
         ) %>%
         dplyr::mutate(suffix_regex = paste0(stringr::str_replace_all(
@@ -2861,7 +2863,7 @@
 #
 # @return A single tibble with all data from matrices of same quantification
 # type in tidy format
-.import_type <- function(q_type, files, cluster, import_matrix_args) {
+.import_type <- function(q_type, files, cluster, prog, import_matrix_args) {
     files <- files %>%
         dplyr::filter(.data$Quantification_type == q_type)
     sample_col_name <- if ("id_col_name" %in% names(import_matrix_args)) {
@@ -2870,21 +2872,25 @@
         pcr_id_column()
     }
     FUN <- function(x, arg_list) {
-        do.call(.import_single_matrix, args = append(
+        matrix <- do.call(.import_single_matrix, args = append(
             list(path = x),
             arg_list
         ))
+        if (!is.null(prog)) {
+          prog()
+        }
+        return(matrix)
     }
     # Import every file
-    suppressMessages(suppressWarnings({
-        matrices <- BiocParallel::bptry(
-            BiocParallel::bplapply(files$Files_chosen,
-                FUN = FUN,
-                arg_list = import_matrix_args,
-                BPPARAM = cluster
-            )
-        )
-    }))
+    suppressWarnings({
+      matrices <- BiocParallel::bptry(
+          BiocParallel::bplapply(files$Files_chosen,
+              FUN = FUN,
+              arg_list = import_matrix_args,
+              BPPARAM = cluster
+          )
+      )
+    })
     correct <- BiocParallel::bpok(matrices)
     samples_count <- purrr::map2_int(matrices, correct, ~ {
         if (.y) {
@@ -2930,10 +2936,6 @@
 #
 # @param files_to_import The tibble containing the files to import
 # @param workers Number of parallel workers
-# @keywords internal
-#' @importFrom dplyr select distinct bind_rows
-#' @importFrom purrr map set_names reduce flatten
-#' @importFrom tibble as_tibble
 #
 # @return A named list of tibbles
 .parallel_import_merge <- function(files_to_import, workers,
@@ -2942,33 +2944,27 @@
     q_types <- files_to_import %>%
         dplyr::distinct(.data$Quantification_type) %>%
         dplyr::pull(.data$Quantification_type)
-    # Register backend according to platform
-    if (.Platform$OS.type == "windows") {
-        p <- BiocParallel::SnowParam(
-            workers = workers,
-            stop.on.error = FALSE,
-            progressbar = getOption("ISAnalytics.verbose", TRUE),
-            tasks = nrow(files_to_import)
-        )
+
+    # Register backend + progressor
+    doParallel::registerDoParallel(workers)
+    p <- BiocParallel::DoparParam(stop.on.error = FALSE)
+    prog <- if (rlang::is_installed("progressr")) {
+      progressr::progressor(steps = nrow(files_to_import))
     } else {
-        p <- BiocParallel::MulticoreParam(
-            workers = workers,
-            stop.on.error = FALSE,
-            progressbar = getOption("ISAnalytics.verbose", TRUE),
-            tasks = nrow(files_to_import)
-        )
+      NULL
     }
+    doParallel::stopImplicitCluster()
     # Import and merge for every quantification type
     imported_matrices <- purrr::map(q_types,
         .f = ~ .import_type(
             .x,
             files_to_import,
             p,
+            prog,
             import_matrix_args
         )
     ) %>%
         purrr::set_names(q_types)
-    BiocParallel::bpstop(p)
     summary_files <- purrr::map(imported_matrices, ~ .x$imported_files) %>%
         purrr::reduce(dplyr::bind_rows)
     imported_matrices <- purrr::map(imported_matrices, ~ .x$matrix)
@@ -3153,29 +3149,20 @@
 
 # Identifies independent samples and separates the joined_df in
 # collisions and non-collisions
-#' @importFrom data.table .SD .N
-#' @importFrom rlang sym
+#' @importFrom data.table .SD
 # @return A named list containing the splitted joined_df for collisions and
 # non-collisions
 .identify_independent_samples <- function(joined, indep_sample_id) {
-    indep_syms <- purrr::map(indep_sample_id, rlang::sym)
-    temp <- joined %>%
-        dplyr::select(dplyr::all_of(
-            c(mandatory_IS_vars(), indep_sample_id)
-        )) %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
-        dplyr::summarise(
-            N = dplyr::n_distinct(!!!indep_syms),
-            .groups = "drop"
-        ) %>%
-        dplyr::filter(.data$N > 1)
-    non_collisions <- joined %>%
-        dplyr::anti_join(temp, by = mandatory_IS_vars())
-    collisions <- joined %>%
-        dplyr::semi_join(temp, by = mandatory_IS_vars())
-    data.table::setDT(non_collisions)
-    data.table::setDT(collisions)
-    list(collisions = collisions, non_collisions = non_collisions)
+  data.table::setDT(joined)
+  data.table::setkeyv(joined, cols = mandatory_IS_vars())
+  vars_to_group <- c(mandatory_IS_vars(), indep_sample_id)
+  joined_red <- joined[, mget(vars_to_group)]
+  temp <- joined_red[, list(N = data.table::uniqueN(.SD)),
+                     keyby = eval(mandatory_IS_vars())]
+  temp <- temp[eval(rlang::sym("N")) > 1, ]
+  non_collisions <- joined[!temp, on = eval(mandatory_IS_vars())]
+  collisions <- dplyr::semi_join(joined, temp, by = mandatory_IS_vars())
+  list(collisions = collisions, non_collisions = non_collisions)
 }
 
 # Internal for date discrimination in collision removal.
@@ -3198,14 +3185,14 @@
     # Test for all dates equality
     all_equal_dates <- length(unique(x[[date_col]])) == 1
     if (all_equal_dates == TRUE) {
-        return(list(data = x, check = FALSE))
+        return(list(data = NULL, check = FALSE))
     }
     # If not all are equal sort them asc
     x <- dplyr::arrange(x, .data[[date_col]])
     # Test if first date is unique
     dates <- x[[date_col]]
     if (length(dates[dates %in% dates[1]]) > 1) {
-        return(list(data = x, check = FALSE))
+        return(list(data = NULL, check = FALSE))
     }
     winning_sample <- x[1, mget(ind_sample_key)]
     # Filter the winning rows
@@ -3241,7 +3228,7 @@
         dplyr::arrange(dplyr::desc(.data$N))
     data.table::setDT(temp)
     if (length(temp$N) != 1 & !temp$N[1] > temp$N[2]) {
-        return(list(data = x, check = FALSE))
+        return(list(data = NULL, check = FALSE))
     }
     temp <- temp[1, mget(ind_sample_key)]
     x <- x %>%
@@ -3282,7 +3269,7 @@
     data.table::setDT(temp)
     ratio <- temp$sum[1] / temp$sum[2]
     if (!ratio > reads_ratio) {
-        return(list(data = x, check = FALSE))
+        return(list(data = NULL, check = FALSE))
     }
     temp <- temp[1, mget(ind_sample_key)]
     x <- x %>%
@@ -3320,16 +3307,16 @@
     current_data <- x[, !mandatory_IS_vars()]
     # Try to discriminate by date
     result <- .discriminate_by_date(current_data, date_col, ind_sample_key)
-    current_data <- result$data
     if (result$check == TRUE) {
+      current_data <- result$data
         coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
         res <- cbind(coordinates, current_data)
         return(list(data = res, reassigned = 1, removed = 0))
     }
     # If first check fails try to discriminate by replicate
     result <- .discriminate_by_replicate(current_data, repl_col, ind_sample_key)
-    current_data <- result$data
     if (result$check == TRUE) {
+      current_data <- result$data
         coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
         res <- cbind(coordinates, current_data)
         return(list(data = res, reassigned = 1, removed = 0))
@@ -3339,8 +3326,8 @@
         current_data, reads_ratio, seqCount_col,
         ind_sample_key
     )
-    current_data <- result$data
     if (result$check == TRUE) {
+      current_data <- result$data
         coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
         res <- cbind(coordinates, current_data)
         return(list(data = res, reassigned = 1, removed = 0))
@@ -3363,7 +3350,10 @@
     ind_sample_key,
     max_workers) {
     # Split by IS
-    split_data <- split(collisions, by = mandatory_IS_vars())
+    split_data <- collisions %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
+      dplyr::group_split() %>%
+      purrr::map(.f = data.table::setDT)
     # Manage workers
     if (.Platform$OS.type == "windows" & is.null(max_workers)) {
         max_workers <- BiocParallel::snowWorkers()
