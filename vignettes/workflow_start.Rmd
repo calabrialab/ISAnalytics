@@ -44,7 +44,6 @@ bib <- c(
     rmarkdown = citation("rmarkdown")[1],
     sessioninfo = citation("sessioninfo")[1],
     testthat = citation("testthat")[1],
-    progressr = citation("progressr")[1],
     ISAnalytics = citation("ISAnalytics")[1],
     VISPA2 = BibEntry(bibtype = "Article", 
      title = paste("VISPA2: a scalable pipeline for", 
