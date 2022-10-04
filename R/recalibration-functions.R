@@ -258,42 +258,27 @@ compute_near_integrations <- function(x,
             dplyr::group_split()
         ## Select only groups with 2 or more rows
         split_to_process <- split[purrr::map_lgl(split, ~ nrow(.x) > 1)]
-        # Set up parallel workers
-        if (.Platform$OS.type == "windows") {
-            p <- BiocParallel::SnowParam(
-                workers = max_workers,
-                progressbar = getOption("ISAnalytics.verbose", TRUE),
-                tasks = length(split_to_process),
-                exportglobals = TRUE
-            )
-        } else {
-            p <- BiocParallel::MulticoreParam(
-                workers = max_workers,
-                progressbar = getOption("ISAnalytics.verbose", TRUE),
-                tasks = length(split_to_process),
-                exportglobals = FALSE
-            )
-        }
-        ## Obtain result: list of lists
-        result <- BiocParallel::bplapply(
-            split_to_process,
-            FUN = .sliding_window,
-            threshold = threshold,
-            keep_criteria = criteria,
-            annotated = annotated,
-            num_cols = num_cols,
-            max_val_col = max_value_column,
-            sample_col = sample_id_column,
-            req_tags = required_tag_cols,
-            add_col_lambdas = add_cols_lambdas,
-            produce_map = map_as_file,
-            BPPARAM = p
+        result <- .execute_map_job(
+            data_list = split_to_process,
+            fun_to_apply = .sliding_window,
+            fun_args = list(
+                threshold = threshold,
+                keep_criteria = criteria,
+                annotated = annotated,
+                num_cols = num_cols,
+                max_val_col = max_value_column,
+                sample_col = sample_id_column,
+                req_tags = required_tag_cols,
+                add_col_lambdas = add_cols_lambdas,
+                produce_map = map_as_file
+            ),
+            stop_on_error = TRUE,
+            max_workers = max_workers
         )
-        BiocParallel::bpstop(p)
         ## Obtain single list
-        recalibr_m <- purrr::map(result, ~ .x$recalibrated_matrix)
+        recalibr_m <- purrr::map(result$res, ~ .x$recalibrated_matrix)
         recalibr_m <- data.table::rbindlist(recalibr_m)
-        maps <- purrr::map(result, ~ .x$map)
+        maps <- purrr::map(result$res, ~ .x$map)
         maps <- data.table::rbindlist(maps)
         ## Add all rows that were not part of recalibration
         split_fine <- split[purrr::map_lgl(split, ~ !nrow(.x) > 1)]

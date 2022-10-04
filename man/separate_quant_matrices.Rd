@@ -57,6 +57,7 @@ separated <- separate_quant_matrices(
 Other Utilities: 
 \code{\link{as_sparse_matrix}()},
 \code{\link{comparison_matrix}()},
+\code{\link{enable_progress_bars}()},
 \code{\link{export_ISA_settings}()},
 \code{\link{generate_Vispa2_launch_AF}()},
 \code{\link{generate_blank_association_file}()},

@@ -8,4 +8,5 @@
     options(ISAnalytics.af_specs = "default")
     options(ISAnalytics.iss_stats_specs = "default")
     options(ISAnalytics.matrix_file_suffix = "default")
+    options(ISAnalytics.parallel_processing = TRUE)
 }

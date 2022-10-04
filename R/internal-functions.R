@@ -192,8 +192,10 @@
 .process_af_for_gen <- function(af) {
     association_file <- if (!is.data.frame(af) && all(af == "default")) {
         af_sym <- "association_file"
-        utils::data(list = af_sym, envir = rlang::current_env(),
-                    package = "ISAnalytics")
+        utils::data(
+            list = af_sym, envir = rlang::current_env(),
+            package = "ISAnalytics"
+        )
         rlang::eval_tidy(rlang::sym(af_sym))
     } else {
         af
@@ -227,8 +229,10 @@
     integration_matrices <- if (!is.data.frame(matrices) &&
         all(matrices == "default")) {
         matrices_sym <- "integration_matrices"
-        utils::data(list = matrices_sym, envir = rlang::current_env(),
-                    package = "ISAnalytics")
+        utils::data(
+            list = matrices_sym, envir = rlang::current_env(),
+            package = "ISAnalytics"
+        )
         rlang::eval_tidy(rlang::sym(matrices_sym))
     } else {
         matrices
@@ -266,7 +270,8 @@
     # Then separate by pool
     sep_matrices <- purrr::map(sep_matrices, ~ {
         tmp <- .x %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of(tag_list$vispa_concatenate)))
+            dplyr::group_by(dplyr::across(
+              dplyr::all_of(tag_list$vispa_concatenate)))
         pool_names <- tmp %>%
             dplyr::group_keys() %>%
             dplyr::pull(dplyr::all_of(tag_list$vispa_concatenate))
@@ -776,6 +781,115 @@
     return(result)
 }
 
+.check_parallel_packages <- function() {
+    if (getOption("ISAnalytics.parallel_processing", default = TRUE) == TRUE) {
+        required_parallel_pkgs <- list(
+            BiocParallel = "BIOC",
+            doFuture = "CRAN",
+            future = "CRAN",
+            foreach = "CRAN"
+        )
+        pkgs_present <- purrr::map_lgl(
+            names(required_parallel_pkgs),
+            ~ requireNamespace(.x, quietly = TRUE)
+        )
+        if (any(pkgs_present == FALSE)) {
+            missing_pkgs <- required_parallel_pkgs[!pkgs_present]
+            options(ISAnalytics.parallel_processing = FALSE)
+            info_msg <- c(.missing_pkg_error(missing_pkgs),
+                i = paste(
+                    "Packages for parallel computation are not available,",
+                    "switching to default sequential computation",
+                    "(certain operations might be slower).",
+                    "To re-activate the functionality, install the",
+                    "packages and set",
+                    "`options(ISAnalytics.parallel_processing = TRUE)`"
+                )
+            )
+            rlang::inform(info_msg)
+        }
+    }
+}
+
+# Establishes whether a map job can be executed in parallel (multi-threading)
+# or needs to be executed sequentially and calls appropriate functions.
+#
+# Functions in "fun_to_apply" should always have at least 2 args:
+# - the data
+# - a `progress` arg
+# The list of args must contain everything needed by the function except for
+# the first argument (passed in data_list) and progress (internally managed)
+#' @importFrom purrr map map_lgl
+.execute_map_job <- function(data_list,
+    fun_to_apply,
+    fun_args,
+    stop_on_error,
+    max_workers = NULL) {
+    # Set up progressor if package available
+    prog <- if (rlang::is_installed("progressr")) {
+        progressr::progressor(steps = length(data_list))
+    } else {
+        NULL
+    }
+    .check_parallel_packages()
+    if (getOption("ISAnalytics.parallel_processing", default = TRUE) == TRUE) {
+        # Manage workers
+        if (.Platform$OS.type == "windows" & is.null(max_workers)) {
+            max_workers <- BiocParallel::snowWorkers()
+        } else if (.Platform$OS.type != "windows" & is.null(max_workers)) {
+            max_workers <- BiocParallel::multicoreWorkers()
+        }
+    }
+
+    if (getOption("ISAnalytics.parallel_processing", default = TRUE) == TRUE &
+        max_workers > 1) {
+        # Set up parallel workers
+        old_be <- doFuture::registerDoFuture()
+        old_plan <- future::plan(future::multisession, workers = max_workers)
+        on.exit(
+            {
+                future::plan(old_plan)
+                foreach::setDoPar(fun = old_be$fun,
+                                  data = old_be$data, info = old_be$info)
+            },
+            add = TRUE
+        )
+        p <- BiocParallel::DoparParam(stop.on.error = stop_on_error)
+
+        # Execute
+        arg_list <- append(fun_args, list(
+            X = data_list,
+            FUN = fun_to_apply,
+            BPPARAM = p,
+            progress = prog
+        ))
+        results <- rlang::exec(
+            BiocParallel::bplapply,
+            !!!arg_list
+        )
+        return(list(res = results, mode = "par"))
+    }
+
+    # Sequential
+    arg_list <- append(
+        list(
+            .x = data_list,
+            .f = fun_to_apply,
+            progress = prog
+        ),
+        fun_args
+    )
+    if (stop_on_error == TRUE) {
+        results <- rlang::exec(purrr::map, !!!arg_list)
+        return(list(res = results, mode = "seq"))
+    } else {
+        results <- rlang::exec(purrr::safely(purrr::map), !!!arg_list)
+        errs <- results$error
+        results <- results$result
+        return(list(res = results, mode = "seq", err = errs))
+    }
+}
+
 #### ---- Internals for checks on integration matrices----####
 
 # Internal helper function for checking mandatory vars presence in x.
@@ -997,7 +1111,8 @@
         (is.list(additional_cols) & !is.null(names(additional_cols))))
     correct_types <- additional_cols %in% c(.types_mapping()$types, "_")
     if (any(correct_types == FALSE)) {
-        add_types_err <- c("Unknown column type in specified additional columns",
+        add_types_err <- c(
+          "Unknown column type in specified additional columns",
             x = paste("Types must be in the allowed types"),
             i = paste(
                 "Unknown formats: ",
@@ -1070,7 +1185,10 @@
     if (is_annotated) {
         id_vars <- c(id_vars, annotation_IS_vars())
     }
-    mt <- function(data, id_vars, sample_col, value_col) {
+    mt <- function(data, id_vars, sample_col, value_col, progress) {
+        if (!is.null(progress)) {
+            progress()
+        }
         data.table::melt.data.table(data,
             id.vars = id_vars,
             variable.name = sample_col,
@@ -1085,27 +1203,10 @@
     }
     max_workers <- trunc(BiocParallel::snowWorkers() / 3)
     if (call_mode == "INTERNAL" || nrow(df) <= 500000 || max_workers <= 1) {
-        tidy <- mt(df, id_vars, id_col_name, val_col_name)
+        tidy <- mt(df, id_vars, id_col_name, val_col_name, NULL)
     } else if (nrow(df) > 500000 & max_workers > 1) {
         ## - Melt in parallel
-        p <- if (.Platform$OS.type == "windows") {
-            BiocParallel::SnowParam(
-                workers = max_workers,
-                tasks = trunc(nrow(df) / max_workers),
-                progressbar = getOption("ISAnalytics.verbose", TRUE),
-                exportglobals = TRUE,
-                stop.on.error = TRUE
-            )
-        } else {
-            BiocParallel::MulticoreParam(
-                workers = max_workers,
-                tasks = trunc(nrow(df) / max_workers),
-                progressbar = getOption("ISAnalytics.verbose", TRUE),
-                exportglobals = FALSE,
-                stop.on.error = TRUE
-            )
-        }
-        ## - Split in chunks
+        ### - Split in chunks
         chunk_id_vec <- rep(seq_len(max_workers - 1),
             each = trunc(nrow(df) / max_workers)
         )
@@ -1121,16 +1222,19 @@
             verbose = FALSE,
             keep.by = FALSE
         )
-        tidy_chunks <- BiocParallel::bplapply(
-            X = chunks,
-            FUN = mt,
-            id_vars = id_vars,
-            sample_col = id_col_name,
-            value_col = val_col_name,
-            BPPARAM = p
+        tidy_chunks <- .execute_map_job(
+            data_list = chunks,
+            fun_to_apply = mt,
+            fun_args = list(
+                id_vars = id_vars,
+                sample_col = id_col_name,
+                value_col = val_col_name
+            ),
+            stop_on_error = TRUE,
+            max_workers = max_workers
         )
-        BiocParallel::bpstop(p)
-        tidy <- data.table::rbindlist(tidy_chunks)
+
+        tidy <- data.table::rbindlist(tidy_chunks$res)
     }
     tidy <- tidy[val_col_name > 0]
     ## Transform cols
@@ -1729,22 +1833,8 @@
     vispa_stats_req <- iss_stats_specs(TRUE) %>%
         dplyr::filter(.data$flag == "required") %>%
         dplyr::pull(.data$names)
-    # Setup parallel workers and import
-    # Register backend according to platform
-    if (.Platform$OS.type == "windows") {
-        p <- BiocParallel::SnowParam(
-            stop.on.error = FALSE,
-            tasks = length(stats_paths$stats_files),
-            progressbar = getOption("ISAnalytics.verbose", TRUE)
-        )
-    } else {
-        p <- BiocParallel::MulticoreParam(
-            stop.on.error = FALSE,
-            tasks = length(stats_paths$stats_files),
-            progressbar = getOption("ISAnalytics.verbose", TRUE)
-        )
-    }
-    FUN <- function(x, req_cols) {
+
+    FUN <- function(x, req_cols, progress) {
         if (is.na(x)) {
             return(NULL)
         }
@@ -1757,20 +1847,26 @@
         if (ok == TRUE) {
             # Apply column transformations if present
             stats <- .apply_col_transform(stats, iss_stats_specs(TRUE))
+            if (!is.null(progress)) {
+                progress()
+            }
             return(stats)
         } else {
+            if (!is.null(progress)) {
+                progress()
+            }
             return("MALFORMED")
         }
     }
-    stats_dfs <- BiocParallel::bptry(
-        BiocParallel::bplapply(stats_paths$stats_files,
-            FUN,
-            req_cols = vispa_stats_req,
-            BPPARAM = p
-        )
+    stats_dfs <- .execute_map_job(
+        data_list = stats_paths$stats_files,
+        fun_to_apply = FUN,
+        fun_args = list(
+            req_cols = vispa_stats_req
+        ), stop_on_error = FALSE
     )
-    BiocParallel::bpstop(p)
-    correct <- purrr::map_chr(stats_dfs, function(x) {
+
+    correct <- purrr::map_chr(stats_dfs$res, function(x) {
         if (all(is.data.frame(x))) {
             "TRUE"
         } else if (is.null(x)) {
@@ -1800,7 +1896,7 @@
     })
     stats_paths <- stats_paths %>%
         dplyr::select(-.data$info)
-    stats_dfs <- stats_dfs[stats_paths$Imported]
+    stats_dfs <- stats_dfs$res[stats_paths$Imported]
     # Bind rows in single tibble for all files
     if (purrr::is_empty(stats_dfs)) {
         return(list(stats = NULL, report = stats_paths))
@@ -2858,12 +2954,12 @@
 # @param workers Number of parallel workers
 # @keywords internal
 #' @importFrom dplyr filter mutate bind_rows distinct
-#' @importFrom BiocParallel SnowParam MulticoreParam bptry bplapply bpstop bpok
 #' @importFrom purrr is_empty reduce
 #
 # @return A single tibble with all data from matrices of same quantification
 # type in tidy format
-.import_type <- function(q_type, files, cluster, prog, import_matrix_args) {
+.import_type <- function(q_type, files, cluster,
+    progress, import_matrix_args) {
     files <- files %>%
         dplyr::filter(.data$Quantification_type == q_type)
     sample_col_name <- if ("id_col_name" %in% names(import_matrix_args)) {
@@ -2876,22 +2972,39 @@
             list(path = x),
             arg_list
         ))
-        if (!is.null(prog)) {
-          prog()
+        if (!is.null(progress)) {
+            progress()
         }
         return(matrix)
     }
-    # Import every file
-    suppressWarnings({
-      matrices <- BiocParallel::bptry(
-          BiocParallel::bplapply(files$Files_chosen,
-              FUN = FUN,
-              arg_list = import_matrix_args,
-              BPPARAM = cluster
-          )
-      )
-    })
-    correct <- BiocParallel::bpok(matrices)
+    if (!is.null(cluster)) {
+        # Import every file
+        suppressWarnings({
+            matrices <- BiocParallel::bptry(
+                BiocParallel::bplapply(files$Files_chosen,
+                    FUN = FUN,
+                    arg_list = import_matrix_args,
+                    BPPARAM = cluster
+                )
+            )
+        })
+        correct <- BiocParallel::bpok(matrices)
+    } else {
+        arg_list <- append(
+            import_matrix_args,
+            list(
+                .x = files$Files_chosen,
+                .f = FUN
+            )
+        )
+        matrices <- rlang::exec(
+            purrr::safely(purrr::map),
+            !!!arg_list
+        )
+        correct <- purrr::map_lgl(matrices$error, ~ is.null(.x))
+        matrices <- matrices$result
+    }
+
     samples_count <- purrr::map2_int(matrices, correct, ~ {
         if (.y) {
             .x %>%
@@ -2944,27 +3057,52 @@
     q_types <- files_to_import %>%
         dplyr::distinct(.data$Quantification_type) %>%
         dplyr::pull(.data$Quantification_type)
-
-    # Register backend + progressor
-    doParallel::registerDoParallel(workers)
-    p <- BiocParallel::DoparParam(stop.on.error = FALSE)
-    prog <- if (rlang::is_installed("progressr")) {
-      progressr::progressor(steps = nrow(files_to_import))
-    } else {
-      NULL
-    }
-    doParallel::stopImplicitCluster()
-    # Import and merge for every quantification type
-    imported_matrices <- purrr::map(q_types,
-        .f = ~ .import_type(
-            .x,
-            files_to_import,
-            p,
-            prog,
-            import_matrix_args
+    .check_parallel_packages()
+    if (getOption("ISAnalytics.parallel_processing", TRUE) == TRUE) {
+        # Register backend + progressor
+        old_be <- doFuture::registerDoFuture()
+        old_plan <- future::plan(future::multisession, workers = workers)
+        on.exit(
+            {
+                future::plan(old_plan)
+                foreach::setDoPar(fun = old_be$fun,
+                                  data = old_be$data, info = old_be$info)
+            },
+            add = TRUE
         )
-    ) %>%
-        purrr::set_names(q_types)
+        p <- BiocParallel::DoparParam(stop.on.error = FALSE)
+        prog <- if (rlang::is_installed("progressr")) {
+            progressr::progressor(steps = nrow(files_to_import))
+        } else {
+            NULL
+        }
+        # Import and merge for every quantification type
+        imported_matrices <- purrr::map(q_types,
+            .f = ~ .import_type(
+                .x,
+                files_to_import,
+                p,
+                prog,
+                import_matrix_args
+            )
+        ) %>%
+            purrr::set_names(q_types)
+    } else {
+        p <- NULL
+        # Import and merge for every quantification type
+        imported_matrices <- purrr::map(q_types,
+            .f = ~ .import_type(
+                .x,
+                files_to_import,
+                p,
+                prog,
+                import_matrix_args
+            )
+        ) %>%
+            purrr::set_names(q_types)
+    }
+
+
     summary_files <- purrr::map(imported_matrices, ~ .x$imported_files) %>%
         purrr::reduce(dplyr::bind_rows)
     imported_matrices <- purrr::map(imported_matrices, ~ .x$matrix)
@@ -3153,16 +3291,17 @@
 # @return A named list containing the splitted joined_df for collisions and
 # non-collisions
 .identify_independent_samples <- function(joined, indep_sample_id) {
-  data.table::setDT(joined)
-  data.table::setkeyv(joined, cols = mandatory_IS_vars())
-  vars_to_group <- c(mandatory_IS_vars(), indep_sample_id)
-  joined_red <- joined[, mget(vars_to_group)]
-  temp <- joined_red[, list(N = data.table::uniqueN(.SD)),
-                     keyby = eval(mandatory_IS_vars())]
-  temp <- temp[eval(rlang::sym("N")) > 1, ]
-  non_collisions <- joined[!temp, on = eval(mandatory_IS_vars())]
-  collisions <- dplyr::semi_join(joined, temp, by = mandatory_IS_vars())
-  list(collisions = collisions, non_collisions = non_collisions)
+    data.table::setDT(joined)
+    data.table::setkeyv(joined, cols = mandatory_IS_vars())
+    vars_to_group <- c(mandatory_IS_vars(), indep_sample_id)
+    joined_red <- joined[, mget(vars_to_group)]
+    temp <- joined_red[, list(N = data.table::uniqueN(.SD)),
+        keyby = eval(mandatory_IS_vars())
+    ]
+    temp <- temp[eval(rlang::sym("N")) > 1, ]
+    non_collisions <- joined[!temp, on = eval(mandatory_IS_vars())]
+    collisions <- dplyr::semi_join(joined, temp, by = mandatory_IS_vars())
+    list(collisions = collisions, non_collisions = non_collisions)
 }
 
 # Internal for date discrimination in collision removal.
@@ -3303,22 +3442,29 @@
     repl_col,
     reads_ratio,
     seqCount_col,
-    ind_sample_key) {
+    ind_sample_key,
+    progress = NULL) {
     current_data <- x[, !mandatory_IS_vars()]
     # Try to discriminate by date
     result <- .discriminate_by_date(current_data, date_col, ind_sample_key)
     if (result$check == TRUE) {
-      current_data <- result$data
+        current_data <- result$data
         coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
         res <- cbind(coordinates, current_data)
+        if (!is.null(progress)) {
+            progress()
+        }
         return(list(data = res, reassigned = 1, removed = 0))
     }
     # If first check fails try to discriminate by replicate
     result <- .discriminate_by_replicate(current_data, repl_col, ind_sample_key)
     if (result$check == TRUE) {
-      current_data <- result$data
+        current_data <- result$data
         coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
         res <- cbind(coordinates, current_data)
+        if (!is.null(progress)) {
+            progress()
+        }
         return(list(data = res, reassigned = 1, removed = 0))
     }
     # If second check fails try to discriminate by seqCount
@@ -3327,12 +3473,18 @@
         ind_sample_key
     )
     if (result$check == TRUE) {
-      current_data <- result$data
+        current_data <- result$data
         coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
         res <- cbind(coordinates, current_data)
+        if (!is.null(progress)) {
+            progress()
+        }
         return(list(data = res, reassigned = 1, removed = 0))
     }
     # If all check fails remove the integration from all subjects
+    if (!is.null(progress)) {
+        progress()
+    }
     return(list(data = NULL, reassigned = 0, removed = 1))
 }
 
@@ -3351,48 +3503,28 @@
     max_workers) {
     # Split by IS
     split_data <- collisions %>%
-      dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
-      dplyr::group_split() %>%
-      purrr::map(.f = data.table::setDT)
-    # Manage workers
-    if (.Platform$OS.type == "windows" & is.null(max_workers)) {
-        max_workers <- BiocParallel::snowWorkers()
-    } else if (.Platform$OS.type != "windows" & is.null(max_workers)) {
-        max_workers <- BiocParallel::multicoreWorkers()
-    }
-    # Register backend according to platform
-    if (.Platform$OS.type == "windows") {
-        p <- BiocParallel::SnowParam(
-            stop.on.error = TRUE,
-            progressbar = getOption("ISAnalytics.verbose", TRUE),
-            tasks = length(split_data),
-            workers = max_workers
-        )
-    } else {
-        p <- BiocParallel::MulticoreParam(
-            stop.on.error = TRUE,
-            progressbar = getOption("ISAnalytics.verbose", TRUE),
-            tasks = length(split_data),
-            workers = max_workers
-        )
-    }
-    # For each chunk process collisions in parallel
-    result <- BiocParallel::bplapply(split_data,
-        FUN = .four_step_check,
-        date_col = date_col,
-        repl_col = repl_col,
-        reads_ratio = reads_ratio,
-        seqCount_col = seqCount_col,
-        ind_sample_key = ind_sample_key,
-        BPPARAM = p
+        dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
+        dplyr::group_split() %>%
+        purrr::map(.f = data.table::setDT)
+    result <- .execute_map_job(
+        data_list = split_data,
+        fun_to_apply = .four_step_check,
+        fun_args = list(
+            date_col = date_col,
+            repl_col = repl_col,
+            reads_ratio = reads_ratio,
+            seqCount_col = seqCount_col,
+            ind_sample_key = ind_sample_key
+        ),
+        stop_on_error = TRUE,
+        max_workers = max_workers
     )
-    BiocParallel::bpstop(p)
     # For each element of result extract and bind the 3 components
-    processed_collisions_df <- purrr::map(result, ~ .x$data) %>%
+    processed_collisions_df <- purrr::map(result$res, ~ .x$data) %>%
         purrr::reduce(~ data.table::rbindlist(list(.x, .y)))
-    removed_total <- purrr::map(result, ~ .x$removed) %>%
+    removed_total <- purrr::map(result$res, ~ .x$removed) %>%
         purrr::reduce(sum)
-    reassigned_total <- purrr::map(result, ~ .x$reassigned) %>%
+    reassigned_total <- purrr::map(result$res, ~ .x$reassigned) %>%
         purrr::reduce(sum)
     # Return the summary
     list(
@@ -3410,42 +3542,42 @@
 #' @importFrom rlang .data
 # @keywords internal
 #
-# @return A tibble with a summary containing for each SubjectID the number of
+# @return A tibble with a summary containing for each indep sample the number of
 # integrations found before and after, the sum of the value of the sequence
-# count for each subject before and after and the corresponding deltas.
-.summary_table <- function(before, after, seqCount_col) {
+# count for each sample before and after and the corresponding deltas.
+.summary_table <- function(before, after, seqCount_col, ind_sample_id) {
     after_matr <- after %>%
-        dplyr::select(dplyr::all_of(colnames(after)), .data$SubjectID)
+        dplyr::select(dplyr::all_of(c(colnames(after), ind_sample_id)))
 
     n_int_after <- after_matr %>%
-        dplyr::group_by(.data$SubjectID) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) %>%
         dplyr::tally(name = "count_integrations_after")
     sumReads_after <- after_matr %>%
-        dplyr::group_by(.data$SubjectID) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) %>%
         dplyr::summarise(
             sumSeqReads_after = sum(.data[[seqCount_col]]),
             .groups = "drop_last"
         )
     temp_aft <- n_int_after %>% dplyr::left_join(sumReads_after,
-        by = c("SubjectID")
+        by = ind_sample_id
     )
 
     before_matr <- before %>%
-        dplyr::select(dplyr::all_of(colnames(after)), .data$SubjectID)
+        dplyr::select(dplyr::all_of(c(colnames(after), ind_sample_id)))
     n_int_before <- before_matr %>%
-        dplyr::group_by(.data$SubjectID) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) %>%
         dplyr::tally(name = "count_integrations_before")
     sumReads_before <- before_matr %>%
-        dplyr::group_by(.data$SubjectID) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) %>%
         dplyr::summarise(
             sumSeqReads_before = sum(.data[[seqCount_col]]),
             .groups = "drop_last"
         )
     temp_bef <- n_int_before %>% dplyr::left_join(sumReads_before,
-        by = c("SubjectID")
+        by = ind_sample_id
     )
     summary <- temp_bef %>%
-        dplyr::left_join(temp_aft, by = c("SubjectID")) %>%
+        dplyr::left_join(temp_aft, by = ind_sample_id) %>%
         dplyr::mutate(
             delta_integrations =
                 .data$count_integrations_before -
@@ -3561,7 +3693,8 @@
     )
     summary_tbl <- .summary_table(
         before = joined, after = post_joined,
-        seqCount_col = seq_count_col
+        seqCount_col = seq_count_col,
+        ind_sample_id = independent_sample_id
     )
     return(
         list(
@@ -3842,7 +3975,8 @@
     sample_col,
     req_tags,
     add_col_lambdas,
-    produce_map) {
+    produce_map,
+    progress = NULL) {
     locus_col <- req_tags %>%
         dplyr::filter(.data$tag == "locus") %>%
         dplyr::pull(.data$names)
@@ -3887,6 +4021,9 @@
                             ~ eval(sym(paste0(.x, "_before")))
                         )
                 ]
+            }
+            if (!is.null(progress)) {
+                progress()
             }
             return(list(recalibrated_matrix = x, map = map_recalibr))
         }
@@ -4030,7 +4167,10 @@
             index <- index + 1
         }
     }
-    list(recalibrated_matrix = x, map = map_recalibr)
+    if (!is.null(progress)) {
+        progress()
+    }
+    return(list(recalibrated_matrix = x, map = map_recalibr))
 }
 
 
@@ -4571,7 +4711,6 @@
     # Check other parameters
     stopifnot(is.data.frame(genomic_annotation_file) ||
         is.character(genomic_annotation_file))
-    genomic_annotation_file <- genomic_annotation_file[1]
     if (is.character(genomic_annotation_file) &&
         !genomic_annotation_file %in% c("hg19", "mm9")) {
         err_msg <- c("Genomic annotation file unknown",
@@ -5424,6 +5563,7 @@
     } else {
         c(seqCount_column, fragmentEstimate_column)
     }
+    logger <- list()
     # --- STABLE TIMEPOINTS?
     found_stable <- purrr::map_lgl(
         stable_timepoints,
@@ -5498,6 +5638,11 @@
         cols_estimate_mcm = cols_estimate_mcm,
         subject = subject, stable = FALSE
     )
+    if (is.null(models0_all) || nrow(models0_all) == 0) {
+        logger <- append(logger, list(
+            paste("Patient", subject, "- Models0 estimates tp 'All' is empty")
+        ))
+    }
     #### For the slice (first stable - last tp)
     models0_stable <- if (!is.null(patient_slice_stable) &&
         ncol(patient_slice_stable) > 1) {
@@ -5510,6 +5655,11 @@
     } else {
         NULL
     }
+    if (is.null(models0_stable) || nrow(models0_stable) == 0) {
+        logger <- append(logger, list(
+            paste("Patient", subject, "- Models0 estimates tp 'Stable' is empty")
+        ))
+    }
     ## BC models
     ### Estimate abundance without bias correction nor het
     models_bc_all <- .closed_mthchaobc_est(
@@ -5518,6 +5668,11 @@
         cols_estimate_mcm = cols_estimate_mcm,
         subject = subject, stable = FALSE
     )
+    if (is.null(models_bc_all) || nrow(models_bc_all) == 0) {
+        logger <- append(logger, list(
+            paste("Patient", subject, "- ModelsBC estimates tp 'All' is empty")
+        ))
+    }
     models_bc_stable <- if (!is.null(patient_slice_stable) &&
         ncol(patient_slice_stable) > 1) {
         .closed_mthchaobc_est(
@@ -5528,6 +5683,11 @@
         )
     } else {
         NULL
+    }
+    if (is.null(models_bc_stable) || nrow(models_bc_stable) == 0) {
+        logger <- append(logger, list(
+            paste("Patient", subject, "- ModelsBC estimates tp 'Stable' is empty")
+        ))
     }
     ## Consecutive timepoints
     ### Model m0 bc
@@ -5540,6 +5700,15 @@
     } else {
         NULL
     }
+    if (is.null(estimate_consecutive_m0) ||
+        nrow(estimate_consecutive_m0) == 0) {
+        logger <- append(logger, list(
+            paste(
+                "Patient", subject,
+                "- Models0 estimates tp 'Consecutive' is empty"
+            )
+        ))
+    }
     ### Model Mth
     estimate_consecutive_mth <- if (stable_tps & ncol(matrix_desc) > 2) {
         # - Note: pass the whole matrix, not only stable slice
@@ -5551,13 +5720,22 @@
     } else {
         NULL
     }
+    if (is.null(estimate_consecutive_mth) ||
+        nrow(estimate_consecutive_mth) == 0) {
+        logger <- append(logger, list(
+            paste(
+                "Patient", subject,
+                "- ModelsMth estimates tp 'Consecutive' is empty"
+            )
+        ))
+    }
     results <- models0_all %>%
         dplyr::bind_rows(models0_stable) %>%
         dplyr::bind_rows(models_bc_all) %>%
         dplyr::bind_rows(models_bc_stable) %>%
         dplyr::bind_rows(estimate_consecutive_m0) %>%
         dplyr::bind_rows(estimate_consecutive_mth)
-    results
+    return(list(est = results, logger = logger))
 }
 
 #' @importFrom Rcapture closedp.0
@@ -5756,13 +5934,15 @@
     tissue_type,
     annotation_cols,
     subj_col,
-    stable_timepoints) {
+    stable_timepoints,
+    progress = NULL) {
     # --- RE-AGGREGATION - by cell type, tissue and time point
     val_cols <- if (!is.null(fragmentEstimate_column)) {
         c(seqCount_column, fragmentEstimate_column)
     } else {
         seqCount_column
     }
+    logger <- NULL
     re_agg <- aggregate_values_by_key(
         x = df,
         association_file = metadata,
@@ -5827,7 +6007,14 @@
     ### If selected patient does not have at least 3 distinct timepoints
     ### simply return (do not consider for population estimate)
     if (length(unique(patient_slice[[timepoint_column]])) <= 2) {
-        return(NULL)
+        logger <- list(
+            paste(
+                "Patient", df[[subj_col]][1],
+                "- Data contains less than 2 time points,",
+                "returning NULL"
+            )
+        )
+        return(list(est = NULL, log = logger))
     }
     estimate <- .estimate_pop(
         df = patient_slice,
@@ -5839,7 +6026,10 @@
         stable_timepoints = stable_timepoints,
         tissue_col = tissue_col
     )
-    return(estimate)
+    if (!is.null(progress)) {
+        progress()
+    }
+    return(list(est = estimate$est, log = estimate$logger))
 }
 
 #---- USED IN : is_sharing ----
@@ -6496,22 +6686,10 @@
                 )
             )
         }
-        if (.Platform$OS.type == "windows") {
-            p <- BiocParallel::SnowParam(
-                tasks = length(common_names),
-                progressbar = getOption("ISAnalytics.verbose", TRUE),
-                exportglobals = TRUE
-            )
-        } else {
-            p <- BiocParallel::MulticoreParam(
-                tasks = length(common_names),
-                progressbar = getOption("ISAnalytics.verbose", TRUE),
-                exportglobals = FALSE
-            )
-        }
+
         FUN <- function(subj,
     ref, sel, ref_key, sel_key,
-    tp_col) {
+    tp_col, progress) {
             ref_df <- ref[[subj]]
             sel_df <- sel[[subj]]
             ref_key_min <- ref_key[ref_key != tp_col]
@@ -6545,16 +6723,24 @@
                         convert = TRUE
                     )
             })
+            if (!is.null(progress)) {
+                progress()
+            }
+            sharing
         }
 
-        shared <- BiocParallel::bplapply(common_names, FUN,
-            ref = ref,
-            sel = sel,
-            ref_key = ref_key,
-            sel_key = sel_key,
-            tp_col = tp_col,
-            BPPARAM = p
-        ) %>%
+        shared <- .execute_map_job(
+            data_list = common_names,
+            fun_to_apply = FUN,
+            fun_args = list(
+                ref = ref,
+                sel = sel,
+                ref_key = ref_key,
+                sel_key = sel_key,
+                tp_col = tp_col
+            ),
+            stop_on_error = TRUE
+        )$res %>%
             purrr::set_names(common_names)
         return(shared)
     }

@@ -150,7 +150,7 @@ test_that(paste(func_name[2], "produces expected output"), {
             "modelMTHBC"
         )
     )
-    expect_equal(est_slice, expected, ignore_attr = TRUE)
+    expect_equal(est_slice$est, expected, ignore_attr = TRUE)
 })
 
 #------------------------------------------------------------------------------#
@@ -163,7 +163,7 @@ test_that(paste(func_name[1], "produces expected output"), {
         fragmentEstimate_column = NULL,
         stable_timepoints = c(9, 12, 13, 18, 30)
     )
-    expect_equal(popul, test_expected)
+    expect_equal(popul$est, test_expected)
 })
 
 
@@ -175,5 +175,5 @@ test_that(paste(func_name[1], "produces output missing NumIS"), {
         fragmentEstimate_column = NULL,
         stable_timepoints = c(9, 12, 13, 18, 30)
     )
-    expect_equal(popul, test_expected)
+    expect_equal(popul$est, test_expected)
 })

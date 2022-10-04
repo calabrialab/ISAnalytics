@@ -67,6 +67,7 @@ generate_Vispa2_launch_AF(association_file, "PJ01", "POOL01", temp)
 Other Utilities: 
 \code{\link{as_sparse_matrix}()},
 \code{\link{comparison_matrix}()},
+\code{\link{enable_progress_bars}()},
 \code{\link{export_ISA_settings}()},
 \code{\link{generate_blank_association_file}()},
 \code{\link{generate_default_folder_structure}()},

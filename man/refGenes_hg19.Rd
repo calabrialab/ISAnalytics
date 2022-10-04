@@ -43,6 +43,6 @@ ORDER BY kg.chrom ASC , kg.txStart ASC
 \section{Functions}{
 \itemize{
 \item \code{refGenes_mm9}: Data frame for murine mm9 genome
-}}
 
+}}
 \keyword{datasets}

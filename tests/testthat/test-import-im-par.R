@@ -44,11 +44,11 @@ to_dupl_case1 <- fs::path(
     )
 )
 to_dupl_case2 <- fs::path(
-  copy_path, "PJ01", "quantification", "POOL02-1",
-  paste0(
-    "PJ01_POOL02-1_fragmentEstimate_",
-    "matrix.no0.annotated.tsv.gz"
-  )
+    copy_path, "PJ01", "quantification", "POOL02-1",
+    paste0(
+        "PJ01_POOL02-1_fragmentEstimate_",
+        "matrix.no0.annotated.tsv.gz"
+    )
 )
 fs::file_copy(
     to_dupl_case1,
@@ -62,15 +62,15 @@ fs::file_copy(
     overwrite = TRUE
 )
 fs::file_copy(
-  to_dupl_case2,
-  fs::path(
-    copy_path, "PJ01", "quantification", "POOL02-1",
-    paste0(
-      "PJ01_POOL02-1_fragmentEstimate_",
-      "matrix.tsv.gz"
-    )
-  ),
-  overwrite = TRUE
+    to_dupl_case2,
+    fs::path(
+        copy_path, "PJ01", "quantification", "POOL02-1",
+        paste0(
+            "PJ01_POOL02-1_fragmentEstimate_",
+            "matrix.tsv.gz"
+        )
+    ),
+    overwrite = TRUE
 )
 
 smpl_ff <- function() {

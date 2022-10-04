@@ -116,6 +116,7 @@ reference:
     - comparison_matrix
     - separate_quant_matrices
     - generate_default_folder_structure
+    - enable_progress_bars
     - NGSdataExplorer
   - title: "Exported variables and helpers"
   - contents:

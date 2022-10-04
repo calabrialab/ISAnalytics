@@ -1116,6 +1116,7 @@ CIS_grubbs <- function(x,
 #' @param max_workers Maximum number of parallel workers. If `NULL` the
 #' maximum number of workers is calculated automatically.
 #'
+#'
 #' @return A list with results and optionally missing genes info
 #' @export
 #'
@@ -1153,12 +1154,6 @@ CIS_grubbs_overtime <- function(x,
             c(group, timepoint_col)[!c(group, timepoint_col) %in% colnames(x)]
         ))
     }
-    # Manage workers
-    if (.Platform$OS.type == "windows" & is.null(max_workers)) {
-        max_workers <- BiocParallel::snowWorkers()
-    } else if (.Platform$OS.type != "windows" & is.null(max_workers)) {
-        max_workers <- BiocParallel::multicoreWorkers()
-    }
     stopifnot(is.logical(as_df) || is.character(as_df))
     result_as_df <- if (is.logical(as_df)) {
         if (as_df[1] == TRUE) {
@@ -1194,7 +1189,9 @@ CIS_grubbs_overtime <- function(x,
         purrr::set_names(keys_g)
 
     # --- Calculate for each group and each tp
-    tp_slice_cis <- function(df, timepoint_col, res_checks, result_as_df) {
+    tp_slice_cis <- function(df, timepoint_col,
+    res_checks, result_as_df,
+    progress) {
         tmp <- df %>%
             dplyr::group_by(dplyr::across(dplyr::all_of(timepoint_col)))
         g_keys <- tmp %>%
@@ -1210,7 +1207,8 @@ CIS_grubbs_overtime <- function(x,
                 threshold_alpha = res_checks$threshold_alpha,
                 gene_symbol_col = res_checks$gene_symbol_col,
                 gene_strand_col = res_checks$gene_strand_col,
-                chr_col = res_checks$chrom_col, locus_col = res_checks$locus_col,
+                chr_col = res_checks$chrom_col,
+                locus_col = res_checks$locus_col,
                 strand_col = res_checks$strand_col
             ))
         } else {
@@ -1220,43 +1218,35 @@ CIS_grubbs_overtime <- function(x,
                 threshold_alpha = res_checks$threshold_alpha,
                 gene_symbol_col = res_checks$gene_symbol_col,
                 gene_strand_col = res_checks$gene_strand_col,
-                chr_col = res_checks$chrom_col, locus_col = res_checks$locus_col,
+                chr_col = res_checks$chrom_col,
+                locus_col = res_checks$locus_col,
                 strand_col = res_checks$strand_col
             ) %>% dplyr::mutate(!!timepoint_col := .y))
         }
+        if (!is.null(progress)) {
+            progress()
+        }
         return(res)
     }
-
-    if (.Platform$OS.type == "windows") {
-        p <- BiocParallel::SnowParam(
-            stop.on.error = TRUE,
-            progressbar = getOption("ISAnalytics.verbose", TRUE),
-            tasks = length(split),
-            workers = max_workers
-        )
-    } else {
-        p <- BiocParallel::MulticoreParam(
-            stop.on.error = TRUE,
-            progressbar = getOption("ISAnalytics.verbose", TRUE),
-            tasks = length(split),
-            workers = max_workers
-        )
-    }
-    cis_overtime <- BiocParallel::bplapply(split,
-        FUN = tp_slice_cis,
-        timepoint_col = timepoint_col,
-        res_checks = res_checks,
-        result_as_df = result_as_df,
-        BPPARAM = p
+    cis_overtime <- .execute_map_job(
+        data_list = split,
+        fun_to_apply = tp_slice_cis,
+        fun_args = list(
+            timepoint_col = timepoint_col,
+            result_as_df = result_as_df,
+            res_checks = res_checks
+        ),
+        stop_on_error = TRUE,
+        max_workers = max_workers
     )
-    BiocParallel::bpstop(p)
-
     if (result_as_df == 1) {
         cis_overtime <- purrr::map2_df(
-            cis_overtime, names(cis_overtime),
+            cis_overtime$res, names(cis_overtime$res),
             ~ .x %>%
                 dplyr::mutate(group = .y)
         )
+    } else {
+        cis_overtime <- cis_overtime$res
     }
     result$cis <- cis_overtime
     return(result)

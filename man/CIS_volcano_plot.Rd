@@ -83,6 +83,7 @@ The default values are included in this package and
 it can be accessed by doing:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{known_clinical_oncogenes()
+
 }\if{html}{\out{</div>}}
 
 If the user wants to change this parameter the input data frame must
@@ -90,6 +91,7 @@ preserve the column structure. The same goes for the \code{suspicious_genes}
 parameter (DOIReference column is optional):
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{clinical_relevant_suspicious_genes()
+
 }\if{html}{\out{</div>}}
 }
 }

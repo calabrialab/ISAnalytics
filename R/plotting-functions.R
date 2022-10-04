@@ -984,7 +984,7 @@ fisher_scatterplot <- function(fisher_df,
 #'     stable_timepoints = c(90, 180, 360),
 #'     cell_type = "Other"
 #' )
-#' p <- HSC_population_plot(estimate, "PJ01")
+#' p <- HSC_population_plot(estimate$est, "PJ01")
 #' p
 HSC_population_plot <- function(estimates,
     project_name,
@@ -1108,7 +1108,6 @@ HSC_population_plot <- function(estimates,
 #' @family Plotting functions
 #' @importFrom rlang abort eval_tidy call2 inform .data fn_fmls_names dots_list
 #' @importFrom dplyr group_by across group_keys everything pull group_split
-#' @importFrom BiocParallel SnowParam MulticoreParam bplapply bpstop
 #' @importFrom purrr set_names
 #' @importFrom tidyr unite
 #'
@@ -1177,13 +1176,7 @@ integration_alluvial_plot <- function(x,
         dplyr::group_split() %>%
         purrr::set_names(group_names)
 
-    # Compute plots in parallel
-    p <- BiocParallel::MulticoreParam(
-        stop.on.error = FALSE, progressbar = TRUE,
-        tasks = length(groups_to_plot), exportglobals = FALSE
-    )
-
-
+    # # Compute plots in parallel
     FUN <- function(group_df,
     plot_x,
     plot_y,
@@ -1191,7 +1184,8 @@ integration_alluvial_plot <- function(x,
     alluvia_plot_y_threshold,
     top_abundant_tbl,
     empty_space_color,
-    other_params) {
+    other_params,
+    progress) {
         cleaned <- .clean_data(
             group_df, plot_x, plot_y,
             alluvia, alluvia_plot_y_threshold
@@ -1231,7 +1225,13 @@ integration_alluvial_plot <- function(x,
                     invokeRestart("missing")
                 }
             )
+            if (!is.null(progress)) {
+                progress()
+            }
             return(list(plot = alluv_plot, tables = summary_tbls))
+        }
+        if (!is.null(progress)) {
+            progress()
         }
         return(alluv_plot)
     }
@@ -1245,20 +1245,30 @@ integration_alluvial_plot <- function(x,
             "alluvial_plot"
         )]
     dot_args <- dot_args[names(dot_args) %in% optional_params_names]
-    results <- BiocParallel::bplapply(
-        X = groups_to_plot,
-        FUN = FUN,
-        plot_x = plot_x,
-        plot_y = plot_y,
-        alluvia = alluvia,
-        alluvia_plot_y_threshold = alluvia_plot_y_threshold,
-        top_abundant_tbl = top_abundant_tbl,
-        empty_space_color = empty_space_color,
-        other_params = dot_args,
-        BPPARAM = p
+    results <- .execute_map_job(
+        data_list = groups_to_plot,
+        fun_to_apply = FUN,
+        fun_args = list(
+            plot_x = plot_x,
+            plot_y = plot_y,
+            alluvia = alluvia,
+            alluvia_plot_y_threshold = alluvia_plot_y_threshold,
+            top_abundant_tbl = top_abundant_tbl,
+            empty_space_color = empty_space_color,
+            other_params = dot_args
+        ),
+        stop_on_error = FALSE
     )
-    BiocParallel::bpstop(p)
-    return(results)
+    if (!all(is.null(results$err))) {
+        errors_msg <- purrr::flatten_chr(results$err)
+        names(errors_msg) <- "x"
+        errors_msg <- c(
+            "Errors occurred during computation",
+            errors_msg
+        )
+        rlang::inform(errors_msg)
+    }
+    return(results$res)
 }
 
 # Internal, used in integration_alluvial_plot to obtain the data frame
@@ -1309,7 +1319,8 @@ integration_alluvial_plot <- function(x,
 #' @importFrom ggplot2 ggplot aes_ geom_text scale_fill_viridis_d sym
 #' @importFrom dplyr group_by summarise pull across all_of
 #' @importFrom rlang .data
-.alluvial_plot <- function(tbl, plot_x, plot_y, empty_space_color) {
+.alluvial_plot <- function(tbl, plot_x, plot_y,
+    empty_space_color) {
     sums_y <- tbl %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
         dplyr::summarise(sums = sum(.data[[plot_y]])) %>%
@@ -1715,13 +1726,12 @@ sharing_heatmap <- function(sharing_df,
             }
             plot
         }
+        heatmap_rel <- purrr::map(
+            unique(rel_sharing_col),
+            ~ plot_rel_heat(.x, df = sharing_df_rounding)
+        ) %>%
+            purrr::set_names(rel_sharing_col)
     }
-
-    heatmap_rel <- purrr::map(
-        unique(rel_sharing_col),
-        ~ plot_rel_heat(.x, df = sharing_df_rounding)
-    ) %>%
-        purrr::set_names(rel_sharing_col)
 
     result <- list(absolute = heatmap_abs)
     result <- append(result, heatmap_rel)

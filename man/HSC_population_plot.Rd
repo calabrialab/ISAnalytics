@@ -46,7 +46,7 @@ estimate <- HSC_population_size_estimate(
     stable_timepoints = c(90, 180, 360),
     cell_type = "Other"
 )
-p <- HSC_population_plot(estimate, "PJ01")
+p <- HSC_population_plot(estimate$est, "PJ01")
 p
 }
 \seealso{

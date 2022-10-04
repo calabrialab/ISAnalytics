@@ -17,7 +17,8 @@ HSC_population_size_estimate(
   fragmentEstimate_threshold = 3,
   nIS_threshold = 5,
   cell_type = "MYELOID",
-  tissue_type = "PB"
+  tissue_type = "PB",
+  max_workers = 4
 )
 }
 \arguments{
@@ -62,6 +63,8 @@ the matching is case-insensitive.}
 
 \item{tissue_type}{The tissue types to include in the models. Note that
 the matching is case-insensitive.}
+
+\item{max_workers}{Maximum parallel workers allowed}
 }
 \value{
 A data frame with the results of the estimates

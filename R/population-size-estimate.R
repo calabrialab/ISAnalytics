@@ -68,6 +68,7 @@
 #' the matching is case-insensitive.
 #' @param tissue_type The tissue types to include in the models. Note that
 #' the matching is case-insensitive.
+#' @param max_workers Maximum parallel workers allowed
 #'
 #' @section Required tags:
 #' The function will explicitly check for the presence of these tags:
@@ -116,7 +117,8 @@ HSC_population_size_estimate <- function(x,
     fragmentEstimate_threshold = 3,
     nIS_threshold = 5,
     cell_type = "MYELOID",
-    tissue_type = "PB") {
+    tissue_type = "PB",
+    max_workers = 4) {
     # Param check
     ## Basic checks on types
     stopifnot(is.data.frame(x))
@@ -139,6 +141,7 @@ HSC_population_size_estimate <- function(x,
     nIS_threshold <- nIS_threshold[1]
     stopifnot(is.character(cell_type))
     stopifnot(is.character(tissue_type))
+    stopifnot(is.numeric(max_workers))
     ## Convert cell_type and tissue_type to uppercase (for case insensitivity)
     cell_type <- stringr::str_to_upper(cell_type)
     tissue_type <- stringr::str_to_upper(tissue_type)
@@ -181,12 +184,19 @@ HSC_population_size_estimate <- function(x,
     }
     ## Check seqCount col in x
     if (!seqCount_column %in% colnames(x)) {
-        rlang::abort(c("Sequence count column not found in x"))
+        sc_err <- c("Sequence count column not found in x")
+        rlang::abort(sc_err)
     }
     ## Check fragmentEstimate col in x
     if (!is.null(fragmentEstimate_column) &&
         !fragmentEstimate_column %in% colnames(x)) {
-        rlang::abort(c("Fragment estimate column not found in x"))
+        fe_err <- c("Fragment estimate column not found in x",
+            i = paste(
+                "To ignore fragment estimate, set",
+                "`fragmentEstimate_column = NULL`"
+            )
+        )
+        rlang::abort(fe_err)
     }
     ## Reorder stable timepoints
     if (is.null(stable_timepoints)) {
@@ -196,7 +206,8 @@ HSC_population_size_estimate <- function(x,
     ## Check presence of NumIS column
     if (!"NumIS" %in% colnames(metadata)) {
         if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-            rlang::inform(c("Calculating number of IS for each group..."))
+            is_msg <- c("Calculating number of IS for each group...")
+            rlang::inform(is_msg)
         }
         numIs <- x %>%
             dplyr::left_join(metadata, by = dplyr::all_of(aggregation_key)) %>%
@@ -231,6 +242,17 @@ HSC_population_size_estimate <- function(x,
     metadata <- metadata %>%
         dplyr::filter(.data$NumIS > nIS_threshold) %>%
         dplyr::left_join(blood_lineages, by = cm_col)
+    if (nrow(metadata) == 0) {
+        empty_meta_warn <- c("Empty metadata after filtering",
+            i = paste(
+                "Metadata does not contain samples that",
+                "match the filter",
+                "`numIS >", nIS_threshold, "`. Nothing to do."
+            )
+        )
+        rlang::inform(empty_meta_warn)
+        return(NULL)
+    }
     # --- SPLIT THE INPUT AGGREGATED MATRIX BY SubjectID
     x_subj_split <- x %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(subj_col))) %>%
@@ -241,25 +263,10 @@ HSC_population_size_estimate <- function(x,
     } else {
         NULL
     }
-    if (.Platform$OS.type == "windows") {
-        p <- BiocParallel::SnowParam(
-            stop.on.error = FALSE,
-            tasks = length(x_subj_split),
-            progressbar = getOption("ISAnalytics.verbose", TRUE),
-            exportglobals = TRUE
-        )
-    } else {
-        p <- BiocParallel::MulticoreParam(
-            stop.on.error = FALSE,
-            tasks = length(x_subj_split),
-            progressbar = getOption("ISAnalytics.verbose", TRUE),
-            exportglobals = FALSE
-        )
-    }
-    population_size <- BiocParallel::bptry({
-        BiocParallel::bplapply(
-            x_subj_split,
-            FUN = .re_agg_and_estimate,
+    population_size <- .execute_map_job(
+        data_list = x_subj_split,
+        fun_to_apply = .re_agg_and_estimate,
+        fun_args = list(
             metadata = metadata,
             fragmentEstimate_column = fragmentEstimate_column,
             seqCount_column = seqCount_column,
@@ -272,29 +279,45 @@ HSC_population_size_estimate <- function(x,
             tissue_type = tissue_type,
             annotation_cols = annotation_cols,
             subj_col = subj_col,
-            stable_timepoints = stable_timepoints,
-            BPPARAM = p
-        )
-    })
-    BiocParallel::bpstop(p)
-    if (all(BiocParallel::bpok(population_size))) {
-        population_size <- purrr::reduce(population_size, function(x, y) {
-            if (is.null(x) & is.null(y)) {
-                return(NULL)
-            } else {
-                return(dplyr::bind_rows(x, y))
-            }
-        })
+            stable_timepoints = stable_timepoints
+        ),
+        stop_on_error = FALSE,
+        max_workers = max_workers
+    )
+    extract_and_bind <- function(err) {
+        logs <- purrr::map(population_size$res, ~ .x$log)
+        if (err) {
+            rlang::inform(c("An error occurred",
+                i = paste0(population_size$err, collapse = "\n")
+            ))
+            return(list(est = NULL, log = logs))
+        }
+        population_size <- purrr::map(population_size$res, ~ .x$est) %>%
+            purrr::reduce(function(x, y) {
+                if (is.null(x) & is.null(y)) {
+                    return(NULL)
+                } else {
+                    return(dplyr::bind_rows(x, y))
+                }
+            })
         if (!is.null(population_size)) {
             population_size <- population_size %>%
                 dplyr::mutate(PopSize = round(.data$abundance - .data$stderr))
         }
-        return(population_size)
+        return(list(est = population_size, log = logs))
+    }
+    if (population_size$mode == "par") {
+        if (all(BiocParallel::bpok(population_size$res))) {
+            return(extract_and_bind(FALSE))
+        } else {
+            return(extract_and_bind(TRUE))
+        }
     } else {
-        rlang::inform(c("An error occurred",
-            i = paste0(population_size, collapse = "\n")
-        ))
-        return(NULL)
+        if (all(is.null(population_size$err))) {
+            return(extract_and_bind(FALSE))
+        } else {
+            return(extract_and_bind(TRUE))
+        }
     }
 }
 

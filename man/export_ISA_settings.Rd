@@ -30,6 +30,7 @@ export_ISA_settings(tmp_folder, "DEFAULT")
 Other Utilities: 
 \code{\link{as_sparse_matrix}()},
 \code{\link{comparison_matrix}()},
+\code{\link{enable_progress_bars}()},
 \code{\link{generate_Vispa2_launch_AF}()},
 \code{\link{generate_blank_association_file}()},
 \code{\link{generate_default_folder_structure}()},

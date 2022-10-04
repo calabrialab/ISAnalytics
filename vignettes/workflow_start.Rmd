@@ -44,6 +44,7 @@ bib <- c(
     rmarkdown = citation("rmarkdown")[1],
     sessioninfo = citation("sessioninfo")[1],
     testthat = citation("testthat")[1],
+    progressr = citation("progressr")[1],
     ISAnalytics = citation("ISAnalytics")[1],
     VISPA2 = BibEntry(bibtype = "Article", 
      title = paste("VISPA2: a scalable pipeline for", 
@@ -65,7 +66,7 @@ main_fig <- fs::path("../man", "figures", "dyn_vars_general.png")
 
 ISAnalytics is an R package developed to analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies.
 
-In this vignette we will explain how to properly setup the worflow and
+In this vignette we will explain how to properly setup the workflow and
 the first steps of data import and data cleaning.
 
 ```{r echo=FALSE}
@@ -346,6 +347,21 @@ these functions allow the import/export of setting profiles in *.json format.
 Once you set your variables for the first time through the procedure described
 before, simply call the export function and all will be saved to a json file,
 which can then be imported for the next workflow.
+
+# Reporting progress
+
+From `ISAnalytics 1.7.4`, functions that make use of parallel workers or
+process long tasks report progress via the functions offered by
+[progressr](https://progressr.futureverse.org/). To enable progress bars
+for all functions in ISAnalytics do
+
+```{r eval=FALSE}
+enable_progress_bars()
+```
+
+before calling other functions. 
+For customizing the appearance of the progress bar please refer to `progressr`
+documentation.
 
 # Introduction to `ISAnalytics` import functions family
 

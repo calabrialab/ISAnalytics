@@ -39,3 +39,5 @@ sample_reports
 README.Rmd
 NEWS.Rmd
 pkgdown
+/doc/
+/Meta/

@@ -24,6 +24,6 @@ on UniProt database.
 \section{Functions}{
 \itemize{
 \item \code{tumor_suppressors}: Data frame for tumor suppressor genes
-}}
 
+}}
 \keyword{datasets}

@@ -1232,11 +1232,11 @@ export_ISA_settings <- function(folder, setting_profile_name) {
         tmp
     }
     all_specs_json <- list(
-      mandatory_IS_vars = jsonify(mandatory_IS_vars(TRUE)),
-      annotation_IS_vars = jsonify(annotation_IS_vars(TRUE)),
-      association_file_columns = jsonify(association_file_columns(TRUE)),
-      iss_stats_specs = jsonify(iss_stats_specs(TRUE)),
-      matrix_file_suffixes = matrix_file_suffixes()
+        mandatory_IS_vars = jsonify(mandatory_IS_vars(TRUE)),
+        annotation_IS_vars = jsonify(annotation_IS_vars(TRUE)),
+        association_file_columns = jsonify(association_file_columns(TRUE)),
+        iss_stats_specs = jsonify(iss_stats_specs(TRUE)),
+        matrix_file_suffixes = matrix_file_suffixes()
     )
     fs::dir_create(folder)
     file_name <- paste0(setting_profile_name, "_ISAsettings.json")
@@ -1302,6 +1302,45 @@ import_ISA_settings <- function(path) {
         rlang::inform("Matrix suffixes specs successfully changed")
     }
 }
+
+
+#' Enable global progress bars for ISAnalytics functions.
+#'
+#' This is a simple wrapper around functions from the package
+#' `progressr`. To customize the appearance of the progress bar,
+#' please refer to [progressr](https://progressr.futureverse.org/)
+#' documentation.
+#'
+#' @return `NULL`
+#' @family Utilities
+#' @export
+#'
+#' @examples
+#' enable_progress_bars()
+#' progressr::handlers(global = FALSE) # Deactivate
+enable_progress_bars <- function() {
+    if (!requireNamespace("progressr", quietly = TRUE)) {
+        rlang::abort(.missing_pkg_error("progressr"))
+    }
+    progressr::handlers(global = TRUE)
+    progressr::handlers(
+        progressr::handler_progress(
+            format = paste(
+                ":spin :current/:total (:message)",
+                "[:bar] :percent in :elapsed ETA: :eta"
+            )
+        )
+    )
+    msg <- c(
+        "Progress bars enabled globally",
+        i = paste(
+            "To customise the appearance of the progress bar see",
+            "the documentation of package `progressr`"
+        )
+    )
+    rlang::inform(msg)
+}
+
 
 #' Launch the shiny application NGSdataExplorer.
 #'

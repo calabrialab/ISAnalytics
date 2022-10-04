@@ -2,6 +2,20 @@
 title: "NEWS"
 output: github_document
 ---
+# ISAnalytics 1.7.4 (2022-10-04)
+
+## VISIBLE USER CHANGES
+
+* Progress bars for long processing functions are now implemented via the 
+package `progressr`, added a wrapper function for fast enabling progress bars,
+`enable_progress_bars()`
+* Introduced logging for issues in `HSC_population_size_estimate()` - 
+signals eventual problems in computing estimates and why
+
+## BUG FIXES AND MINOR CHANGES
+
+* Fixed minor bugs and typos
+
 # ISAnalytics 1.7.3 (2022-06-17)
 
 ## BUG FIXES AND MINOR CHANGES

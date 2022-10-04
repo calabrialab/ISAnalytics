@@ -437,16 +437,16 @@ import_association_file <- function(path,
         {
             if ("checks_env" %in% names(dots) &&
                 rlang::is_environment(dots$checks_env)) {
-              rlang::env_bind(
-                dots$checks_env,
-                parsing_prob = parsing_problems,
-                dates_prob = date_problems,
-                col_prob = col_probs,
-                crit_nas = crit_nas,
-                fs_align = checks,
-                iss_stats = import_stats_rep,
-                iss_stats_miss = missing_stats_rep
-              )
+                rlang::env_bind(
+                    dots$checks_env,
+                    parsing_prob = parsing_problems,
+                    dates_prob = date_problems,
+                    col_prob = col_probs,
+                    crit_nas = crit_nas,
+                    fs_align = checks,
+                    iss_stats = import_stats_rep,
+                    iss_stats_miss = missing_stats_rep
+                )
             }
             .produce_report("asso_file",
                 params = list(
@@ -950,6 +950,17 @@ import_parallel_Vispa2Matrices <- function(association_file,
     if (!is.null(patterns)) {
         launch_params[["patterns"]] <- patterns
         launch_params[["matching_opt"]] <- matching_option
+    }
+    if ("checks_env" %in% names(dots_args) &&
+        is.environment(dots_args$checks_env)) {
+        rlang::env_bind(
+            dots_args$checks_env,
+            launch_params = launch_params,
+            set_vars = list(proj_col = proj_col, pool_col = pool_col),
+            files_found = files_found,
+            files_imp = fimported,
+            annot_prob = annotation_problems
+        )
     }
     withCallingHandlers(
         {
