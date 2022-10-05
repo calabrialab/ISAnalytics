@@ -842,7 +842,7 @@
     }
 
     if (getOption("ISAnalytics.parallel_processing", default = TRUE) == TRUE &
-        max_workers > 1) {
+        (!is.null(max_workers) && max_workers > 1)) {
         # Set up parallel workers
         old_be <- doFuture::registerDoFuture()
         old_plan <- future::plan(future::multisession, workers = max_workers)
