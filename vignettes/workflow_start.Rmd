@@ -521,12 +521,11 @@ so it is recommended to import them in the first steps of the workflow.
 To do that, you can use `import_VISPA2_stats`:
 
 ```{r results='hide'}
-withr::with_options(list(ISAnalytics.reports = FALSE), {
-    vispa_stats <- import_Vispa2_stats(
-        association_file = af,
-        join_with_af = FALSE
-    )
-})
+vispa_stats <- import_Vispa2_stats(
+    association_file = af,
+    join_with_af = FALSE, 
+    report_path = NULL
+)
 ```
 
 ```{r echo=FALSE}

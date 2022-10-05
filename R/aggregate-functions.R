@@ -131,7 +131,7 @@ default_meta_agg <- function() {
         NA, "{.col}_sum",
         "BWA_MAPPED_OVERALL", ~ sum(.x, na.rm = TRUE),
         NA, "{.col}_sum",
-        "ISS_MAPPED_PP", ~ sum(.x, na.rm = TRUE),
+        "ISS_MAPPED_OVERALL", ~ sum(.x, na.rm = TRUE),
         NA, "{.col}_sum",
         "PCRMethod", ~ paste0(unique(.x), collapse = "|"),
         NA, "{.col}",
