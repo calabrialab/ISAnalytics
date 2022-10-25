@@ -1236,7 +1236,7 @@
 
         tidy <- data.table::rbindlist(tidy_chunks$res)
     }
-    tidy <- tidy[val_col_name > 0]
+    tidy <- tidy[get(val_col_name) > 0]
     ## Transform cols
     if (call_mode == "EXTERNAL" &&
         getOption("ISAnalytics.verbose", TRUE) == TRUE &&

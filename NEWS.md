@@ -1,6 +1,10 @@
 NEWS
 ================
 
+# ISAnalytics 1.7.6 (2022-10-25)
+
+-   Fixed minor bugs and typos
+
 # ISAnalytics 1.7.5 (2022-10-05)
 
 -   Fixed build issues

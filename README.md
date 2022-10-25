@@ -135,6 +135,14 @@ options("ISAnalytics.reports" = TRUE)
 Show more
 </summary>
 
+# ISAnalytics 1.7.6 (2022-10-25)
+
+-   Fixed minor bugs and typos
+
+# ISAnalytics 1.7.5 (2022-10-05)
+
+-   Fixed build issues
+
 # ISAnalytics 1.7.4 (2022-10-04)
 
 ## VISIBLE USER CHANGES
