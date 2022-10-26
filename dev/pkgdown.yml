@@ -1,11 +1,11 @@
-pandoc: 2.14.2
+pandoc: 2.19.2
 pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   ISAnalytics: ISAnalytics.html
   sharing_analyses: sharing_analyses.html
   workflow_start: workflow_start.html
-last_built: 2022-10-25T10:21Z
+last_built: 2022-10-26T16:45Z
 urls:
   reference: https://calabrialab.github.io/ISAnalytics/reference
   article: https://calabrialab.github.io/ISAnalytics/articles
