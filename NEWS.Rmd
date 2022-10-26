@@ -2,6 +2,10 @@
 title: "NEWS"
 output: github_document
 ---
+# ISAnalytics 1.7.7 (2022-10-26)
+
+* Added new section in workflow vignette + sample files
+
 # ISAnalytics 1.7.6 (2022-10-25)
 
 * Fixed minor bugs and typos
