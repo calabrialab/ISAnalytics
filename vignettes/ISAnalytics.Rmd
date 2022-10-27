@@ -246,8 +246,6 @@ form, in the other tab we can plot data. It is possible to customize several
 different parameters for the plot and finally save it to file with the 
 dedicated button at the end of the page.
 
-![NGS data explorer example](`r ngs_exp_fig`)
-
 The Shiny interface is still currently under active development and new features
 will be added in the near future.
 
