@@ -106,7 +106,7 @@ Italia</p>
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 data-toc-skip class="date">26 October 2022</h4>
+            <h4 data-toc-skip class="date">27 October 2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/vignettes/ISAnalytics.Rmd" class="external-link"><code>vignettes/ISAnalytics.Rmd</code></a></small>
       <div class="d-none name"><code>ISAnalytics.Rmd</code></div>
@@ -685,6 +685,28 @@ the authors and it is available in the package additional files.</p>
 <span><span class="co">#&gt; Association file columns specs reset to default</span></span>
 <span><span class="co">#&gt; ISS stats specs reset to default</span></span>
 <span><span class="co">#&gt; Matrix suffixes specs reset to default</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="using-the-shiny-interface">Using the Shiny interface<a class="anchor" aria-label="anchor" href="#using-the-shiny-interface"></a>
+</h2>
+<p>The package provides a simple Shiny interface for data exploration
+and plotting. To start the interface use:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/NGSdataExplorer.html">NGSdataExplorer</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>The application main page will show a loading screen for a file. It
+is possible to load files also from the R environment, for example,
+before opening the app, we can load the included association file:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span><span class="op">)</span></span></code></pre></div>
+<p>Once in the application we can choose <code>"association_file"</code>
+from the R environment loading option screen and click on “Import data”.
+Once data is imported, we can click on the “Explore” tab in the upper
+navbar: here we will see 2 tabs, one allows interactive exploration of
+data in tabular form, in the other tab we can plot data. It is possible
+to customize several different parameters for the plot and finally save
+it to file with the dedicated button at the end of the page.</p>
+<p>The Shiny interface is still currently under active development and
+new features will be added in the near future.</p>
 </div>
 <div class="section level2">
 <h2 id="ensuring-reproducibility-of-results">Ensuring reproducibility of results<a class="anchor" aria-label="anchor" href="#ensuring-reproducibility-of-results"></a>
