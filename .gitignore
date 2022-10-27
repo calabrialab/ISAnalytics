@@ -41,3 +41,5 @@ NEWS.Rmd
 pkgdown
 /doc/
 /Meta/
+Dockerfile
+/scripts/

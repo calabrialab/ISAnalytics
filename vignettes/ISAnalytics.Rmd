@@ -53,6 +53,8 @@ bib <- c(
      date = "2020-11",
      doi = "https://doi.org/10.1038/s41587-020-0551-y")
 )
+
+ngs_exp_fig <- fs::path("../man", "figures", "ngs_data_exp.png")
 ```
 
 # Introduction
@@ -218,6 +220,36 @@ abundance
 reset_dyn_vars_config()
 
 ```
+
+# Using the Shiny interface
+
+The package provides a simple Shiny interface for data exploration and plotting.
+To start the interface use:
+
+```{r eval=FALSE}
+NGSdataExplorer()
+```
+
+The application main page will show a loading screen for a file. 
+It is possible to load files also from the R environment, for example, 
+before opening the app, we can load the included association file:
+
+```{r eval=FALSE}
+data("association_file")
+```
+
+Once in the application we can choose `"association_file"` from the 
+R environment loading option screen and click on "Import data". Once
+data is imported, we can click on the "Explore" tab in the upper navbar:
+here we will see 2 tabs, one allows interactive exploration of data in tabular
+form, in the other tab we can plot data. It is possible to customize several
+different parameters for the plot and finally save it to file with the 
+dedicated button at the end of the page.
+
+![NGS data explorer example](`r ngs_exp_fig`)
+
+The Shiny interface is still currently under active development and new features
+will be added in the near future.
 
 
 # Ensuring reproducibility of results
