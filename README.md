@@ -6,8 +6,7 @@
 <!-- badges: start -->
 
 [![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
-[![R build status -
-bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
+[![R-CMD-check-bioc](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-devel.yml/badge.svg)](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-devel.yml)
 [![BioC
 status](http://www.bioconductor.org/shields/build/devel/bioc/ISAnalytics.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/ISAnalytics)
 [![Lifecycle:
@@ -25,7 +24,7 @@ retrieval and mapping of the sequences flanking the virus-host DNA
 junctions allows the identification of insertion sites (IS), essential
 for monitoring the evolution of genetically modified cells in vivo. A
 comprehensive toolkit for the analysis of IS is required to foster
-clonal trackign studies and supporting the assessment of safety and long
+clonal tracking studies and supporting the assessment of safety and long
 term efficacy in vivo. This package is aimed at (1) supporting
 automation of IS workflow, (2) performing base and advance analysis for
 IS tracking (clonal abundance, clonal expansions and statistics for
@@ -86,7 +85,7 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_15",
+                         ref = "RELEASE_3_16",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
 ```
@@ -134,6 +133,10 @@ options("ISAnalytics.reports" = TRUE)
 <summary>
 Show more
 </summary>
+
+# ISAnalytics 1.7.7 (2022-10-26)
+
+-   Added new section in workflow vignette + sample files
 
 # ISAnalytics 1.7.6 (2022-10-25)
 
