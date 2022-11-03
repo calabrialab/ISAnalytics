@@ -34,7 +34,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.0</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.8.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -173,7 +173,7 @@ up-to-date version where all new features are introduced</li>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,</span>
-<span>                         ref <span class="op">=</span> <span class="st">"RELEASE_3_16"</span>,</span>
+<span>                         ref <span class="op">=</span> <span class="st">"RELEASE_3_15"</span>,</span>
 <span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>DEVEL:</p>
@@ -335,8 +335,8 @@ the critical tags for each category.</p>
 <div class="section level4">
 <h4 id="mandatory-is-vars">Mandatory IS vars<a class="anchor" aria-label="anchor" href="#mandatory-is-vars"></a>
 </h4>
-<div id="htmlwidget-1d2f47a13e6f83032418" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1d2f47a13e6f83032418">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in
+<div id="htmlwidget-51d66a54a09e1b23b344" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-51d66a54a09e1b23b344">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in
 other functions - for example, when importing matrices it is ensured
 that all mandatory variables are present in the input, as declared in
 the look up table. Some functions may require information that needs to
@@ -346,8 +346,8 @@ doubts.</p>
 <div class="section level4">
 <h4 id="annotation-is-vars">Annotation IS vars<a class="anchor" aria-label="anchor" href="#annotation-is-vars"></a>
 </h4>
-<div id="htmlwidget-4a0496d6f6d19ca2f5b3" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4a0496d6f6d19ca2f5b3">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work
+<div id="htmlwidget-a277cf34a75dfbb2d375" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a277cf34a75dfbb2d375">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work
 with ISAnalytics, some operations do require annotation - if you’re
 working with matrices that are not annotated you can either annotate
 them with a tool of your choice or skip the steps that require
@@ -356,16 +356,16 @@ annotation.</p>
 <div class="section level4">
 <h4 id="association-file-columns">Association file columns<a class="anchor" aria-label="anchor" href="#association-file-columns"></a>
 </h4>
-<div id="htmlwidget-cff3c2308429e39cc33b" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-cff3c2308429e39cc33b">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but
+<div id="htmlwidget-41dd9a255ee84b378d32" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-41dd9a255ee84b378d32">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but
 they exist for potential new features that will be added in the
 future.</p>
 </div>
 <div class="section level4">
 <h4 id="vispa2-stats-specs">VISPA2 stats specs<a class="anchor" aria-label="anchor" href="#vispa2-stats-specs"></a>
 </h4>
-<div id="htmlwidget-aa8e7d8fa840b054050a" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-aa8e7d8fa840b054050a">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats"],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions.
+<div id="htmlwidget-5eae7c4c302ca6067c50" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5eae7c4c302ca6067c50">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats"],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions.
 If the pipeline launch was configured with default parameters, do not
 change this lookup table.</p>
 </div>
@@ -783,26 +783,26 @@ function also produces an interactive HTML report.</p>
 <span><span class="co">#&gt; 5:                 /PJ01             &lt;NA&gt;          0180              06</span></span>
 <span><span class="co">#&gt; 6:                 /PJ01             &lt;NA&gt;          0060              02</span></span>
 <span><span class="co">#&gt;    TimepointYears ng DNA corrected                    Path</span></span>
-<span><span class="co">#&gt; 1:             01            23.18 /tmp/RtmpJ0cme6/fs/PJ01</span></span>
-<span><span class="co">#&gt; 2:             01           181.44 /tmp/RtmpJ0cme6/fs/PJ01</span></span>
-<span><span class="co">#&gt; 3:             01           181.44 /tmp/RtmpJ0cme6/fs/PJ01</span></span>
-<span><span class="co">#&gt; 4:             01           181.44 /tmp/RtmpJ0cme6/fs/PJ01</span></span>
-<span><span class="co">#&gt; 5:             01            23.06 /tmp/RtmpJ0cme6/fs/PJ01</span></span>
-<span><span class="co">#&gt; 6:             01           171.36 /tmp/RtmpJ0cme6/fs/PJ01</span></span>
+<span><span class="co">#&gt; 1:             01            23.18 /tmp/RtmpyDm9aq/fs/PJ01</span></span>
+<span><span class="co">#&gt; 2:             01           181.44 /tmp/RtmpyDm9aq/fs/PJ01</span></span>
+<span><span class="co">#&gt; 3:             01           181.44 /tmp/RtmpyDm9aq/fs/PJ01</span></span>
+<span><span class="co">#&gt; 4:             01           181.44 /tmp/RtmpyDm9aq/fs/PJ01</span></span>
+<span><span class="co">#&gt; 5:             01            23.06 /tmp/RtmpyDm9aq/fs/PJ01</span></span>
+<span><span class="co">#&gt; 6:             01           171.36 /tmp/RtmpyDm9aq/fs/PJ01</span></span>
 <span><span class="co">#&gt;                                         Path_quant</span></span>
-<span><span class="co">#&gt; 1: /tmp/RtmpJ0cme6/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 2: /tmp/RtmpJ0cme6/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 3: /tmp/RtmpJ0cme6/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 4: /tmp/RtmpJ0cme6/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 5: /tmp/RtmpJ0cme6/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 6: /tmp/RtmpJ0cme6/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 1: /tmp/RtmpyDm9aq/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 2: /tmp/RtmpyDm9aq/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 3: /tmp/RtmpyDm9aq/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 4: /tmp/RtmpyDm9aq/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 5: /tmp/RtmpyDm9aq/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 6: /tmp/RtmpyDm9aq/fs/PJ01/quantification/POOL01-1</span></span>
 <span><span class="co">#&gt;                                Path_iss</span></span>
-<span><span class="co">#&gt; 1: /tmp/RtmpJ0cme6/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 2: /tmp/RtmpJ0cme6/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 3: /tmp/RtmpJ0cme6/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 4: /tmp/RtmpJ0cme6/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 5: /tmp/RtmpJ0cme6/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 6: /tmp/RtmpJ0cme6/fs/PJ01/iss/POOL01-1</span></span></code></pre>
+<span><span class="co">#&gt; 1: /tmp/RtmpyDm9aq/fs/PJ01/iss/POOL01-1</span></span>
+<span><span class="co">#&gt; 2: /tmp/RtmpyDm9aq/fs/PJ01/iss/POOL01-1</span></span>
+<span><span class="co">#&gt; 3: /tmp/RtmpyDm9aq/fs/PJ01/iss/POOL01-1</span></span>
+<span><span class="co">#&gt; 4: /tmp/RtmpyDm9aq/fs/PJ01/iss/POOL01-1</span></span>
+<span><span class="co">#&gt; 5: /tmp/RtmpyDm9aq/fs/PJ01/iss/POOL01-1</span></span>
+<span><span class="co">#&gt; 6: /tmp/RtmpyDm9aq/fs/PJ01/iss/POOL01-1</span></span></code></pre>
 <div class="section level4">
 <h4 id="function-arguments">Function arguments<a class="anchor" aria-label="anchor" href="#function-arguments"></a>
 </h4>
@@ -1787,7 +1787,7 @@ any other variable to the key, just set it to <code>NULL</code>.</li>
 <span><span class="co">#&gt;  htmlwidgets    1.5.4   <span style="color: #555555;">2021-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  httpuv         1.6.6   <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  httr           1.4.4   <span style="color: #555555;">2022-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  ISAnalytics  * 1.9.0   <span style="color: #555555;">2022-11-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
+<span><span class="co">#&gt;  ISAnalytics  * 1.8.0   <span style="color: #555555;">2022-11-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
 <span><span class="co">#&gt;  iterators      1.0.14  <span style="color: #555555;">2022-02-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  jquerylib      0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  jsonlite       1.8.3   <span style="color: #555555;">2022-10-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
