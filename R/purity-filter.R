@@ -230,7 +230,7 @@ purity_filter <- function(x,
         dplyr::summarise(n = n(), .groups = "drop")
     to_process <- by_is %>%
         dplyr::filter(.data$n > 1) %>%
-        dplyr::select(-.data$n) %>%
+        dplyr::select(-dplyr::all_of("n")) %>%
         dplyr::inner_join(pre_filt$process, by = vars_to_group)
     if (nrow(to_process) == 0) {
         ## If there are no shared iss there is nothing to process,
@@ -239,7 +239,7 @@ purity_filter <- function(x,
     }
     to_keep <- by_is %>%
         dplyr::filter(.data$n == 1) %>%
-        dplyr::select(-.data$n) %>%
+        dplyr::select(-dplyr::all_of("n")) %>%
         dplyr::inner_join(pre_filt$process, by = vars_to_group)
     #### - Process groups
     .filter_by_purity <- function(group) {
@@ -248,7 +248,7 @@ purity_filter <- function(x,
             dplyr::mutate(remove = (max_val / .data$Value) >
                 impurity_threshold) %>%
             dplyr::filter(remove == FALSE) %>%
-            dplyr::select(-.data$remove)
+            dplyr::select(-dplyr::all_of("remove"))
         processed
     }
     processed_iss <- to_process %>%

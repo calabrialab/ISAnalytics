@@ -170,7 +170,7 @@ test_that(paste(
     write(input_value2, input2)
     write(input_value3, input3)
     project_list <- dplyr::distinct(
-        dplyr::select(local_af_corr, .data$ProjectID)
+        dplyr::select(local_af_corr, dplyr::all_of("ProjectID"))
     )$ProjectID
     invisible(capture_output(capture_output({
         updated_af <- .interactive_select_projects_import(
@@ -365,7 +365,9 @@ test_that(paste(func_name[4], "selects only the first pools
         )
     })))
     available <- local_af_corr %>%
-        dplyr::select(.data$ProjectID, .data$concatenatePoolIDSeqRun) %>%
+        dplyr::select(
+            dplyr::all_of(c("ProjectID", "concatenatePoolIDSeqRun"))
+        ) %>%
         dplyr::distinct()
     pools_selected <- purrr::map(
         unique(available$ProjectID),
@@ -1117,11 +1119,12 @@ test_that("deprecation of old functions gets signaled - AUTO", {
         quantification_type = c("seqCount", "fragmentEstimate"),
         mode = "AUTO", report_path = NULL
     )
-    expect_equal(matrices %>%
-        dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
-    matrices_new_fun %>%
-        dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
-    ignore_attr = TRUE
+    expect_equal(
+        matrices %>%
+            dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+        matrices_new_fun %>%
+            dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+        ignore_attr = TRUE
     )
 })
 
@@ -1163,10 +1166,11 @@ test_that("deprecation of old functions gets signaled - INTERACTIVE", {
             mode = "INTERACTIVE", report_path = NULL
         )
     }))
-    expect_equal(matrices %>%
-        dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
-    matrices_new_fun %>%
-        dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
-    ignore_attr = TRUE
+    expect_equal(
+        matrices %>%
+            dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+        matrices_new_fun %>%
+            dplyr::arrange(.data$seqCount, .data$fragmentEstimate),
+        ignore_attr = TRUE
     )
 })

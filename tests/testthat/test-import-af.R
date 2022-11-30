@@ -322,10 +322,11 @@ test_that(paste(func_name[5], "custom - no fs align - no missing tags"), {
             false = .data$names
         ))
     new_af_path <- fs::path(fs::path_dir(fs_path$af), "asso_file_mod.tsv")
-    readr::write_tsv(association_file %>%
-        dplyr::select(dplyr::all_of(.default_af_cols()$names)) %>%
-        dplyr::rename(Proj = "ProjectID"),
-    file = new_af_path, na = ""
+    readr::write_tsv(
+        association_file %>%
+            dplyr::select(dplyr::all_of(.default_af_cols()$names)) %>%
+            dplyr::rename(Proj = "ProjectID"),
+        file = new_af_path, na = ""
     )
     withr::local_options(.new = list(ISAnalytics.af_specs = temp_specs))
     expect_message(
@@ -356,12 +357,13 @@ test_that(paste(func_name[5], "custom - no fs align - missing tags"), {
 
 test_that(paste(func_name[5], "custom - no fs align - missing cols"), {
     new_af_path <- fs::path(fs::path_dir(fs_path$af), "asso_file_mod.tsv")
-    readr::write_tsv(association_file %>%
-        dplyr::select(
-            dplyr::all_of(.default_af_cols()$names),
-            -.data$ProjectID
-        ),
-    file = new_af_path, na = ""
+    readr::write_tsv(
+        association_file %>%
+            dplyr::select(
+                dplyr::all_of(.default_af_cols()$names),
+                -dplyr::all_of("ProjectID")
+            ),
+        file = new_af_path, na = ""
     )
     expect_message(
         { ## Should work without errors since no fs alignment
@@ -381,10 +383,11 @@ test_that(paste(func_name[5], "custom - fs align - no missing tags"), {
             false = .data$names
         ))
     new_af_path <- fs::path(fs::path_dir(fs_path$af), "asso_file_mod.tsv")
-    readr::write_tsv(association_file %>%
-        dplyr::select(dplyr::all_of(.default_af_cols()$names)) %>%
-        dplyr::rename(Proj = "ProjectID"),
-    file = new_af_path, na = ""
+    readr::write_tsv(
+        association_file %>%
+            dplyr::select(dplyr::all_of(.default_af_cols()$names)) %>%
+            dplyr::rename(Proj = "ProjectID"),
+        file = new_af_path, na = ""
     )
     withr::local_options(.new = list(ISAnalytics.af_specs = temp_specs))
     expect_message(
@@ -417,12 +420,13 @@ test_that(paste(func_name[5], "custom - fs align - missing tags"), {
 
 test_that(paste(func_name[5], "custom - fs align - missing cols"), {
     new_af_path <- fs::path(fs::path_dir(fs_path$af), "asso_file_mod.tsv")
-    readr::write_tsv(association_file %>%
-        dplyr::select(
-            dplyr::all_of(.default_af_cols()$names),
-            -.data$ProjectID
-        ),
-    file = new_af_path, na = ""
+    readr::write_tsv(
+        association_file %>%
+            dplyr::select(
+                dplyr::all_of(.default_af_cols()$names),
+                -dplyr::all_of("ProjectID")
+            ),
+        file = new_af_path, na = ""
     )
     expect_error({ # Should error, missing ProjectID col
         af <- import_association_file(new_af_path,

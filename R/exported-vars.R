@@ -172,8 +172,10 @@
         dplyr::left_join(.types_mapping(), by = "types")
     if (mode == "fread") {
         specs_mappings <- specs_mappings %>%
-            dplyr::select(.data$names, .data$fread) %>%
-            dplyr::group_by(.data$fread)
+            dplyr::select(
+                dplyr::all_of(c("names", "fread"))
+            ) %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of("fread")))
         types <- specs_mappings %>%
             dplyr::group_keys() %>%
             dplyr::pull(.data$fread)
@@ -195,8 +197,8 @@
         dplyr::left_join(.types_mapping(), by = "types")
     if (mode == "fread") {
         specs_mappings <- specs_mappings %>%
-            dplyr::select(.data$names, .data$fread) %>%
-            dplyr::group_by(.data$fread)
+            dplyr::select(dplyr::all_of(c("names", "fread"))) %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of("fread")))
         types <- specs_mappings %>%
             dplyr::group_keys() %>%
             dplyr::pull(.data$fread)
@@ -218,8 +220,8 @@
         dplyr::left_join(.types_mapping(), by = "types")
     if (mode == "fread") {
         specs_mappings <- specs_mappings %>%
-            dplyr::select(.data$names, .data$fread) %>%
-            dplyr::group_by(.data$fread)
+            dplyr::select(dplyr::all_of(c("names", "fread"))) %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of("fread")))
         types <- specs_mappings %>%
             dplyr::group_keys() %>%
             dplyr::pull(.data$fread)
@@ -299,7 +301,7 @@ reduced_AF_columns <- function() {
         vars_df = association_file_columns(TRUE),
         duplicate_politic = politics
     ) %>%
-        dplyr::select(.data$names, .data$tag)
+        dplyr::select(dplyr::all_of(c("names", "tag")))
     data.table::setDT(tag_cols)
     return(tag_cols)
 }

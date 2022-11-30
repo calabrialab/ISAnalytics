@@ -250,15 +250,16 @@
     }
     # First separate by project
     sep_matrices <- integration_matrices %>%
-        dplyr::left_join(af %>%
-            dplyr::select(
-                dplyr::all_of(c(
-                    tag_list$pcr_repl_id,
-                    tag_list$vispa_concatenate,
-                    tag_list$project_id
-                ))
-            ),
-        by = tag_list$pcr_repl_id
+        dplyr::left_join(
+            af %>%
+                dplyr::select(
+                    dplyr::all_of(c(
+                        tag_list$pcr_repl_id,
+                        tag_list$vispa_concatenate,
+                        tag_list$project_id
+                    ))
+                ),
+            by = tag_list$pcr_repl_id
         ) %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(tag_list$project_id)))
     proj_names <- sep_matrices %>%
@@ -271,7 +272,8 @@
     sep_matrices <- purrr::map(sep_matrices, ~ {
         tmp <- .x %>%
             dplyr::group_by(dplyr::across(
-              dplyr::all_of(tag_list$vispa_concatenate)))
+                dplyr::all_of(tag_list$vispa_concatenate)
+            ))
         pool_names <- tmp %>%
             dplyr::group_keys() %>%
             dplyr::pull(dplyr::all_of(tag_list$vispa_concatenate))
@@ -420,16 +422,17 @@
                     )
                 } else {
                     if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-                        warn_empty_iss <- c(paste0(
-                            "Warning: empty stats for project '",
-                            proj, "', pool '", .y, "'"
-                        ),
-                        i = paste(
-                            "No files will be produced for",
-                            "this pool, if this behaviour is",
-                            "not desired check the association",
-                            "file provided in input"
-                        )
+                        warn_empty_iss <- c(
+                            paste0(
+                                "Warning: empty stats for project '",
+                                proj, "', pool '", .y, "'"
+                            ),
+                            i = paste(
+                                "No files will be produced for",
+                                "this pool, if this behaviour is",
+                                "not desired check the association",
+                                "file provided in input"
+                            )
                         )
                         rlang::inform(warn_empty_iss, class = "warn_empty_iss")
                     }
@@ -527,16 +530,17 @@
                         )
                     } else {
                         if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-                            warn_empty_iss <- c(paste0(
-                                "Warning: empty stats for project '",
-                                proj, "', pool '", .y, "'"
-                            ),
-                            i = paste(
-                                "No files will be produced for",
-                                "this pool, if this behaviour is",
-                                "not desired check the association",
-                                "file provided in input"
-                            )
+                            warn_empty_iss <- c(
+                                paste0(
+                                    "Warning: empty stats for project '",
+                                    proj, "', pool '", .y, "'"
+                                ),
+                                i = paste(
+                                    "No files will be produced for",
+                                    "this pool, if this behaviour is",
+                                    "not desired check the association",
+                                    "file provided in input"
+                                )
                             )
                             rlang::inform(warn_empty_iss,
                                 class = "warn_empty_iss"
@@ -631,20 +635,21 @@
 .eval_tag_duplicates <- function(df, duplicate_politic) {
     if (any(duplicate_politic != "keep")) {
         tags_split <- df %>%
-            dplyr::group_by(.data$tag) %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of("tag"))) %>%
             dplyr::group_split()
 
         first_politic <- function(sub_df) {
             first_row <- sub_df[1, ]
-            warn <- c(paste0(
-                "--> Duplicates found for tag '",
-                sub_df$tag[1], "', only first match kept"
-            ),
-            i = paste(
-                "Found:",
-                paste0(sub_df$names, collapse = ", ")
-            ),
-            i = paste("Kept:", first_row$names)
+            warn <- c(
+                paste0(
+                    "--> Duplicates found for tag '",
+                    sub_df$tag[1], "', only first match kept"
+                ),
+                i = paste(
+                    "Found:",
+                    paste0(sub_df$names, collapse = ", ")
+                ),
+                i = paste("Kept:", first_row$names)
             )
             return(list(type = "MOD", result = first_row, warning = warn))
         }
@@ -740,7 +745,7 @@
 # Types is a named vec in the form of c("tag" = "col_type")
 .eval_tag_types <- function(df, types) {
     tag_split <- df %>%
-        dplyr::group_by(.data$tag) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of("tag"))) %>%
         dplyr::group_split()
     single_type_eval <- function(sub_df) {
         tag_type <- types[[sub_df$tag[1]]]
@@ -849,8 +854,10 @@
         on.exit(
             {
                 future::plan(old_plan)
-                foreach::setDoPar(fun = old_be$fun,
-                                  data = old_be$data, info = old_be$info)
+                foreach::setDoPar(
+                    fun = old_be$fun,
+                    data = old_be$data, info = old_be$info
+                )
             },
             add = TRUE
         )
@@ -1112,7 +1119,7 @@
     correct_types <- additional_cols %in% c(.types_mapping()$types, "_")
     if (any(correct_types == FALSE)) {
         add_types_err <- c(
-          "Unknown column type in specified additional columns",
+            "Unknown column type in specified additional columns",
             x = paste("Types must be in the allowed types"),
             i = paste(
                 "Unknown formats: ",
@@ -1249,13 +1256,14 @@
     ## - Report summary
     if (call_mode == "EXTERNAL" &&
         getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-        rlang::inform(.summary_ism_import_msg(
-            is_annotated,
-            df_dim,
-            mode,
-            length(unique(tidy[[id_col_name]]))
-        ),
-        class = "ism_import_summary"
+        rlang::inform(
+            .summary_ism_import_msg(
+                is_annotated,
+                df_dim,
+                mode,
+                length(unique(tidy[[id_col_name]]))
+            ),
+            class = "ism_import_summary"
         )
     }
     return(tidy)
@@ -1431,7 +1439,7 @@
         dplyr::distinct()
     path_cols <- .path_cols_names()
     proj_folders_exist <- temp_df %>%
-        dplyr::select(.data[[proj_fold_col]]) %>%
+        dplyr::select(dplyr::all_of(proj_fold_col)) %>%
         dplyr::distinct() %>%
         dplyr::mutate(Found = !is.na(
             .data[[proj_fold_col]]
@@ -1526,12 +1534,12 @@
     concat_pool_col,
     project_id_col) {
     as_file <- as_file %>%
-        dplyr::left_join(checks %>%
-            dplyr::select(
-                -.data[[proj_fold_col]],
-                -.data$Found
-            ),
-        by = c(project_id_col, concat_pool_col)
+        dplyr::left_join(
+            checks %>%
+                dplyr::select(
+                    -dplyr::all_of(c(proj_fold_col, "Found"))
+                ),
+            by = c(project_id_col, concat_pool_col)
         )
     as_file
 }
@@ -1753,7 +1761,7 @@
                 levels = prefixes
             )) %>%
             dplyr::filter(!is.na(.data$file)) %>%
-            dplyr::group_by(.data$pattern) %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of("pattern"))) %>%
             dplyr::tally() %>%
             dplyr::arrange(.data$pattern)
         one_index <- purrr::detect_index(pattern_counts$n, ~ .x == 1)
@@ -1820,7 +1828,7 @@
         path_iss_col = path_iss_col
     )
     stats_paths <- stats_paths %>%
-        tidyr::unnest(.data$info)
+        tidyr::unnest(dplyr::all_of("info"))
     if (all(is.na(stats_paths$stats_files))) {
         stats_paths <- stats_paths %>%
             dplyr::mutate(
@@ -1895,7 +1903,7 @@
             ))
     })
     stats_paths <- stats_paths %>%
-        dplyr::select(-.data$info)
+        dplyr::select(-dplyr::all_of("info"))
     stats_dfs <- stats_dfs$res[stats_paths$Imported]
     # Bind rows in single tibble for all files
     if (purrr::is_empty(stats_dfs)) {
@@ -2200,11 +2208,10 @@
             )
             available <- association_file %>%
                 dplyr::select(
-                    .data[[proj_col]],
-                    .data[[pool_col]]
+                    dplyr::all_of(c(proj_col, pool_col))
                 ) %>%
                 dplyr::distinct() %>%
-                tidyr::nest(data = c(.data[[pool_col]]))
+                tidyr::nest(data = dplyr::all_of(pool_col))
             pools_to_import <- purrr::pmap(available, function(...) {
                 l <- list(...)
                 current <- l[proj_col]
@@ -2263,8 +2270,7 @@
             cat("\nYour choices: ", sep = "\n")
             print(association_file %>%
                 dplyr::select(
-                    .data[[proj_col]],
-                    .data[[pool_col]]
+                    dplyr::all_of(c(proj_col, pool_col))
                 ) %>%
                 dplyr::distinct())
             cat("\nConfirm your choices? [y/n]", sep = "")
@@ -2304,7 +2310,9 @@
         temp <- tibble::tibble(...)
         an <- temp$Files
         an <- an %>%
-            dplyr::group_by(.data$Quantification_type) %>%
+            dplyr::group_by(
+                dplyr::across(dplyr::all_of("Quantification_type"))
+            ) %>%
             dplyr::summarise(
                 Found = sum(!is.na(.data$Files_found)),
                 .groups = "drop_last"
@@ -2319,7 +2327,7 @@
                 .data$Files_count,
                 ~ any(.x["Found"] != 1)
             ),
-            .before = .data$Files
+            .before = dplyr::all_of("Files")
         )
     lups
 }
@@ -2348,9 +2356,7 @@
     path_col_names <- .path_cols_names()
     temp <- association_file %>%
         dplyr::select(
-            .data[[proj_col]],
-            .data[[pool_col]],
-            .data[[path_col_names$quant]]
+            dplyr::all_of(c(proj_col, pool_col, path_col_names$quant))
         ) %>%
         dplyr::distinct()
 
@@ -2386,7 +2392,9 @@
             )
         })
         found <- found %>%
-            dplyr::group_by(.data$Quantification_type) %>%
+            dplyr::group_by(
+                dplyr::across(dplyr::all_of("Quantification_type"))
+            ) %>%
             dplyr::distinct() %>%
             dplyr::group_modify(~ {
                 if (nrow(.x) > 1) {
@@ -2408,7 +2416,9 @@
         )
     })
     lups <- lups %>%
-        tidyr::nest(Files = c(.data$Quantification_type, .data$Files_found))
+        tidyr::nest(Files = dplyr::all_of(
+            c("Quantification_type", "Files_found")
+        ))
     lups <- .trace_anomalies(lups)
     lups
 }
@@ -2491,10 +2501,9 @@
     if (nrow(anomalies) == 0) {
         files_to_import <- files_found %>%
             dplyr::select(
-                .data[[proj_col]],
-                .data[[pool_col]], .data$Files
+                dplyr::all_of(c(proj_col, pool_col, "Files"))
             ) %>%
-            tidyr::unnest(.data$Files) %>%
+            tidyr::unnest(dplyr::all_of("Files")) %>%
             dplyr::rename(Files_chosen = "Files_found")
         return(files_to_import)
     }
@@ -2574,10 +2583,9 @@
             if (nrow(files_found) > 0) {
                 files_found <- files_found %>%
                     dplyr::select(
-                        .data[[proj_col]],
-                        .data[[pool_col]], .data$Files
+                        dplyr::all_of(c(proj_col, pool_col, "Files"))
                     ) %>%
-                    tidyr::unnest(.data$Files) %>%
+                    tidyr::unnest(dplyr::all_of("Files")) %>%
                     dplyr::rename(Files_chosen = "Files_found")
                 files_to_import <- files_to_import %>%
                     dplyr::bind_rows(files_found) %>%
@@ -2654,7 +2662,7 @@
     p_matches <- files_nested %>% dplyr::bind_cols(p_matches)
     # Find the different quantification types in the files_found
     types <- p_matches %>%
-        dplyr::select(.data$Quantification_type) %>%
+        dplyr::select(dplyr::all_of("Quantification_type")) %>%
         dplyr::distinct() %>%
         dplyr::pull(.data$Quantification_type)
     # For each quantification type
@@ -2678,7 +2686,11 @@
                 # are kept
                 files_keep <- temp %>%
                     dplyr::filter(.data$ANY == TRUE) %>%
-                    dplyr::select(.data$Quantification_type, .data$Files_found)
+                    dplyr::select(
+                        dplyr::all_of(c(
+                            "Quantification_type", "Files_found"
+                        ))
+                    )
             } else {
                 # If none of the files match, none is preserved, file is
                 # converted to NA
@@ -2687,7 +2699,9 @@
                     dplyr::mutate(Files_found = fs::as_fs_path(
                         NA_character_
                     )) %>%
-                    dplyr::select(.data$Quantification_type, .data$Files_found)
+                    dplyr::select(dplyr::all_of(c(
+                        "Quantification_type", "Files_found"
+                    )))
             }
             files_keep
             # If the matching option is "ALL" - preserve only files that match
@@ -2698,7 +2712,9 @@
                 # are kept
                 files_keep <- temp %>%
                     dplyr::filter(.data$ALL == TRUE) %>%
-                    dplyr::select(.data$Quantification_type, .data$Files_found)
+                    dplyr::select(dplyr::all_of(c(
+                        "Quantification_type", "Files_found"
+                    )))
             } else {
                 # If none of the files match none is preserved, file is
                 # converted to NA
@@ -2707,7 +2723,9 @@
                     dplyr::mutate(Files_found = fs::as_fs_path(
                         NA_character_
                     )) %>%
-                    dplyr::select(.data$Quantification_type, .data$Files_found)
+                    dplyr::select(dplyr::all_of(c(
+                        "Quantification_type", "Files_found"
+                    )))
             }
             files_keep
             # If the matching option is "OPTIONAL" - preserve preferentially
@@ -2719,18 +2737,24 @@
                 # Preserve only the ones that match
                 files_keep <- temp %>%
                     dplyr::filter(.data$ALL == TRUE) %>%
-                    dplyr::select(.data$Quantification_type, .data$Files_found)
+                    dplyr::select(dplyr::all_of(c(
+                        "Quantification_type", "Files_found"
+                    )))
             } else if (!all(is.na(temp$ANY)) & any(temp$ANY)) {
                 # If none match all the patterns check files that match any of
                 # the patterns and preserve only those
                 files_keep <- temp %>%
                     dplyr::filter(.data$ANY == TRUE) %>%
-                    dplyr::select(.data$Quantification_type, .data$Files_found)
+                    dplyr::select(dplyr::all_of(c(
+                        "Quantification_type", "Files_found"
+                    )))
             } else {
                 # If there are no files that match any of the patterns simply
                 # preserve the files found
                 files_keep <- temp %>%
-                    dplyr::select(.data$Quantification_type, .data$Files_found)
+                    dplyr::select(dplyr::all_of(c(
+                        "Quantification_type", "Files_found"
+                    )))
             }
             files_keep
         }
@@ -2774,8 +2798,7 @@
         files_found <- files_found %>%
             dplyr::mutate(Files = matching_patterns) %>%
             dplyr::select(
-                .data[[proj_col]], .data[[pool_col]],
-                .data$Files
+                dplyr::all_of(c(proj_col, pool_col, "Files"))
             )
         files_found <- .trace_anomalies(files_found)
     }
@@ -2809,10 +2832,9 @@
     if (nrow(anomalies) == 0) {
         files_to_import <- files_found %>%
             dplyr::select(
-                .data[[proj_col]],
-                .data[[pool_col]], .data$Files
+                dplyr::all_of(c(proj_col, pool_col, "Files"))
             ) %>%
-            tidyr::unnest(.data$Files) %>%
+            tidyr::unnest(dplyr::all_of("Files")) %>%
             dplyr::rename(Files_chosen = "Files_found")
         return(files_to_import)
     }
@@ -2841,7 +2863,7 @@
             reported_missing_or_dupl <- dplyr::bind_rows(
                 reported_missing_or_dupl,
                 missing %>%
-                    dplyr::select(.data$Quantification_type) %>%
+                    dplyr::select(dplyr::all_of("Quantification_type")) %>%
                     dplyr::mutate(
                         !!proj_col := current[[proj_col]],
                         !!pool_col := current[[pool_col]],
@@ -2860,7 +2882,7 @@
             reported_missing_or_dupl <- dplyr::bind_rows(
                 reported_missing_or_dupl,
                 duplicate %>%
-                    dplyr::select(.data$Quantification_type) %>%
+                    dplyr::select(dplyr::all_of("Quantification_type")) %>%
                     dplyr::mutate(
                         !!proj_col := current[[proj_col]],
                         !!pool_col := current[[pool_col]],
@@ -2889,15 +2911,15 @@
             missing_msg <- c("Some files are missing and will be ignored",
                 i = paste(
                     "Here is a summary of missing files:\n",
-                    paste0(utils::capture.output(print(
-                        reported_anomalies %>%
-                            dplyr::filter(.data$Missing == TRUE) %>%
-                            dplyr::select(
-                                -.data$Duplicated,
-                                -.data$Missing
-                            )
-                    )),
-                    collapse = "\n"
+                    paste0(
+                        utils::capture.output(print(
+                            reported_anomalies %>%
+                                dplyr::filter(.data$Missing == TRUE) %>%
+                                dplyr::select(
+                                    dplyr::all_of(c("Duplicated", "Missing"))
+                                )
+                        )),
+                        collapse = "\n"
                     )
                 )
             )
@@ -2918,8 +2940,7 @@
                             reported_anomalies %>%
                                 dplyr::filter(.data$Duplicated == TRUE) %>%
                                 dplyr::select(
-                                    -.data$Duplicated,
-                                    -.data$Missing
+                                    dplyr::all_of(c("Duplicated", "Missing"))
                                 )
                         )
                     ), collapse = "\n")
@@ -2932,10 +2953,9 @@
     if (nrow(files_found) > 0) {
         files_found <- files_found %>%
             dplyr::select(
-                .data[[proj_col]],
-                .data[[pool_col]], .data$Files
+                dplyr::all_of(c(proj_col, pool_col, "Files"))
             ) %>%
-            tidyr::unnest(.data$Files) %>%
+            tidyr::unnest(dplyr::all_of("Files")) %>%
             dplyr::rename(Files_chosen = "Files_found")
         files_to_import <- files_to_import %>%
             dplyr::bind_rows(files_found) %>%
@@ -3065,8 +3085,10 @@
         on.exit(
             {
                 future::plan(old_plan)
-                foreach::setDoPar(fun = old_be$fun,
-                                  data = old_be$data, info = old_be$info)
+                foreach::setDoPar(
+                    fun = old_be$fun,
+                    data = old_be$data, info = old_be$info
+                )
             },
             add = TRUE
         )
@@ -3600,14 +3622,15 @@
         nrow()
     quant_totals <- input_df %>%
         dplyr::select(dplyr::all_of(quant_cols)) %>%
-        dplyr::summarise(dplyr::across(
-            .cols = dplyr::all_of(quant_cols),
-            .fns = list(
-                sum = ~ sum(.x, na.rm = TRUE)
+        dplyr::summarise(
+            dplyr::across(
+                .cols = dplyr::all_of(quant_cols),
+                .fns = list(
+                    sum = ~ sum(.x, na.rm = TRUE)
+                ),
+                .names = "{.col}"
             ),
-            .names = "{.col}"
-        ),
-        .groups = "drop"
+            .groups = "drop"
         ) %>%
         as.list()
     list(total_iss = n_IS, quant_totals = quant_totals)
@@ -3616,7 +3639,7 @@
 .per_pool_stats <- function(joined, quant_cols, pool_col) {
     ## Joined is the matrix already joined with metadata
     df_by_pool <- joined %>%
-        dplyr::group_by(.data[[pool_col]]) %>%
+        dplyr::group_by(dplyr::across(dplyr::all_of(pool_col))) %>%
         dplyr::summarise(dplyr::across(
             .cols = dplyr::all_of(quant_cols),
             .fns = list(
@@ -3658,7 +3681,7 @@
     input_summary <- .summary_input(x, quant_cols)
     missing_smpl <- if (!is.null(missing_ind)) {
         x[missing_ind, ] %>%
-            dplyr::group_by(.data[[pcr_col]]) %>%
+            dplyr::group_by(dplyr::across(dplyr::all_of(pcr_col))) %>%
             dplyr::summarise(
                 n_IS = dplyr::n(),
                 dplyr::across(
@@ -3800,11 +3823,12 @@
                     }
                 },
                 sharing_err = function(e) {
-                    rlang::inform(c(paste(
-                        "Unable to compute sharing:",
-                        conditionMessage(e)
-                    ),
-                    i = "Skipping"
+                    rlang::inform(c(
+                        paste(
+                            "Unable to compute sharing:",
+                            conditionMessage(e)
+                        ),
+                        i = "Skipping"
                     ))
                 }
             )
@@ -3842,7 +3866,7 @@
         return(NULL)
     }
     function_tbl <- function_tbl %>%
-        tidyr::nest(cols = .data$Column)
+        tidyr::nest(cols = dplyr::all_of("Column"))
     apply_function <- function(Function, Args, Output_colname, cols) {
         Function <- list(Function)
         Args <- list(Args)
@@ -3898,7 +3922,7 @@
     join_af_by) {
     cols_to_check <- c(group, key, value_cols, join_af_by)
     joint <- x %>%
-        dplyr::left_join(af, by = dplyr::all_of(join_af_by))
+        dplyr::left_join(af, by = join_af_by)
     if (any(!cols_to_check %in% colnames(joint))) {
         missing <- cols_to_check[!cols_to_check %in% colnames(joint)]
         rlang::abort(.missing_user_cols_error(missing))
@@ -4790,18 +4814,19 @@
     if (nrow(missing_genes) > 0 &
         getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         warn_miss <- c("Warning: missing genes in refgenes table",
-            i = paste(paste(
-                "A total of", nrow(missing_genes),
-                "genes",
-                "were found in the input data but not",
-                "in the refgene table. This may be caused by",
-                "a mismatch in the annotation phase of",
-                "the matrix. Here is a summary: "
-            ),
-            paste0(utils::capture.output({
-                print(missing_genes, n = Inf)
-            }), collapse = "\n"),
-            sep = "\n"
+            i = paste(
+                paste(
+                    "A total of", nrow(missing_genes),
+                    "genes",
+                    "were found in the input data but not",
+                    "in the refgene table. This may be caused by",
+                    "a mismatch in the annotation phase of",
+                    "the matrix. Here is a summary: "
+                ),
+                paste0(utils::capture.output({
+                    print(missing_genes, n = Inf)
+                }), collapse = "\n"),
+                sep = "\n"
             ),
             i = paste(
                 "NOTE: missing genes will be removed from",
@@ -5172,9 +5197,10 @@
     stopifnot(is.data.frame(metadata))
     stopifnot(is.character(key))
     if (!all(key %in% colnames(metadata))) {
-        rlang::abort(.missing_user_cols_error(key[!key %in%
-            colnames(metadata)]),
-        class = "missing_cols_key"
+        rlang::abort(
+            .missing_user_cols_error(key[!key %in%
+                colnames(metadata)]),
+            class = "missing_cols_key"
         )
     }
     stopifnot(is.numeric(outlier_p_value_threshold))
@@ -5189,10 +5215,11 @@
         stopifnot(is.numeric(min_samples_per_pool) &&
             length(min_samples_per_pool) == 1)
         if (!all(pool_col %in% colnames(metadata))) {
-            rlang::abort(.missing_user_cols_error(
-                pool_col[!pool_col %in% colnames(metadata)]
-            ),
-            class = "missing_cols_pool"
+            rlang::abort(
+                .missing_user_cols_error(
+                    pool_col[!pool_col %in% colnames(metadata)]
+                ),
+                class = "missing_cols_pool"
             )
         }
     }
@@ -5212,15 +5239,16 @@
                 value = flag_logic_new
             )
             if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-                flag_msg <- c(paste0(
-                    "'", symbol_name,
-                    "' has more elements than expected"
-                ),
-                i = paste(
-                    "The vector will be trimmed to consider",
-                    "the first", length(key) - 1, "elements",
-                    "only."
-                )
+                flag_msg <- c(
+                    paste0(
+                        "'", symbol_name,
+                        "' has more elements than expected"
+                    ),
+                    i = paste(
+                        "The vector will be trimmed to consider",
+                        "the first", length(key) - 1, "elements",
+                        "only."
+                    )
                 )
                 rlang::inform(flag_msg, class = "flag_logic_long")
             }
@@ -5232,16 +5260,17 @@
                 value = flag_logic_new
             )
             if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-                flag_logic_err <- c(paste(
-                    "'", symbol_name, "' has an incorrect",
-                    "amount of elements"
-                ),
-                paste(
-                    "You should provide 1 or",
-                    length(key) - 1,
-                    "logical operators"
-                ),
-                i = "Only the first parameter will be considered"
+                flag_logic_err <- c(
+                    paste(
+                        "'", symbol_name, "' has an incorrect",
+                        "amount of elements"
+                    ),
+                    paste(
+                        "You should provide 1 or",
+                        length(key) - 1,
+                        "logical operators"
+                    ),
+                    i = "Only the first parameter will be considered"
                 )
                 rlang::inform(flag_logic_err,
                     class = "flag_logic_short"
@@ -5590,7 +5619,7 @@
                 tissue_col,
                 timepoint_column
             )),
-            values_from = .data$bin,
+            values_from = dplyr::all_of("bin"),
             names_sort = TRUE,
             values_fill = 0
         ) %>%
@@ -5613,7 +5642,7 @@
                     tissue_col,
                     timepoint_column
                 )),
-                values_from = .data$bin,
+                values_from = dplyr::all_of("bin"),
                 names_sort = TRUE,
                 values_fill = 0
             ) %>%
@@ -6155,7 +6184,7 @@
                 get("group_id"), "(", group_name, ")"
             )]
             retrieved <- retrieved %>%
-                tidyr::unnest(.data$is) %>%
+                tidyr::unnest(dplyr::all_of("is")) %>%
                 tidyr::unite(
                     col = "int_id",
                     dplyr::all_of(mandatory_IS_vars())
@@ -6174,7 +6203,7 @@
         labels <- unlist(row[groups])
         retrieved <- lookup[eval(rlang::sym("group_id")) %in% labels]
         retrieved <- retrieved %>%
-            tidyr::unnest(.data$is) %>%
+            tidyr::unnest(dplyr::all_of("is")) %>%
             tidyr::unite(
                 col = "int_id",
                 dplyr::all_of(mandatory_IS_vars())
@@ -6207,35 +6236,60 @@
     temp <- .sh_obtain_lookup(key, df)
     # Check n and k
     if (nrow(temp) < n_comp) {
-        n_comp <- nrow(temp)
-        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-            warn_msg <- c("Number of requested comparisons too big",
-                i = paste(
-                    "The number of requested comparisons",
-                    "is greater than the number of groups.",
-                    "Reducing comparisons to the biggest value",
-                    "allowed"
+        if (nrow(temp) >= 2) {
+            n_comp <- nrow(temp)
+            if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
+                warn_msg <- c("Number of requested comparisons too big",
+                    i = paste(
+                        "The number of requested comparisons",
+                        "is greater than the number of groups.",
+                        "Reducing comparisons to the biggest value",
+                        "allowed"
+                    )
                 )
-            )
-            rlang::inform(warn_msg)
+                rlang::inform(warn_msg)
+            }
+        } else if (!include_self_comp) {
+            if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
+                warn_msg <- c("Number of requested comparisons too big",
+                    i = paste(
+                        "The number of requested comparisons",
+                        "is greater than the number of groups.",
+                        "There is only 1 group available in the input",
+                        "data frame, nothing to compare"
+                    )
+                )
+                rlang::inform(warn_msg)
+            }
+            return(NULL)
         }
     }
     if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform("Calculating combinations...")
     }
-    group_comb <- gtools::combinations(
-        n = length(temp$group_id),
-        r = n_comp,
-        v = temp$group_id,
-        set = TRUE,
-        repeats.allowed = FALSE
-    )
+    group_comb <- if (nrow(temp) == 1) {
+        gtools::combinations(
+            n = length(temp$group_id),
+            r = n_comp,
+            v = temp$group_id,
+            set = TRUE,
+            repeats.allowed = TRUE
+        )
+    } else {
+        gtools::combinations(
+            n = length(temp$group_id),
+            r = n_comp,
+            v = temp$group_id,
+            set = TRUE,
+            repeats.allowed = FALSE
+        )
+    }
     cols <- paste0("g", seq_len(ncol(group_comb)))
     colnames(group_comb) <- cols
     group_comb <- data.table::setDT(as.data.frame(group_comb))
     is_counts <- temp %>%
         dplyr::mutate(count = purrr::map_int(.data$is, ~ nrow(.x))) %>%
-        dplyr::select(-.data$is)
+        dplyr::select(-dplyr::all_of("is"))
     sharing_df <- if (!keep_genomic_coord) {
         group_comb[, c("shared") := .find_in_common(.SD,
             lookup_tbl = temp,
@@ -6252,7 +6306,7 @@
         ]
     }
 
-    if (include_self_comp) {
+    if (include_self_comp & nrow(temp) >= 2) {
         ## Calculate groups with equal components
         if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
             rlang::inform("Calculating self groups (requested)...")
@@ -6290,8 +6344,8 @@
             sharing_df <- sharing_df[
                 dplyr::rename(
                     is_counts,
-                    !!col := .data$group_id,
-                    !!count_col_name := .data$count
+                    !!col := dplyr::all_of("group_id"),
+                    !!count_col_name := dplyr::all_of("count")
                 ),
                 on = col,
                 nomatch = 0
@@ -6378,15 +6432,15 @@
     if (is_count || rel_sharing) {
         is_counts <- lookup %>%
             dplyr::mutate(count = purrr::map_int(.data$is, ~ nrow(.x))) %>%
-            dplyr::select(-.data$is)
+            dplyr::select(-dplyr::all_of("is"))
         ## Add counts -groups
         for (col in g_names) {
             count_col_name <- paste0("count_", col)
             sharing_df <- sharing_df[
                 dplyr::rename(
                     is_counts,
-                    !!col := .data$group_id,
-                    !!count_col_name := .data$count
+                    !!col := dplyr::all_of("group_id"),
+                    !!count_col_name := dplyr::all_of("count")
                 ),
                 on = col,
                 nomatch = 0
@@ -6471,8 +6525,8 @@
                 dplyr::mutate(!!count_col_name := purrr::map_int(
                     .data$is, ~ nrow(.x)
                 )) %>%
-                dplyr::select(-.data$is) %>%
-                dplyr::rename(!!y := .data$group_id)
+                dplyr::select(-dplyr::all_of("is")) %>%
+                dplyr::rename(!!y := dplyr::all_of("group_id"))
         })
         ## Add counts -groups
         for (col in names(dfs)) {
@@ -6558,8 +6612,8 @@
                 dplyr::mutate(!!count_col_name := purrr::map_int(
                     .data$is, ~ nrow(.x)
                 )) %>%
-                dplyr::select(-.data$is) %>%
-                dplyr::rename(!!y := .data$group_id)
+                dplyr::select(-dplyr::all_of("is")) %>%
+                dplyr::rename(!!y := dplyr::all_of("group_id"))
         })
         ## Add counts -groups
         for (col in names(keys)) {
@@ -6679,9 +6733,10 @@
                 ),
                 paste(
                     "Excluded: ",
-                    paste0(all_names[!all_names %in%
-                        common_names],
-                    collapse = ", "
+                    paste0(
+                        all_names[!all_names %in%
+                            common_names],
+                        collapse = ", "
                     )
                 )
             )

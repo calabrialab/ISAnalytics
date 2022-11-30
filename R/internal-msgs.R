@@ -132,11 +132,12 @@
 # - import_single_Vispa2Matrix
 # - .read_af
 .unsupported_comp_format_inf <- function() {
-    c(paste(
-        "Warning: compression format not",
-        "supported by fread"
-    ),
-    i = "File will be read using readr"
+    c(
+        paste(
+            "Warning: compression format not",
+            "supported by fread"
+        ),
+        i = "File will be read using readr"
     )
 }
 
@@ -185,11 +186,12 @@
 
 # @keywords internal
 .non_quant_cols_msg <- function(x) {
-    c(paste(
-        "Found numeric columns that are not quantification values -",
-        "these columns will be copied in all resulting matrices."
-    ),
-    i = paste0("Found: ", paste0(x, collapse = ", "))
+    c(
+        paste(
+            "Found numeric columns that are not quantification values -",
+            "these columns will be copied in all resulting matrices."
+        ),
+        i = paste0("Found: ", paste0(x, collapse = ", "))
     )
 }
 
@@ -223,11 +225,12 @@
 
 # @keywords internal
 .comparators_err <- function() {
-    paste(c(
-        "The parameter `comparators` must be a character vector",
-        "and in the allowed range: ", c("<", ">", "==", "!=", ">=", "<=")
-    ),
-    collapse = " "
+    paste(
+        c(
+            "The parameter `comparators` must be a character vector",
+            "and in the allowed range: ", c("<", ">", "==", "!=", ">=", "<=")
+        ),
+        collapse = " "
     )
 }
 
@@ -257,14 +260,15 @@
 # - compute_near_integrations
 # - cumulative_is
 .missing_user_cols_error <- function(missing_cols) {
-    c(paste(
-        "Some or all of the input column names were not found",
-        "in the data frame"
-    ),
-    i = paste(
-        "Columns missing:",
-        paste0(missing_cols, collapse = ", ")
-    )
+    c(
+        paste(
+            "Some or all of the input column names were not found",
+            "in the data frame"
+        ),
+        i = paste(
+            "Columns missing:",
+            paste0(missing_cols, collapse = ", ")
+        )
     )
 }
 
@@ -273,14 +277,15 @@
 # USED IN:
 # - sample_statistics
 .missing_user_cols_meta_error <- function(missing_cols) {
-    c(paste(
-        "Some or all of the input column names were not found",
-        "in metadata"
-    ),
-    i = paste(
-        "Columns missing:",
-        paste0(missing_cols, collapse = ", ")
-    )
+    c(
+        paste(
+            "Some or all of the input column names were not found",
+            "in metadata"
+        ),
+        i = paste(
+            "Columns missing:",
+            paste0(missing_cols, collapse = ", ")
+        )
     )
 }
 

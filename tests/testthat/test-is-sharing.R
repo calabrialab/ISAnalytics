@@ -4,7 +4,6 @@ withr::local_options(list(ISAnalytics.verbose = FALSE))
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
-withr::local_options(ISAnalytics.verbose = FALSE)
 test_sharing_input <- tibble::tribble(
     ~chr, ~integration_locus, ~strand, ~SubjectID, ~CellMarker, ~Tissue,
     "1", 10032, "+", "S1", "CD34", "BM",
@@ -258,6 +257,46 @@ test_that(".sharing_singledf_single_key ok", {
         venn = TRUE
     )
     expect_true(nrow(sh) == 36 * 2 + 9 & "truth_tbl_venn" %in% colnames(sh))
+})
+
+test_that(".sharing_singledf_single_key works with 1 group", {
+    sub <- test_sharing_input %>%
+        dplyr::filter(.data$SubjectID == "S1")
+    key <- "SubjectID"
+    sh <- .sharing_singledf_single_key(
+        df = sub,
+        key = key,
+        minimal = FALSE,
+        n_comp = 2,
+        is_count = TRUE,
+        rel_sharing = TRUE,
+        include_self_comp = TRUE,
+        keep_genomic_coord = TRUE,
+        venn = TRUE
+    )
+    expect_true(nrow(sh) == 1)
+    expect_equal(sh$g1, "S1")
+    expect_equal(sh$g2, "S1")
+    expect_equal(sh$shared, 6)
+    expect_equal(sh$count_g1, 6)
+    expect_equal(sh$count_g2, 6)
+    expect_equal(sh$count_union, 6)
+    expect_equal(sh$on_g1, 100)
+    expect_equal(sh$on_g2, 100)
+    expect_equal(sh$on_union, 100)
+
+    sh_1 <- .sharing_singledf_single_key(
+        df = sub,
+        key = key,
+        minimal = FALSE,
+        n_comp = 2,
+        is_count = TRUE,
+        rel_sharing = TRUE,
+        include_self_comp = FALSE,
+        keep_genomic_coord = TRUE,
+        venn = TRUE
+    )
+    expect_null(sh_1)
 })
 
 #------------------------------------------------------------------------------#

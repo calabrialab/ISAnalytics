@@ -73,7 +73,6 @@ remove_collisions <- function(x,
     ),
     report_path = default_report_path(),
     max_workers = NULL) {
-
     # Check basic parameter correctness
     association_file <- data.table::setDT(association_file)
     ### --- For matrices

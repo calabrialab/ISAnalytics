@@ -1478,10 +1478,11 @@ top_abund_tableGrob <- function(df,
             ), "%"))
     } else {
         top <- top %>%
-            dplyr::mutate(Ab = format(round(.data$Ab,
-                digits = digits
-            ),
-            nsmall = digits
+            dplyr::mutate(Ab = format(
+                round(.data$Ab,
+                    digits = digits
+                ),
+                nsmall = digits
             ))
     }
     if (!is.null(color_map)) {
@@ -1629,12 +1630,12 @@ sharing_heatmap <- function(sharing_df,
     ### --- Absolute sharing
     heatmap_abs <- ggplot2::ggplot(
         sharing_df,
-        ggplot2::aes_(
-            x = as.name(show_on_x[1]),
-            y = as.name(show_on_y[1]),
-            fill = as.name(absolute_sharing_col[1]),
-            alpha = as.name(absolute_sharing_col[1]),
-            label = as.name(absolute_sharing_col[1])
+        ggplot2::aes(
+            x = .data[[show_on_x[1]]],
+            y = .data[[show_on_y[1]]],
+            fill = .data[[absolute_sharing_col[1]]],
+            alpha = .data[[absolute_sharing_col[1]]],
+            label = .data[[absolute_sharing_col[1]]]
         )
     ) +
         ggplot2::geom_raster() +
@@ -1672,11 +1673,11 @@ sharing_heatmap <- function(sharing_df,
         plot_rel_heat <- function(col, df) {
             plot <- ggplot2::ggplot(
                 df,
-                ggplot2::aes_(
-                    x = as.name(show_on_x[1]),
-                    y = as.name(show_on_y[1]),
-                    fill = as.name(col),
-                    alpha = as.name(col)
+                ggplot2::aes(
+                    x = .data[[show_on_x[1]]],
+                    y = .data[[show_on_y[1]]],
+                    fill = .data[[col]],
+                    alpha = .data[[col]]
                 )
             ) +
                 ggplot2::geom_raster() +
@@ -1706,22 +1707,25 @@ sharing_heatmap <- function(sharing_df,
 
             if (show_perc_symbol_rel[1]) {
                 plot <- plot +
-                    ggplot2::geom_text(ggplot2::aes(
-                        alpha = 1,
-                        label = scales::percent(..fill..,
-                            scale = 1,
-                            accuracy = 0.1
-                        )
-                    ),
-                    size = 3
+                    ggplot2::geom_text(
+                        ggplot2::aes(
+                            alpha = 1,
+                            label = scales::percent(
+                                .data[[col]],
+                                scale = 1,
+                                accuracy = 0.1
+                            )
+                        ),
+                        size = 3
                     )
             } else {
                 plot <- plot +
-                    ggplot2::geom_text(ggplot2::aes(
-                        alpha = 1,
-                        label = ..fill..
-                    ),
-                    size = 3
+                    ggplot2::geom_text(
+                        ggplot2::aes(
+                            alpha = 1,
+                            label = .data[[col]]
+                        ),
+                        size = 3
                     )
             }
             plot

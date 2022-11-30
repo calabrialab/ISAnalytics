@@ -58,7 +58,6 @@ inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAn
 ```
 
 ```{r child=inst_chunk_path}
-
 ```
 
 # Shared integration sites
@@ -86,8 +85,9 @@ sites.
 ```{r}
 ## Aggregation by standard key
 agg <- aggregate_values_by_key(integration_matrices,
-                               association_file,
-                               value_cols = c("seqCount", "fragmentEstimate"))
+    association_file,
+    value_cols = c("seqCount", "fragmentEstimate")
+)
 agg <- agg %>% dplyr::filter(TimePoint %in% c("0030", "0060"))
 ```
 
@@ -107,15 +107,18 @@ to user needs.
 ## SCENARIO 1: single input data frame and single grouping key
 
 ```{r}
-sharing_1 <- is_sharing(agg, 
-                        group_key = c("SubjectID", "CellMarker", 
-                                      "Tissue", "TimePoint"),
-                        n_comp = 2,
-                        is_count = TRUE,
-                        relative_is_sharing = TRUE,
-                        minimal = TRUE,
-                        include_self_comp = FALSE, 
-                        keep_genomic_coord = TRUE)
+sharing_1 <- is_sharing(agg,
+    group_key = c(
+        "SubjectID", "CellMarker",
+        "Tissue", "TimePoint"
+    ),
+    n_comp = 2,
+    is_count = TRUE,
+    relative_is_sharing = TRUE,
+    minimal = TRUE,
+    include_self_comp = FALSE,
+    keep_genomic_coord = TRUE
+)
 sharing_1
 ```
 
@@ -148,15 +151,18 @@ shared integration sites as a separate table
 ### Changing the number of comparisons
 
 ```{r}
-sharing_1_a <- is_sharing(agg, 
-                        group_key = c("SubjectID", "CellMarker", 
-                                      "Tissue", "TimePoint"),
-                        n_comp = 3,
-                        is_count = TRUE,
-                        relative_is_sharing = TRUE,
-                        minimal = TRUE,
-                        include_self_comp = FALSE, 
-                        keep_genomic_coord = TRUE)
+sharing_1_a <- is_sharing(agg,
+    group_key = c(
+        "SubjectID", "CellMarker",
+        "Tissue", "TimePoint"
+    ),
+    n_comp = 3,
+    is_count = TRUE,
+    relative_is_sharing = TRUE,
+    minimal = TRUE,
+    include_self_comp = FALSE,
+    keep_genomic_coord = TRUE
+)
 sharing_1_a
 ```
 
@@ -177,13 +183,16 @@ plot results as a heatmap.
 
 ```{r}
 sharing_1_b <- is_sharing(agg,
-                          group_key = c("SubjectID", "CellMarker", 
-                                      "Tissue", "TimePoint"),
-                          n_comp = 2,
-                          is_count = TRUE,
-                          relative_is_sharing = TRUE,
-                          minimal = FALSE,
-                          include_self_comp = TRUE)
+    group_key = c(
+        "SubjectID", "CellMarker",
+        "Tissue", "TimePoint"
+    ),
+    n_comp = 2,
+    is_count = TRUE,
+    relative_is_sharing = TRUE,
+    minimal = FALSE,
+    include_self_comp = TRUE
+)
 sharing_1_b
 heatmaps <- sharing_heatmap(sharing_1_b)
 ```
@@ -213,12 +222,15 @@ the argument `group_keys`.
 
 ```{r}
 sharing_2 <- is_sharing(agg,
-                        group_keys = list(
-                          g1 = c("SubjectID", "CellMarker", 
-                                 "Tissue", "TimePoint"),
-                          g2 = c("SubjectID", "CellMarker"),
-                          g3 = c("CellMarker", "Tissue")
-                          ))
+    group_keys = list(
+        g1 = c(
+            "SubjectID", "CellMarker",
+            "Tissue", "TimePoint"
+        ),
+        g2 = c("SubjectID", "CellMarker"),
+        g3 = c("CellMarker", "Tissue")
+    )
+)
 sharing_2
 ```
 
@@ -246,17 +258,24 @@ relevant data in 2 separated tables and then proceed by calling the function.
 
 ```{r}
 first_sample <- agg %>%
-  dplyr::filter(SubjectID == "PT001", CellMarker == "MNC", Tissue == "BM", 
-         TimePoint == "0030")
+    dplyr::filter(
+        SubjectID == "PT001", CellMarker == "MNC", Tissue == "BM",
+        TimePoint == "0030"
+    )
 second_sample <- agg %>%
-  dplyr::filter(SubjectID == "PT001", CellMarker == "MNC", Tissue == "BM", 
-         TimePoint == "0060")
+    dplyr::filter(
+        SubjectID == "PT001", CellMarker == "MNC", Tissue == "BM",
+        TimePoint == "0060"
+    )
 sharing_3 <- is_sharing(first_sample, second_sample,
-                        group_key = c("SubjectID", "CellMarker", 
-                                      "Tissue", "TimePoint"),
-                        is_count = TRUE,
-                        relative_is_sharing = TRUE,
-                        minimal = TRUE)
+    group_key = c(
+        "SubjectID", "CellMarker",
+        "Tissue", "TimePoint"
+    ),
+    is_count = TRUE,
+    relative_is_sharing = TRUE,
+    minimal = TRUE
+)
 sharing_3
 ```
 
@@ -273,15 +292,17 @@ so on).
 
 ```{r}
 df1 <- agg %>%
-  dplyr::filter(TimePoint == "0030")
+    dplyr::filter(TimePoint == "0030")
 df2 <- agg %>%
-  dplyr::filter(TimePoint == "0060")
+    dplyr::filter(TimePoint == "0060")
 df3 <- agg %>%
-  dplyr::filter(Tissue == "BM")
+    dplyr::filter(Tissue == "BM")
 
-keys <- list(g1 = c("SubjectID", "CellMarker", "Tissue"),
-             g2 = c("SubjectID", "Tissue"),
-             g3 = c("SubjectID", "CellMarker", "Tissue"))
+keys <- list(
+    g1 = c("SubjectID", "CellMarker", "Tissue"),
+    g2 = c("SubjectID", "Tissue"),
+    g3 = c("SubjectID", "CellMarker", "Tissue")
+)
 
 sharing_4 <- is_sharing(df1, df2, df3, group_keys = keys)
 sharing_4
@@ -300,12 +321,15 @@ euler diagrams. ISAnalytics has a fast way to do that through the functions
 
 ```{r}
 sharing_5 <- is_sharing(agg,
-                        group_keys = list(
-                          g1 = c("SubjectID", "CellMarker", 
-                                 "Tissue", "TimePoint"),
-                          g2 = c("SubjectID", "CellMarker"),
-                          g3 = c("CellMarker", "Tissue")
-                          ), table_for_venn = TRUE)
+    group_keys = list(
+        g1 = c(
+            "SubjectID", "CellMarker",
+            "Tissue", "TimePoint"
+        ),
+        g2 = c("SubjectID", "CellMarker"),
+        g3 = c("CellMarker", "Tissue")
+    ), table_for_venn = TRUE
+)
 sharing_5
 ```
 

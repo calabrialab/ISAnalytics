@@ -45,14 +45,18 @@ bib <- c(
     sessioninfo = citation("sessioninfo")[1],
     testthat = citation("testthat")[1],
     ISAnalytics = citation("ISAnalytics")[1],
-    VISPA2 = BibEntry(bibtype = "Article", 
-     title = paste("VISPA2: a scalable pipeline for", 
-                   "high-throughput identification and",
-                   "annotation of vector integration sites"),
-     author = "Giulio Spinozzi, Andrea Calabria, Stefano Brasca", 
-     journaltitle = "BMC Bioinformatics", 
-     date = "2017-11-25",
-     doi = "10.1186/s12859-017-1937-9")
+    VISPA2 = BibEntry(
+        bibtype = "Article",
+        title = paste(
+            "VISPA2: a scalable pipeline for",
+            "high-throughput identification and",
+            "annotation of vector integration sites"
+        ),
+        author = "Giulio Spinozzi, Andrea Calabria, Stefano Brasca",
+        journaltitle = "BMC Bioinformatics",
+        date = "2017-11-25",
+        doi = "10.1186/s12859-017-1937-9"
+    )
 )
 
 library(ISAnalytics)
@@ -73,7 +77,6 @@ inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAn
 ```
 
 ```{r child=inst_chunk_path}
-
 ```
 
 # Setting up your workflow with dynamic vars
@@ -164,24 +167,34 @@ category.
 
 ```{r echo=FALSE}
 all_tags <- available_tags()
-all_tags[, needed_in := purrr::map_chr(needed_in,
-                                       ~ paste0(.x, collapse = ", "))]
-mand_tags <- all_tags[eval(rlang::sym("dyn_vars_tbl")) == "mand_vars", 
-                      mget(c("tag", "needed_in", "description"))]
-annot_tags <- all_tags[eval(rlang::sym("dyn_vars_tbl")) == "annot_vars", 
-                      mget(c("tag", "needed_in", "description"))]
-af_tags <- all_tags[eval(rlang::sym("dyn_vars_tbl")) == "af_vars", 
-                      mget(c("tag", "needed_in", "description"))]
-iss_tags <- all_tags[eval(rlang::sym("dyn_vars_tbl")) == "iss_vars", 
-                      mget(c("tag", "needed_in", "description"))]
+all_tags[, needed_in := purrr::map_chr(
+    needed_in,
+    ~ paste0(.x, collapse = ", ")
+)]
+mand_tags <- all_tags[
+    eval(rlang::sym("dyn_vars_tbl")) == "mand_vars",
+    mget(c("tag", "needed_in", "description"))
+]
+annot_tags <- all_tags[
+    eval(rlang::sym("dyn_vars_tbl")) == "annot_vars",
+    mget(c("tag", "needed_in", "description"))
+]
+af_tags <- all_tags[
+    eval(rlang::sym("dyn_vars_tbl")) == "af_vars",
+    mget(c("tag", "needed_in", "description"))
+]
+iss_tags <- all_tags[
+    eval(rlang::sym("dyn_vars_tbl")) == "iss_vars",
+    mget(c("tag", "needed_in", "description"))
+]
 ```
 
 ```{r echo=FALSE}
 datatable(
-  mand_tags,
-  class = "stripe",
-  options = list(dom = 't'), 
-  rownames = FALSE
+    mand_tags,
+    class = "stripe",
+    options = list(dom = "t"),
+    rownames = FALSE
 )
 ```
 
@@ -196,10 +209,10 @@ always check the documentation if you have doubts.
 
 ```{r echo=FALSE}
 datatable(
-  annot_tags,
-  class = "stripe",
-  options = list(dom = 't'), 
-  rownames = FALSE
+    annot_tags,
+    class = "stripe",
+    options = list(dom = "t"),
+    rownames = FALSE
 )
 ```
 
@@ -212,10 +225,10 @@ your choice or skip the steps that require annotation.
 
 ```{r echo=FALSE}
 datatable(
-  af_tags,
-  class = "stripe",
-  options = list(dom = 't'), 
-  rownames = FALSE
+    af_tags,
+    class = "stripe",
+    options = list(dom = "t"),
+    rownames = FALSE
 )
 ```
 
@@ -226,10 +239,10 @@ exist for potential new features that will be added in the future.
 
 ```{r echo=FALSE}
 datatable(
-  iss_tags,
-  class = "stripe",
-  options = list(dom = 't'), 
-  rownames = FALSE
+    iss_tags,
+    class = "stripe",
+    options = list(dom = "t"),
+    rownames = FALSE
 )
 ```
 
@@ -273,13 +286,13 @@ table like this:
 
 ```{r}
 new_mand_vars <- tibble::tribble(
-  ~names, ~types, ~transform, ~flag, ~tag,
-  "chrom", "char", ~stringr::str_replace_all(.x, "chr", ""), "required",
-  "chromosome",
-  "position", "int", NULL, "required", "locus",
-  "strand", "char", NULL, "required", "is_strand",
-  "gap", "int", NULL, "required", NA_character_,
-  "junction", "int", NULL, "required", NA_character_
+    ~names, ~types, ~transform, ~flag, ~tag,
+    "chrom", "char", ~ stringr::str_replace_all(.x, "chr", ""), "required",
+    "chromosome",
+    "position", "int", NULL, "required", "locus",
+    "strand", "char", NULL, "required", "is_strand",
+    "gap", "int", NULL, "required", NA_character_,
+    "junction", "int", NULL, "required", NA_character_
 )
 ```
 
@@ -414,11 +427,11 @@ of the corresponding integration site
 
 ```{r echo=FALSE}
 sample_sparse_matrix <- tibble::tribble(
-  ~ chr, ~ integration_locus, ~ strand, ~ GeneName, ~GeneStrand, 
-  ~ exp1, ~ exp2, ~ exp3,
-  "1", 12324, "+", "NFATC3", "+", 4553,5345,NA_integer_,
-  "6", 657532, "+", "LOC100507487", "+", 76,545,5,
-  "7", 657532, "+", "EDIL3", "-", NA_integer_,56,NA_integer_,
+    ~chr, ~integration_locus, ~strand, ~GeneName, ~GeneStrand,
+    ~exp1, ~exp2, ~exp3,
+    "1", 12324, "+", "NFATC3", "+", 4553, 5345, NA_integer_,
+    "6", 657532, "+", "LOC100507487", "+", 76, 545, 5,
+    "7", 657532, "+", "EDIL3", "-", NA_integer_, 56, NA_integer_,
 )
 print(sample_sparse_matrix, width = Inf)
 ```
@@ -452,7 +465,7 @@ HTML report.
 ```{r}
 fs_path <- generate_default_folder_structure()
 withr::with_options(list(ISAnalytics.reports = FALSE), code = {
-  af <- import_association_file(fs_path$af, root = fs_path$root)
+    af <- import_association_file(fs_path$af, root = fs_path$root)
 })
 ```
 
@@ -523,7 +536,7 @@ To do that, you can use `import_VISPA2_stats`:
 ```{r results='hide'}
 vispa_stats <- import_Vispa2_stats(
     association_file = af,
-    join_with_af = FALSE, 
+    join_with_af = FALSE,
     report_path = NULL
 )
 ```
@@ -552,11 +565,13 @@ This function reads the file and converts it into a tidy structure: several
 different formats can be read, since you can specify the column separator.
 
 ```{r message=FALSE, results='hide'}
-matrix_path <- fs::path(fs_path$root,
-                        "PJ01",
-                        "quantification",
-                        "POOL01-1",
-                        "PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz")
+matrix_path <- fs::path(
+    fs_path$root,
+    "PJ01",
+    "quantification",
+    "POOL01-1",
+    "PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz"
+)
 matrix <- import_single_Vispa2Matrix(matrix_path)
 ```
 
@@ -762,15 +777,17 @@ count > 1 are considered collisions.
 ```{r echo=FALSE}
 library(ISAnalytics)
 ex_coll <- tibble::tribble(
-  ~ chr, ~ integration_locus, ~ strand, ~ seqCount, ~ CompleteAmplificationID,
-  ~ SubjectID, ~ ProjectID, 
-  "1", 123454,  "+", 653, "SAMPLE1", "SUBJ01", "PJ01",
-  "1", 123454, "+", 456, "SAMPLE2", "SUBJ02", "PJ01"
+    ~chr, ~integration_locus, ~strand, ~seqCount, ~CompleteAmplificationID,
+    ~SubjectID, ~ProjectID,
+    "1", 123454, "+", 653, "SAMPLE1", "SUBJ01", "PJ01",
+    "1", 123454, "+", 456, "SAMPLE2", "SUBJ02", "PJ01"
 )
-knitr::kable(ex_coll, caption = paste("Example of collisions: the same",
-                                      "integration (1, 123454, +) is found",
-                                      "in 2 different independent samples",
-                                      "((SUBJ01, PJ01) & (SUBJ02, PJ01))"))
+knitr::kable(ex_coll, caption = paste(
+    "Example of collisions: the same",
+    "integration (1, 123454, +) is found",
+    "in 2 different independent samples",
+    "((SUBJ01, PJ01) & (SUBJ02, PJ01))"
+))
 ```
 
 #### Re-assign vs remove
@@ -804,19 +821,25 @@ is simply removed from the matrix.
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 ## Multi quantification matrix
-no_coll <- remove_collisions(x = integration_matrices,
-                             association_file = association_file,
-                             report_path = NULL)
+no_coll <- remove_collisions(
+    x = integration_matrices,
+    association_file = association_file,
+    report_path = NULL
+)
 ## Matrix list
 separated <- separate_quant_matrices(integration_matrices)
-no_coll_list <- remove_collisions(x = separated,
-                             association_file = association_file,
-                             report_path = NULL)
+no_coll_list <- remove_collisions(
+    x = separated,
+    association_file = association_file,
+    report_path = NULL
+)
 ## Only sequence count
-no_coll_single <- remove_collisions(x = separated$seqCount,
-                             association_file = association_file,
-                             quant_cols = c(seqCount = "Value"),
-                             report_path = NULL)
+no_coll_single <- remove_collisions(
+    x = separated$seqCount,
+    association_file = association_file,
+    quant_cols = c(seqCount = "Value"),
+    report_path = NULL
+)
 ```
 
 Important notes on the association file:
@@ -849,8 +872,8 @@ to realign.
 
 ```{r realign}
 other_realigned <- realign_after_collisions(
-  sc_matrix = no_coll_single,
-  other_matrices = list(fragmentEstimate = separated$fragmentEstimate)
+    sc_matrix = no_coll_single,
+    other_matrices = list(fragmentEstimate = separated$fragmentEstimate)
 )
 ```
 
@@ -919,9 +942,9 @@ columns contained in the association file that are related to the samples.
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
-  x = integration_matrices, 
-  association_file = association_file,
-  value_cols = c("seqCount", "fragmentEstimate")
+    x = integration_matrices,
+    association_file = association_file,
+    value_cols = c("seqCount", "fragmentEstimate")
 )
 ```
 
