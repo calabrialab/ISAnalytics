@@ -155,9 +155,10 @@ cat("#### Parameters and options chosen\n\n", choice_msg)
 ```{r eval=!is.null(params$removed_nas)}
 na_df <- params$removed_nas %>%
             dplyr::select(
-                dplyr::all_of(params$pool_col),
-                .data[[params$dyn_vars$pcr_id]],
-                dplyr::all_of(params$key)
+                dplyr::all_of(c(params$pool_col,
+                                params$dyn_vars$pcr_id,
+                                params$key
+                                ))
             )
 datatable(
   na_df,
@@ -226,7 +227,7 @@ Row2
 cols_to_factor <- c(params$pool_col, params$dyn_vars$project_id)
 datatable(
   params$flag_df %>%
-    dplyr::mutate(dplyr::across(cols_to_factor,
+    dplyr::mutate(dplyr::across(dplyr::all_of(cols_to_factor),
                                 as.factor)),
   rownames = FALSE,
   filter = 'top',

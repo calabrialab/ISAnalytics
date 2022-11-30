@@ -623,15 +623,16 @@ transform_columns <- function(df, transf_list) {
                     string_list <- paste(names(transf_list), transf_list,
                         sep = " = ", collapse = "; "
                     )
-                    err_msg <- c(paste(
-                        "Encountered a problem while applying transformations",
-                        "to columns. Skipping this."
-                    ),
-                    i = paste(
-                        "Check the correctness of your input,",
-                        "see the documentation"
-                    ),
-                    i = paste("Your input: ", string_list)
+                    err_msg <- c(
+                        paste(
+                            "Encountered a problem while applying transformations",
+                            "to columns. Skipping this."
+                        ),
+                        i = paste(
+                            "Check the correctness of your input,",
+                            "see the documentation"
+                        ),
+                        i = paste("Your input: ", string_list)
                     )
                     if (getOption("ISAnalytics.verbose", TRUE)) {
                         rlang::inform(err_msg, class = "skip_col_transform")
@@ -722,7 +723,7 @@ comparison_matrix <- function(x,
     )
     x <- purrr::map2(x, names(x), function(matrix, quant_type) {
         quant_name <- param_names[names(param_names) %in% quant_type]
-        matrix %>% dplyr::rename(!!quant_name := .data[[value_col_name]])
+        matrix %>% dplyr::rename(!!quant_name := dplyr::all_of(value_col_name))
     })
     result <- purrr::reduce(x, function(matrix1, matrix2) {
         commoncols <- dplyr::intersect(colnames(matrix1), colnames(matrix2))
@@ -817,7 +818,7 @@ separate_quant_matrices <- function(x,
     separated <- purrr::map(num_cols, function(quant) {
         x %>%
             dplyr::select(dplyr::all_of(c(key, to_copy, quant))) %>%
-            dplyr::rename(Value = .data[[quant]])
+            dplyr::rename(Value = dplyr::all_of(quant))
     }) %>% purrr::set_names(names(num_cols))
     separated
 }
@@ -947,10 +948,11 @@ generate_Vispa2_launch_AF <- function(association_file,
                 .data[[pool_col]]
             )) %>%
             dplyr::select(
-                .data[[tag_id_col]], .data$TagID2, .data[[tissue_col]],
-                .data[[tp_col]], .data[[fusion_col]], .data[[pcr_id_col]],
-                .data[[cm_col]], .data[[proj_col]], .data[[vec_id_col]],
-                .data[[pool_col]], .data$PoolName
+                dplyr::all_of(c(
+                    tag_id_col, "TagID2", tissue_col, tp_col, fusion_col,
+                    pcr_id_col, cm_col, proj_col, vec_id_col, pool_col,
+                    "PoolName"
+                ))
             )
     }
     files <- purrr::map2(project, pool, process_proj_pool) %>%
@@ -1048,8 +1050,8 @@ as_sparse_matrix <- function(x,
                         c(id_cols, .x)
                     )) %>%
                     tidyr::pivot_wider(
-                        names_from = key,
-                        values_from = .data[[.x]]
+                        names_from = dplyr::all_of(key),
+                        values_from = dplyr::all_of(.x)
                     )
                 return(pivoted)
             }

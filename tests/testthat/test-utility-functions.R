@@ -42,7 +42,7 @@ test_that(".process_af_for_gen works for custom af", {
     expect_equal(af_out, af_custom)
 
     af_custom_err <- af_custom %>%
-        dplyr::select(-.data$ProjectID)
+        dplyr::select(-dplyr::all_of(c("ProjectID")))
     expect_error(
         {
             res <- .process_af_for_gen(af = af_custom_err)
@@ -461,7 +461,8 @@ test_that("generate_Vispa2_launch_AF stops if lengths of projects and pool is
 })
 
 test_that("generate_Vispa2_launch_AF stops if af is malformed", {
-    af <- association_file %>% dplyr::select(-c(.data$ProjectID))
+    af <- association_file %>%
+        dplyr::select(-dplyr::all_of(c("ProjectID")))
     expect_error({
         generate_Vispa2_launch_AF(af, c("PJ01"), c("POOL01"), "test")
     })

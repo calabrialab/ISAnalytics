@@ -776,7 +776,7 @@ gene_frequency_fisher <- function(cis_x,
                 to_exclude_from_test = purrr::pmap(., test_exclude)
             ) %>%
             dplyr::filter(.data$to_exclude_from_test == FALSE) %>%
-            dplyr::select(-.data$to_exclude_from_test)
+            dplyr::select(-dplyr::all_of("to_exclude_from_test"))
         if (nrow(merged) == 0) {
             if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                 msg <- c("Data frame empty after filtering",
@@ -914,11 +914,12 @@ sample_statistics <- function(x,
 
     result <- x %>%
         dplyr::group_by(dplyr::across(dplyr::all_of(sample_key))) %>%
-        dplyr::summarise(dplyr::across(
-            .cols = dplyr::all_of(value_columns),
-            .fns = functions
-        ),
-        .groups = "drop"
+        dplyr::summarise(
+            dplyr::across(
+                .cols = dplyr::all_of(value_columns),
+                .fns = functions
+            ),
+            .groups = "drop"
         )
 
     ## Flatten nested data frames
@@ -1842,16 +1843,14 @@ iss_source <- function(reference,
             shared,
             ~ .x %>%
                 dplyr::select(
-                    -.data$count_g1, -.data$count_g2,
-                    -.data$count_union
+                    -dplyr::all_of(c("count_g1", "count_g2", "count_union"))
                 ) %>%
-                tidyr::unnest(.data$is_coord, keep_empty = TRUE) %>%
+                tidyr::unnest(dplyr::all_of("is_coord"), keep_empty = TRUE) %>%
                 dplyr::mutate(sharing_perc = dplyr::if_else(
                     shared == 0, 0, .data$on_g2 / .data$shared
                 )) %>%
                 dplyr::select(
-                    -.data$shared, -.data$on_g1, -.data$on_g2,
-                    -.data$on_union
+                    -dplyr::all_of(c("shared", "on_g1", "on_g2", "on_union"))
                 )
         )
     } else {
@@ -1864,18 +1863,16 @@ iss_source <- function(reference,
         )
         shared <- shared %>%
             dplyr::select(
-                -.data$count_g1, -.data$count_g2,
-                -.data$count_union
+                -dplyr::all_of(c("count_g1", "count_g2", "count_union"))
             ) %>%
-            tidyr::unnest(.data$is_coord, keep_empty = TRUE) %>%
+            tidyr::unnest(dplyr::all_of("is_coord"), keep_empty = TRUE) %>%
             dplyr::mutate(sharing_perc = dplyr::if_else(shared == 0,
                 0,
                 .data$on_g2 /
                     .data$shared
             )) %>%
             dplyr::select(
-                -.data$shared, -.data$on_g1, -.data$on_g2,
-                -.data$on_union
+                -dplyr::all_of(c("shared", "on_g1", "on_g2", "on_union"))
             )
     }
 

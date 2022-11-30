@@ -170,10 +170,12 @@ HSC_population_size_estimate <- function(x,
         rlang::abort(.agg_key_not_found_err("metadata", aggregation_key))
     }
     ## Check actual aggregation
-    distinct_agg_groups <- dplyr::distinct(
-        metadata,
-        dplyr::across(dplyr::all_of(aggregation_key))
-    )
+    distinct_agg_groups <- metadata %>%
+        dplyr::distinct(
+            dplyr::across(
+                dplyr::all_of(aggregation_key)
+            )
+        )
     meta_is_aggregated <- if (nrow(metadata) == nrow(distinct_agg_groups)) {
         TRUE
     } else {
@@ -210,7 +212,7 @@ HSC_population_size_estimate <- function(x,
             rlang::inform(is_msg)
         }
         numIs <- x %>%
-            dplyr::left_join(metadata, by = dplyr::all_of(aggregation_key)) %>%
+            dplyr::left_join(metadata, by = aggregation_key) %>%
             dplyr::group_by(dplyr::across(dplyr::all_of(aggregation_key))) %>%
             dplyr::distinct(dplyr::across(
                 dplyr::all_of(mandatory_IS_vars())

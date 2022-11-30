@@ -243,14 +243,15 @@ import_association_file <- function(path,
         lifecycle::deprecate_warn(
             when = "1.5.4",
             what = "import_association_file(tp_padding)",
-            details = c(paste(
-                "The argument is now deprecated in favor of custom",
-                "column transformations"
-            ),
-            i = paste(
-                "See the documentation of `transform_columns`",
-                "or browse the package vignettes for more details"
-            )
+            details = c(
+                paste(
+                    "The argument is now deprecated in favor of custom",
+                    "column transformations"
+                ),
+                i = paste(
+                    "See the documentation of `transform_columns`",
+                    "or browse the package vignettes for more details"
+                )
             )
         )
     }

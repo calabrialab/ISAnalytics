@@ -168,7 +168,7 @@ test_that(paste(func_name[1], "produces expected output"), {
 
 
 test_that(paste(func_name[1], "produces output missing NumIS"), {
-    mod_meta <- test_meta %>% dplyr::select(-.data$NumIS)
+    mod_meta <- test_meta %>% dplyr::select(-dplyr::all_of("NumIS"))
     popul <- HSC_population_size_estimate(
         x = test_data,
         metadata = mod_meta,

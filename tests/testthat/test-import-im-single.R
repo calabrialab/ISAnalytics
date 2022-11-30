@@ -19,8 +19,8 @@ readr::write_tsv(x = sample_df, na = "", file = sample_df_path)
 
 sample_df_old <- tidyr::unite(sample_df,
     col = "IS_genomicID",
-    .data$chr, .data$integration_locus,
-    .data$strand, sep = "_", remove = FALSE
+    dplyr::all_of(c("chr", "integration_locus", "strand")),
+    sep = "_", remove = FALSE
 )
 
 sample_df_old_path <- withr::local_tempfile(fileext = "tsv.gz")
@@ -28,8 +28,8 @@ readr::write_tsv(x = sample_df_old, na = "", file = sample_df_old_path)
 
 sample_df_old_2 <- tidyr::unite(sample_df,
     col = "IS_genomicID",
-    .data$chr, .data$integration_locus,
-    .data$strand, sep = "_", remove = TRUE
+    dplyr::all_of(c("chr", "integration_locus", "strand")),
+    sep = "_", remove = TRUE
 )
 sample_df_old_2_path <- withr::local_tempfile(fileext = "tsv.gz")
 readr::write_tsv(x = sample_df_old_2, na = "", file = sample_df_old_2_path)

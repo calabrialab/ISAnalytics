@@ -185,13 +185,14 @@ example_df_multi <- function(ProjectID,
     )
     t <- t %>%
         dplyr::mutate(
-            CompleteAmplificationID = paste(.data$ProjectID,
-                .data$PoolID,
-                .data$SubjectID,
-                .data$ReplicateNumber,
+            CompleteAmplificationID = paste(
+                .data[["ProjectID"]],
+                .data[["PoolID"]],
+                .data[["SubjectID"]],
+                .data[["ReplicateNumber"]],
                 sep = "_"
             ),
-            .before = .data$seqCount
+            .before = seqCount
         )
     t <- data.table::setDT(t)
     return(t)
@@ -649,13 +650,14 @@ example_collisions_multi <- function() {
     )
     t <- tibble::as_tibble(cols)
     t <- t %>%
-        tibble::add_column(tibble::as_tibble_col(list(
-            smpl1, smpl2,
-            smpl3, smpl4
-        ),
-        column_name = "data"
+        tibble::add_column(tibble::as_tibble_col(
+            list(
+                smpl1, smpl2,
+                smpl3, smpl4
+            ),
+            column_name = "data"
         )) %>%
-        tidyr::unnest(.data$data)
+        tidyr::unnest(dplyr::all_of("data"))
     return(data.table::setDT(t))
 }
 
@@ -785,21 +787,23 @@ test_that(".collisions_check_input_af works as expected", {
     ## Throws error if required tags are ok but actual names are not present
     ## in the data frame
     expect_error({
-        checks <- .collisions_check_input_af(minimal_test_coll_meta %>%
-            dplyr::rename(Project = "ProjectID"),
-        date_col = "SequencingDate",
-        independent_sample_id = c("SubjectID")
+        checks <- .collisions_check_input_af(
+            minimal_test_coll_meta %>%
+                dplyr::rename(Project = "ProjectID"),
+            date_col = "SequencingDate",
+            independent_sample_id = c("SubjectID")
         )
     })
     ## Throws error if date column is not a date
     expect_error(
         {
-            checks <- .collisions_check_input_af(minimal_test_coll_meta %>%
-                dplyr::mutate(SequencingDate = as.character(
-                    .data$SequencingDate
-                )),
-            date_col = "SequencingDate",
-            independent_sample_id = c("SubjectID")
+            checks <- .collisions_check_input_af(
+                minimal_test_coll_meta %>%
+                    dplyr::mutate(SequencingDate = as.character(
+                        .data$SequencingDate
+                    )),
+                date_col = "SequencingDate",
+                independent_sample_id = c("SubjectID")
             )
         },
         class = "not_date_coll_err"

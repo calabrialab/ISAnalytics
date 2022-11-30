@@ -101,11 +101,12 @@ outlier_filter <- function(metadata,
     mode <- "CALL"
     test_num <- 1
     if (is.null(outlier_test) & is.null(outlier_test_outputs)) {
-        err_msg <- c(paste(
-            "One between `outlier_test` and",
-            "`outlier_test_outputs` should not be NULL"
-        ),
-        i = "See documentation with `?outlier_filter`"
+        err_msg <- c(
+            paste(
+                "One between `outlier_test` and",
+                "`outlier_test_outputs` should not be NULL"
+            ),
+            i = "See documentation with `?outlier_filter`"
         )
         rlang::abort(err_msg, class = "no_outlier_tests")
     } else if (!is.null(outlier_test) & !is.null(outlier_test_outputs)) {
