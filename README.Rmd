@@ -6,10 +6,10 @@ output: github_document
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
+    collapse = TRUE,
+    comment = "#>",
+    fig.path = "man/figures/README-",
+    out.width = "100%"
 )
 ```
 
@@ -35,7 +35,6 @@ more.
 * For the devel version: [ISAnalytics Website dev](https://calabrialab.github.io/ISAnalytics/dev)
 
 ```{r child="inst/rmd/install_and_options.Rmd"}
-
 ```
 
 # NEWS
@@ -43,7 +42,6 @@ more.
   <summary>Show more</summary>
 
 ```{r child="NEWS.Rmd"}
-
 ```
 
 </details>
