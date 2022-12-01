@@ -34,7 +34,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.8.0</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,7 +106,7 @@ Italia</p>
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 data-toc-skip class="date">3 November 2022</h4>
+            <h4 data-toc-skip class="date">1 December 2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/vignettes/ISAnalytics.Rmd" class="external-link"><code>vignettes/ISAnalytics.Rmd</code></a></small>
       <div class="d-none name"><code>ISAnalytics.Rmd</code></div>
@@ -168,7 +168,7 @@ up-to-date version where all new features are introduced</li>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,</span>
-<span>                         ref <span class="op">=</span> <span class="st">"RELEASE_3_15"</span>,</span>
+<span>                         ref <span class="op">=</span> <span class="st">"RELEASE_3_16"</span>,</span>
 <span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>DEVEL:</p>
@@ -311,15 +311,15 @@ the authors and it is available in the package additional files.</p>
 <span></span>
 <span><span class="co"># Set appropriate data and metadata specs ----</span></span>
 <span><span class="va">metadata_specs</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
-<span>  <span class="op">~</span><span class="va">names</span>, <span class="op">~</span><span class="va">types</span>, <span class="op">~</span><span class="va">transform</span>, <span class="op">~</span><span class="va">flag</span>, <span class="op">~</span><span class="va">tag</span>,</span>
-<span>  <span class="st">"ProjectID"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"project_id"</span>,</span>
-<span>  <span class="st">"SubjectID"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"subject"</span>,</span>
-<span>  <span class="st">"Tissue"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"tissue"</span>,</span>
-<span>  <span class="st">"TimePoint"</span>, <span class="st">"int"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"tp_days"</span>,</span>
-<span>  <span class="st">"CellMarker"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"cell_marker"</span>,</span>
-<span>  <span class="st">"ID"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"pcr_repl_id"</span>,</span>
-<span>  <span class="st">"SourceFileName"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"optional"</span>, <span class="cn">NA_character_</span>,</span>
-<span>  <span class="st">"Link"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"optional"</span>, <span class="cn">NA_character_</span></span>
+<span>    <span class="op">~</span><span class="va">names</span>, <span class="op">~</span><span class="va">types</span>, <span class="op">~</span><span class="va">transform</span>, <span class="op">~</span><span class="va">flag</span>, <span class="op">~</span><span class="va">tag</span>,</span>
+<span>    <span class="st">"ProjectID"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"project_id"</span>,</span>
+<span>    <span class="st">"SubjectID"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"subject"</span>,</span>
+<span>    <span class="st">"Tissue"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"tissue"</span>,</span>
+<span>    <span class="st">"TimePoint"</span>, <span class="st">"int"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"tp_days"</span>,</span>
+<span>    <span class="st">"CellMarker"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"cell_marker"</span>,</span>
+<span>    <span class="st">"ID"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"pcr_repl_id"</span>,</span>
+<span>    <span class="st">"SourceFileName"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"optional"</span>, <span class="cn">NA_character_</span>,</span>
+<span>    <span class="st">"Link"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"optional"</span>, <span class="cn">NA_character_</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/set_mandatory_IS_vars.html">set_af_columns_def</a></span><span class="op">(</span><span class="va">metadata_specs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Warning: important tags missing</span></span>
@@ -329,8 +329,8 @@ the authors and it is available in the package additional files.</p>
 <span><span class="co">#&gt; Association file columns specs successfully changed</span></span>
 <span></span>
 <span><span class="va">mandatory_specs</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
-<span>  <span class="op">~</span><span class="va">names</span>, <span class="op">~</span><span class="va">types</span>, <span class="op">~</span><span class="va">transform</span>, <span class="op">~</span><span class="va">flag</span>, <span class="op">~</span><span class="va">tag</span>,</span>
-<span>  <span class="st">"BarcodeSeq"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="cn">NA_character_</span></span>
+<span>    <span class="op">~</span><span class="va">names</span>, <span class="op">~</span><span class="va">types</span>, <span class="op">~</span><span class="va">transform</span>, <span class="op">~</span><span class="va">flag</span>, <span class="op">~</span><span class="va">tag</span>,</span>
+<span>    <span class="st">"BarcodeSeq"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="cn">NA_character_</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/set_mandatory_IS_vars.html">set_mandatory_IS_vars</a></span><span class="op">(</span><span class="va">mandatory_specs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Warning: important tags missing</span></span>
@@ -346,7 +346,8 @@ the authors and it is available in the package additional files.</p>
 <span></span>
 <span><span class="co"># Data import ----</span></span>
 <span><span class="va">af</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">data_folder</span>, <span class="va">meta_file</span><span class="op">)</span>,</span>
-<span>                              report_path <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span>    report_path <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">af</span></span>
 <span><span class="co">#&gt;        ProjectID SubjectID Tissue TimePoint CellMarker      ID</span></span>
 <span><span class="co">#&gt;  1: PMID32601433        A0     BM        21      Whole   BM_A0</span></span>
@@ -414,7 +415,8 @@ the authors and it is available in the package additional files.</p>
 <span><span class="co">#&gt; 15:              01             01</span></span>
 <span></span>
 <span><span class="va">matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_single_Vispa2Matrix.html">import_single_Vispa2Matrix</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">data_folder</span>, <span class="va">matrix_file</span><span class="op">)</span>,</span>
-<span>                                     sample_names_to <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span></span>
+<span>    sample_names_to <span class="op">=</span> <span class="st">"ID"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: compression format not supported by fread</span></span>
 <span><span class="co">#&gt; <span style="color: #0000BB;">ℹ</span> File will be read using readr</span></span>
 <span><span class="co">#&gt; Reading file...</span></span>
@@ -441,9 +443,10 @@ the authors and it is available in the package additional files.</p>
 <span></span>
 <span><span class="co"># Descriptive stats ----</span></span>
 <span><span class="va">desc_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_statistics.html">sample_statistics</a></span><span class="op">(</span><span class="va">matrix</span>, <span class="va">af</span>,</span>
-<span>                                sample_key <span class="op">=</span> <span class="fu"><a href="../reference/pcr_id_column.html">pcr_id_column</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>                                value_columns <span class="op">=</span> <span class="st">"Value"</span><span class="op">)</span><span class="op">$</span><span class="va">metadata</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>distinct_barcodes <span class="op">=</span> <span class="st">"nIS"</span><span class="op">)</span></span>
+<span>    sample_key <span class="op">=</span> <span class="fu"><a href="../reference/pcr_id_column.html">pcr_id_column</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    value_columns <span class="op">=</span> <span class="st">"Value"</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">metadata</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>distinct_barcodes <span class="op">=</span> <span class="st">"nIS"</span><span class="op">)</span></span>
 <span><span class="va">desc_stats</span></span>
 <span><span class="co">#&gt;        ProjectID SubjectID Tissue TimePoint CellMarker      ID</span></span>
 <span><span class="co">#&gt;  1: PMID32601433        A0     BM        21      Whole   BM_A0</span></span>
@@ -592,9 +595,11 @@ the authors and it is available in the package additional files.</p>
 <span></span>
 <span><span class="co"># Aggregation and new stats ----</span></span>
 <span><span class="va">agg_key</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span><span class="op">)</span></span>
-<span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span><span class="va">matrix</span>, <span class="va">af</span>, key <span class="op">=</span> <span class="va">agg_key</span>,</span>
-<span>                               group <span class="op">=</span> <span class="st">"BarcodeSeq"</span>,</span>
-<span>                               join_af_by <span class="op">=</span> <span class="fu"><a href="../reference/pcr_id_column.html">pcr_id_column</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span><span class="va">matrix</span>, <span class="va">af</span>,</span>
+<span>    key <span class="op">=</span> <span class="va">agg_key</span>,</span>
+<span>    group <span class="op">=</span> <span class="st">"BarcodeSeq"</span>,</span>
+<span>    join_af_by <span class="op">=</span> <span class="fu"><a href="../reference/pcr_id_column.html">pcr_id_column</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">agg</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 33,267 × 3</span></span></span>
 <span><span class="co">#&gt;    BarcodeSeq             SubjectID Value_sum</span></span>
@@ -612,14 +617,15 @@ the authors and it is available in the package additional files.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># … with 33,257 more rows</span></span></span>
 <span></span>
 <span><span class="va">agg_meta_functions</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
-<span>  <span class="op">~</span><span class="va">Column</span>, <span class="op">~</span><span class="va">Function</span>, <span class="op">~</span><span class="va">Args</span>, <span class="op">~</span><span class="va">Output_colname</span>,</span>
-<span>  <span class="st">"TimePoint"</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">.x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="cn">NA</span>, <span class="st">"{.col}_avg"</span>,</span>
-<span>  <span class="st">"CellMarker"</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span>, <span class="cn">NA</span>, <span class="st">"distinct_cell_marker_count"</span>,</span>
-<span>  <span class="st">"ID"</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span>, <span class="cn">NA</span>, <span class="st">"distinct_id_count"</span></span>
+<span>    <span class="op">~</span><span class="va">Column</span>, <span class="op">~</span><span class="va">Function</span>, <span class="op">~</span><span class="va">Args</span>, <span class="op">~</span><span class="va">Output_colname</span>,</span>
+<span>    <span class="st">"TimePoint"</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">.x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="cn">NA</span>, <span class="st">"{.col}_avg"</span>,</span>
+<span>    <span class="st">"CellMarker"</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span>, <span class="cn">NA</span>, <span class="st">"distinct_cell_marker_count"</span>,</span>
+<span>    <span class="st">"ID"</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span>, <span class="cn">NA</span>, <span class="st">"distinct_id_count"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">agg_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_metadata.html">aggregate_metadata</a></span><span class="op">(</span></span>
-<span>  <span class="va">af</span>, aggregating_functions <span class="op">=</span> <span class="va">agg_meta_functions</span>,</span>
-<span>  grouping_keys <span class="op">=</span> <span class="va">agg_key</span></span>
+<span>    <span class="va">af</span>,</span>
+<span>    aggregating_functions <span class="op">=</span> <span class="va">agg_meta_functions</span>,</span>
+<span>    grouping_keys <span class="op">=</span> <span class="va">agg_key</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">agg_meta</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 4</span></span></span>
@@ -636,9 +642,10 @@ the authors and it is available in the package additional files.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> C3                   21                          1                 2</span></span>
 <span></span>
 <span><span class="va">agg_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_statistics.html">sample_statistics</a></span><span class="op">(</span><span class="va">agg</span>, <span class="va">agg_meta</span>,</span>
-<span>                               sample_key <span class="op">=</span> <span class="va">agg_key</span>,</span>
-<span>                               value_columns <span class="op">=</span> <span class="st">"Value_sum"</span><span class="op">)</span><span class="op">$</span><span class="va">metadata</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>distinct_barcodes <span class="op">=</span> <span class="st">"nIS"</span><span class="op">)</span></span>
+<span>    sample_key <span class="op">=</span> <span class="va">agg_key</span>,</span>
+<span>    value_columns <span class="op">=</span> <span class="st">"Value_sum"</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">metadata</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>distinct_barcodes <span class="op">=</span> <span class="st">"nIS"</span><span class="op">)</span></span>
 <span><span class="va">agg_stats</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 23</span></span></span>
 <span><span class="co">#&gt;   SubjectID TimePoint_…¹ disti…² disti…³ Value…⁴ Value…⁵ Value…⁶ Value…⁷ Value…⁸</span></span>

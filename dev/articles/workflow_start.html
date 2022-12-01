@@ -34,7 +34,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.8.0</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,7 +109,7 @@ Italia</p>
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 data-toc-skip class="date">3 November 2022</h4>
+            <h4 data-toc-skip class="date">1 December 2022</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/vignettes/workflow_start.Rmd" class="external-link"><code>vignettes/workflow_start.Rmd</code></a></small>
       <div class="d-none name"><code>workflow_start.Rmd</code></div>
@@ -173,7 +173,7 @@ up-to-date version where all new features are introduced</li>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,</span>
-<span>                         ref <span class="op">=</span> <span class="st">"RELEASE_3_15"</span>,</span>
+<span>                         ref <span class="op">=</span> <span class="st">"RELEASE_3_16"</span>,</span>
 <span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>DEVEL:</p>
@@ -335,8 +335,8 @@ the critical tags for each category.</p>
 <div class="section level4">
 <h4 id="mandatory-is-vars">Mandatory IS vars<a class="anchor" aria-label="anchor" href="#mandatory-is-vars"></a>
 </h4>
-<div id="htmlwidget-5cb60d34dcd07265548c" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5cb60d34dcd07265548c">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in
+<div id="htmlwidget-0be3744d30bdaa32b670" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0be3744d30bdaa32b670">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in
 other functions - for example, when importing matrices it is ensured
 that all mandatory variables are present in the input, as declared in
 the look up table. Some functions may require information that needs to
@@ -346,8 +346,8 @@ doubts.</p>
 <div class="section level4">
 <h4 id="annotation-is-vars">Annotation IS vars<a class="anchor" aria-label="anchor" href="#annotation-is-vars"></a>
 </h4>
-<div id="htmlwidget-1ba9de5e2b528c58cef1" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1ba9de5e2b528c58cef1">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work
+<div id="htmlwidget-c3c35fe57393f2bab08a" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c3c35fe57393f2bab08a">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work
 with ISAnalytics, some operations do require annotation - if you’re
 working with matrices that are not annotated you can either annotate
 them with a tool of your choice or skip the steps that require
@@ -356,16 +356,16 @@ annotation.</p>
 <div class="section level4">
 <h4 id="association-file-columns">Association file columns<a class="anchor" aria-label="anchor" href="#association-file-columns"></a>
 </h4>
-<div id="htmlwidget-a78b095893e249ea7e15" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a78b095893e249ea7e15">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but
+<div id="htmlwidget-f9f9ee56bfd41f3019f3" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f9f9ee56bfd41f3019f3">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but
 they exist for potential new features that will be added in the
 future.</p>
 </div>
 <div class="section level4">
 <h4 id="vispa2-stats-specs">VISPA2 stats specs<a class="anchor" aria-label="anchor" href="#vispa2-stats-specs"></a>
 </h4>
-<div id="htmlwidget-2a42d7708c78cad0930f" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2a42d7708c78cad0930f">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats"],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions.
+<div id="htmlwidget-a9cb2ed4cad260f9c511" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a9cb2ed4cad260f9c511">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats"],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions.
 If the pipeline launch was configured with default parameters, do not
 change this lookup table.</p>
 </div>
@@ -427,13 +427,13 @@ contains random data):</p>
 lookup table like this:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_mand_vars</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
-<span>  <span class="op">~</span><span class="va">names</span>, <span class="op">~</span><span class="va">types</span>, <span class="op">~</span><span class="va">transform</span>, <span class="op">~</span><span class="va">flag</span>, <span class="op">~</span><span class="va">tag</span>,</span>
-<span>  <span class="st">"chrom"</span>, <span class="st">"char"</span>, <span class="op">~</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html" class="external-link">str_replace_all</a></span><span class="op">(</span><span class="va">.x</span>, <span class="st">"chr"</span>, <span class="st">""</span><span class="op">)</span>, <span class="st">"required"</span>,</span>
-<span>  <span class="st">"chromosome"</span>,</span>
-<span>  <span class="st">"position"</span>, <span class="st">"int"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"locus"</span>,</span>
-<span>  <span class="st">"strand"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"is_strand"</span>,</span>
-<span>  <span class="st">"gap"</span>, <span class="st">"int"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="cn">NA_character_</span>,</span>
-<span>  <span class="st">"junction"</span>, <span class="st">"int"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="cn">NA_character_</span></span>
+<span>    <span class="op">~</span><span class="va">names</span>, <span class="op">~</span><span class="va">types</span>, <span class="op">~</span><span class="va">transform</span>, <span class="op">~</span><span class="va">flag</span>, <span class="op">~</span><span class="va">tag</span>,</span>
+<span>    <span class="st">"chrom"</span>, <span class="st">"char"</span>, <span class="op">~</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html" class="external-link">str_replace_all</a></span><span class="op">(</span><span class="va">.x</span>, <span class="st">"chr"</span>, <span class="st">""</span><span class="op">)</span>, <span class="st">"required"</span>,</span>
+<span>    <span class="st">"chromosome"</span>,</span>
+<span>    <span class="st">"position"</span>, <span class="st">"int"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"locus"</span>,</span>
+<span>    <span class="st">"strand"</span>, <span class="st">"char"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="st">"is_strand"</span>,</span>
+<span>    <span class="st">"gap"</span>, <span class="st">"int"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="cn">NA_character_</span>,</span>
+<span>    <span class="st">"junction"</span>, <span class="st">"int"</span>, <span class="cn">NULL</span>, <span class="st">"required"</span>, <span class="cn">NA_character_</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Notice that we have specified a transformation for the “chromosome”
 tag: in this case we would like to have only the number of the
@@ -668,7 +668,7 @@ function also produces an interactive HTML report.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fs_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_default_folder_structure.html">generate_default_folder_structure</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ISAnalytics.reports <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, code <span class="op">=</span> <span class="op">{</span></span>
-<span>  <span class="va">af</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">fs_path</span><span class="op">$</span><span class="va">af</span>, root <span class="op">=</span> <span class="va">fs_path</span><span class="op">$</span><span class="va">root</span><span class="op">)</span></span>
+<span>    <span class="va">af</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">fs_path</span><span class="op">$</span><span class="va">af</span>, root <span class="op">=</span> <span class="va">fs_path</span><span class="op">$</span><span class="va">root</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt; *** Association file import summary ***</span></span>
 <span><span class="co">#&gt; <span style="color: #0000BB;">ℹ</span> For detailed report please set option 'ISAnalytics.reports' to TRUE</span></span>
@@ -783,26 +783,26 @@ function also produces an interactive HTML report.</p>
 <span><span class="co">#&gt; 5:                 /PJ01             &lt;NA&gt;          0180              06</span></span>
 <span><span class="co">#&gt; 6:                 /PJ01             &lt;NA&gt;          0060              02</span></span>
 <span><span class="co">#&gt;    TimepointYears ng DNA corrected                    Path</span></span>
-<span><span class="co">#&gt; 1:             01            23.18 /tmp/Rtmp6EuIJY/fs/PJ01</span></span>
-<span><span class="co">#&gt; 2:             01           181.44 /tmp/Rtmp6EuIJY/fs/PJ01</span></span>
-<span><span class="co">#&gt; 3:             01           181.44 /tmp/Rtmp6EuIJY/fs/PJ01</span></span>
-<span><span class="co">#&gt; 4:             01           181.44 /tmp/Rtmp6EuIJY/fs/PJ01</span></span>
-<span><span class="co">#&gt; 5:             01            23.06 /tmp/Rtmp6EuIJY/fs/PJ01</span></span>
-<span><span class="co">#&gt; 6:             01           171.36 /tmp/Rtmp6EuIJY/fs/PJ01</span></span>
+<span><span class="co">#&gt; 1:             01            23.18 /tmp/Rtmpd4W5Q7/fs/PJ01</span></span>
+<span><span class="co">#&gt; 2:             01           181.44 /tmp/Rtmpd4W5Q7/fs/PJ01</span></span>
+<span><span class="co">#&gt; 3:             01           181.44 /tmp/Rtmpd4W5Q7/fs/PJ01</span></span>
+<span><span class="co">#&gt; 4:             01           181.44 /tmp/Rtmpd4W5Q7/fs/PJ01</span></span>
+<span><span class="co">#&gt; 5:             01            23.06 /tmp/Rtmpd4W5Q7/fs/PJ01</span></span>
+<span><span class="co">#&gt; 6:             01           171.36 /tmp/Rtmpd4W5Q7/fs/PJ01</span></span>
 <span><span class="co">#&gt;                                         Path_quant</span></span>
-<span><span class="co">#&gt; 1: /tmp/Rtmp6EuIJY/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 2: /tmp/Rtmp6EuIJY/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 3: /tmp/Rtmp6EuIJY/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 4: /tmp/Rtmp6EuIJY/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 5: /tmp/Rtmp6EuIJY/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 6: /tmp/Rtmp6EuIJY/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 1: /tmp/Rtmpd4W5Q7/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 2: /tmp/Rtmpd4W5Q7/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 3: /tmp/Rtmpd4W5Q7/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 4: /tmp/Rtmpd4W5Q7/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 5: /tmp/Rtmpd4W5Q7/fs/PJ01/quantification/POOL01-1</span></span>
+<span><span class="co">#&gt; 6: /tmp/Rtmpd4W5Q7/fs/PJ01/quantification/POOL01-1</span></span>
 <span><span class="co">#&gt;                                Path_iss</span></span>
-<span><span class="co">#&gt; 1: /tmp/Rtmp6EuIJY/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 2: /tmp/Rtmp6EuIJY/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 3: /tmp/Rtmp6EuIJY/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 4: /tmp/Rtmp6EuIJY/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 5: /tmp/Rtmp6EuIJY/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 6: /tmp/Rtmp6EuIJY/fs/PJ01/iss/POOL01-1</span></span></code></pre>
+<span><span class="co">#&gt; 1: /tmp/Rtmpd4W5Q7/fs/PJ01/iss/POOL01-1</span></span>
+<span><span class="co">#&gt; 2: /tmp/Rtmpd4W5Q7/fs/PJ01/iss/POOL01-1</span></span>
+<span><span class="co">#&gt; 3: /tmp/Rtmpd4W5Q7/fs/PJ01/iss/POOL01-1</span></span>
+<span><span class="co">#&gt; 4: /tmp/Rtmpd4W5Q7/fs/PJ01/iss/POOL01-1</span></span>
+<span><span class="co">#&gt; 5: /tmp/Rtmpd4W5Q7/fs/PJ01/iss/POOL01-1</span></span>
+<span><span class="co">#&gt; 6: /tmp/Rtmpd4W5Q7/fs/PJ01/iss/POOL01-1</span></span></code></pre>
 <div class="section level4">
 <h4 id="function-arguments">Function arguments<a class="anchor" aria-label="anchor" href="#function-arguments"></a>
 </h4>
@@ -891,7 +891,7 @@ that, you can use <code>import_VISPA2_stats</code>:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vispa_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_Vispa2_stats.html">import_Vispa2_stats</a></span><span class="op">(</span></span>
 <span>    association_file <span class="op">=</span> <span class="va">af</span>,</span>
-<span>    join_with_af <span class="op">=</span> <span class="cn">FALSE</span>, </span>
+<span>    join_with_af <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    report_path <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 14</span></span></span>
@@ -928,11 +928,13 @@ function reads the file and converts it into a tidy structure: several
 different formats can be read, since you can specify the column
 separator.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">matrix_path</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">fs_path</span><span class="op">$</span><span class="va">root</span>,</span>
-<span>                        <span class="st">"PJ01"</span>,</span>
-<span>                        <span class="st">"quantification"</span>,</span>
-<span>                        <span class="st">"POOL01-1"</span>,</span>
-<span>                        <span class="st">"PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">matrix_path</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span></span>
+<span>    <span class="va">fs_path</span><span class="op">$</span><span class="va">root</span>,</span>
+<span>    <span class="st">"PJ01"</span>,</span>
+<span>    <span class="st">"quantification"</span>,</span>
+<span>    <span class="st">"POOL01-1"</span>,</span>
+<span>    <span class="st">"PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_single_Vispa2Matrix.html">import_single_Vispa2Matrix</a></span><span class="op">(</span><span class="va">matrix_path</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;      chr integration_locus strand     GeneName GeneStrand</span></span>
 <span><span class="co">#&gt;   1:  16          68164148      +       NFATC3          +</span></span>
@@ -1290,25 +1292,31 @@ integration is simply removed from the matrix.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="co">## Multi quantification matrix</span></span>
-<span><span class="va">no_coll</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
-<span>                             association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
-<span>                             report_path <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="va">no_coll</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
+<span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
+<span>    report_path <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Identifying collisions...</span></span>
 <span><span class="co">#&gt; Processing collisions...</span></span>
 <span><span class="co">#&gt; Finished!</span></span>
 <span><span class="co">## Matrix list</span></span>
 <span><span class="va">separated</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/separate_quant_matrices.html">separate_quant_matrices</a></span><span class="op">(</span><span class="va">integration_matrices</span><span class="op">)</span></span>
-<span><span class="va">no_coll_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">separated</span>,</span>
-<span>                             association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
-<span>                             report_path <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="va">no_coll_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="va">separated</span>,</span>
+<span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
+<span>    report_path <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Identifying collisions...</span></span>
 <span><span class="co">#&gt; Processing collisions...</span></span>
 <span><span class="co">#&gt; Finished!</span></span>
 <span><span class="co">## Only sequence count</span></span>
-<span><span class="va">no_coll_single</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">separated</span><span class="op">$</span><span class="va">seqCount</span>,</span>
-<span>                             association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
-<span>                             quant_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>seqCount <span class="op">=</span> <span class="st">"Value"</span><span class="op">)</span>,</span>
-<span>                             report_path <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="va">no_coll_single</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove_collisions.html">remove_collisions</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="va">separated</span><span class="op">$</span><span class="va">seqCount</span>,</span>
+<span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
+<span>    quant_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>seqCount <span class="op">=</span> <span class="st">"Value"</span><span class="op">)</span>,</span>
+<span>    report_path <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Identifying collisions...</span></span>
 <span><span class="co">#&gt; Processing collisions...</span></span>
 <span><span class="co">#&gt; Finished!</span></span></code></pre></div>
@@ -1345,8 +1353,8 @@ matrices to realign. <strong>NOTE: the names in the list must be
 quantification types.</strong></p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">other_realigned</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/realign_after_collisions.html">realign_after_collisions</a></span><span class="op">(</span></span>
-<span>  sc_matrix <span class="op">=</span> <span class="va">no_coll_single</span>,</span>
-<span>  other_matrices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fragmentEstimate <span class="op">=</span> <span class="va">separated</span><span class="op">$</span><span class="va">fragmentEstimate</span><span class="op">)</span></span>
+<span>    sc_matrix <span class="op">=</span> <span class="va">no_coll_single</span>,</span>
+<span>    other_matrices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fragmentEstimate <span class="op">=</span> <span class="va">separated</span><span class="op">$</span><span class="va">fragmentEstimate</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -1462,9 +1470,9 @@ that are related to the samples.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="va">aggreg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
-<span>  x <span class="op">=</span> <span class="va">integration_matrices</span>, </span>
-<span>  association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
-<span>  value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span>
+<span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
+<span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
+<span>    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1,074 × 11</span></span></span>
 <span><span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand SubjectID CellMarker</span></span>
@@ -1737,118 +1745,123 @@ any other variable to the key, just set it to <code>NULL</code>.</li>
 <span><span class="co">#&gt;  collate  C.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    C.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       UTC</span></span>
-<span><span class="co">#&gt;  date     2022-11-03</span></span>
+<span><span class="co">#&gt;  date     2022-12-01</span></span>
 <span><span class="co">#&gt;  pandoc   2.19.2 @ /usr/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">package     </span> <span style="color: #555555; font-style: italic;">*</span> <span style="color: #555555; font-style: italic;">version</span> <span style="color: #555555; font-style: italic;">date (UTC)</span> <span style="color: #555555; font-style: italic;">lib</span> <span style="color: #555555; font-style: italic;">source</span></span></span>
-<span><span class="co">#&gt;  backports      1.4.1   <span style="color: #555555;">2021-12-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  bibtex         0.5.0   <span style="color: #555555;">2022-09-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  BiocManager    1.30.19 <span style="color: #555555;">2022-10-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  BiocParallel   1.30.4  <span style="color: #555555;">2022-10-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
-<span><span class="co">#&gt;  BiocStyle    * 2.24.0  <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
-<span><span class="co">#&gt;  bit            4.0.4   <span style="color: #555555;">2020-08-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  bit64          4.0.5   <span style="color: #555555;">2020-08-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  bookdown       0.29    <span style="color: #555555;">2022-09-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  bslib          0.4.0   <span style="color: #555555;">2022-07-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  cachem         1.0.6   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  cellranger     1.1.0   <span style="color: #555555;">2016-07-27</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  cli            3.4.1   <span style="color: #555555;">2022-09-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  codetools      0.2-18  <span style="color: #555555;">2020-11-04</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  colorspace     2.0-3   <span style="color: #555555;">2022-02-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  crayon         1.5.2   <span style="color: #555555;">2022-09-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  crosstalk      1.2.0   <span style="color: #555555;">2021-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  curl           4.3.3   <span style="color: #555555;">2022-10-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  data.table     1.14.4  <span style="color: #555555;">2022-10-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  datamods       1.3.4   <span style="color: #555555;">2022-09-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  desc           1.4.2   <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  digest         0.6.30  <span style="color: #555555;">2022-10-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  doFuture       0.12.2  <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  dplyr          1.0.10  <span style="color: #555555;">2022-09-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  DT           * 0.26    <span style="color: #555555;">2022-10-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  ellipsis       0.3.2   <span style="color: #555555;">2021-04-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  evaluate       0.17    <span style="color: #555555;">2022-10-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  fansi          1.0.3   <span style="color: #555555;">2022-03-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  fastmap        1.1.0   <span style="color: #555555;">2021-01-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  forcats        0.5.2   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  foreach        1.5.2   <span style="color: #555555;">2022-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  foreign        0.8-83  <span style="color: #555555;">2022-09-28</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  fs             1.5.2   <span style="color: #555555;">2021-12-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  future         1.28.0  <span style="color: #555555;">2022-09-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  generics       0.1.3   <span style="color: #555555;">2022-07-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  ggplot2        3.3.6   <span style="color: #555555;">2022-05-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  globals        0.16.1  <span style="color: #555555;">2022-08-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  glue           1.6.2   <span style="color: #555555;">2022-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  gtable         0.3.1   <span style="color: #555555;">2022-09-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  haven          2.5.1   <span style="color: #555555;">2022-08-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  highr          0.9     <span style="color: #555555;">2021-04-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  hms            1.1.2   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  htmltools      0.5.3   <span style="color: #555555;">2022-07-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  htmlwidgets    1.5.4   <span style="color: #555555;">2021-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  httpuv         1.6.6   <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  httr           1.4.4   <span style="color: #555555;">2022-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  ISAnalytics  * 1.8.0   <span style="color: #555555;">2022-11-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
-<span><span class="co">#&gt;  iterators      1.0.14  <span style="color: #555555;">2022-02-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  jquerylib      0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  jsonlite       1.8.3   <span style="color: #555555;">2022-10-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  knitr          1.40    <span style="color: #555555;">2022-08-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  later          1.3.0   <span style="color: #555555;">2021-08-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  lattice        0.20-45 <span style="color: #555555;">2021-09-22</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  lifecycle      1.0.3   <span style="color: #555555;">2022-10-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  listenv        0.8.0   <span style="color: #555555;">2019-12-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  lubridate      1.8.0   <span style="color: #555555;">2021-10-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  magrittr     * 2.0.3   <span style="color: #555555;">2022-03-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  memoise        2.0.1   <span style="color: #555555;">2021-11-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  mime           0.12    <span style="color: #555555;">2021-09-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  mnormt         2.1.1   <span style="color: #555555;">2022-09-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  munsell        0.5.0   <span style="color: #555555;">2018-06-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  nlme           3.1-160 <span style="color: #555555;">2022-10-10</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  openxlsx       4.2.5.1 <span style="color: #555555;">2022-10-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  parallelly     1.32.1  <span style="color: #555555;">2022-07-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  pillar         1.8.1   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  pkgconfig      2.0.3   <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  pkgdown        2.0.6   <span style="color: #555555;">2022-07-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">any (@2.0.6)</span></span></span>
-<span><span class="co">#&gt;  plyr           1.8.7   <span style="color: #555555;">2022-03-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  progressr      0.11.0  <span style="color: #555555;">2022-09-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  promises       1.2.0.1 <span style="color: #555555;">2021-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  psych          2.2.9   <span style="color: #555555;">2022-09-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  purrr          0.3.5   <span style="color: #555555;">2022-10-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  R.methodsS3    1.8.2   <span style="color: #555555;">2022-06-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  R.oo           1.25.0  <span style="color: #555555;">2022-06-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  R.utils        2.12.1  <span style="color: #555555;">2022-10-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  R6             2.5.1   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  ragg           1.2.4   <span style="color: #555555;">2022-10-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  Rcapture       1.4-4   <span style="color: #555555;">2022-05-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  Rcpp           1.0.9   <span style="color: #555555;">2022-07-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  readr          2.1.3   <span style="color: #555555;">2022-10-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  readxl         1.4.1   <span style="color: #555555;">2022-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  RefManageR   * 1.4.0   <span style="color: #555555;">2022-09-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  rio            0.5.29  <span style="color: #555555;">2021-11-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  rlang          1.0.6   <span style="color: #555555;">2022-09-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  rmarkdown      2.17    <span style="color: #555555;">2022-10-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  rprojroot      2.0.3   <span style="color: #555555;">2022-04-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  sass           0.4.2   <span style="color: #555555;">2022-07-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  scales         1.2.1   <span style="color: #555555;">2022-08-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  sessioninfo  * 1.2.2   <span style="color: #555555;">2021-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">any (@1.2.2)</span></span></span>
-<span><span class="co">#&gt;  shiny          1.7.3   <span style="color: #555555;">2022-10-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  shinyWidgets   0.7.4   <span style="color: #555555;">2022-10-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  stringi        1.7.8   <span style="color: #555555;">2022-07-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  stringr        1.4.1   <span style="color: #555555;">2022-08-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  systemfonts    1.0.4   <span style="color: #555555;">2022-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  textshaping    0.3.6   <span style="color: #555555;">2021-10-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  tibble         3.1.8   <span style="color: #555555;">2022-07-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  tidyr          1.2.1   <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  tidyselect     1.2.0   <span style="color: #555555;">2022-10-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  tzdb           0.3.0   <span style="color: #555555;">2022-03-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  utf8           1.2.2   <span style="color: #555555;">2021-07-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  vctrs          0.5.0   <span style="color: #555555;">2022-10-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  vroom          1.6.0   <span style="color: #555555;">2022-09-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  withr          2.5.0   <span style="color: #555555;">2022-03-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  xfun           0.34    <span style="color: #555555;">2022-10-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  xml2           1.3.3   <span style="color: #555555;">2021-11-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  xtable         1.8-4   <span style="color: #555555;">2019-04-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  yaml           2.3.6   <span style="color: #555555;">2022-10-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  zip            2.2.2   <span style="color: #555555;">2022-10-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">package      </span> <span style="color: #555555; font-style: italic;">*</span> <span style="color: #555555; font-style: italic;">version</span> <span style="color: #555555; font-style: italic;">date (UTC)</span> <span style="color: #555555; font-style: italic;">lib</span> <span style="color: #555555; font-style: italic;">source</span></span></span>
+<span><span class="co">#&gt;  backports       1.4.1   <span style="color: #555555;">2021-12-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  bibtex          0.5.0   <span style="color: #555555;">2022-09-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  BiocManager     1.30.19 <span style="color: #555555;">2022-10-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  BiocParallel    1.30.4  <span style="color: #555555;">2022-10-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
+<span><span class="co">#&gt;  BiocStyle     * 2.24.0  <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
+<span><span class="co">#&gt;  bit             4.0.5   <span style="color: #555555;">2022-11-15</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  bit64           4.0.5   <span style="color: #555555;">2020-08-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  bookdown        0.30    <span style="color: #555555;">2022-11-09</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  bslib           0.4.1   <span style="color: #555555;">2022-11-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  cachem          1.0.6   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  cellranger      1.1.0   <span style="color: #555555;">2016-07-27</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  cli             3.4.1   <span style="color: #555555;">2022-09-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  codetools       0.2-18  <span style="color: #555555;">2020-11-04</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  colorspace      2.0-3   <span style="color: #555555;">2022-02-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  crayon          1.5.2   <span style="color: #555555;">2022-09-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  crosstalk       1.2.0   <span style="color: #555555;">2021-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  curl            4.3.3   <span style="color: #555555;">2022-10-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  data.table      1.14.6  <span style="color: #555555;">2022-11-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  datamods        1.4.0   <span style="color: #555555;">2022-11-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  desc            1.4.2   <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  digest          0.6.30  <span style="color: #555555;">2022-10-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  doFuture        0.12.2  <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  dplyr           1.0.10  <span style="color: #555555;">2022-09-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  DT            * 0.26    <span style="color: #555555;">2022-10-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  ellipsis        0.3.2   <span style="color: #555555;">2021-04-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  evaluate        0.18    <span style="color: #555555;">2022-11-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  fansi           1.0.3   <span style="color: #555555;">2022-03-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  fastmap         1.1.0   <span style="color: #555555;">2021-01-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  forcats         0.5.2   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  foreach         1.5.2   <span style="color: #555555;">2022-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  foreign         0.8-83  <span style="color: #555555;">2022-09-28</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  fs              1.5.2   <span style="color: #555555;">2021-12-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  future          1.29.0  <span style="color: #555555;">2022-11-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  generics        0.1.3   <span style="color: #555555;">2022-07-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  ggplot2         3.4.0   <span style="color: #555555;">2022-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  globals         0.16.2  <span style="color: #555555;">2022-11-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  glue            1.6.2   <span style="color: #555555;">2022-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  gtable          0.3.1   <span style="color: #555555;">2022-09-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  haven           2.5.1   <span style="color: #555555;">2022-08-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  highr           0.9     <span style="color: #555555;">2021-04-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  hms             1.1.2   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  htmltools       0.5.3   <span style="color: #555555;">2022-07-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  htmlwidgets     1.5.4   <span style="color: #555555;">2021-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  httpuv          1.6.6   <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  httr            1.4.4   <span style="color: #555555;">2022-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  ISAnalytics   * 1.9.1   <span style="color: #555555;">2022-12-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
+<span><span class="co">#&gt;  iterators       1.0.14  <span style="color: #555555;">2022-02-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  jquerylib       0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  jsonlite        1.8.3   <span style="color: #555555;">2022-10-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  knitr           1.41    <span style="color: #555555;">2022-11-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  later           1.3.0   <span style="color: #555555;">2021-08-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  lattice         0.20-45 <span style="color: #555555;">2021-09-22</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  lifecycle       1.0.3   <span style="color: #555555;">2022-10-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  listenv         0.8.0   <span style="color: #555555;">2019-12-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  lubridate       1.9.0   <span style="color: #555555;">2022-11-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  magrittr      * 2.0.3   <span style="color: #555555;">2022-03-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  memoise         2.0.1   <span style="color: #555555;">2021-11-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  mime            0.12    <span style="color: #555555;">2021-09-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  mnormt          2.1.1   <span style="color: #555555;">2022-09-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  munsell         0.5.0   <span style="color: #555555;">2018-06-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  nlme            3.1-160 <span style="color: #555555;">2022-10-10</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  openxlsx        4.2.5.1 <span style="color: #555555;">2022-10-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  parallelly      1.32.1  <span style="color: #555555;">2022-07-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  phosphoricons   0.1.2   <span style="color: #555555;">2022-04-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  pillar          1.8.1   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  pkgconfig       2.0.3   <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  pkgdown         2.0.6   <span style="color: #555555;">2022-07-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">any (@2.0.6)</span></span></span>
+<span><span class="co">#&gt;  plyr            1.8.8   <span style="color: #555555;">2022-11-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  progressr       0.11.0  <span style="color: #555555;">2022-09-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  promises        1.2.0.1 <span style="color: #555555;">2021-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  psych           2.2.9   <span style="color: #555555;">2022-09-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  purrr           0.3.5   <span style="color: #555555;">2022-10-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  R.methodsS3     1.8.2   <span style="color: #555555;">2022-06-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  R.oo            1.25.0  <span style="color: #555555;">2022-06-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  R.utils         2.12.2  <span style="color: #555555;">2022-11-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  R6              2.5.1   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  ragg            1.2.4   <span style="color: #555555;">2022-10-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  Rcapture        1.4-4   <span style="color: #555555;">2022-05-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  Rcpp            1.0.9   <span style="color: #555555;">2022-07-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  reactable       0.3.0   <span style="color: #555555;">2022-05-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  readr           2.1.3   <span style="color: #555555;">2022-10-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  readxl          1.4.1   <span style="color: #555555;">2022-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  RefManageR    * 1.4.0   <span style="color: #555555;">2022-09-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  rio             0.5.29  <span style="color: #555555;">2021-11-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  rlang           1.0.6   <span style="color: #555555;">2022-09-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  rmarkdown       2.18    <span style="color: #555555;">2022-11-09</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  rprojroot       2.0.3   <span style="color: #555555;">2022-04-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  sass            0.4.4   <span style="color: #555555;">2022-11-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  scales          1.2.1   <span style="color: #555555;">2022-08-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  sessioninfo   * 1.2.2   <span style="color: #555555;">2021-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">any (@1.2.2)</span></span></span>
+<span><span class="co">#&gt;  shiny           1.7.3   <span style="color: #555555;">2022-10-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  shinybusy       0.3.1   <span style="color: #555555;">2022-05-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  shinyWidgets    0.7.5   <span style="color: #555555;">2022-11-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  stringi         1.7.8   <span style="color: #555555;">2022-07-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  stringr         1.4.1   <span style="color: #555555;">2022-08-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  systemfonts     1.0.4   <span style="color: #555555;">2022-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  textshaping     0.3.6   <span style="color: #555555;">2021-10-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  tibble          3.1.8   <span style="color: #555555;">2022-07-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  tidyr           1.2.1   <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  tidyselect      1.2.0   <span style="color: #555555;">2022-10-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  timechange      0.1.1   <span style="color: #555555;">2022-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  tzdb            0.3.0   <span style="color: #555555;">2022-03-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  utf8            1.2.2   <span style="color: #555555;">2021-07-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  vctrs           0.5.1   <span style="color: #555555;">2022-11-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  vroom           1.6.0   <span style="color: #555555;">2022-09-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  withr           2.5.0   <span style="color: #555555;">2022-03-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  writexl         1.4.1   <span style="color: #555555;">2022-10-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  xfun            0.35    <span style="color: #555555;">2022-11-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  xml2            1.3.3   <span style="color: #555555;">2021-11-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  xtable          1.8-4   <span style="color: #555555;">2019-04-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  yaml            2.3.6   <span style="color: #555555;">2022-10-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  zip             2.2.2   <span style="color: #555555;">2022-10-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #555555;"> [1] /home/runner/work/_temp/Library</span></span></span>
 <span><span class="co">#&gt; <span style="color: #555555;"> [2] /opt/R/4.2.2/lib/R/site-library</span></span></span>
@@ -1869,7 +1882,7 @@ Chang, and Iannone, 2022) running behind the scenes.</p>
 <p>
 <a id="bib-allaire2022rmarkdown"></a><a href="#cite-allaire2022rmarkdown">[1]</a><cite>
 J. Allaire, Y. Xie, J. McPherson, et al. <em>rmarkdown: Dynamic
-Documents for R</em>. R package version 2.17. 2022. URL:
+Documents for R</em>. R package version 2.18. 2022. URL:
 <a href="https://github.com/rstudio/rmarkdown" class="external-link">https://github.com/rstudio/rmarkdown</a>.</cite>
 </p>
 <p>
@@ -1895,7 +1908,7 @@ Bioconductor documents</em>. R package version 2.24.0. 2022. URL:
 <p>
 <a id="bib-xie2022knitr"></a><a href="#cite-xie2022knitr">[5]</a><cite>
 Y. Xie. <em>knitr: A General-Purpose Package for Dynamic Report
-Generation in R</em>. R package version 1.40. 2022. URL:
+Generation in R</em>. R package version 1.41. 2022. URL:
 <a href="https://yihui.org/knitr/" class="external-link">https://yihui.org/knitr/</a>.</cite>
 </p>
 </div>
