@@ -2,6 +2,11 @@
 title: "NEWS"
 output: github_document
 ---
+# ISAnalytics 1.8.1 (2022-12-01)
+
+* Fixed all `tidyselect` warnings (internal use of .data$ in selection context)
+* Added bonferroni correction in `gene_frequency_fisher`
+
 # ISAnalytics 1.7.7 (2022-10-26)
 
 * Added new section in workflow vignette + sample files
