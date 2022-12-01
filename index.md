@@ -1,10 +1,10 @@
 # ISAnalytics <img src='man/figures/logo.png' align="right"/>
 
 <!-- badges: start -->
-[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
-[![R build status - bioc](https://github.com/calabrialab/isanalytics/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/calabrialab/isanalytics/actions)
-[![BioC status](http://www.bioconductor.org/shields/build/devel/bioc/ISAnalytics.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/ISAnalytics)
+[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/RELEASE_3_16/graph/badge.svg)](https://app.codecov.io/gh/calabrialab/ISAnalytics/tree/RELEASE_3_16)
+[![R-CMD-check-bioc RELEASE](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-release.yml/badge.svg)](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-release.yml)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Bioc release status](http://www.bioconductor.org/shields/build/release/bioc/ISAnalytics.svg)](https://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics)
 <!-- badges: end -->
 
 ISAnalytics is an R package developed to analyze gene therapy vector
@@ -67,7 +67,7 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_15",
+                         ref = "RELEASE_3_16",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
 ```
