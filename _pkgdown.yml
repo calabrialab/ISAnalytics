@@ -15,7 +15,7 @@ navbar:
     - tutorials
     - news
     right:
-    - release-v
+    - devel-v
     - github
   components:
     home:
@@ -37,10 +37,10 @@ navbar:
         href: articles/workflow_start.html
       - text: Sharing analyses with ISAnalytics
         href: articles/sharing_analyses.html
-    release-v:
+    devel-v:
       icon: fas fa-code-branch
       text: RELEASE
-      href: https://calabrialab.github.io/ISAnalytics/
+      href: https://calabrialab.github.io/ISAnalytics/dev/
 reference:
   - title: "Import functions"
     desc: >
