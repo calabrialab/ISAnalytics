@@ -801,6 +801,9 @@ gene_frequency_fisher <- function(cis_x,
                 method = "BY",
                 n = length(.data$Fisher_p_value)
             ),
+            Fisher_p_value_bonferroni = stats::p.adjust(.data$Fisher_p_value,
+                method = "bonferroni",
+                n = length(.data$Fisher_p_value)),
             minus_log10_pvalue = -log(.data$Fisher_p_value, base = 10)
         ) %>%
         dplyr::mutate(
