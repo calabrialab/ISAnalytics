@@ -31,6 +31,9 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/CIS_grubbs.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/CIS_grubbs_overtime.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/CIS_volcano_plot.html</loc>
   </url>
   <url>
@@ -115,6 +118,12 @@
     <loc>https://calabrialab.github.io/ISAnalytics/reference/default_stats.html</loc>
   </url>
   <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/enable_progress_bars.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/export_ISA_settings.html</loc>
+  </url>
+  <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/fisher_scatterplot.html</loc>
   </url>
   <url>
@@ -128,6 +137,9 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/generate_default_folder_structure.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/import_ISA_settings.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/import_Vispa2_stats.html</loc>
@@ -233,6 +245,9 @@
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/top_abund_tableGrob.html</loc>
+  </url>
+  <url>
+    <loc>https://calabrialab.github.io/ISAnalytics/reference/top_cis_overtime_heatmap.html</loc>
   </url>
   <url>
     <loc>https://calabrialab.github.io/ISAnalytics/reference/top_integrations.html</loc>
