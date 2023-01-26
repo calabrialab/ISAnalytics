@@ -2,6 +2,18 @@
 title: "NEWS"
 output: github_document
 ---
+# ISAnalytics 1.8.2 (2023-01-26)
+
+## FIXES AND GENERAL UPDATES
+
+* Fixed an issue with ifelse function in `top_abund_tableGrob()` - now the 
+function has a new argument `transform_by` which is useful for controlling
+ordering of columns
+* Updated CITATION file
+* Package `DT` has been moved (likely temporarily) in Imports - linked to issue
+https://github.com/calabrialab/ISAnalytics/issues/2
+* Fixed other typos and minor issues
+
 # ISAnalytics 1.8.1 (2022-12-01)
 
 * Fixed all `tidyselect` warnings (internal use of .data$ in selection context)

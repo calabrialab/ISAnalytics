@@ -39,7 +39,7 @@ navbar:
         href: articles/sharing_analyses.html
     devel-v:
       icon: fas fa-code-branch
-      text: RELEASE
+      text: DEVEL
       href: https://calabrialab.github.io/ISAnalytics/dev/
 reference:
   - title: "Import functions"
