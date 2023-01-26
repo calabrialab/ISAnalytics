@@ -136,11 +136,11 @@ CIS_volcano_plot <- function(x,
     ## Trace plot
     plot_cis_fdr_slice <- ggplot2::ggplot(
         data = cis_grubbs_df,
-        ggplot2::aes_(
-            y = ~minus_log_p_fdr,
-            x = ~neg_zscore_minus_log2_int_freq_tolerance,
-            color = ~KnownGeneClass,
-            fill = ~KnownGeneClass
+        ggplot2::aes(
+            y = .data[["minus_log_p_fdr"]],
+            x = .data[["neg_zscore_minus_log2_int_freq_tolerance"]],
+            color = .data[["KnownGeneClass"]],
+            fill = .data[["KnownGeneClass"]]
         ),
         na.rm = TRUE, se = TRUE
     ) +
@@ -159,7 +159,7 @@ CIS_volcano_plot <- function(x,
                 cis_grubbs_df,
                 .data$tdist_fdr < significance_threshold
             ),
-            ggplot2::aes_string(label = gene_sym_col),
+            ggplot2::aes(label = .data[[gene_sym_col]]),
             box.padding = ggplot2::unit(0.35, "lines"),
             point.padding = ggplot2::unit(0.3, "lines"),
             color = "white",
@@ -220,7 +220,7 @@ CIS_volcano_plot <- function(x,
         plot_cis_fdr_slice <- plot_cis_fdr_slice +
             ggrepel::geom_label_repel(
                 data = to_highlight,
-                ggplot2::aes_string(label = gene_sym_col),
+                ggplot2::aes(label = .data[[gene_sym_col]]),
                 box.padding = ggplot2::unit(0.35, "lines"),
                 point.padding = ggplot2::unit(0.3, "lines"),
                 color = "white",
@@ -924,10 +924,10 @@ fisher_scatterplot <- function(fisher_df,
     }
     plot <- ggplot2::ggplot(
         above_threshold,
-        ggplot2::aes_(
-            x = ~IS_per_kbGeneLen_1,
-            y = ~IS_per_kbGeneLen_2,
-            color = ggplot2::sym(p_value_col)
+        ggplot2::aes(
+            x = .data[["IS_per_kbGeneLen_1"]],
+            y = .data[["IS_per_kbGeneLen_2"]],
+            color = .data[[p_value_col]]
         )
     ) +
         ggplot2::geom_point(alpha = 0.65) +
@@ -939,7 +939,7 @@ fisher_scatterplot <- function(fisher_df,
         ) +
         ggrepel::geom_label_repel(
             data = below_threshold,
-            ggplot2::aes_string(label = gene_sym_col),
+            ggplot2::aes(label = .data[[gene_sym_col]]),
             box.padding = ggplot2::unit(0.35, "lines"),
             point.padding = ggplot2::unit(0.3, "lines"),
             max.overlaps = Inf, color = annot_color,
@@ -1001,10 +1001,10 @@ HSC_population_plot <- function(estimates,
         )
     p <- ggplot2::ggplot(
         data = df,
-        ggplot2::aes_(
-            y = ~PopSize,
-            x = ~TimePoint_to,
-            color = ~SubjectID
+        ggplot2::aes(
+            y = .data[["PopSize"]],
+            x = .data[["TimePoint_to"]],
+            color = .data[["SubjectID"]]
         ),
         na.rm = TRUE, se = TRUE
     ) +
@@ -1316,7 +1316,7 @@ integration_alluvial_plot <- function(x,
 # Internal, used in integration_alluvial_plot to obtain the alluvial plots
 # for a single group. NOTE: tbl must contain the column "alluvia_id" and
 # "counts"
-#' @importFrom ggplot2 ggplot aes_ geom_text scale_fill_viridis_d sym
+#' @importFrom ggplot2 ggplot geom_text scale_fill_viridis_d sym
 #' @importFrom dplyr group_by summarise pull across all_of
 #' @importFrom rlang .data
 .alluvial_plot <- function(tbl, plot_x, plot_y,
@@ -1338,17 +1338,17 @@ integration_alluvial_plot <- function(x,
         dplyr::ungroup()
     alluv <- ggplot2::ggplot(
         tbl,
-        ggplot2::aes_(
-            x = ggplot2::sym(plot_x),
-            y = ggplot2::sym(plot_y),
-            alluvium = ~alluvia_id
+        ggplot2::aes(
+            x = .data[[plot_x]],
+            y = .data[[plot_y]],
+            alluvium = .data[["alluvia_id"]]
         )
     ) +
-        ggalluvial::stat_stratum(ggplot2::aes_(stratum = ~alluvia_id),
+        ggalluvial::stat_stratum(ggplot2::aes(stratum = .data[["alluvia_id"]]),
             na.rm = FALSE,
             fill = empty_space_color
         ) +
-        ggalluvial::geom_alluvium(ggplot2::aes_(fill = ~alluvia_id),
+        ggalluvial::geom_alluvium(ggplot2::aes(fill = .data[["alluvia_id"]]),
             na.rm = FALSE,
             alpha = .75,
             aes.bind = "alluvia"
@@ -1359,10 +1359,10 @@ integration_alluvial_plot <- function(x,
         ggplot2::theme(legend.position = "none") +
         ggplot2::geom_text(
             data = labels,
-            ggplot2::aes_(
-                x = ggplot2::sym(plot_x),
+            ggplot2::aes(
+                x = .data[[plot_x]],
                 y = max_y + 5,
-                label = ~count
+                label = .data[["count"]]
             ), inherit.aes = FALSE
         )
     return(alluv)
@@ -1400,6 +1400,9 @@ integration_alluvial_plot <- function(x,
 #' @param digits Integer. Digits to show for the quantification column
 #' @param perc_symbol Logical. Show percentage symbol in the quantification
 #' column?
+#' @param transform_by Either a function or a purrr-style lambda. This
+#' function is applied to the column `by` before separating columns. If
+#' `NULL` no function is applied. Useful to modify column order in final table.
 #'
 #' @family Plotting functions
 #' @return A tableGrob object
@@ -1426,6 +1429,9 @@ integration_alluvial_plot <- function(x,
 #' abund <- compute_abundance(x = aggreg)
 #' grob <- top_abund_tableGrob(abund)
 #' gridExtra::grid.arrange(grob)
+#'
+#' # with transform
+#' grob <- top_abund_tableGrob(abund, transform_by = ~ as.numeric(.x))
 top_abund_tableGrob <- function(df,
     id_cols = mandatory_IS_vars(),
     quant_col = "fragmentEstimate_sum_PercAbundance",
@@ -1435,7 +1441,8 @@ top_abund_tableGrob <- function(df,
     tbl_cols = "GeneName",
     include_id_cols = FALSE,
     digits = 2,
-    perc_symbol = TRUE) {
+    perc_symbol = TRUE,
+    transform_by = NULL) {
     if (!requireNamespace("gridExtra", quietly = TRUE)) {
         rlang::abort(.missing_pkg_error("gridExtra"))
     }
@@ -1451,11 +1458,14 @@ top_abund_tableGrob <- function(df,
     } else {
         NULL
     }
+    if (!is.null(transform_by)) {
+      df <- df %>%
+        dplyr::mutate(
+          dplyr::across(.cols = dplyr::all_of(by),
+                        .fns = transform_by)
+        )
+    }
     top <- df %>%
-        dplyr::mutate(dplyr::across({{ by }}, ~ ifelse(is.na(.x),
-            yes = "NA",
-            no = .x
-        ))) %>%
         tidyr::unite({{ id_cols }}, col = "alluvia_id") %>%
         dplyr::select(dplyr::all_of(c(
             "alluvia_id", tbl_cols,
@@ -1495,26 +1505,35 @@ top_abund_tableGrob <- function(df,
             dplyr::select(-.data$alluvia_id)
     }
     distinct_x <- unique(top[[by]])
-    tops_by_x <- purrr::map(distinct_x, function(x) {
-        tmp <- top %>%
-            dplyr::filter(
-                dplyr::if_all(.cols = dplyr::all_of(by), .fns = ~ .x == x)
-            ) %>%
-            dplyr::select(-dplyr::all_of(by))
-        if (nrow(tmp) < top_n) {
-            index_1 <- nrow(tmp) + 1
-            tmp[seq(from = index_1, to = top_n, by = 1), ] <-
-                as.list(c(
-                    rep_len(
-                        NA,
-                        length(colnames(tmp)[colnames(tmp) != "font_col"])
-                    ),
-                    "transparent"
-                ))
-        }
-        tmp <- tmp %>%
-            dplyr::rename_with(.fn = ~ paste0(.x, " ", x))
-    }) %>% purrr::set_names(distinct_x)
+    sep_x <- function(x) {
+      tmp <- if (is.na(x)) {
+        top %>%
+          dplyr::filter(
+            is.na(.data[[by]])
+          )
+      } else {
+        top %>%
+          dplyr::filter(
+            .data[[by]] == x
+          )
+      }
+      tmp <- tmp %>%
+        dplyr::select(-dplyr::all_of(by))
+      if (nrow(tmp) < top_n) {
+        index_1 <- nrow(tmp) + 1
+        tmp[seq(from = index_1, to = top_n, by = 1), ] <-
+          as.list(c(
+            rep_len(
+              NA,
+              length(colnames(tmp)[colnames(tmp) != "font_col"])
+            ),
+            "transparent"
+          ))
+      }
+      tmp <- tmp %>%
+        dplyr::rename_with(.fn = ~ paste0(.x, " ", x))
+    }
+    tops_by_x <- purrr::map(distinct_x, sep_x) %>% purrr::set_names(distinct_x)
 
     obtain_grobs <- function(df, x) {
         fill_var <- colnames(df)[stringr::str_detect(colnames(df), "fill")]
@@ -1578,7 +1597,7 @@ top_abund_tableGrob <- function(df,
 #' @export
 #'
 #' @importFrom rlang abort inform .data
-#' @importFrom ggplot2 ggplot aes_ geom_raster scale_fill_gradientn geom_text
+#' @importFrom ggplot2 ggplot geom_raster scale_fill_gradientn geom_text
 #' @importFrom ggplot2 scale_alpha_continuous aes theme element_text
 #' @importFrom ggplot2 element_blank rel labs
 #' @importFrom dplyr mutate across all_of
