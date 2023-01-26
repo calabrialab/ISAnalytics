@@ -14,7 +14,8 @@ top_abund_tableGrob(
   tbl_cols = "GeneName",
   include_id_cols = FALSE,
   digits = 2,
-  perc_symbol = TRUE
+  perc_symbol = TRUE,
+  transform_by = NULL
 )
 }
 \arguments{
@@ -49,6 +50,10 @@ between values of y.}
 
 \item{perc_symbol}{Logical. Show percentage symbol in the quantification
 column?}
+
+\item{transform_by}{Either a function or a purrr-style lambda. This
+function is applied to the column \code{by} before separating columns. If
+\code{NULL} no function is applied. Useful to modify column order in final table.}
 }
 \value{
 A tableGrob object
@@ -73,6 +78,9 @@ aggreg <- aggregate_values_by_key(
 abund <- compute_abundance(x = aggreg)
 grob <- top_abund_tableGrob(abund)
 gridExtra::grid.arrange(grob)
+
+# with transform
+grob <- top_abund_tableGrob(abund, transform_by = ~ as.numeric(.x))
 }
 \seealso{
 Other Plotting functions: 
