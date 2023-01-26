@@ -1,14 +1,15 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ISAnalytics <a href='https://bioconductor.org/packages/3.12/bioc/html/ISAnalytics.html'><img src='man/figures/logo.png' align="right" height="250" /></a>
+# ISAnalytics <a href='https://bioconductor.org/packages/3.16/bioc/html/ISAnalytics.html'><img src='man/figures/logo.png' align="right" height="250" /></a>
 
 <!-- badges: start -->
 
-[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://codecov.io/gh/calabrialab/ISAnalytics)
-[![R-CMD-check-bioc](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-devel.yml/badge.svg)](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-devel.yml)
+[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://app.codecov.io/gh/calabrialab/ISAnalytics)
+[![R-CMD-check-bioc
+DEVEL](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-devel.yml/badge.svg)](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-devel.yml)
 [![BioC
-status](http://www.bioconductor.org/shields/build/devel/bioc/ISAnalytics.svg)](https://bioconductor.org/checkResults/devel/bioc-LATEST/ISAnalytics)
+status](http://www.bioconductor.org/shields/build/devel/bioc/ISAnalytics.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/ISAnalytics/)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
@@ -30,6 +31,9 @@ automation of IS workflow, (2) performing base and advance analysis for
 IS tracking (clonal abundance, clonal expansions and statistics for
 insertional mutagenesis, etc.), (3) providing basic biology insights of
 transduced stem cells in vivo.
+
+The paper is available here
+<https://academic.oup.com/bib/article/24/1/bbac551/6955274?login=false>
 
 # Visit the package website
 
@@ -133,6 +137,18 @@ options("ISAnalytics.reports" = TRUE)
 <summary>
 Show more
 </summary>
+
+# ISAnalytics 1.9.2 (2023-01-26)
+
+## FIXES AND GENERAL UPDATES
+
+- Fixed an issue with ifelse function in `top_abund_tableGrob()` - now
+  the function has a new argument `transform_by` which is useful for
+  controlling ordering of columns
+- Updated CITATION file
+- Package `DT` has been moved (likely temporarily) in Imports - linked
+  to issue <https://github.com/calabrialab/ISAnalytics/issues/2>
+- Fixed other typos and minor issues
 
 # ISAnalytics 1.9.1 (2022-12-01)
 
