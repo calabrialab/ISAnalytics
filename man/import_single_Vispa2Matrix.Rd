@@ -40,7 +40,7 @@ Deprecated. Use \code{additonal_cols} instead}
 Deprecated. Use \code{additonal_cols} instead}
 }
 \value{
-A data.table object in tidy format
+A data frame object in tidy format
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}

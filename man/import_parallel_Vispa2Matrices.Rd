@@ -13,14 +13,13 @@ import_parallel_Vispa2Matrices(
   report_path = default_report_path(),
   patterns = NULL,
   matching_opt = matching_options(),
-  mode = c("AUTO", "INTERACTIVE"),
+  mode = "AUTO",
   ...
 )
 }
 \arguments{
 \item{association_file}{Data frame imported via
-\link{import_association_file} (with file system alignment) or
-a string containing the path to the association file on disk.}
+\link{import_association_file} (with file system alignment)}
 
 \item{quantification_type}{A vector of requested quantification_types.
 Possible choices are \link{quantification_types}}
@@ -39,21 +38,17 @@ instead of a list.}
 Can be a folder or \code{NULL} if no report should be produced.
 Defaults to \code{{user_home}/ISAnalytics_reports}.}
 
-\item{patterns}{Relevant only if argument \code{mode} is set to \code{AUTO}.
-A character vector of additional patterns to match on file
+\item{patterns}{A character vector of additional patterns to match on file
 names. Please note that patterns must be regular expressions. Can be \code{NULL}
 if no patterns need to be matched.}
 
-\item{matching_opt}{Relevant only if argument \code{mode} is set to \code{AUTO}.
-A single value between \link{matching_options}}
+\item{matching_opt}{A single value between \link{matching_options}}
 
-\item{mode}{A single value between \code{AUTO} and \code{INTERACTIVE}. If
-\code{INTERACTIVE}, the function will ask for input from the user on console,
-otherwise the process is fully automated (with limitations, see vignette).}
+\item{mode}{Only \code{AUTO} is supported. As of \verb{ISAnalytics 1.8.3}, the value
+\code{INTERACTIVE} is officially deprecated.}
 
 \item{...}{<\code{\link[rlang:dyn-dots]{dynamic-dots}}> Additional named arguments
-to pass to \code{ìmport_association_file}, \code{comparison_matrix} and
-\code{import_single_Vispa2_matrix}}
+to pass to \code{comparison_matrix} and \code{import_single_Vispa2_matrix}}
 }
 \value{
 Either a multi-quantification matrix or a list of integration

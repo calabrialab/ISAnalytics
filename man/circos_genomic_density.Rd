@@ -77,8 +77,8 @@ aggreg <- aggregate_values_by_key(
     association_file = association_file,
     value_cols = c("seqCount", "fragmentEstimate")
 )
-by_subj <- aggreg \%>\%
-    dplyr::group_by(.data$SubjectID) \%>\%
+by_subj <- aggreg |>
+    dplyr::group_by(.data$SubjectID) |>
     dplyr::group_split()
 circos_genomic_density(by_subj,
     track_colors = c("navyblue", "gold"),

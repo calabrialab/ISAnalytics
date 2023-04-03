@@ -37,11 +37,12 @@ is set to TRUE}
 A data frame
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#defunct}{\figure{lifecycle-defunct.svg}{options: alt='[Defunct]'}}}{\strong{[Defunct]}}
 This function was deprecated in favour of a single function,
 please use \code{cumulative_is} instead.
 }
 \examples{
+\dontrun{
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
@@ -51,5 +52,6 @@ aggreg <- aggregate_values_by_key(
 )
 cumulative_count <- cumulative_count_union(aggreg)
 cumulative_count
+}
 }
 \keyword{internal}

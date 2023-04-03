@@ -138,6 +138,51 @@ options("ISAnalytics.reports" = TRUE)
 Show more
 </summary>
 
+# ISAnalytics 1.8.3 (2023-04-03)
+
+## ENHANCES AND REFACTORING
+
+- The package no longer depends on `magrittr`
+- All functionality associated with `data.table` now it’s completely
+  optional and will be used internally only if the package is available
+- Several packages were moved from `Imports` to `Suggests` - functions
+  will notify when additional packages are requested for the specific
+  functionality
+- All known deprecated or superseded functions from other packages have
+  been removed or substituted
+
+## FIXES AND GENERAL UPDATES
+
+- Added a new tag “barcode_mux” in `available_tags()`
+- The function `HSC_population_size_estimate()` now better supports the
+  computation of estimates from different groups of cell types and
+  tissues at the same time. The tabular output now contains an
+  additional column “Timepoints_included” that specifies how many time
+  points the estimate contains
+- Function `is_sharing()` can now handle better limit cases and has the
+  option of being parallelised provided appropriate packages are
+  available (better performance)
+
+## DEPRECATIONS & BREAKING CHANGES
+
+- Functions `import_parallel_Vispa2Matrices_auto()` and
+  `import_parallel_Vispa2Matrices_interactive()` are officially defunct
+  and will not be exported anymore starting from the next release cycle
+- The argument `mode` of `import_parallel_Vispa2Matrices()` no longer
+  accepts `INTERACTIVE` as a valid option and the interactive mode is
+  considered now defunct, since the usage is very limiting and limited
+- The argument `association_file` of `import_parallel_Vispa2Matrices()`
+  no longer accepts a string representing a path. Association file
+  import is delegated solely to its dedicated function from now on.
+- The function `threshold_filter()` is deprecated, since its use is
+  rather complicated instead of using standard filtering with dplyr or
+  similar tools
+
+## MINOR CHANGES
+
+- `default_af_transform()` now pads time points based on the maximum
+  number of characters + 1 in the column
+
 # ISAnalytics 1.8.2 (2023-01-26)
 
 ## FIXES AND GENERAL UPDATES

@@ -20,7 +20,7 @@ import_parallel_Vispa2Matrices_auto(
 A data frame or a list
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#defunct}{\figure{lifecycle-defunct.svg}{options: alt='[Defunct]'}}}{\strong{[Defunct]}}
 This function was deprecated to avoid redundancy.
 Please refer to \code{\link{import_parallel_Vispa2Matrices}}.
 }

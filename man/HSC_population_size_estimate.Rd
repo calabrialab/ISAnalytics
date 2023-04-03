@@ -27,7 +27,8 @@ HSC_population_size_estimate(
 \item{metadata}{An aggregated association file. See details.}
 
 \item{stable_timepoints}{A numeric vector or NULL if there are no
-stable time points.}
+stable time points. NOTE: the vector is NOT intended as a sequence min-max,
+every stable time point has to be specified individually}
 
 \item{aggregation_key}{A character vector indicating the key used for
 aggregating x and metadata. Note that x and metadata should always be
@@ -85,6 +86,36 @@ aggregation, must contain at least the columns associated with the tags
 column in the argument \code{timepoint_column}).
 }
 
+\section{Specifying more than one group}{
+Groups for the estimates are computed as a pair of cell type and tissue.
+If the user wishes to compute estimates for more than one combination
+of cell type and tissue, it is possible to specify them as character
+vectors to the fields \code{cell_type} and \code{tissue_type} respectively,
+noting that:
+\itemize{
+\item Vectors must have the same length or one of the 2 has to be of length 1
+\item It is a responsibility of the user to check whether the combination
+exists in the dataset provided.
+}
+
+Example:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{estimate <- HSC_population_size_estimate(
+    x = aggreg,
+    metadata = aggreg_meta,
+    cell_type = c("MYELOID", "T", "B"),
+    tissue_type = "PB"
+)
+
+# Evaluated groups will be:
+# - MYELOID PB
+# - T PB
+# - B PB
+}\if{html}{\out{</div>}}
+
+Note that estimates are computed individually for each group.
+}
+
 \section{On time points}{
 If \code{stable_timepoints} is a vector with length > 1, the function will look
 for the first available stable time point and slice the data from that
@@ -92,6 +123,8 @@ time point onward. If \code{NULL} is supplied instead, it means there are no
 stable time points available. Note that 0 time points are ALWAYS discarded.
 Also, to be included in the analysis, a group must have at least 2
 distinct non-zero time points.
+NOTE: the vector passed has to contain all individual time points, not
+just the minimum and maximum
 }
 
 \section{Setting a threshold for fragment estimate}{

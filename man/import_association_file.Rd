@@ -94,9 +94,15 @@ and years
 \itemize{
 \item If \code{TPD} is \code{NA} --> \code{NA} (for both months and years)
 \item \code{TPM} = 0, \code{TPY} = 0 if and only if \code{TPD} = 0
+}
+
 For conversion in months:
+\itemize{
 \item \code{TPM} = ceiling(\code{TPD}/30) if \code{TPD} < 30 otherwise \code{TPM} = round(\code{TPD}/30)
+}
+
 For conversion in years:
+\itemize{
 \item \code{TPY} = ceiling(\code{TPD}/360)
 }
 }
