@@ -14,7 +14,7 @@ models."><meta property="og:image" content="https://calabrialab.github.io/ISAnal
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -110,7 +110,8 @@ models.</p>
 
 <dt>stable_timepoints</dt>
 <dd><p>A numeric vector or NULL if there are no
-stable time points.</p></dd>
+stable time points. NOTE: the vector is NOT intended as a sequence min-max,
+every stable time point has to be specified individually</p></dd>
 
 
 <dt>aggregation_key</dt>
@@ -190,13 +191,38 @@ aggregation, must contain at least the columns associated with the tags
 column in the argument <code>timepoint_column</code>).</p>
     </div>
     <div class="section level2">
+    <h2 id="specifying-more-than-one-group">Specifying more than one group<a class="anchor" aria-label="anchor" href="#specifying-more-than-one-group"></a></h2>
+    <p>Groups for the estimates are computed as a pair of cell type and tissue.
+If the user wishes to compute estimates for more than one combination
+of cell type and tissue, it is possible to specify them as character
+vectors to the fields <code>cell_type</code> and <code>tissue_type</code> respectively,
+noting that:</p><ul><li><p>Vectors must have the same length or one of the 2 has to be of length 1</p></li>
+<li><p>It is a responsibility of the user to check whether the combination
+exists in the dataset provided.</p></li>
+</ul><p>Example:</p>
+<p></p><div class="sourceCode r"><pre><code><span><span class="va">estimate</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/HSC_population_size_estimate.html">HSC_population_size_estimate</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="va">aggreg</span>,</span>
+<span>    metadata <span class="op">=</span> <span class="va">aggreg_meta</span>,</span>
+<span>    cell_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MYELOID"</span>, <span class="st">"T"</span>, <span class="st">"B"</span><span class="op">)</span>,</span>
+<span>    tissue_type <span class="op">=</span> <span class="st">"PB"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Evaluated groups will be:</span></span>
+<span><span class="co"># - MYELOID PB</span></span>
+<span><span class="co"># - T PB</span></span>
+<span><span class="co"># - B PB</span></span></code></pre><p></p></div>
+<p>Note that estimates are computed individually for each group.</p>
+    </div>
+    <div class="section level2">
     <h2 id="on-time-points">On time points<a class="anchor" aria-label="anchor" href="#on-time-points"></a></h2>
     <p>If <code>stable_timepoints</code> is a vector with length &gt; 1, the function will look
 for the first available stable time point and slice the data from that
 time point onward. If <code>NULL</code> is supplied instead, it means there are no
 stable time points available. Note that 0 time points are ALWAYS discarded.
 Also, to be included in the analysis, a group must have at least 2
-distinct non-zero time points.</p>
+distinct non-zero time points.
+NOTE: the vector passed has to contain all individual time points, not
+just the minimum and maximum</p>
     </div>
     <div class="section level2">
     <h2 id="setting-a-threshold-for-fragment-estimate">Setting a threshold for fragment estimate<a class="anchor" aria-label="anchor" href="#setting-a-threshold-for-fragment-estimate"></a></h2>
@@ -257,7 +283,7 @@ the combined filtering with fragment estimate, simply set
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

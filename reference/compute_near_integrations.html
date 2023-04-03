@@ -16,7 +16,7 @@ into single integration sites adjusting their values if needed.'><meta property=
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -282,27 +282,16 @@ all quantification matrices.</p>
 <span class="r-in"><span>    x <span class="op">=</span> <span class="va">integration_matrices</span>, map_as_file <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    chr integration_locus strand GeneName GeneStrand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   1           8607357      +     RERE          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   1           8607357      +     RERE          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:   1           8607357      +     RERE          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:   1           8607357      +     RERE          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:   1           8607357      +     RERE          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:   1           8850362      +     RERE          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 CompleteAmplificationID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  PJ01_POOL01_LTR27LC94_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: PJ01_POOL01_LTR83LC46_PT001_PT001-107_lenti_GLOBE_BM_1_SLiM_0060_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: PJ01_POOL02_LTR87LC74_PT001_PT001-156_lenti_GLOBE_BM_1_SLiM_0360_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: PJ01_POOL03_LTR51LC86_PT002_PT002-466_lenti_GLOBE_BM_1_SLiM_0360_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    seqCount fragmentEstimate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     1046         3.010030</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:        1         1.001340</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:       41         1.000357</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:        9         1.000302</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:      330        34.101600</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:      562         3.009667</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   chr   integration_locus strand GeneName GeneStrand CompleteAmplificationID    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 1               8<span style="text-decoration: underline;">607</span>357 +      RERE     -          PJ01_POOL01_LTR27LC94_PT00…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 1               8<span style="text-decoration: underline;">607</span>357 +      RERE     -          PJ01_POOL01_LTR83LC46_PT00…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 1               8<span style="text-decoration: underline;">607</span>357 +      RERE     -          PJ01_POOL01_LTR83LC66_PT00…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 1               8<span style="text-decoration: underline;">607</span>357 +      RERE     -          PJ01_POOL01_LTR53LC32_PT00…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 1               8<span style="text-decoration: underline;">607</span>357 +      RERE     -          PJ01_POOL02_LTR87LC74_PT00…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 1               8<span style="text-decoration: underline;">850</span>362 +      RERE     -          PJ01_POOL03_LTR51LC86_PT00…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: seqCount &lt;dbl&gt;, fragmentEstimate &lt;dbl&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -310,7 +299,7 @@ all quantification matrices.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

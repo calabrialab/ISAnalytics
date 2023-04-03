@@ -22,7 +22,7 @@ https://ashpublications.org/blood/article/117/20/5332/21206/Lentiviral-vector-co
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -203,22 +203,22 @@ format, meaning the input file headers should include:</p>
 <span class="r-in"><span><span class="va">cis</span> <span class="op">&lt;-</span> <span class="fu">CIS_grubbs</span><span class="op">(</span><span class="va">integration_matrices</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Warning: missing genes in refgenes table</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> A total of 5 genes were found in the input data but not in the refgene table. This may be caused by a mismatch in the annotation phase of the matrix. Here is a summary: </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>    chr  GeneName GeneStrand</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> 1:  15    CRELD2          -</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> 2:   6      HTR4          +</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> 3:  16    UBE2D2          +</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> 4:  19 LINC01133          +</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> 5:  14  PLEKHG4B          -</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>     GeneName GeneStrand chr</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 1:    CRELD2          -  15</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 2:      HTR4          +   6</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 3:    UBE2D2          +  16</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 4: LINC01133          +  19</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 5:  PLEKHG4B          -  14</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> NOTE: missing genes will be removed from the final output! Review results carefully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> A total of 25 IS will be removed because of missing genes ( 1.48 % of total IS in input)</span>
 <span class="r-in"><span><span class="va">cis</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $missing_genes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    chr  GeneName GeneStrand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  15    CRELD2          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   6      HTR4          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  16    UBE2D2          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  19 LINC01133          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:  14  PLEKHG4B          -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     GeneName GeneStrand chr</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    CRELD2          -  15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      HTR4          +   6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    UBE2D2          +  16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: LINC01133          +  19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:  PLEKHG4B          -  14</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $missing_is</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $missing_is$absolute</span>
@@ -230,25 +230,25 @@ format, meaning the input file headers should include:</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cis</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 501 × 37</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    GeneName GeneSt…¹ chr       n   mean    sd median trimmed   mad    min    max</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ABHD16A  -        6         3 3.17<span style="color: #949494;">e</span>7    0  3.17<span style="color: #949494;">e</span>7  3.17<span style="color: #949494;">e</span>7    0  3.17<span style="color: #949494;">e</span>7 3.17<span style="color: #949494;">e</span>7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ABHD2    +        15        3 8.96<span style="color: #949494;">e</span>7    0  8.96<span style="color: #949494;">e</span>7  8.96<span style="color: #949494;">e</span>7    0  8.96<span style="color: #949494;">e</span>7 8.96<span style="color: #949494;">e</span>7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ACAP2    -        3         2 1.95<span style="color: #949494;">e</span>8    0  1.95<span style="color: #949494;">e</span>8  1.95<span style="color: #949494;">e</span>8    0  1.95<span style="color: #949494;">e</span>8 1.95<span style="color: #949494;">e</span>8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ACOX1    -        17       10 7.40<span style="color: #949494;">e</span>7 <span style="text-decoration: underline;">8</span>844. 7.40<span style="color: #949494;">e</span>7  7.40<span style="color: #949494;">e</span>7 <span style="text-decoration: underline;">4</span>236. 7.40<span style="color: #949494;">e</span>7 7.40<span style="color: #949494;">e</span>7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ACSM3    +        16        4 2.08<span style="color: #949494;">e</span>7    0  2.08<span style="color: #949494;">e</span>7  2.08<span style="color: #949494;">e</span>7    0  2.08<span style="color: #949494;">e</span>7 2.08<span style="color: #949494;">e</span>7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ADD1     +        4         8 2.87<span style="color: #949494;">e</span>6 <span style="text-decoration: underline;">6</span>694. 2.87<span style="color: #949494;">e</span>6  2.87<span style="color: #949494;">e</span>6 <span style="text-decoration: underline;">8</span>804. 2.86<span style="color: #949494;">e</span>6 2.87<span style="color: #949494;">e</span>6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ADGRA3   -        4         2 2.25<span style="color: #949494;">e</span>7    0  2.25<span style="color: #949494;">e</span>7  2.25<span style="color: #949494;">e</span>7    0  2.25<span style="color: #949494;">e</span>7 2.25<span style="color: #949494;">e</span>7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ADGRB3   +        6         4 6.94<span style="color: #949494;">e</span>7    0  6.94<span style="color: #949494;">e</span>7  6.94<span style="color: #949494;">e</span>7    0  6.94<span style="color: #949494;">e</span>7 6.94<span style="color: #949494;">e</span>7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ADGRG3   +        16        3 5.77<span style="color: #949494;">e</span>7    0  5.77<span style="color: #949494;">e</span>7  5.77<span style="color: #949494;">e</span>7    0  5.77<span style="color: #949494;">e</span>7 5.77<span style="color: #949494;">e</span>7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> AHR      +        7         2 1.72<span style="color: #949494;">e</span>7    0  1.72<span style="color: #949494;">e</span>7  1.72<span style="color: #949494;">e</span>7    0  1.72<span style="color: #949494;">e</span>7 1.72<span style="color: #949494;">e</span>7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 491 more rows, 26 more variables: range &lt;dbl&gt;, skew &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   kurtosis &lt;dbl&gt;, n_IS_perGene &lt;int&gt;, min_bp_integration_locus &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    GeneName GeneStrand chr       n       mean    sd  median trimmed   mad    min</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ABHD16A  -          6         3  31<span style="text-decoration: underline;">654</span>876     0   3.17<span style="color: #949494;">e</span>7  3.17<span style="color: #949494;">e</span>7    0  3.17<span style="color: #949494;">e</span>7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ABHD2    +          15        3  89<span style="text-decoration: underline;">642</span>998     0   8.96<span style="color: #949494;">e</span>7  8.96<span style="color: #949494;">e</span>7    0  8.96<span style="color: #949494;">e</span>7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ACAP2    -          3         2 195<span style="text-decoration: underline;">107</span>772     0   1.95<span style="color: #949494;">e</span>8  1.95<span style="color: #949494;">e</span>8    0  1.95<span style="color: #949494;">e</span>8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ACOX1    -          17       10  73<span style="text-decoration: underline;">960</span>093. <span style="text-decoration: underline;">8</span>844.  7.40<span style="color: #949494;">e</span>7  7.40<span style="color: #949494;">e</span>7 <span style="text-decoration: underline;">4</span>236. 7.40<span style="color: #949494;">e</span>7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ACSM3    +          16        4  20<span style="text-decoration: underline;">777</span>188     0   2.08<span style="color: #949494;">e</span>7  2.08<span style="color: #949494;">e</span>7    0  2.08<span style="color: #949494;">e</span>7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ADD1     +          4         8   2<span style="text-decoration: underline;">865</span>706. <span style="text-decoration: underline;">6</span>694.  2.87<span style="color: #949494;">e</span>6  2.87<span style="color: #949494;">e</span>6 <span style="text-decoration: underline;">8</span>804. 2.86<span style="color: #949494;">e</span>6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ADGRA3   -          4         2  22<span style="text-decoration: underline;">505</span>019     0   2.25<span style="color: #949494;">e</span>7  2.25<span style="color: #949494;">e</span>7    0  2.25<span style="color: #949494;">e</span>7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ADGRB3   +          6         4  69<span style="text-decoration: underline;">397</span>949     0   6.94<span style="color: #949494;">e</span>7  6.94<span style="color: #949494;">e</span>7    0  6.94<span style="color: #949494;">e</span>7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ADGRG3   +          16        3  57<span style="text-decoration: underline;">716</span>345     0   5.77<span style="color: #949494;">e</span>7  5.77<span style="color: #949494;">e</span>7    0  5.77<span style="color: #949494;">e</span>7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> AHR      +          7         2  17<span style="text-decoration: underline;">227</span>687     0   1.72<span style="color: #949494;">e</span>7  1.72<span style="color: #949494;">e</span>7    0  1.72<span style="color: #949494;">e</span>7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 491 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 27 more variables: max &lt;dbl&gt;, range &lt;dbl&gt;, skew &lt;dbl&gt;, kurtosis &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   n_IS_perGene &lt;int&gt;, min_bp_integration_locus &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   max_bp_integration_locus &lt;dbl&gt;, IS_span_bp &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   avg_bp_integration_locus &lt;dbl&gt;, median_bp_integration_locus &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   distinct_orientations &lt;int&gt;, average_TxLen &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   raw_gene_integration_frequency &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   integration_frequency_withtolerance &lt;dbl&gt;, …</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   raw_gene_integration_frequency &lt;dbl&gt;, …</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
@@ -257,7 +257,7 @@ format, meaning the input file headers should include:</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -105,7 +105,7 @@ Italia</p>
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 data-toc-skip class="date">26 January 2023</h4>
+            <h4 data-toc-skip class="date">3 April 2023</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/vignettes/sharing_analyses.Rmd" class="external-link"><code>vignettes/sharing_analyses.Rmd</code></a></small>
       <div class="d-none name"><code>sharing_analyses.Rmd</code></div>
@@ -210,7 +210,6 @@ set this feature:</p>
 are always present in integration matrices.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://calabrialab.github.io/ISAnalytics">ISAnalytics</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: magrittr</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;    chr integration_locus strand     GeneName GeneStrand</span></span>
@@ -239,13 +238,18 @@ are always present in integration matrices.</p>
 <code><a href="../articles/workflow_start.html">vignette("workflow_start", package = "ISAnalytics")</a></code>),
 obtaining therefore different groups. Each group has an associated set
 of integration sites.</p>
+<p>NOTE: aggregating data is not mandatory, since sharing functions in
+ISAnalytics only count distinct integration sites and do not require any
+quantification. The only important thing is that columns that are
+included in the specified key are also included in the input
+matrices.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Aggregation by standard key</span></span>
 <span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span><span class="va">integration_matrices</span>,</span>
 <span>    <span class="va">association_file</span>,</span>
 <span>    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0030"</span>, <span class="st">"0060"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0030"</span>, <span class="st">"0060"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 419 × 11</span></span></span>
 <span><span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand SubjectID CellMarker</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
@@ -271,7 +275,7 @@ of integration sites.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> BM     0060              <span style="text-decoration: underline;">2</span>947                 9.04</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> BM     0030                23                 9.14</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PB     0060                36                 7.07</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 409 more rows</span></span></span></code></pre>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 409 more rows</span></span></span></code></pre>
 <p>An integration site is <em>shared</em> between two or more groups if
 the same triple is observed in all the groups considered.</p>
 </div>
@@ -297,69 +301,22 @@ that can be tuned according to user needs.</p>
 <span>    include_self_comp <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    keep_genomic_coord <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Calculating combinations...</span></span>
-<span><span class="co">#&gt; Done!</span></span>
 <span><span class="va">sharing_1</span></span>
-<span><span class="co">#&gt;                    g1                g2 shared           is_coord count_g1</span></span>
-<span><span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC_BM_0060     21 &lt;data.table[21x3]&gt;       54</span></span>
-<span><span class="co">#&gt;  2: PT001_MNC_BM_0030 PT001_MNC_PB_0060      8  &lt;data.table[8x3]&gt;       54</span></span>
-<span><span class="co">#&gt;  3: PT001_MNC_BM_0060 PT001_MNC_PB_0060     29 &lt;data.table[29x3]&gt;      114</span></span>
-<span><span class="co">#&gt;  4: PT001_MNC_PB_0030 PT001_MNC_PB_0060     10 &lt;data.table[10x3]&gt;       28</span></span>
-<span><span class="co">#&gt;  5: PT001_MNC_BM_0030 PT002_MNC_BM_0030      0  &lt;data.table[0x3]&gt;       54</span></span>
-<span><span class="co">#&gt;  6: PT001_MNC_BM_0060 PT002_MNC_BM_0030      1  &lt;data.table[1x3]&gt;      114</span></span>
-<span><span class="co">#&gt;  7: PT001_MNC_PB_0060 PT002_MNC_BM_0030      1  &lt;data.table[1x3]&gt;       59</span></span>
-<span><span class="co">#&gt;  8: PT001_MNC_PB_0030 PT002_MNC_BM_0030      0  &lt;data.table[0x3]&gt;       28</span></span>
-<span><span class="co">#&gt;  9: PT001_MNC_BM_0030 PT002_MNC_PB_0060      0  &lt;data.table[0x3]&gt;       54</span></span>
-<span><span class="co">#&gt; 10: PT001_MNC_BM_0060 PT002_MNC_PB_0060      0  &lt;data.table[0x3]&gt;      114</span></span>
-<span><span class="co">#&gt; 11: PT001_MNC_PB_0060 PT002_MNC_PB_0060      0  &lt;data.table[0x3]&gt;       59</span></span>
-<span><span class="co">#&gt; 12: PT002_MNC_BM_0030 PT002_MNC_PB_0060      8  &lt;data.table[8x3]&gt;       98</span></span>
-<span><span class="co">#&gt; 13: PT002_MNC_PB_0030 PT002_MNC_PB_0060      7  &lt;data.table[7x3]&gt;       15</span></span>
-<span><span class="co">#&gt; 14: PT001_MNC_PB_0030 PT002_MNC_PB_0060      0  &lt;data.table[0x3]&gt;       28</span></span>
-<span><span class="co">#&gt; 15: PT002_MNC_BM_0060 PT002_MNC_PB_0060      5  &lt;data.table[5x3]&gt;       33</span></span>
-<span><span class="co">#&gt; 16: PT001_MNC_BM_0030 PT002_MNC_PB_0030      0  &lt;data.table[0x3]&gt;       54</span></span>
-<span><span class="co">#&gt; 17: PT001_MNC_BM_0060 PT002_MNC_PB_0030      1  &lt;data.table[1x3]&gt;      114</span></span>
-<span><span class="co">#&gt; 18: PT001_MNC_PB_0060 PT002_MNC_PB_0030      0  &lt;data.table[0x3]&gt;       59</span></span>
-<span><span class="co">#&gt; 19: PT002_MNC_BM_0030 PT002_MNC_PB_0030      3  &lt;data.table[3x3]&gt;       98</span></span>
-<span><span class="co">#&gt; 20: PT001_MNC_PB_0030 PT002_MNC_PB_0030      0  &lt;data.table[0x3]&gt;       28</span></span>
-<span><span class="co">#&gt; 21: PT002_MNC_BM_0060 PT002_MNC_PB_0030      2  &lt;data.table[2x3]&gt;       33</span></span>
-<span><span class="co">#&gt; 22: PT001_MNC_BM_0030 PT001_MNC_PB_0030      7  &lt;data.table[7x3]&gt;       54</span></span>
-<span><span class="co">#&gt; 23: PT001_MNC_BM_0060 PT001_MNC_PB_0030      7  &lt;data.table[7x3]&gt;      114</span></span>
-<span><span class="co">#&gt; 24: PT001_MNC_BM_0030 PT002_MNC_BM_0060      1  &lt;data.table[1x3]&gt;       54</span></span>
-<span><span class="co">#&gt; 25: PT001_MNC_BM_0060 PT002_MNC_BM_0060      0  &lt;data.table[0x3]&gt;      114</span></span>
-<span><span class="co">#&gt; 26: PT001_MNC_PB_0060 PT002_MNC_BM_0060      0  &lt;data.table[0x3]&gt;       59</span></span>
-<span><span class="co">#&gt; 27: PT002_MNC_BM_0030 PT002_MNC_BM_0060      5  &lt;data.table[5x3]&gt;       98</span></span>
-<span><span class="co">#&gt; 28: PT001_MNC_PB_0030 PT002_MNC_BM_0060      0  &lt;data.table[0x3]&gt;       28</span></span>
-<span><span class="co">#&gt;                    g1                g2 shared           is_coord count_g1</span></span>
-<span><span class="co">#&gt;     count_g2 count_union     on_g1     on_g2   on_union</span></span>
-<span><span class="co">#&gt;  1:      114         147 38.888889 18.421053 14.2857143</span></span>
-<span><span class="co">#&gt;  2:       59         105 14.814815 13.559322  7.6190476</span></span>
-<span><span class="co">#&gt;  3:       59         144 25.438596 49.152542 20.1388889</span></span>
-<span><span class="co">#&gt;  4:       59          77 35.714286 16.949153 12.9870130</span></span>
-<span><span class="co">#&gt;  5:       98         152  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt;  6:       98         211  0.877193  1.020408  0.4739336</span></span>
-<span><span class="co">#&gt;  7:       98         156  1.694915  1.020408  0.6410256</span></span>
-<span><span class="co">#&gt;  8:       98         126  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt;  9:       18          72  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt; 10:       18         132  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt; 11:       18          77  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt; 12:       18         108  8.163265 44.444444  7.4074074</span></span>
-<span><span class="co">#&gt; 13:       18          26 46.666667 38.888889 26.9230769</span></span>
-<span><span class="co">#&gt; 14:       18          46  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt; 15:       18          46 15.151515 27.777778 10.8695652</span></span>
-<span><span class="co">#&gt; 16:       15          69  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt; 17:       15         128  0.877193  6.666667  0.7812500</span></span>
-<span><span class="co">#&gt; 18:       15          74  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt; 19:       15         110  3.061224 20.000000  2.7272727</span></span>
-<span><span class="co">#&gt; 20:       15          43  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt; 21:       15          46  6.060606 13.333333  4.3478261</span></span>
-<span><span class="co">#&gt; 22:       28          75 12.962963 25.000000  9.3333333</span></span>
-<span><span class="co">#&gt; 23:       28         135  6.140351 25.000000  5.1851852</span></span>
-<span><span class="co">#&gt; 24:       33          86  1.851852  3.030303  1.1627907</span></span>
-<span><span class="co">#&gt; 25:       33         147  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt; 26:       33          92  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt; 27:       33         126  5.102041 15.151515  3.9682540</span></span>
-<span><span class="co">#&gt; 28:       33          61  0.000000  0.000000  0.0000000</span></span>
-<span><span class="co">#&gt;     count_g2 count_union     on_g1     on_g2   on_union</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 28 × 10</span></span></span>
+<span><span class="co">#&gt;    g1           g2    shared count_g1 count_g2 count_union  on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_MNC_B… PT00…     21       54      114         147 38.9   18.4    14.3  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_MNC_B… PT00…      7       54       28          75 13.0   25       9.33 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_MNC_B… PT00…      8       54       59         105 14.8   13.6     7.62 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT001_MNC_B… PT00…      0       54       98         152  0      0       0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT001_MNC_B… PT00…      1       54       33          86  1.85   3.03    1.16 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT001_MNC_B… PT00…      0       54       15          69  0      0       0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_MNC_B… PT00…      0       54       18          72  0      0       0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT001_MNC_B… PT00…      7      114       28         135  6.14  25       5.19 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_MNC_B… PT00…     29      114       59         144 25.4   49.2    20.1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_MNC_B… PT00…      1      114       98         211  0.877  1.02    0.474</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 18 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: is_coord &lt;list&gt;</span></span></span></code></pre></div>
 <p>In this configuration we set:</p>
 <ul>
 <li>A single input data frame: <code>agg</code>
@@ -414,183 +371,22 @@ coordinates of the shared integration sites as a separate table</li>
 <span>    include_self_comp <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    keep_genomic_coord <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Calculating combinations...</span></span>
-<span><span class="co">#&gt; Done!</span></span>
 <span><span class="va">sharing_1_a</span></span>
-<span><span class="co">#&gt;                    g1                g2                g3 shared</span></span>
-<span><span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT001_MNC_PB_0060      6</span></span>
-<span><span class="co">#&gt;  2: PT001_MNC_BM_0030 PT001_MNC_PB_0030 PT001_MNC_PB_0060      1</span></span>
-<span><span class="co">#&gt;  3: PT001_MNC_BM_0060 PT001_MNC_PB_0030 PT001_MNC_PB_0060      2</span></span>
-<span><span class="co">#&gt;  4: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT002_MNC_BM_0030      0</span></span>
-<span><span class="co">#&gt;  5: PT001_MNC_BM_0030 PT001_MNC_PB_0060 PT002_MNC_BM_0030      0</span></span>
-<span><span class="co">#&gt;  6: PT001_MNC_BM_0060 PT001_MNC_PB_0060 PT002_MNC_BM_0030      1</span></span>
-<span><span class="co">#&gt;  7: PT001_MNC_PB_0030 PT001_MNC_PB_0060 PT002_MNC_BM_0030      0</span></span>
-<span><span class="co">#&gt;  8: PT001_MNC_BM_0030 PT001_MNC_PB_0030 PT002_MNC_BM_0030      0</span></span>
-<span><span class="co">#&gt;  9: PT001_MNC_BM_0060 PT001_MNC_PB_0030 PT002_MNC_BM_0030      0</span></span>
-<span><span class="co">#&gt; 10: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 11: PT001_MNC_BM_0030 PT001_MNC_PB_0060 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 12: PT001_MNC_BM_0060 PT001_MNC_PB_0060 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 13: PT001_MNC_PB_0030 PT001_MNC_PB_0060 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 14: PT001_MNC_BM_0030 PT002_MNC_BM_0030 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 15: PT001_MNC_BM_0060 PT002_MNC_BM_0030 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 16: PT001_MNC_PB_0060 PT002_MNC_BM_0030 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 17: PT001_MNC_PB_0030 PT002_MNC_BM_0030 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 18: PT001_MNC_BM_0030 PT002_MNC_PB_0030 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 19: PT001_MNC_BM_0060 PT002_MNC_PB_0030 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 20: PT001_MNC_PB_0060 PT002_MNC_PB_0030 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 21: PT002_MNC_BM_0030 PT002_MNC_PB_0030 PT002_MNC_PB_0060      1</span></span>
-<span><span class="co">#&gt; 22: PT001_MNC_PB_0030 PT002_MNC_PB_0030 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 23: PT002_MNC_BM_0060 PT002_MNC_PB_0030 PT002_MNC_PB_0060      1</span></span>
-<span><span class="co">#&gt; 24: PT001_MNC_BM_0030 PT001_MNC_PB_0030 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 25: PT001_MNC_BM_0060 PT001_MNC_PB_0030 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 26: PT001_MNC_BM_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 27: PT001_MNC_BM_0060 PT002_MNC_BM_0060 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 28: PT001_MNC_PB_0060 PT002_MNC_BM_0060 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 29: PT002_MNC_BM_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0060      1</span></span>
-<span><span class="co">#&gt; 30: PT001_MNC_PB_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0060      0</span></span>
-<span><span class="co">#&gt; 31: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 32: PT001_MNC_BM_0030 PT001_MNC_PB_0060 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 33: PT001_MNC_BM_0060 PT001_MNC_PB_0060 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 34: PT001_MNC_PB_0030 PT001_MNC_PB_0060 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 35: PT001_MNC_BM_0030 PT002_MNC_BM_0030 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 36: PT001_MNC_BM_0060 PT002_MNC_BM_0030 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 37: PT001_MNC_PB_0060 PT002_MNC_BM_0030 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 38: PT001_MNC_PB_0030 PT002_MNC_BM_0030 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 39: PT001_MNC_BM_0030 PT001_MNC_PB_0030 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 40: PT001_MNC_BM_0060 PT001_MNC_PB_0030 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 41: PT001_MNC_BM_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 42: PT001_MNC_BM_0060 PT002_MNC_BM_0060 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 43: PT001_MNC_PB_0060 PT002_MNC_BM_0060 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 44: PT002_MNC_BM_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0030      1</span></span>
-<span><span class="co">#&gt; 45: PT001_MNC_PB_0030 PT002_MNC_BM_0060 PT002_MNC_PB_0030      0</span></span>
-<span><span class="co">#&gt; 46: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT001_MNC_PB_0030      5</span></span>
-<span><span class="co">#&gt; 47: PT001_MNC_BM_0030 PT001_MNC_BM_0060 PT002_MNC_BM_0060      0</span></span>
-<span><span class="co">#&gt; 48: PT001_MNC_BM_0030 PT001_MNC_PB_0060 PT002_MNC_BM_0060      0</span></span>
-<span><span class="co">#&gt; 49: PT001_MNC_BM_0060 PT001_MNC_PB_0060 PT002_MNC_BM_0060      0</span></span>
-<span><span class="co">#&gt; 50: PT001_MNC_PB_0030 PT001_MNC_PB_0060 PT002_MNC_BM_0060      0</span></span>
-<span><span class="co">#&gt; 51: PT001_MNC_BM_0030 PT002_MNC_BM_0030 PT002_MNC_BM_0060      0</span></span>
-<span><span class="co">#&gt; 52: PT001_MNC_BM_0060 PT002_MNC_BM_0030 PT002_MNC_BM_0060      0</span></span>
-<span><span class="co">#&gt; 53: PT001_MNC_PB_0060 PT002_MNC_BM_0030 PT002_MNC_BM_0060      0</span></span>
-<span><span class="co">#&gt; 54: PT001_MNC_PB_0030 PT002_MNC_BM_0030 PT002_MNC_BM_0060      0</span></span>
-<span><span class="co">#&gt; 55: PT001_MNC_BM_0030 PT001_MNC_PB_0030 PT002_MNC_BM_0060      0</span></span>
-<span><span class="co">#&gt; 56: PT001_MNC_BM_0060 PT001_MNC_PB_0030 PT002_MNC_BM_0060      0</span></span>
-<span><span class="co">#&gt;                    g1                g2                g3 shared</span></span>
-<span><span class="co">#&gt;              is_coord count_g1 count_g2 count_g3 count_union     on_g1    on_g2</span></span>
-<span><span class="co">#&gt;  1: &lt;data.table[6x3]&gt;       54      114       59         175 11.111111 5.263158</span></span>
-<span><span class="co">#&gt;  2: &lt;data.table[1x3]&gt;       54       28       59         117  1.851852 3.571429</span></span>
-<span><span class="co">#&gt;  3: &lt;data.table[2x3]&gt;      114       28       59         157  1.754386 7.142857</span></span>
-<span><span class="co">#&gt;  4: &lt;data.table[0x3]&gt;       54      114       98         244  0.000000 0.000000</span></span>
-<span><span class="co">#&gt;  5: &lt;data.table[0x3]&gt;       54       59       98         202  0.000000 0.000000</span></span>
-<span><span class="co">#&gt;  6: &lt;data.table[1x3]&gt;      114       59       98         241  0.877193 1.694915</span></span>
-<span><span class="co">#&gt;  7: &lt;data.table[0x3]&gt;       28       59       98         174  0.000000 0.000000</span></span>
-<span><span class="co">#&gt;  8: &lt;data.table[0x3]&gt;       54       28       98         173  0.000000 0.000000</span></span>
-<span><span class="co">#&gt;  9: &lt;data.table[0x3]&gt;      114       28       98         232  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 10: &lt;data.table[0x3]&gt;       54      114       18         165  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 11: &lt;data.table[0x3]&gt;       54       59       18         123  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 12: &lt;data.table[0x3]&gt;      114       59       18         162  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 13: &lt;data.table[0x3]&gt;       28       59       18          95  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 14: &lt;data.table[0x3]&gt;       54       98       18         162  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 15: &lt;data.table[0x3]&gt;      114       98       18         221  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 16: &lt;data.table[0x3]&gt;       59       98       18         166  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 17: &lt;data.table[0x3]&gt;       28       98       18         136  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 18: &lt;data.table[0x3]&gt;       54       15       18          80  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 19: &lt;data.table[0x3]&gt;      114       15       18         139  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 20: &lt;data.table[0x3]&gt;       59       15       18          85  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 21: &lt;data.table[1x3]&gt;       98       15       18         114  1.020408 6.666667</span></span>
-<span><span class="co">#&gt; 22: &lt;data.table[0x3]&gt;       28       15       18          54  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 23: &lt;data.table[1x3]&gt;       33       15       18          53  3.030303 6.666667</span></span>
-<span><span class="co">#&gt; 24: &lt;data.table[0x3]&gt;       54       28       18          93  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 25: &lt;data.table[0x3]&gt;      114       28       18         153  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 26: &lt;data.table[0x3]&gt;       54       33       18          99  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 27: &lt;data.table[0x3]&gt;      114       33       18         160  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 28: &lt;data.table[0x3]&gt;       59       33       18         105  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 29: &lt;data.table[1x3]&gt;       98       33       18         132  1.020408 3.030303</span></span>
-<span><span class="co">#&gt; 30: &lt;data.table[0x3]&gt;       28       33       18          74  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 31: &lt;data.table[0x3]&gt;       54      114       15         161  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 32: &lt;data.table[0x3]&gt;       54       59       15         120  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 33: &lt;data.table[0x3]&gt;      114       59       15         158  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 34: &lt;data.table[0x3]&gt;       28       59       15          92  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 35: &lt;data.table[0x3]&gt;       54       98       15         164  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 36: &lt;data.table[0x3]&gt;      114       98       15         222  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 37: &lt;data.table[0x3]&gt;       59       98       15         168  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 38: &lt;data.table[0x3]&gt;       28       98       15         138  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 39: &lt;data.table[0x3]&gt;       54       28       15          90  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 40: &lt;data.table[0x3]&gt;      114       28       15         149  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 41: &lt;data.table[0x3]&gt;       54       33       15          99  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 42: &lt;data.table[0x3]&gt;      114       33       15         159  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 43: &lt;data.table[0x3]&gt;       59       33       15         105  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 44: &lt;data.table[1x3]&gt;       98       33       15         137  1.020408 3.030303</span></span>
-<span><span class="co">#&gt; 45: &lt;data.table[0x3]&gt;       28       33       15          74  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 46: &lt;data.table[5x3]&gt;       54      114       28         166  9.259259 4.385965</span></span>
-<span><span class="co">#&gt; 47: &lt;data.table[0x3]&gt;       54      114       33         179  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 48: &lt;data.table[0x3]&gt;       54       59       33         137  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 49: &lt;data.table[0x3]&gt;      114       59       33         177  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 50: &lt;data.table[0x3]&gt;       28       59       33         110  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 51: &lt;data.table[0x3]&gt;       54       98       33         179  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 52: &lt;data.table[0x3]&gt;      114       98       33         239  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 53: &lt;data.table[0x3]&gt;       59       98       33         184  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 54: &lt;data.table[0x3]&gt;       28       98       33         154  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 55: &lt;data.table[0x3]&gt;       54       28       33         107  0.000000 0.000000</span></span>
-<span><span class="co">#&gt; 56: &lt;data.table[0x3]&gt;      114       28       33         168  0.000000 0.000000</span></span>
-<span><span class="co">#&gt;              is_coord count_g1 count_g2 count_g3 count_union     on_g1    on_g2</span></span>
-<span><span class="co">#&gt;         on_g3  on_union</span></span>
-<span><span class="co">#&gt;  1: 10.169492 3.4285714</span></span>
-<span><span class="co">#&gt;  2:  1.694915 0.8547009</span></span>
-<span><span class="co">#&gt;  3:  3.389831 1.2738854</span></span>
-<span><span class="co">#&gt;  4:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt;  5:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt;  6:  1.020408 0.4149378</span></span>
-<span><span class="co">#&gt;  7:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt;  8:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt;  9:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 10:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 11:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 12:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 13:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 14:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 15:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 16:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 17:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 18:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 19:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 20:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 21:  5.555556 0.8771930</span></span>
-<span><span class="co">#&gt; 22:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 23:  5.555556 1.8867925</span></span>
-<span><span class="co">#&gt; 24:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 25:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 26:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 27:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 28:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 29:  5.555556 0.7575758</span></span>
-<span><span class="co">#&gt; 30:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 31:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 32:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 33:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 34:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 35:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 36:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 37:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 38:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 39:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 40:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 41:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 42:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 43:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 44:  6.666667 0.7299270</span></span>
-<span><span class="co">#&gt; 45:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 46: 17.857143 3.0120482</span></span>
-<span><span class="co">#&gt; 47:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 48:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 49:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 50:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 51:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 52:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 53:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 54:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 55:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt; 56:  0.000000 0.0000000</span></span>
-<span><span class="co">#&gt;         on_g3  on_union</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 56 × 13</span></span></span>
+<span><span class="co">#&gt;    g1      g2    g3    shared count_g1 count_g2 count_g3 count_union on_g1 on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_… PT00… PT00…      5       54      114       28         166  9.26  4.39</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_… PT00… PT00…      6       54      114       59         175 11.1   5.26</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_… PT00… PT00…      0       54      114       98         244  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT001_… PT00… PT00…      0       54      114       33         179  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT001_… PT00… PT00…      0       54      114       15         161  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT001_… PT00… PT00…      0       54      114       18         165  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_… PT00… PT00…      1       54       28       59         117  1.85  3.57</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT001_… PT00… PT00…      0       54       28       98         173  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_… PT00… PT00…      0       54       28       33         107  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_… PT00… PT00…      0       54       28       15          90  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 46 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;, is_coord &lt;list&gt;</span></span></span></code></pre></div>
 <p>Changing the <code>n_comp</code> to 3 means that we want to calculate
 the sharing between 3 different groups. Note that the
 <code>shared</code> column contains the counts of integrations that are
@@ -619,143 +415,21 @@ heatmap.</p>
 <span>    minimal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    include_self_comp <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Calculating combinations...</span></span>
-<span><span class="co">#&gt; Calculating self groups (requested)...</span></span>
-<span><span class="co">#&gt; Calculating permutations (requested)...</span></span>
-<span><span class="co">#&gt; Done!</span></span>
 <span><span class="va">sharing_1_b</span></span>
-<span><span class="co">#&gt;                    g1                g2 shared count_g1 count_g2 count_union</span></span>
-<span><span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC_BM_0030     54       54       54          54</span></span>
-<span><span class="co">#&gt;  2: PT001_MNC_BM_0030 PT001_MNC_BM_0060     21       54      114         147</span></span>
-<span><span class="co">#&gt;  3: PT001_MNC_BM_0060 PT001_MNC_BM_0030     21      114       54         147</span></span>
-<span><span class="co">#&gt;  4: PT001_MNC_BM_0060 PT001_MNC_BM_0060    114      114      114         114</span></span>
-<span><span class="co">#&gt;  5: PT001_MNC_BM_0030 PT001_MNC_PB_0060      8       54       59         105</span></span>
-<span><span class="co">#&gt;  6: PT001_MNC_PB_0060 PT001_MNC_BM_0030      8       59       54         105</span></span>
-<span><span class="co">#&gt;  7: PT001_MNC_BM_0060 PT001_MNC_PB_0060     29      114       59         144</span></span>
-<span><span class="co">#&gt;  8: PT001_MNC_PB_0060 PT001_MNC_BM_0060     29       59      114         144</span></span>
-<span><span class="co">#&gt;  9: PT001_MNC_PB_0060 PT001_MNC_PB_0060     59       59       59          59</span></span>
-<span><span class="co">#&gt; 10: PT001_MNC_PB_0030 PT001_MNC_PB_0060     10       28       59          77</span></span>
-<span><span class="co">#&gt; 11: PT001_MNC_PB_0060 PT001_MNC_PB_0030     10       59       28          77</span></span>
-<span><span class="co">#&gt; 12: PT001_MNC_BM_0030 PT002_MNC_BM_0030      0       54       98         152</span></span>
-<span><span class="co">#&gt; 13: PT002_MNC_BM_0030 PT001_MNC_BM_0030      0       98       54         152</span></span>
-<span><span class="co">#&gt; 14: PT001_MNC_BM_0060 PT002_MNC_BM_0030      1      114       98         211</span></span>
-<span><span class="co">#&gt; 15: PT002_MNC_BM_0030 PT001_MNC_BM_0060      1       98      114         211</span></span>
-<span><span class="co">#&gt; 16: PT001_MNC_PB_0060 PT002_MNC_BM_0030      1       59       98         156</span></span>
-<span><span class="co">#&gt; 17: PT002_MNC_BM_0030 PT001_MNC_PB_0060      1       98       59         156</span></span>
-<span><span class="co">#&gt; 18: PT002_MNC_BM_0030 PT002_MNC_BM_0030     98       98       98          98</span></span>
-<span><span class="co">#&gt; 19: PT001_MNC_PB_0030 PT002_MNC_BM_0030      0       28       98         126</span></span>
-<span><span class="co">#&gt; 20: PT002_MNC_BM_0030 PT001_MNC_PB_0030      0       98       28         126</span></span>
-<span><span class="co">#&gt; 21: PT001_MNC_BM_0030 PT002_MNC_PB_0060      0       54       18          72</span></span>
-<span><span class="co">#&gt; 22: PT002_MNC_PB_0060 PT001_MNC_BM_0030      0       18       54          72</span></span>
-<span><span class="co">#&gt; 23: PT001_MNC_BM_0060 PT002_MNC_PB_0060      0      114       18         132</span></span>
-<span><span class="co">#&gt; 24: PT002_MNC_PB_0060 PT001_MNC_BM_0060      0       18      114         132</span></span>
-<span><span class="co">#&gt; 25: PT001_MNC_PB_0060 PT002_MNC_PB_0060      0       59       18          77</span></span>
-<span><span class="co">#&gt; 26: PT002_MNC_PB_0060 PT001_MNC_PB_0060      0       18       59          77</span></span>
-<span><span class="co">#&gt; 27: PT002_MNC_BM_0030 PT002_MNC_PB_0060      8       98       18         108</span></span>
-<span><span class="co">#&gt; 28: PT002_MNC_PB_0060 PT002_MNC_BM_0030      8       18       98         108</span></span>
-<span><span class="co">#&gt; 29: PT002_MNC_PB_0060 PT002_MNC_PB_0060     18       18       18          18</span></span>
-<span><span class="co">#&gt; 30: PT002_MNC_PB_0030 PT002_MNC_PB_0060      7       15       18          26</span></span>
-<span><span class="co">#&gt; 31: PT002_MNC_PB_0060 PT002_MNC_PB_0030      7       18       15          26</span></span>
-<span><span class="co">#&gt; 32: PT001_MNC_PB_0030 PT002_MNC_PB_0060      0       28       18          46</span></span>
-<span><span class="co">#&gt; 33: PT002_MNC_PB_0060 PT001_MNC_PB_0030      0       18       28          46</span></span>
-<span><span class="co">#&gt; 34: PT002_MNC_BM_0060 PT002_MNC_PB_0060      5       33       18          46</span></span>
-<span><span class="co">#&gt; 35: PT002_MNC_PB_0060 PT002_MNC_BM_0060      5       18       33          46</span></span>
-<span><span class="co">#&gt; 36: PT001_MNC_BM_0030 PT002_MNC_PB_0030      0       54       15          69</span></span>
-<span><span class="co">#&gt; 37: PT002_MNC_PB_0030 PT001_MNC_BM_0030      0       15       54          69</span></span>
-<span><span class="co">#&gt; 38: PT001_MNC_BM_0060 PT002_MNC_PB_0030      1      114       15         128</span></span>
-<span><span class="co">#&gt; 39: PT002_MNC_PB_0030 PT001_MNC_BM_0060      1       15      114         128</span></span>
-<span><span class="co">#&gt; 40: PT001_MNC_PB_0060 PT002_MNC_PB_0030      0       59       15          74</span></span>
-<span><span class="co">#&gt; 41: PT002_MNC_PB_0030 PT001_MNC_PB_0060      0       15       59          74</span></span>
-<span><span class="co">#&gt; 42: PT002_MNC_BM_0030 PT002_MNC_PB_0030      3       98       15         110</span></span>
-<span><span class="co">#&gt; 43: PT002_MNC_PB_0030 PT002_MNC_BM_0030      3       15       98         110</span></span>
-<span><span class="co">#&gt; 44: PT002_MNC_PB_0030 PT002_MNC_PB_0030     15       15       15          15</span></span>
-<span><span class="co">#&gt; 45: PT001_MNC_PB_0030 PT002_MNC_PB_0030      0       28       15          43</span></span>
-<span><span class="co">#&gt; 46: PT002_MNC_PB_0030 PT001_MNC_PB_0030      0       15       28          43</span></span>
-<span><span class="co">#&gt; 47: PT002_MNC_BM_0060 PT002_MNC_PB_0030      2       33       15          46</span></span>
-<span><span class="co">#&gt; 48: PT002_MNC_PB_0030 PT002_MNC_BM_0060      2       15       33          46</span></span>
-<span><span class="co">#&gt; 49: PT001_MNC_BM_0030 PT001_MNC_PB_0030      7       54       28          75</span></span>
-<span><span class="co">#&gt; 50: PT001_MNC_PB_0030 PT001_MNC_BM_0030      7       28       54          75</span></span>
-<span><span class="co">#&gt; 51: PT001_MNC_BM_0060 PT001_MNC_PB_0030      7      114       28         135</span></span>
-<span><span class="co">#&gt; 52: PT001_MNC_PB_0030 PT001_MNC_BM_0060      7       28      114         135</span></span>
-<span><span class="co">#&gt; 53: PT001_MNC_PB_0030 PT001_MNC_PB_0030     28       28       28          28</span></span>
-<span><span class="co">#&gt; 54: PT001_MNC_BM_0030 PT002_MNC_BM_0060      1       54       33          86</span></span>
-<span><span class="co">#&gt; 55: PT002_MNC_BM_0060 PT001_MNC_BM_0030      1       33       54          86</span></span>
-<span><span class="co">#&gt; 56: PT001_MNC_BM_0060 PT002_MNC_BM_0060      0      114       33         147</span></span>
-<span><span class="co">#&gt; 57: PT002_MNC_BM_0060 PT001_MNC_BM_0060      0       33      114         147</span></span>
-<span><span class="co">#&gt; 58: PT001_MNC_PB_0060 PT002_MNC_BM_0060      0       59       33          92</span></span>
-<span><span class="co">#&gt; 59: PT002_MNC_BM_0060 PT001_MNC_PB_0060      0       33       59          92</span></span>
-<span><span class="co">#&gt; 60: PT002_MNC_BM_0030 PT002_MNC_BM_0060      5       98       33         126</span></span>
-<span><span class="co">#&gt; 61: PT002_MNC_BM_0060 PT002_MNC_BM_0030      5       33       98         126</span></span>
-<span><span class="co">#&gt; 62: PT001_MNC_PB_0030 PT002_MNC_BM_0060      0       28       33          61</span></span>
-<span><span class="co">#&gt; 63: PT002_MNC_BM_0060 PT001_MNC_PB_0030      0       33       28          61</span></span>
-<span><span class="co">#&gt; 64: PT002_MNC_BM_0060 PT002_MNC_BM_0060     33       33       33          33</span></span>
-<span><span class="co">#&gt;                    g1                g2 shared count_g1 count_g2 count_union</span></span>
-<span><span class="co">#&gt;          on_g1      on_g2    on_union</span></span>
-<span><span class="co">#&gt;  1: 100.000000 100.000000 100.0000000</span></span>
-<span><span class="co">#&gt;  2:  38.888889  18.421053  14.2857143</span></span>
-<span><span class="co">#&gt;  3:  18.421053  38.888889  14.2857143</span></span>
-<span><span class="co">#&gt;  4: 100.000000 100.000000 100.0000000</span></span>
-<span><span class="co">#&gt;  5:  14.814815  13.559322   7.6190476</span></span>
-<span><span class="co">#&gt;  6:  13.559322  14.814815   7.6190476</span></span>
-<span><span class="co">#&gt;  7:  25.438596  49.152542  20.1388889</span></span>
-<span><span class="co">#&gt;  8:  49.152542  25.438596  20.1388889</span></span>
-<span><span class="co">#&gt;  9: 100.000000 100.000000 100.0000000</span></span>
-<span><span class="co">#&gt; 10:  35.714286  16.949153  12.9870130</span></span>
-<span><span class="co">#&gt; 11:  16.949153  35.714286  12.9870130</span></span>
-<span><span class="co">#&gt; 12:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 13:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 14:   0.877193   1.020408   0.4739336</span></span>
-<span><span class="co">#&gt; 15:   1.020408   0.877193   0.4739336</span></span>
-<span><span class="co">#&gt; 16:   1.694915   1.020408   0.6410256</span></span>
-<span><span class="co">#&gt; 17:   1.020408   1.694915   0.6410256</span></span>
-<span><span class="co">#&gt; 18: 100.000000 100.000000 100.0000000</span></span>
-<span><span class="co">#&gt; 19:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 20:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 21:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 22:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 23:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 24:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 25:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 26:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 27:   8.163265  44.444444   7.4074074</span></span>
-<span><span class="co">#&gt; 28:  44.444444   8.163265   7.4074074</span></span>
-<span><span class="co">#&gt; 29: 100.000000 100.000000 100.0000000</span></span>
-<span><span class="co">#&gt; 30:  46.666667  38.888889  26.9230769</span></span>
-<span><span class="co">#&gt; 31:  38.888889  46.666667  26.9230769</span></span>
-<span><span class="co">#&gt; 32:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 33:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 34:  15.151515  27.777778  10.8695652</span></span>
-<span><span class="co">#&gt; 35:  27.777778  15.151515  10.8695652</span></span>
-<span><span class="co">#&gt; 36:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 37:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 38:   0.877193   6.666667   0.7812500</span></span>
-<span><span class="co">#&gt; 39:   6.666667   0.877193   0.7812500</span></span>
-<span><span class="co">#&gt; 40:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 41:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 42:   3.061224  20.000000   2.7272727</span></span>
-<span><span class="co">#&gt; 43:  20.000000   3.061224   2.7272727</span></span>
-<span><span class="co">#&gt; 44: 100.000000 100.000000 100.0000000</span></span>
-<span><span class="co">#&gt; 45:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 46:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 47:   6.060606  13.333333   4.3478261</span></span>
-<span><span class="co">#&gt; 48:  13.333333   6.060606   4.3478261</span></span>
-<span><span class="co">#&gt; 49:  12.962963  25.000000   9.3333333</span></span>
-<span><span class="co">#&gt; 50:  25.000000  12.962963   9.3333333</span></span>
-<span><span class="co">#&gt; 51:   6.140351  25.000000   5.1851852</span></span>
-<span><span class="co">#&gt; 52:  25.000000   6.140351   5.1851852</span></span>
-<span><span class="co">#&gt; 53: 100.000000 100.000000 100.0000000</span></span>
-<span><span class="co">#&gt; 54:   1.851852   3.030303   1.1627907</span></span>
-<span><span class="co">#&gt; 55:   3.030303   1.851852   1.1627907</span></span>
-<span><span class="co">#&gt; 56:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 57:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 58:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 59:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 60:   5.102041  15.151515   3.9682540</span></span>
-<span><span class="co">#&gt; 61:  15.151515   5.102041   3.9682540</span></span>
-<span><span class="co">#&gt; 62:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 63:   0.000000   0.000000   0.0000000</span></span>
-<span><span class="co">#&gt; 64: 100.000000 100.000000 100.0000000</span></span>
-<span><span class="co">#&gt;          on_g1      on_g2    on_union</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 64 × 9</span></span></span>
+<span><span class="co">#&gt;    g1            g2    shared count_g1 count_g2 count_union on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_MNC_BM… PT00…     54       54       54          54 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_MNC_BM… PT00…    114      114      114         114 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_MNC_PB… PT00…     59       59       59          59 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT002_MNC_BM… PT00…     98       98       98          98 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT002_MNC_PB… PT00…     18       18       18          18 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT002_MNC_PB… PT00…     15       15       15          15 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_MNC_PB… PT00…     28       28       28          28 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT002_MNC_BM… PT00…     33       33       33          33 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_MNC_BM… PT00…     21       54      114         147  38.9  18.4     14.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_MNC_BM… PT00…     21      114       54         147  18.4  38.9     14.3</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 54 more rows</span></span></span>
 <span><span class="va">heatmaps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_heatmap.html">sharing_heatmap</a></span><span class="op">(</span><span class="va">sharing_1_b</span><span class="op">)</span></span></code></pre></div>
 <p>The function <code><a href="../reference/sharing_heatmap.html">sharing_heatmap()</a></code> automatically plots
 sharing between 2 groups. There are several arguments to this function
@@ -797,76 +471,22 @@ input a <strong>list of keys</strong> through the argument
 <span>        g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Done!</span></span>
 <span><span class="va">sharing_2</span></span>
-<span><span class="co">#&gt;                    g1        g2     g3 shared count_g1 count_g2 count_g3</span></span>
-<span><span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC MNC_BM     54       54      186      271</span></span>
-<span><span class="co">#&gt;  2: PT001_MNC_BM_0060 PT001_MNC MNC_BM    114      114      186      271</span></span>
-<span><span class="co">#&gt;  3: PT001_MNC_PB_0060 PT001_MNC MNC_BM     31       59      186      271</span></span>
-<span><span class="co">#&gt;  4: PT002_MNC_BM_0030 PT001_MNC MNC_BM      1       98      186      271</span></span>
-<span><span class="co">#&gt;  5: PT002_MNC_PB_0060 PT001_MNC MNC_BM      0       18      186      271</span></span>
-<span><span class="co">#&gt;  6: PT002_MNC_PB_0030 PT001_MNC MNC_BM      1       15      186      271</span></span>
-<span><span class="co">#&gt;  7: PT001_MNC_PB_0030 PT001_MNC MNC_BM      9       28      186      271</span></span>
-<span><span class="co">#&gt;  8: PT002_MNC_BM_0060 PT001_MNC MNC_BM      1       33      186      271</span></span>
-<span><span class="co">#&gt;  9: PT001_MNC_BM_0030 PT002_MNC MNC_BM      1       54      137      271</span></span>
-<span><span class="co">#&gt; 10: PT001_MNC_BM_0060 PT002_MNC MNC_BM      2      114      137      271</span></span>
-<span><span class="co">#&gt; 11: PT001_MNC_PB_0060 PT002_MNC MNC_BM      1       59      137      271</span></span>
-<span><span class="co">#&gt; 12: PT002_MNC_BM_0030 PT002_MNC MNC_BM     98       98      137      271</span></span>
-<span><span class="co">#&gt; 13: PT002_MNC_PB_0060 PT002_MNC MNC_BM     12       18      137      271</span></span>
-<span><span class="co">#&gt; 14: PT002_MNC_PB_0030 PT002_MNC MNC_BM      5       15      137      271</span></span>
-<span><span class="co">#&gt; 15: PT001_MNC_PB_0030 PT002_MNC MNC_BM      0       28      137      271</span></span>
-<span><span class="co">#&gt; 16: PT002_MNC_BM_0060 PT002_MNC MNC_BM     33       33      137      271</span></span>
-<span><span class="co">#&gt; 17: PT001_MNC_BM_0030 PT001_MNC MNC_PB     14       54      186      103</span></span>
-<span><span class="co">#&gt; 18: PT001_MNC_BM_0060 PT001_MNC MNC_PB     35      114      186      103</span></span>
-<span><span class="co">#&gt; 19: PT001_MNC_PB_0060 PT001_MNC MNC_PB     59       59      186      103</span></span>
-<span><span class="co">#&gt; 20: PT002_MNC_BM_0030 PT001_MNC MNC_PB      1       98      186      103</span></span>
-<span><span class="co">#&gt; 21: PT002_MNC_PB_0060 PT001_MNC MNC_PB      0       18      186      103</span></span>
-<span><span class="co">#&gt; 22: PT002_MNC_PB_0030 PT001_MNC MNC_PB      1       15      186      103</span></span>
-<span><span class="co">#&gt; 23: PT001_MNC_PB_0030 PT001_MNC MNC_PB     28       28      186      103</span></span>
-<span><span class="co">#&gt; 24: PT002_MNC_BM_0060 PT001_MNC MNC_PB      0       33      186      103</span></span>
-<span><span class="co">#&gt; 25: PT001_MNC_BM_0030 PT002_MNC MNC_PB      0       54      137      103</span></span>
-<span><span class="co">#&gt; 26: PT001_MNC_BM_0060 PT002_MNC MNC_PB      2      114      137      103</span></span>
-<span><span class="co">#&gt; 27: PT001_MNC_PB_0060 PT002_MNC MNC_PB      1       59      137      103</span></span>
-<span><span class="co">#&gt; 28: PT002_MNC_BM_0030 PT002_MNC MNC_PB     11       98      137      103</span></span>
-<span><span class="co">#&gt; 29: PT002_MNC_PB_0060 PT002_MNC MNC_PB     18       18      137      103</span></span>
-<span><span class="co">#&gt; 30: PT002_MNC_PB_0030 PT002_MNC MNC_PB     15       15      137      103</span></span>
-<span><span class="co">#&gt; 31: PT001_MNC_PB_0030 PT002_MNC MNC_PB      0       28      137      103</span></span>
-<span><span class="co">#&gt; 32: PT002_MNC_BM_0060 PT002_MNC MNC_PB      6       33      137      103</span></span>
-<span><span class="co">#&gt;                    g1        g2     g3 shared count_g1 count_g2 count_g3</span></span>
-<span><span class="co">#&gt;     count_union      on_g1      on_g2      on_g3   on_union</span></span>
-<span><span class="co">#&gt;  1:         310 100.000000 29.0322581 19.9261993 17.4193548</span></span>
-<span><span class="co">#&gt;  2:         310 100.000000 61.2903226 42.0664207 36.7741935</span></span>
-<span><span class="co">#&gt;  3:         310  52.542373 16.6666667 11.4391144 10.0000000</span></span>
-<span><span class="co">#&gt;  4:         310   1.020408  0.5376344  0.3690037  0.3225806</span></span>
-<span><span class="co">#&gt;  5:         316   0.000000  0.0000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt;  6:         320   6.666667  0.5376344  0.3690037  0.3125000</span></span>
-<span><span class="co">#&gt;  7:         310  32.142857  4.8387097  3.3210332  2.9032258</span></span>
-<span><span class="co">#&gt;  8:         310   3.030303  0.5376344  0.3690037  0.3225806</span></span>
-<span><span class="co">#&gt;  9:         281   1.851852  0.7299270  0.3690037  0.3558719</span></span>
-<span><span class="co">#&gt; 10:         281   1.754386  1.4598540  0.7380074  0.7117438</span></span>
-<span><span class="co">#&gt; 11:         309   1.694915  0.7299270  0.3690037  0.3236246</span></span>
-<span><span class="co">#&gt; 12:         281 100.000000 71.5328467 36.1623616 34.8754448</span></span>
-<span><span class="co">#&gt; 13:         281  66.666667  8.7591241  4.4280443  4.2704626</span></span>
-<span><span class="co">#&gt; 14:         281  33.333333  3.6496350  1.8450185  1.7793594</span></span>
-<span><span class="co">#&gt; 15:         300   0.000000  0.0000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 16:         281 100.000000 24.0875912 12.1771218 11.7437722</span></span>
-<span><span class="co">#&gt; 17:         211  25.925926  7.5268817 13.5922330  6.6350711</span></span>
-<span><span class="co">#&gt; 18:         211  30.701754 18.8172043 33.9805825 16.5876777</span></span>
-<span><span class="co">#&gt; 19:         211 100.000000 31.7204301 57.2815534 27.9620853</span></span>
-<span><span class="co">#&gt; 20:         298   1.020408  0.5376344  0.9708738  0.3355705</span></span>
-<span><span class="co">#&gt; 21:         211   0.000000  0.0000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 22:         211   6.666667  0.5376344  0.9708738  0.4739336</span></span>
-<span><span class="co">#&gt; 23:         211 100.000000 15.0537634 27.1844660 13.2701422</span></span>
-<span><span class="co">#&gt; 24:         237   0.000000  0.0000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 25:         252   0.000000  0.0000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 26:         292   1.754386  1.4598540  1.9417476  0.6849315</span></span>
-<span><span class="co">#&gt; 27:         213   1.694915  0.7299270  0.9708738  0.4694836</span></span>
-<span><span class="co">#&gt; 28:         213  11.224490  8.0291971 10.6796117  5.1643192</span></span>
-<span><span class="co">#&gt; 29:         213 100.000000 13.1386861 17.4757282  8.4507042</span></span>
-<span><span class="co">#&gt; 30:         213 100.000000 10.9489051 14.5631068  7.0422535</span></span>
-<span><span class="co">#&gt; 31:         213   0.000000  0.0000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 32:         213  18.181818  4.3795620  5.8252427  2.8169014</span></span>
-<span><span class="co">#&gt;     count_union      on_g1      on_g2      on_g3   on_union</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 32 × 12</span></span></span>
+<span><span class="co">#&gt;    g1    g2    g3    shared count_g1 count_g2 count_g3 count_union  on_g1  on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT00… PT00… MNC_…     54       54      186      271         310 100    29.0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT00… PT00… MNC_…     14       54      186      103         211  25.9   7.53 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT00… PT00… MNC_…      1       54      137      271         281   1.85  0.730</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT00… PT00… MNC_…      0       54      137      103         252   0     0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT00… PT00… MNC_…    114      114      186      271         310 100    61.3  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT00… PT00… MNC_…     35      114      186      103         211  30.7  18.8  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT00… PT00… MNC_…      2      114      137      271         281   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT00… PT00… MNC_…      2      114      137      103         292   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT00… PT00… MNC_…      9       28      186      271         310  32.1   4.84 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT00… PT00… MNC_…     28       28      186      103         211 100    15.1  </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 22 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;</span></span></span></code></pre></div>
 <p>There are a few things to keep in mind in this case:</p>
 <ul>
 <li>The arguments <code>group_key</code> (notice the absence of plural),
@@ -893,12 +513,12 @@ integrations relative to <code>PT001_MNC_BM_0060</code>.</p>
 relevant data in 2 separated tables and then proceed by calling the
 function.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">first_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">first_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>        <span class="va">SubjectID</span> <span class="op">==</span> <span class="st">"PT001"</span>, <span class="va">CellMarker</span> <span class="op">==</span> <span class="st">"MNC"</span>, <span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span>,</span>
 <span>        <span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0030"</span></span>
 <span>    <span class="op">)</span></span>
-<span><span class="va">second_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="va">second_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>        <span class="va">SubjectID</span> <span class="op">==</span> <span class="st">"PT001"</span>, <span class="va">CellMarker</span> <span class="op">==</span> <span class="st">"MNC"</span>, <span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span>,</span>
 <span>        <span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0060"</span></span>
@@ -912,15 +532,40 @@ function.</p>
 <span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    minimal <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Done!</span></span>
 <span><span class="va">sharing_3</span></span>
-<span><span class="co">#&gt;                   g1                g2 shared count_g1 count_g2 count_union</span></span>
-<span><span class="co">#&gt; 1: PT001_MNC_BM_0030 PT001_MNC_BM_0060     21       54      114         147</span></span>
-<span><span class="co">#&gt;       on_g1    on_g2 on_union</span></span>
-<span><span class="co">#&gt; 1: 38.88889 18.42105 14.28571</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 9</span></span></span>
+<span><span class="co">#&gt;   g1             g2    shared count_g1 count_g2 count_union on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> PT001_MNC_BM_… PT00…     21       54      114         147  38.9  18.4     14.3</span></span></code></pre></div>
 <p>Once again the arguments <code>n_comp</code> and
 <code>include_self_comp</code> are ignored: the number of comparisons is
 equal to the number of data frames in input.</p>
+<p>To handle special limit cases, the output group ids are appended with
+a dash and a number (<code>-1</code>, <code>-2</code>, …) that indicates
+the data frame of origin: this is useful in the case group ids are
+duplicated in the inputs. To understand better let’s make an
+example:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_3_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span></span>
+<span>    <span class="va">first_sample</span>, <span class="va">second_sample</span>,</span>
+<span>    group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    is_count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    minimal <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_3_a</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 9</span></span></span>
+<span><span class="co">#&gt;   g1       g2       shared count_g1 count_g2 count_union on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> MNC_BM-1 MNC_BM-2     21       54      114         147  38.9  18.4     14.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> MNC_BM-2 MNC_BM-1     21      114       54         147  18.4  38.9     14.3</span></span></code></pre></div>
+<p>As you can see, the IDs of group 1 and group 2 are duplicated and
+without a suffix it would be impossible to know which one came from
+which data frame. In this way we know that the group “MNC_BM-1” comes
+from table 1 and has 54 ISs, while “MNC_BM-2” comes from the second
+input table and has 114 ISs.</p>
 </div>
 <div class="section level3">
 <h3 id="scenario-4-multiple-input-data-frame-and-multiple-grouping-keys">SCENARIO 4: multiple input data frame and multiple grouping
@@ -931,12 +576,12 @@ frames with multiple keys. In this case the number of data frames must
 be equal to the number of provided keys and grouping keys are applied in
 order ( data frame 1 is grouped with key 1, data frame 2 is grouped with
 key 2, and so on).</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0030"</span><span class="op">)</span></span>
-<span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0060"</span><span class="op">)</span></span>
-<span><span class="va">df3</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="va">df3</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">keys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -946,76 +591,22 @@ key 2, and so on).</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sharing_4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">df1</span>, <span class="va">df2</span>, <span class="va">df3</span>, group_keys <span class="op">=</span> <span class="va">keys</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Done!</span></span>
 <span><span class="va">sharing_4</span></span>
-<span><span class="co">#&gt;               g1       g2           g3 shared count_g1 count_g2 count_g3</span></span>
-<span><span class="co">#&gt;  1: PT001_MNC_BM PT001_BM PT001_MNC_BM     21       54      114      147</span></span>
-<span><span class="co">#&gt;  2: PT002_MNC_BM PT001_BM PT001_MNC_BM      0       98      114      147</span></span>
-<span><span class="co">#&gt;  3: PT002_MNC_PB PT001_BM PT001_MNC_BM      0       15      114      147</span></span>
-<span><span class="co">#&gt;  4: PT001_MNC_PB PT001_BM PT001_MNC_BM      5       28      114      147</span></span>
-<span><span class="co">#&gt;  5: PT001_MNC_BM PT001_PB PT001_MNC_BM      8       54       59      147</span></span>
-<span><span class="co">#&gt;  6: PT002_MNC_BM PT001_PB PT001_MNC_BM      0       98       59      147</span></span>
-<span><span class="co">#&gt;  7: PT002_MNC_PB PT001_PB PT001_MNC_BM      0       15       59      147</span></span>
-<span><span class="co">#&gt;  8: PT001_MNC_PB PT001_PB PT001_MNC_BM      1       28       59      147</span></span>
-<span><span class="co">#&gt;  9: PT001_MNC_BM PT002_PB PT001_MNC_BM      0       54       18      147</span></span>
-<span><span class="co">#&gt; 10: PT002_MNC_BM PT002_PB PT001_MNC_BM      0       98       18      147</span></span>
-<span><span class="co">#&gt; 11: PT002_MNC_PB PT002_PB PT001_MNC_BM      0       15       18      147</span></span>
-<span><span class="co">#&gt; 12: PT001_MNC_PB PT002_PB PT001_MNC_BM      0       28       18      147</span></span>
-<span><span class="co">#&gt; 13: PT001_MNC_BM PT002_BM PT001_MNC_BM      1       54       33      147</span></span>
-<span><span class="co">#&gt; 14: PT002_MNC_BM PT002_BM PT001_MNC_BM      0       98       33      147</span></span>
-<span><span class="co">#&gt; 15: PT002_MNC_PB PT002_BM PT001_MNC_BM      0       15       33      147</span></span>
-<span><span class="co">#&gt; 16: PT001_MNC_PB PT002_BM PT001_MNC_BM      0       28       33      147</span></span>
-<span><span class="co">#&gt; 17: PT001_MNC_BM PT001_BM PT002_MNC_BM      0       54      114      126</span></span>
-<span><span class="co">#&gt; 18: PT002_MNC_BM PT001_BM PT002_MNC_BM      1       98      114      126</span></span>
-<span><span class="co">#&gt; 19: PT002_MNC_PB PT001_BM PT002_MNC_BM      0       15      114      126</span></span>
-<span><span class="co">#&gt; 20: PT001_MNC_PB PT001_BM PT002_MNC_BM      0       28      114      126</span></span>
-<span><span class="co">#&gt; 21: PT001_MNC_BM PT001_PB PT002_MNC_BM      0       54       59      126</span></span>
-<span><span class="co">#&gt; 22: PT002_MNC_BM PT001_PB PT002_MNC_BM      1       98       59      126</span></span>
-<span><span class="co">#&gt; 23: PT002_MNC_PB PT001_PB PT002_MNC_BM      0       15       59      126</span></span>
-<span><span class="co">#&gt; 24: PT001_MNC_PB PT001_PB PT002_MNC_BM      0       28       59      126</span></span>
-<span><span class="co">#&gt; 25: PT001_MNC_BM PT002_PB PT002_MNC_BM      0       54       18      126</span></span>
-<span><span class="co">#&gt; 26: PT002_MNC_BM PT002_PB PT002_MNC_BM      8       98       18      126</span></span>
-<span><span class="co">#&gt; 27: PT002_MNC_PB PT002_PB PT002_MNC_BM      1       15       18      126</span></span>
-<span><span class="co">#&gt; 28: PT001_MNC_PB PT002_PB PT002_MNC_BM      0       28       18      126</span></span>
-<span><span class="co">#&gt; 29: PT001_MNC_BM PT002_BM PT002_MNC_BM      0       54       33      126</span></span>
-<span><span class="co">#&gt; 30: PT002_MNC_BM PT002_BM PT002_MNC_BM      5       98       33      126</span></span>
-<span><span class="co">#&gt; 31: PT002_MNC_PB PT002_BM PT002_MNC_BM      1       15       33      126</span></span>
-<span><span class="co">#&gt; 32: PT001_MNC_PB PT002_BM PT002_MNC_BM      0       28       33      126</span></span>
-<span><span class="co">#&gt;               g1       g2           g3 shared count_g1 count_g2 count_g3</span></span>
-<span><span class="co">#&gt;     count_union     on_g1     on_g2      on_g3   on_union</span></span>
-<span><span class="co">#&gt;  1:         147 38.888889 18.421053 14.2857143 14.2857143</span></span>
-<span><span class="co">#&gt;  2:         271  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt;  3:         161  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt;  4:         166 17.857143  4.385965  3.4013605  3.0120482</span></span>
-<span><span class="co">#&gt;  5:         175 14.814815 13.559322  5.4421769  4.5714286</span></span>
-<span><span class="co">#&gt;  6:         299  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt;  7:         189  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt;  8:         186  3.571429  1.694915  0.6802721  0.5376344</span></span>
-<span><span class="co">#&gt;  9:         165  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 10:         277  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 11:         172  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 12:         184  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 13:         179  1.851852  3.030303  0.6802721  0.5586592</span></span>
-<span><span class="co">#&gt; 14:         271  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 15:         191  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 16:         198  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 17:         271  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 18:         239  1.020408  0.877193  0.7936508  0.4184100</span></span>
-<span><span class="co">#&gt; 19:         249  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 20:         260  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 21:         299  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 22:         184  1.020408  1.694915  0.7936508  0.5434783</span></span>
-<span><span class="co">#&gt; 23:         195  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 24:         202  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 25:         277  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 26:         132  8.163265 44.444444  6.3492063  6.0606061</span></span>
-<span><span class="co">#&gt; 27:         137  6.666667  5.555556  0.7936508  0.7299270</span></span>
-<span><span class="co">#&gt; 28:         160  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 29:         271  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt; 30:         126  5.102041 15.151515  3.9682540  3.9682540</span></span>
-<span><span class="co">#&gt; 31:         137  6.666667  3.030303  0.7936508  0.7299270</span></span>
-<span><span class="co">#&gt; 32:         154  0.000000  0.000000  0.0000000  0.0000000</span></span>
-<span><span class="co">#&gt;     count_union     on_g1     on_g2      on_g3   on_union</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 32 × 12</span></span></span>
+<span><span class="co">#&gt;    g1      g2    g3    shared count_g1 count_g2 count_g3 count_union on_g1 on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_… PT00… PT00…     21       54      114      147         147 38.9  18.4 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_… PT00… PT00…      0       54      114      126         271  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_… PT00… PT00…      8       54       59      147         175 14.8  13.6 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT001_… PT00… PT00…      0       54       59      126         229  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT001_… PT00… PT00…      1       54       33      147         179  1.85  3.03</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT001_… PT00… PT00…      1       54       33      126         179  1.85  3.03</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_… PT00… PT00…      0       54       18      147         165  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT001_… PT00… PT00…      0       54       18      126         185  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_… PT00… PT00…      7       28      114      147         166 25     6.14</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_… PT00… PT00…      0       28      114      126         260  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 22 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;</span></span></span></code></pre></div>
 <p>Notice that in this example the keys for g1 and g3 are the same,
 meaning the labels of the groups are actually the same, however you
 should remember that the groups contain a <strong>different set of
@@ -1030,7 +621,7 @@ frames.</p>
 venn or euler diagrams. ISAnalytics has a fast way to do that through
 the functions <code><a href="../reference/is_sharing.html">is_sharing()</a></code> and
 <code><a href="../reference/sharing_venn.html">sharing_venn()</a></code>.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sharing_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,</span>
 <span>    group_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>        g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -1041,80 +632,26 @@ the functions <code><a href="../reference/is_sharing.html">is_sharing()</a></cod
 <span>        g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>, table_for_venn <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Done!</span></span>
 <span><span class="va">sharing_5</span></span>
-<span><span class="co">#&gt;                    g1        g2     g3 shared count_g1 count_g2 count_g3</span></span>
-<span><span class="co">#&gt;  1: PT001_MNC_BM_0030 PT001_MNC MNC_BM     54       54      186      271</span></span>
-<span><span class="co">#&gt;  2: PT001_MNC_BM_0060 PT001_MNC MNC_BM    114      114      186      271</span></span>
-<span><span class="co">#&gt;  3: PT001_MNC_PB_0060 PT001_MNC MNC_BM     31       59      186      271</span></span>
-<span><span class="co">#&gt;  4: PT002_MNC_BM_0030 PT001_MNC MNC_BM      1       98      186      271</span></span>
-<span><span class="co">#&gt;  5: PT002_MNC_PB_0060 PT001_MNC MNC_BM      0       18      186      271</span></span>
-<span><span class="co">#&gt;  6: PT002_MNC_PB_0030 PT001_MNC MNC_BM      1       15      186      271</span></span>
-<span><span class="co">#&gt;  7: PT001_MNC_PB_0030 PT001_MNC MNC_BM      9       28      186      271</span></span>
-<span><span class="co">#&gt;  8: PT002_MNC_BM_0060 PT001_MNC MNC_BM      1       33      186      271</span></span>
-<span><span class="co">#&gt;  9: PT001_MNC_BM_0030 PT002_MNC MNC_BM      1       54      137      271</span></span>
-<span><span class="co">#&gt; 10: PT001_MNC_BM_0060 PT002_MNC MNC_BM      2      114      137      271</span></span>
-<span><span class="co">#&gt; 11: PT001_MNC_PB_0060 PT002_MNC MNC_BM      1       59      137      271</span></span>
-<span><span class="co">#&gt; 12: PT002_MNC_BM_0030 PT002_MNC MNC_BM     98       98      137      271</span></span>
-<span><span class="co">#&gt; 13: PT002_MNC_PB_0060 PT002_MNC MNC_BM     12       18      137      271</span></span>
-<span><span class="co">#&gt; 14: PT002_MNC_PB_0030 PT002_MNC MNC_BM      5       15      137      271</span></span>
-<span><span class="co">#&gt; 15: PT001_MNC_PB_0030 PT002_MNC MNC_BM      0       28      137      271</span></span>
-<span><span class="co">#&gt; 16: PT002_MNC_BM_0060 PT002_MNC MNC_BM     33       33      137      271</span></span>
-<span><span class="co">#&gt; 17: PT001_MNC_BM_0030 PT001_MNC MNC_PB     14       54      186      103</span></span>
-<span><span class="co">#&gt; 18: PT001_MNC_BM_0060 PT001_MNC MNC_PB     35      114      186      103</span></span>
-<span><span class="co">#&gt; 19: PT001_MNC_PB_0060 PT001_MNC MNC_PB     59       59      186      103</span></span>
-<span><span class="co">#&gt; 20: PT002_MNC_BM_0030 PT001_MNC MNC_PB      1       98      186      103</span></span>
-<span><span class="co">#&gt; 21: PT002_MNC_PB_0060 PT001_MNC MNC_PB      0       18      186      103</span></span>
-<span><span class="co">#&gt; 22: PT002_MNC_PB_0030 PT001_MNC MNC_PB      1       15      186      103</span></span>
-<span><span class="co">#&gt; 23: PT001_MNC_PB_0030 PT001_MNC MNC_PB     28       28      186      103</span></span>
-<span><span class="co">#&gt; 24: PT002_MNC_BM_0060 PT001_MNC MNC_PB      0       33      186      103</span></span>
-<span><span class="co">#&gt; 25: PT001_MNC_BM_0030 PT002_MNC MNC_PB      0       54      137      103</span></span>
-<span><span class="co">#&gt; 26: PT001_MNC_BM_0060 PT002_MNC MNC_PB      2      114      137      103</span></span>
-<span><span class="co">#&gt; 27: PT001_MNC_PB_0060 PT002_MNC MNC_PB      1       59      137      103</span></span>
-<span><span class="co">#&gt; 28: PT002_MNC_BM_0030 PT002_MNC MNC_PB     11       98      137      103</span></span>
-<span><span class="co">#&gt; 29: PT002_MNC_PB_0060 PT002_MNC MNC_PB     18       18      137      103</span></span>
-<span><span class="co">#&gt; 30: PT002_MNC_PB_0030 PT002_MNC MNC_PB     15       15      137      103</span></span>
-<span><span class="co">#&gt; 31: PT001_MNC_PB_0030 PT002_MNC MNC_PB      0       28      137      103</span></span>
-<span><span class="co">#&gt; 32: PT002_MNC_BM_0060 PT002_MNC MNC_PB      6       33      137      103</span></span>
-<span><span class="co">#&gt;                    g1        g2     g3 shared count_g1 count_g2 count_g3</span></span>
-<span><span class="co">#&gt;     count_union      on_g1      on_g2      on_g3   on_union      truth_tbl_venn</span></span>
-<span><span class="co">#&gt;  1:         310 100.000000 29.0322581 19.9261993 17.4193548 &lt;data.table[310x4]&gt;</span></span>
-<span><span class="co">#&gt;  2:         310 100.000000 61.2903226 42.0664207 36.7741935 &lt;data.table[310x4]&gt;</span></span>
-<span><span class="co">#&gt;  3:         310  52.542373 16.6666667 11.4391144 10.0000000 &lt;data.table[310x4]&gt;</span></span>
-<span><span class="co">#&gt;  4:         310   1.020408  0.5376344  0.3690037  0.3225806 &lt;data.table[310x4]&gt;</span></span>
-<span><span class="co">#&gt;  5:         316   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[316x4]&gt;</span></span>
-<span><span class="co">#&gt;  6:         320   6.666667  0.5376344  0.3690037  0.3125000 &lt;data.table[320x4]&gt;</span></span>
-<span><span class="co">#&gt;  7:         310  32.142857  4.8387097  3.3210332  2.9032258 &lt;data.table[310x4]&gt;</span></span>
-<span><span class="co">#&gt;  8:         310   3.030303  0.5376344  0.3690037  0.3225806 &lt;data.table[310x4]&gt;</span></span>
-<span><span class="co">#&gt;  9:         281   1.851852  0.7299270  0.3690037  0.3558719 &lt;data.table[281x4]&gt;</span></span>
-<span><span class="co">#&gt; 10:         281   1.754386  1.4598540  0.7380074  0.7117438 &lt;data.table[281x4]&gt;</span></span>
-<span><span class="co">#&gt; 11:         309   1.694915  0.7299270  0.3690037  0.3236246 &lt;data.table[309x4]&gt;</span></span>
-<span><span class="co">#&gt; 12:         281 100.000000 71.5328467 36.1623616 34.8754448 &lt;data.table[281x4]&gt;</span></span>
-<span><span class="co">#&gt; 13:         281  66.666667  8.7591241  4.4280443  4.2704626 &lt;data.table[281x4]&gt;</span></span>
-<span><span class="co">#&gt; 14:         281  33.333333  3.6496350  1.8450185  1.7793594 &lt;data.table[281x4]&gt;</span></span>
-<span><span class="co">#&gt; 15:         300   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[300x4]&gt;</span></span>
-<span><span class="co">#&gt; 16:         281 100.000000 24.0875912 12.1771218 11.7437722 &lt;data.table[281x4]&gt;</span></span>
-<span><span class="co">#&gt; 17:         211  25.925926  7.5268817 13.5922330  6.6350711 &lt;data.table[211x4]&gt;</span></span>
-<span><span class="co">#&gt; 18:         211  30.701754 18.8172043 33.9805825 16.5876777 &lt;data.table[211x4]&gt;</span></span>
-<span><span class="co">#&gt; 19:         211 100.000000 31.7204301 57.2815534 27.9620853 &lt;data.table[211x4]&gt;</span></span>
-<span><span class="co">#&gt; 20:         298   1.020408  0.5376344  0.9708738  0.3355705 &lt;data.table[298x4]&gt;</span></span>
-<span><span class="co">#&gt; 21:         211   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[211x4]&gt;</span></span>
-<span><span class="co">#&gt; 22:         211   6.666667  0.5376344  0.9708738  0.4739336 &lt;data.table[211x4]&gt;</span></span>
-<span><span class="co">#&gt; 23:         211 100.000000 15.0537634 27.1844660 13.2701422 &lt;data.table[211x4]&gt;</span></span>
-<span><span class="co">#&gt; 24:         237   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[237x4]&gt;</span></span>
-<span><span class="co">#&gt; 25:         252   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[252x4]&gt;</span></span>
-<span><span class="co">#&gt; 26:         292   1.754386  1.4598540  1.9417476  0.6849315 &lt;data.table[292x4]&gt;</span></span>
-<span><span class="co">#&gt; 27:         213   1.694915  0.7299270  0.9708738  0.4694836 &lt;data.table[213x4]&gt;</span></span>
-<span><span class="co">#&gt; 28:         213  11.224490  8.0291971 10.6796117  5.1643192 &lt;data.table[213x4]&gt;</span></span>
-<span><span class="co">#&gt; 29:         213 100.000000 13.1386861 17.4757282  8.4507042 &lt;data.table[213x4]&gt;</span></span>
-<span><span class="co">#&gt; 30:         213 100.000000 10.9489051 14.5631068  7.0422535 &lt;data.table[213x4]&gt;</span></span>
-<span><span class="co">#&gt; 31:         213   0.000000  0.0000000  0.0000000  0.0000000 &lt;data.table[213x4]&gt;</span></span>
-<span><span class="co">#&gt; 32:         213  18.181818  4.3795620  5.8252427  2.8169014 &lt;data.table[213x4]&gt;</span></span>
-<span><span class="co">#&gt;     count_union      on_g1      on_g2      on_g3   on_union      truth_tbl_venn</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 32 × 13</span></span></span>
+<span><span class="co">#&gt;    g1    g2    g3    shared count_g1 count_g2 count_g3 count_union  on_g1  on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT00… PT00… MNC_…     54       54      186      271         310 100    29.0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT00… PT00… MNC_…     14       54      186      103         211  25.9   7.53 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT00… PT00… MNC_…      1       54      137      271         281   1.85  0.730</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT00… PT00… MNC_…      0       54      137      103         252   0     0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT00… PT00… MNC_…    114      114      186      271         310 100    61.3  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT00… PT00… MNC_…     35      114      186      103         211  30.7  18.8  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT00… PT00… MNC_…      2      114      137      271         281   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT00… PT00… MNC_…      2      114      137      103         292   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT00… PT00… MNC_…      9       28      186      271         310  32.1   4.84 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT00… PT00… MNC_…     28       28      186      103         211 100    15.1  </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 22 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;, truth_tbl_venn &lt;list&gt;</span></span></span></code></pre></div>
 <p>The argument <code>table_for_venn = TRUE</code> will add a new column
 <code>truth_tbl_venn</code> that contains corresponding truth tables for
 each row.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sharing_plots1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_venn.html">sharing_venn</a></span><span class="op">(</span><span class="va">sharing_5</span>, row_range <span class="op">=</span> <span class="fl">1</span>, euler <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">sharing_plots2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_venn.html">sharing_venn</a></span><span class="op">(</span><span class="va">sharing_5</span>, row_range <span class="op">=</span> <span class="fl">1</span>, euler <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>Say that we’re interested in plotting just the first row of our
@@ -1126,12 +663,12 @@ to work. The argument <code>euler</code> indicates if the function
 should produce euler or venn diagrams instead.</p>
 <p>Once obtained the lists of euler/venn objects we can plot them by
 simply calling the function <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sharing_plots1</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sharing_analyses_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sharing_plots1</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p><img src="sharing_analyses_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sharing_plots2</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="sharing_analyses_files/figure-html/unnamed-chunk-17-2.png" width="700"></p>
+<p><img src="sharing_analyses_files/figure-html/unnamed-chunk-18-2.png" width="700"></p>
 <p>There are several options that can be set, for this please refer to
 <a href="https://jolars.github.io/eulerr/reference/plot.euler.html" class="external-link">eulerr
 docs</a>.</p>
@@ -1142,88 +679,98 @@ docs</a>.</p>
 <p><code>R</code> session information.</p>
 <pre><code><span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
-<span><span class="co">#&gt;  version  R version 4.2.2 (2022-10-31)</span></span>
-<span><span class="co">#&gt;  os       Ubuntu 22.04.1 LTS</span></span>
+<span><span class="co">#&gt;  version  R version 4.2.3 (2023-03-15)</span></span>
+<span><span class="co">#&gt;  os       Ubuntu 22.04.2 LTS</span></span>
 <span><span class="co">#&gt;  system   x86_64, linux-gnu</span></span>
 <span><span class="co">#&gt;  ui       X11</span></span>
 <span><span class="co">#&gt;  language en</span></span>
 <span><span class="co">#&gt;  collate  C.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    C.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       UTC</span></span>
-<span><span class="co">#&gt;  date     2023-01-26</span></span>
+<span><span class="co">#&gt;  date     2023-04-03</span></span>
 <span><span class="co">#&gt;  pandoc   2.19.2 @ /usr/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">package      </span> <span style="color: #555555; font-style: italic;">*</span> <span style="color: #555555; font-style: italic;">version</span> <span style="color: #555555; font-style: italic;">date (UTC)</span> <span style="color: #555555; font-style: italic;">lib</span> <span style="color: #555555; font-style: italic;">source</span></span></span>
 <span><span class="co">#&gt;  backports       1.4.1   <span style="color: #555555;">2021-12-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  bibtex          0.5.1   <span style="color: #555555;">2023-01-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  BiocManager     1.30.19 <span style="color: #555555;">2022-10-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  bibtex          0.5.1   <span style="color: #555555;">2023-01-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  BiocManager     1.30.20 <span style="color: #555555;">2023-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  BiocParallel    1.32.6  <span style="color: #555555;">2023-03-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  BiocStyle     * 2.26.0  <span style="color: #555555;">2022-11-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
-<span><span class="co">#&gt;  bookdown        0.32    <span style="color: #555555;">2023-01-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  bookdown        0.33    <span style="color: #555555;">2023-03-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  bslib           0.4.2   <span style="color: #555555;">2022-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  cachem          1.0.6   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  cachem          1.0.7   <span style="color: #555555;">2023-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  cellranger      1.1.0   <span style="color: #555555;">2016-07-27</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  cli             3.6.0   <span style="color: #555555;">2023-01-09</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  cli             3.6.1   <span style="color: #555555;">2023-03-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  codetools       0.2-19  <span style="color: #555555;">2023-02-01</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.3)</span></span></span>
 <span><span class="co">#&gt;  colorspace      2.1-0   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  curl            5.0.0   <span style="color: #555555;">2023-01-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  data.table      1.14.6  <span style="color: #555555;">2022-11-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  data.table      1.14.8  <span style="color: #555555;">2023-02-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  datamods        1.4.0   <span style="color: #555555;">2022-11-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  desc            1.4.2   <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  digest          0.6.31  <span style="color: #555555;">2022-12-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  dplyr           1.0.10  <span style="color: #555555;">2022-09-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  doFuture        1.0.0   <span style="color: #555555;">2023-03-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  dplyr           1.1.1   <span style="color: #555555;">2023-03-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  ellipsis        0.3.2   <span style="color: #555555;">2021-04-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  eulerr          7.0.0   <span style="color: #555555;">2022-12-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  evaluate        0.20    <span style="color: #555555;">2023-01-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  fansi           1.0.4   <span style="color: #555555;">2023-01-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  farver          2.1.1   <span style="color: #555555;">2022-07-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  fastmap         1.1.0   <span style="color: #555555;">2021-01-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  forcats         0.5.2   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  foreign         0.8-83  <span style="color: #555555;">2022-09-28</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  fs              1.6.0   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  fastmap         1.1.1   <span style="color: #555555;">2023-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  forcats         1.0.0   <span style="color: #555555;">2023-01-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  foreach         1.5.2   <span style="color: #555555;">2022-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  foreign         0.8-84  <span style="color: #555555;">2022-12-06</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.3)</span></span></span>
+<span><span class="co">#&gt;  fs              1.6.1   <span style="color: #555555;">2023-02-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  future          1.32.0  <span style="color: #555555;">2023-03-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  future.apply    1.10.0  <span style="color: #555555;">2022-11-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  generics        0.1.3   <span style="color: #555555;">2022-07-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  ggplot2         3.4.0   <span style="color: #555555;">2022-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  ggplot2         3.4.1   <span style="color: #555555;">2023-02-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  globals         0.16.2  <span style="color: #555555;">2022-11-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  glue            1.6.2   <span style="color: #555555;">2022-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  gtable          0.3.1   <span style="color: #555555;">2022-09-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  gtable          0.3.3   <span style="color: #555555;">2023-03-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  gtools          3.9.4   <span style="color: #555555;">2022-11-27</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  haven           2.5.1   <span style="color: #555555;">2022-08-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  haven           2.5.2   <span style="color: #555555;">2023-02-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  highr           0.10    <span style="color: #555555;">2022-12-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  hms             1.1.2   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  htmltools       0.5.4   <span style="color: #555555;">2022-12-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  htmlwidgets     1.6.1   <span style="color: #555555;">2023-01-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  httpuv          1.6.8   <span style="color: #555555;">2023-01-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  httr            1.4.4   <span style="color: #555555;">2022-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  ISAnalytics   * 1.8.2   <span style="color: #555555;">2023-01-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
+<span><span class="co">#&gt;  hms             1.1.3   <span style="color: #555555;">2023-03-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  htmltools       0.5.5   <span style="color: #555555;">2023-03-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  htmlwidgets     1.6.2   <span style="color: #555555;">2023-03-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  httpuv          1.6.9   <span style="color: #555555;">2023-02-14</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  httr            1.4.5   <span style="color: #555555;">2023-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  ISAnalytics   * 1.8.3   <span style="color: #555555;">2023-04-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
+<span><span class="co">#&gt;  iterators       1.0.14  <span style="color: #555555;">2022-02-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  jquerylib       0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  jsonlite        1.8.4   <span style="color: #555555;">2022-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  knitr           1.42    <span style="color: #555555;">2023-01-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  later           1.3.0   <span style="color: #555555;">2021-08-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  lifecycle       1.0.3   <span style="color: #555555;">2022-10-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  lubridate       1.9.1   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  magrittr      * 2.0.3   <span style="color: #555555;">2022-03-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  listenv         0.9.0   <span style="color: #555555;">2022-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  lubridate       1.9.2   <span style="color: #555555;">2023-02-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  magrittr        2.0.3   <span style="color: #555555;">2022-03-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  memoise         2.0.1   <span style="color: #555555;">2021-11-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  mime            0.12    <span style="color: #555555;">2021-09-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  munsell         0.5.0   <span style="color: #555555;">2018-06-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  openxlsx        4.2.5.1 <span style="color: #555555;">2022-10-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  openxlsx        4.2.5.2 <span style="color: #555555;">2023-02-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  parallelly      1.35.0  <span style="color: #555555;">2023-03-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  phosphoricons   0.1.2   <span style="color: #555555;">2022-04-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  pillar          1.8.1   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  pillar          1.9.0   <span style="color: #555555;">2023-03-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  pkgconfig       2.0.3   <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  pkgdown         2.0.7   <span style="color: #555555;">2022-12-14</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">any (@2.0.7)</span></span></span>
 <span><span class="co">#&gt;  plyr            1.8.8   <span style="color: #555555;">2022-11-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  polyclip        1.10-4  <span style="color: #555555;">2022-10-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  polylabelr      0.2.0   <span style="color: #555555;">2020-04-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  progressr       0.13.0  <span style="color: #555555;">2023-01-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  promises        1.2.0.1 <span style="color: #555555;">2021-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  purrr           1.0.1   <span style="color: #555555;">2023-01-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  R6              2.5.1   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  ragg            1.2.5   <span style="color: #555555;">2023-01-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  Rcapture        1.4-4   <span style="color: #555555;">2022-05-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  Rcpp            1.0.10  <span style="color: #555555;">2023-01-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  reactable       0.4.3   <span style="color: #555555;">2023-01-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  readr           2.1.3   <span style="color: #555555;">2022-10-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  readxl          1.4.1   <span style="color: #555555;">2022-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  reactable       0.4.4   <span style="color: #555555;">2023-03-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  readr           2.1.4   <span style="color: #555555;">2023-02-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  readxl          1.4.2   <span style="color: #555555;">2023-02-09</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  RefManageR    * 1.4.0   <span style="color: #555555;">2022-09-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  rio             0.5.29  <span style="color: #555555;">2021-11-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  rlang           1.0.6   <span style="color: #555555;">2022-09-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  rmarkdown       2.20    <span style="color: #555555;">2023-01-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  rlang           1.1.0   <span style="color: #555555;">2023-03-14</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  rmarkdown       2.21    <span style="color: #555555;">2023-03-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  rprojroot       2.0.3   <span style="color: #555555;">2022-04-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  sass            0.4.5   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  scales          1.2.1   <span style="color: #555555;">2022-08-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
@@ -1235,24 +782,24 @@ docs</a>.</p>
 <span><span class="co">#&gt;  stringr         1.5.0   <span style="color: #555555;">2022-12-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  systemfonts     1.0.4   <span style="color: #555555;">2022-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  textshaping     0.3.6   <span style="color: #555555;">2021-10-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  tibble          3.1.8   <span style="color: #555555;">2022-07-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  tibble          3.2.1   <span style="color: #555555;">2023-03-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  tidyr           1.3.0   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  tidyselect      1.2.0   <span style="color: #555555;">2022-10-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  timechange      0.2.0   <span style="color: #555555;">2023-01-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  tzdb            0.3.0   <span style="color: #555555;">2022-03-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  utf8            1.2.2   <span style="color: #555555;">2021-07-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  vctrs           0.5.2   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  utf8            1.2.3   <span style="color: #555555;">2023-01-31</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  vctrs           0.6.1   <span style="color: #555555;">2023-03-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  withr           2.5.0   <span style="color: #555555;">2022-03-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  writexl         1.4.2   <span style="color: #555555;">2023-01-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  xfun            0.36    <span style="color: #555555;">2022-12-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  xfun            0.38    <span style="color: #555555;">2023-03-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  xml2            1.3.3   <span style="color: #555555;">2021-11-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  xtable          1.8-4   <span style="color: #555555;">2019-04-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  yaml            2.3.7   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  zip             2.2.2   <span style="color: #555555;">2022-10-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #555555;"> [1] /home/runner/work/_temp/Library</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> [2] /opt/R/4.2.2/lib/R/site-library</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> [3] /opt/R/4.2.2/lib/R/library</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> [2] /opt/R/4.2.3/lib/R/site-library</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> [3] /opt/R/4.2.3/lib/R/library</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></span></code></pre>
 </div>
@@ -1262,14 +809,14 @@ docs</a>.</p>
 <p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.16/BiocStyle" class="external-link">BiocStyle</a></em>
 (Oleś, 2022) with <em><a href="https://CRAN.R-project.org/package=knitr" class="external-link">knitr</a></em> (Xie,
 2023) and <em><a href="https://CRAN.R-project.org/package=rmarkdown" class="external-link">rmarkdown</a></em>
-(Allaire, Xie, McPherson, Luraschi, Ushey, Atkins, Wickham, Cheng,
-Chang, and Iannone, 2023) running behind the scenes.</p>
+(Allaire, Xie, Dervieux, McPherson, Luraschi, Ushey, Atkins, Wickham,
+Cheng, Chang, and Iannone, 2023) running behind the scenes.</p>
 <p>Citations made with <em><a href="https://CRAN.R-project.org/package=RefManageR" class="external-link">RefManageR</a></em>
 (McLean, 2017).</p>
 <p>
 <a id="bib-allaire2023rmarkdown"></a><a href="#cite-allaire2023rmarkdown">[1]</a><cite>
-J. Allaire, Y. Xie, J. McPherson, et al. <em>rmarkdown: Dynamic
-Documents for R</em>. R package version 2.20. 2023. URL:
+J. Allaire, Y. Xie, C. Dervieux, et al. <em>rmarkdown: Dynamic Documents
+for R</em>. R package version 2.21. 2023. URL:
 <a href="https://github.com/rstudio/rmarkdown" class="external-link">https://github.com/rstudio/rmarkdown</a>.</cite>
 </p>
 <p>
@@ -1300,7 +847,7 @@ Generation in R</em>. R package version 1.42. 2023. URL:
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+<p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

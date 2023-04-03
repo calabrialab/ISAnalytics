@@ -16,7 +16,7 @@ all the data frame or by group."><meta property="og:image" content="https://cala
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -191,27 +191,29 @@ only if <code>consider_chr = TRUE</code> and/or <code>consider_gene_strand = TRU
 <span class="r-in"><span>    key <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">top_targ</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     GeneName GeneStrand chr n_IS</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:    KMT5B          -  11    5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     RERE          -   1    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:   ANKFY1          -  17    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:    ACOX1          -  17    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:   R3HDM2          -  12    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:   SPATS2          +  12    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     ADD1          +   4    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:   NFATC3          +  16    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:    PRR16          +   5    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:   CNOT6L          -   4    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:    AXIN1          -  16    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:    KMT2D          -  12    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:  C6orf10          -   6    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:     ATF7          -  12    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:   PDIK1L          +   1    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:     ATF1          +  12    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:      SF1          -  11    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:    THADA          -   2    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:    VPS53          -  17    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:    DNMT1          -  19    2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 20 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    GeneName GeneStrand chr    n_IS</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> KMT5B    -          11        5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> RERE     -          1         4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ACOX1    -          17        3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ADD1     +          4         3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ANKFY1   -          17        3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> R3HDM2   -          12        3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> SPATS2   +          12        3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ATF1     +          12        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ATF7     -          12        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> AXIN1    -          16        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> C6orf10  -          6         2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> CD163    -          12        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> CDH2     -          18        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> CLECL1   -          12        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> CNOT6L   -          4         2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> DNMT1    -          19        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">17</span> FCHSD2   -          11        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">18</span> GRB2     -          17        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">19</span> HBE1     -          11        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">20</span> HNRNPM   +          19        2</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -219,7 +221,7 @@ only if <code>consider_chr = TRUE</code> and/or <code>consider_gene_strand = TRU
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

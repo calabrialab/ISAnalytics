@@ -16,7 +16,7 @@ format."><meta property="og:image" content="https://calabrialab.github.io/ISAnal
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -140,7 +140,7 @@ Deprecated. Use <code>additonal_cols</code> instead</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A data.table object in tidy format</p>
+<p>A data frame object in tidy format</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -215,20 +215,16 @@ in the data frame, they are simply ignored.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> --- Read mode: fread</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> --- Sample count: 24</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">matrix</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    chr integration_locus strand     GeneName GeneStrand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  16          68164148      +       NFATC3          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   4         129390130      + LOC100507487          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:   5          84009671      -        EDIL3          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  12          54635693      -         CBX5          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:   2         181930711      +       UBE2E3          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:  20          35920986      +       MANBAL          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 CompleteAmplificationID Value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC   182</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC     4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC     5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC     9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC    83</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC    39</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   chr   integration_locus strand GeneName     GeneStrand CompleteAmplificationID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 16             68<span style="text-decoration: underline;">164</span>148 +      NFATC3       +          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 4             129<span style="text-decoration: underline;">390</span>130 +      LOC100507487 +          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 5              84<span style="text-decoration: underline;">009</span>671 -      EDIL3        -          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 12             54<span style="text-decoration: underline;">635</span>693 -      CBX5         -          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 2             181<span style="text-decoration: underline;">930</span>711 +      UBE2E3       +          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 20             35<span style="text-decoration: underline;">920</span>986 +      MANBAL       +          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: Value &lt;int&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -236,7 +232,7 @@ in the data frame, they are simply ignored.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

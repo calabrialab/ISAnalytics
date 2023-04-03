@@ -16,7 +16,7 @@ Results can be plotted via fisher_scatterplot()."><meta property="og:image" cont
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -194,9 +194,8 @@ parameter (DOIReference column is optional):</p>
     <h2 id="required-tags">Required tags<a class="anchor" aria-label="anchor" href="#required-tags"></a></h2>
     
 
-<p>The function will explicitly check for the presence of these tags:
-*</p>
-    </div>
+<p>The function will explicitly check for the presence of these tags:</p><ul><li><p>gene_symbol</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other Analysis functions: 
@@ -224,13 +223,13 @@ parameter (DOIReference column is optional):</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Warning: missing genes in refgenes table</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> A total of 5 genes were found in the input data but not in the refgene table. This may be caused by a mismatch in the annotation phase of the matrix. Here is a summary: </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 5 × 3</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   chr   GeneName  GeneStrand</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 14    PLEKHG4B  -         </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 15    CRELD2    -         </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 16    UBE2D2    +         </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 19    LINC01133 +         </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 6     HTR4      +         </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   GeneName  GeneStrand chr  </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> PLEKHG4B  -          14   </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> CRELD2    -          15   </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> UBE2D2    +          16   </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> LINC01133 +          19   </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> HTR4      +          6    </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> NOTE: missing genes will be removed from the final output! Review results carefully</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> A total of 25 IS will be removed because of missing genes ( 2.33 % of total IS in input)</span>
 <span class="r-in"><span><span class="va">fisher</span> <span class="op">&lt;-</span> <span class="fu">gene_frequency_fisher</span><span class="op">(</span><span class="va">cis</span><span class="op">$</span><span class="va">cis</span><span class="op">$</span><span class="va">PT001</span>, <span class="va">cis</span><span class="op">$</span><span class="va">cis</span><span class="op">$</span><span class="va">PT002</span>,</span></span>
@@ -238,16 +237,16 @@ parameter (DOIReference column is optional):</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fisher</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 28</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   GeneName n_IS_perGen…¹ avera…² raw_g…³ Onco1…⁴ Clini…⁵ DOIRe…⁶ Known…⁷ Known…⁸</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> KMT5B                2  <span style="text-decoration: underline;">54</span>306. 3.68<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span>      <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>      Other   <span style="color: #BB0000;">NA</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 19 more variables: CriticalForInsMut &lt;lgl&gt;, IS_per_kbGeneLen_1 &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Sum_IS_per_kbGeneLen_1 &lt;dbl&gt;, IS_per_kbGeneLen_perMDepth_TPM_1 &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   n_IS_perGene_2 &lt;int&gt;, average_TxLen_2 &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   raw_gene_integration_frequency_2 &lt;dbl&gt;, IS_per_kbGeneLen_2 &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Sum_IS_per_kbGeneLen_2 &lt;dbl&gt;, IS_per_kbGeneLen_perMDepth_TPM_2 &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   tot_n_IS_perGene_1 &lt;int&gt;, tot_n_IS_perGene_2 &lt;int&gt;, Fisher_p_value &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Fisher_p_value_significant &lt;lgl&gt;, Fisher_p_value_fdr &lt;dbl&gt;, …</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   GeneName n_IS_perGene_1 average_TxLen_1 raw_gene_integration_frequency_1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> KMT5B                 2          <span style="text-decoration: underline;">54</span>306.                        0.000<span style="text-decoration: underline;">036</span>8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 24 more variables: IS_per_kbGeneLen_1 &lt;dbl&gt;, Sum_IS_per_kbGeneLen_1 &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   IS_per_kbGeneLen_perMDepth_TPM_1 &lt;dbl&gt;, n_IS_perGene_2 &lt;int&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   average_TxLen_2 &lt;dbl&gt;, raw_gene_integration_frequency_2 &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   IS_per_kbGeneLen_2 &lt;dbl&gt;, Sum_IS_per_kbGeneLen_2 &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   IS_per_kbGeneLen_perMDepth_TPM_2 &lt;dbl&gt;, Onco1_TS2 &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   KnownClonalExpansion &lt;lgl&gt;, ClinicalRelevance &lt;lgl&gt;, DOIReference &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   KnownGeneClass &lt;chr&gt;, CriticalForInsMut &lt;lgl&gt;, tot_n_IS_perGene_1 &lt;int&gt;, …</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -255,7 +254,7 @@ parameter (DOIReference column is optional):</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

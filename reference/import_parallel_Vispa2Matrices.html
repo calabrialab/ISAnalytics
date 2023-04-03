@@ -18,7 +18,7 @@ vignette("workflow_start", package = "ISAnalytics")'><meta property="og:image" c
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,7 +95,7 @@ For more details see the "How to use import functions" vignette:
 <span>  report_path <span class="op">=</span> <span class="fu"><a href="default_report_path.html">default_report_path</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  patterns <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  matching_opt <span class="op">=</span> <span class="fu"><a href="matching_options.html">matching_options</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AUTO"</span>, <span class="st">"INTERACTIVE"</span><span class="op">)</span>,</span>
+<span>  mode <span class="op">=</span> <span class="st">"AUTO"</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -104,8 +104,7 @@ For more details see the "How to use import functions" vignette:
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>association_file</dt>
 <dd><p>Data frame imported via
-<a href="import_association_file.html">import_association_file</a> (with file system alignment) or
-a string containing the path to the association file on disk.</p></dd>
+<a href="import_association_file.html">import_association_file</a> (with file system alignment)</p></dd>
 
 
 <dt>quantification_type</dt>
@@ -136,27 +135,23 @@ Defaults to <code>{user_home}/ISAnalytics_reports</code>.</p></dd>
 
 
 <dt>patterns</dt>
-<dd><p>Relevant only if argument <code>mode</code> is set to <code>AUTO</code>.
-A character vector of additional patterns to match on file
+<dd><p>A character vector of additional patterns to match on file
 names. Please note that patterns must be regular expressions. Can be <code>NULL</code>
 if no patterns need to be matched.</p></dd>
 
 
 <dt>matching_opt</dt>
-<dd><p>Relevant only if argument <code>mode</code> is set to <code>AUTO</code>.
-A single value between <a href="matching_options.html">matching_options</a></p></dd>
+<dd><p>A single value between <a href="matching_options.html">matching_options</a></p></dd>
 
 
 <dt>mode</dt>
-<dd><p>A single value between <code>AUTO</code> and <code>INTERACTIVE</code>. If
-<code>INTERACTIVE</code>, the function will ask for input from the user on console,
-otherwise the process is fully automated (with limitations, see vignette).</p></dd>
+<dd><p>Only <code>AUTO</code> is supported. As of <code>ISAnalytics 1.8.3</code>, the value
+<code>INTERACTIVE</code> is officially deprecated.</p></dd>
 
 
 <dt>...</dt>
 <dd><p>&lt;<code><a href="https://rlang.r-lib.org/reference/dyn-dots.html" class="external-link">dynamic-dots</a></code>&gt; Additional named arguments
-to pass to <code>ìmport_association_file</code>, <code>comparison_matrix</code> and
-<code>import_single_Vispa2_matrix</code></p></dd>
+to pass to <code>comparison_matrix</code> and <code>import_single_Vispa2_matrix</code></p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -193,27 +188,16 @@ matrices</p>
 <span class="r-in"><span>    mode <span class="op">=</span> <span class="st">"AUTO"</span>, report_path <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">matrices</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    chr integration_locus strand     GeneName GeneStrand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  16          68164148      +       NFATC3          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   4         129390130      + LOC100507487          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:   5          84009671      -        EDIL3          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  12          54635693      -         CBX5          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:   2         181930711      +       UBE2E3          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:  20          35920986      +       MANBAL          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 CompleteAmplificationID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    fragmentEstimate seqCount</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:       102.945718      182</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         3.013590        4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:         5.033742        5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:         9.129338        9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:        50.502734       83</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:        16.394422       39</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   chr   integration_locus strand GeneName     GeneStrand CompleteAmplificationID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 16             68<span style="text-decoration: underline;">164</span>148 +      NFATC3       +          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 4             129<span style="text-decoration: underline;">390</span>130 +      LOC100507487 +          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 5              84<span style="text-decoration: underline;">009</span>671 -      EDIL3        -          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 12             54<span style="text-decoration: underline;">635</span>693 -      CBX5         -          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 2             181<span style="text-decoration: underline;">930</span>711 +      UBE2E3       +          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 20             35<span style="text-decoration: underline;">920</span>986 +      MANBAL       +          PJ01_POOL01_LTR75LC38_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: fragmentEstimate &lt;dbl&gt;, seqCount &lt;int&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -221,7 +205,7 @@ matrices</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -16,7 +16,7 @@ file has been aligned with the file system
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.8.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -160,18 +160,17 @@ Defaults to <code>{user_home}/ISAnalytics_reports</code>.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">stats_files</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 14</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   POOL     TAG   RUN_N…¹ PHIX_…² PLASM…³ BARCO…⁴ LTR_I…⁵ TRIMM…⁶ LV_MA…⁷ BWA_M…⁸</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> POOL01-1 LTR7… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176  <span style="text-decoration: underline;">645</span>026  <span style="text-decoration: underline;">645</span>026  <span style="text-decoration: underline;">630</span>965  <span style="text-decoration: underline;">211</span>757  <span style="text-decoration: underline;">402</span>477</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> POOL01-1 LTR5… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176  <span style="text-decoration: underline;">652</span>208  <span style="text-decoration: underline;">652</span>177  <span style="text-decoration: underline;">649</span>044  <span style="text-decoration: underline;">303</span>300  <span style="text-decoration: underline;">322</span>086</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> POOL01-1 LTR8… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176  <span style="text-decoration: underline;">451</span>519  <span style="text-decoration: underline;">451</span>512  <span style="text-decoration: underline;">449</span>669  <span style="text-decoration: underline;">204</span>810  <span style="text-decoration: underline;">227</span>275</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> POOL01-1 LTR2… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176  <span style="text-decoration: underline;">426</span>500  <span style="text-decoration: underline;">426</span>499  <span style="text-decoration: underline;">425</span>666  <span style="text-decoration: underline;">185</span>752  <span style="text-decoration: underline;">223</span>915</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> POOL01-1 LTR6… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176   <span style="text-decoration: underline;">18</span>300   <span style="text-decoration: underline;">18</span>300   <span style="text-decoration: underline;">18</span>290    <span style="text-decoration: underline;">6</span>962   <span style="text-decoration: underline;">10</span>487</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> POOL01-1 LTR3… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176  <span style="text-decoration: underline;">729</span>327  <span style="text-decoration: underline;">729</span>327  <span style="text-decoration: underline;">727</span>219  <span style="text-decoration: underline;">318</span>653  <span style="text-decoration: underline;">369</span>117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 4 more variables: ISS_MAPPED_OVERALL &lt;int&gt;, RAW_READS &lt;lgl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   QUALITY_PASSED &lt;lgl&gt;, ISS_MAPPED_PP &lt;lgl&gt;, and abbreviated variable names</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ¹​RUN_NAME, ²​PHIX_MAPPING, ³​PLASMID_MAPPED_BYPOOL, ⁴​BARCODE_MUX,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ⁵​LTR_IDENTIFIED, ⁶​TRIMMING_FINAL_LTRLC, ⁷​LV_MAPPED, ⁸​BWA_MAPPED_OVERALL</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   POOL     TAG       RUN_NAME     PHIX_MAPPING PLASMID_MAPPED_BYPOOL BARCODE_MUX</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> POOL01-1 LTR75LC38 PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176      <span style="text-decoration: underline;">645</span>026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> POOL01-1 LTR53LC32 PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176      <span style="text-decoration: underline;">652</span>208</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> POOL01-1 LTR83LC66 PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176      <span style="text-decoration: underline;">451</span>519</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> POOL01-1 LTR27LC94 PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176      <span style="text-decoration: underline;">426</span>500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> POOL01-1 LTR69LC52 PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176       <span style="text-decoration: underline;">18</span>300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> POOL01-1 LTR37LC2  PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176      <span style="text-decoration: underline;">729</span>327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8 more variables: LTR_IDENTIFIED &lt;dbl&gt;, TRIMMING_FINAL_LTRLC &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   LV_MAPPED &lt;dbl&gt;, BWA_MAPPED_OVERALL &lt;dbl&gt;, ISS_MAPPED_OVERALL &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   RAW_READS &lt;lgl&gt;, QUALITY_PASSED &lt;lgl&gt;, ISS_MAPPED_PP &lt;lgl&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -179,7 +178,7 @@ Defaults to <code>{user_home}/ISAnalytics_reports</code>.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">
