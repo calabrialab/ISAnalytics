@@ -119,7 +119,7 @@ cat("*Nothing to report*")
 ```{r echo=FALSE, eval=!is.null(params$missing_info)}
 mi_df <- params$missing_info 
 num_cols <- colnames(mi_df)[colnames(mi_df) != dynamic_cols$pcr_id]
-mi_df <- mi_df %>%
+mi_df <- mi_df |>
   dplyr::mutate(dplyr::across(
     dplyr::all_of(num_cols),
     ~ round(.x, digits = 2)
@@ -205,7 +205,7 @@ datatable(pre_stats, class = "stripe",
               colnames = stringr::str_replace_all(colnames(pre_stats),
                                                   "_", " "),
               filter = "top", rownames = FALSE,
-              options = list(scrollY = 350)) %>%
+              options = list(scrollY = 350)) |>
 formatRound(columns = colnames(pre_stats)[colnames(pre_stats) !=
                                             dynamic_cols$pool], digits = 2)
 ```
@@ -228,7 +228,7 @@ cat("*Heatmaps saved as separate files for size issues*")
 ```
 
 ```{r echo=FALSE, eval=!is.null(pre_sharing)}
-pre_sharing$on_g1 %>%
+pre_sharing$on_g1 |>
   plotly::layout(title = list(text = "IS sharing - percentages on x"))
 ```
 
@@ -238,7 +238,7 @@ cat("*Heatmaps saved as separate files for size issues*")
 ```
 
 ```{r echo=FALSE, eval=!is.null(pre_sharing)}
-pre_sharing$on_union %>%
+pre_sharing$on_union |>
   plotly::layout(title = list(text = "IS sharing - percentages on union"))
 ```
 
@@ -365,7 +365,7 @@ datatable(post_stats, class = "stripe",
               colnames = stringr::str_replace_all(colnames(post_stats),
                                                   "_", " "),
               filter = "top", rownames = FALSE,
-              options = list(scrollY = 350)) %>%
+              options = list(scrollY = 350)) |>
 formatRound(columns = colnames(post_stats)[colnames(post_stats) !=
                                              dynamic_cols$pool], digits = 2)
 ```
@@ -400,7 +400,7 @@ cat("*Heatmaps saved as separate files for size issues*")
 ```
 
 ```{r echo=FALSE, eval=!is.null(post_sharing)}
-post_sharing$on_g1 %>%
+post_sharing$on_g1 |>
   plotly::layout(title = list(text = "IS sharing - percentages on x"))
 ```
 
@@ -410,7 +410,7 @@ cat("*Heatmaps saved as separate files for size issues*")
 ```
 
 ```{r echo=FALSE, eval=!is.null(post_sharing)}
-post_sharing$on_union %>%
+post_sharing$on_union |>
   plotly::layout(title = list(text = "IS sharing - percentages on union"))
 ```
 

@@ -1,4 +1,3 @@
-func_name <- "purity_filter"
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
@@ -226,7 +225,7 @@ expected_output_ab <- tibble::tibble(
 #------------------------------------------------------------------------------#
 # Tests
 #------------------------------------------------------------------------------#
-test_that(paste(func_name, "produces expected output - sc"), {
+test_that("purity_filter produces expected output - sc", {
     purity_filtered <- purity_filter(
         x = df,
         aggregation_key = c(
@@ -241,7 +240,7 @@ test_that(paste(func_name, "produces expected output - sc"), {
     expect_equal(purity_filtered, expected_output_sc)
 })
 
-test_that(paste(func_name, "produces expected output - abundance"), {
+test_that("purity_filter produces expected output - abundance", {
     abund <- compute_abundance(x = df, columns = "Value", key = c(
         "CellMarker",
         "Tissue",
@@ -263,7 +262,7 @@ test_that(paste(func_name, "produces expected output - abundance"), {
     expect_equal(purity_filtered, expected_output_ab)
 })
 
-test_that(paste(func_name, "produces expected output - join"), {
+test_that("purity_filter produces expected output - join", {
     purity_filtered <- purity_filter(
         x = df,
         aggregation_key = c(
@@ -323,7 +322,7 @@ test_that(paste(func_name, "produces expected output - join"), {
     expect_equal(purity_filtered, expected)
 })
 
-test_that(paste(func_name, "produces expected output - group selection"), {
+test_that("purity_filter produces expected output - group selection", {
     ## Vector
     purity_filtered <- purity_filter(
         x = df,

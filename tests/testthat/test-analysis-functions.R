@@ -48,511 +48,6 @@ minimal_agg_example <- tibble::tibble(
 )
 
 #------------------------------------------------------------------------------#
-# Test threshold_filter
-#------------------------------------------------------------------------------#
-example_df <- tibble::tibble(
-    a = c(20, 30, 40), b = c(40, 50, 60),
-    c = c("a", "b", "c"), d = c(3L, 4L, 5L)
-)
-
-example_list <- list(
-    first = example_df,
-    second = example_df,
-    third = example_df
-)
-
-example_list2 <- example_list
-names(example_list2) <- NULL
-
-test_that("threshold_filter gives errors with df - params wrong", {
-    expect_error(
-        {
-            threshold_filter(example_df, threshold = list(1, 2))
-        },
-        regexp = .list_params_err(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_df, threshold = "1")
-        },
-        regexp = .threshold_err(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_df,
-                threshold = 1,
-                cols_to_compare = c(1, 2)
-            )
-        },
-        regexp = paste("`cols_to_compare` must be character"),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_df, threshold = 1, comparators = 1)
-        },
-        regexp = .comparators_err(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_df, threshold = 1, comparators = "%")
-        },
-        regexp = .comparators_err(),
-        fixed = TRUE
-    )
-    expect_error({
-        threshold_filter(example_df,
-            threshold = 1,
-            cols_to_compare = c("a", "f")
-        )
-    })
-    expect_error({
-        threshold_filter(example_df,
-            threshold = 1,
-            cols_to_compare = c("a", "c")
-        )
-    })
-    expect_error(
-        {
-            threshold_filter(example_df,
-                threshold = 1,
-                cols_to_compare = c("a", "b", "d"),
-                comparators = c(">", "<")
-            )
-        },
-        regexp = .diff_leng_args(),
-        fixed = TRUE
-    )
-})
-
-test_that("threshold_filter gives result with df", {
-    filtered <- threshold_filter(example_df,
-        threshold = c(25, 55),
-        cols_to_compare = c("a", "b"),
-        comparators = ">"
-    )
-    expected <- tibble::tibble(a = c(40), b = c(60), c = c("c"), d = c(5))
-    expect_equal(filtered, expected)
-})
-
-test_that("threshold_filter gives errors with list - params wrong", {
-    ### List doesn't contain data frames
-    expect_error(
-        {
-            threshold_filter(list(one = 1, two = 2), threshold = 1)
-        },
-        regexp = paste("Elements of the list must be data frames")
-    )
-    expect_error(
-        {
-            threshold_filter(list(one = example_df, two = 2), threshold = 1)
-        },
-        regexp = paste("Elements of the list must be data frames")
-    )
-
-    ### All param vectors but wrong types
-    expect_error(
-        {
-            threshold_filter(example_list, threshold = c("1", "2"))
-        },
-        regexp = .threshold_err()
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = c(1, 2),
-                cols_to_compare = c(1, 2)
-            )
-        },
-        regexp = paste("`cols_to_compare` must be character")
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = c(1, 2),
-                cols_to_compare = c("a", "b"), comparators = c(2, 4)
-            )
-        },
-        regexp = .comparators_err()
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = c(1, 2),
-                cols_to_compare = c("a", "b"),
-                comparators = c("%in%")
-            )
-        },
-        regexp = .comparators_err()
-    )
-
-    ### Params as lists with unnamed list
-    expect_error(
-        {
-            threshold_filter(example_list2,
-                threshold = list(a = c(1, 2), b = c("a", "b"))
-            )
-        },
-        regexp = .unnamed_list_err(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_list2,
-                threshold = c(1, 2),
-                cols_to_compare = list(a = c("a", "b"))
-            )
-        },
-        regexp = .unnamed_list_err(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_list2,
-                threshold = c(1, 2),
-                cols_to_compare = c("a", "b"),
-                comparators = list(a = c("<", ">"))
-            )
-        },
-        regexp = .unnamed_list_err(),
-        fixed = TRUE
-    )
-
-    ### List params without names
-    expect_error(
-        {
-            threshold_filter(example_list, threshold = list(c(1, 2), c(2, 3)))
-        },
-        regexp = .names_list_param_err()
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = list(
-                    a = c(1, 2),
-                    b = c(2, 3)
-                ),
-                cols_to_compare = list(c("a", "b"), c("b", "c"))
-            )
-        },
-        regexp = .names_list_param_err()
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = list(
-                    a = c(1, 2),
-                    b = c(2, 3)
-                ),
-                cols_to_compare = list(
-                    a = c("a", "b"),
-                    b = c("b", "c")
-                ),
-                comparators = list(c("<", ">"), c(">", "<"))
-            )
-        },
-        regexp = .names_list_param_err()
-    )
-
-    ### List params with internal wrong types
-    expect_error(
-        {
-            threshold_filter(example_list, threshold = list(
-                a = c("1", "2"),
-                b = c(2, 3)
-            ))
-        },
-        regexp = .threshold_err()
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = list(
-                    a = c(1, 2),
-                    b = c(2, 3)
-                ),
-                cols_to_compare = list(
-                    a = c(1, 2),
-                    b = c("b", "c")
-                ),
-                comparators = list(c("<", ">"), c(">", "<"))
-            )
-        },
-        regexp = paste("`cols_to_compare` elements must be character")
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = list(
-                    a = c(1, 2),
-                    b = c(2, 3)
-                ),
-                cols_to_compare = list(
-                    a = c("a", "b"),
-                    b = c("b", "c")
-                ),
-                comparators = list(
-                    a = c("%", ">"),
-                    b = c(">", "<")
-                )
-            )
-        },
-        regexp = .comparators_err()
-    )
-
-    ### Names in param not same names as list
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = list(
-                    a = c(1, 2),
-                    b = c(2, 3)
-                ),
-                cols_to_compare = list(
-                    a = c("a", "b"),
-                    b = c("b", "c")
-                ),
-                comparators = list(
-                    a = c("==", ">"),
-                    b = c(">", "<")
-                )
-            )
-        },
-        regexp = .param_names_not_in_list_err(),
-        fixed = TRUE
-    )
-
-    ### Names not all equal
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = list(
-                    first = c(1, 2),
-                    second = c(2, 3)
-                ),
-                cols_to_compare = list(
-                    second = c("a", "b"),
-                    third = c("b", "c")
-                ),
-                comparators = list(first = c("==", ">"))
-            )
-        },
-        regexp = .param_names_not_equal_err(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = list(
-                    first = c(1, 2),
-                    second = c(2, 3)
-                ),
-                cols_to_compare = list(
-                    first = c("a", "b"),
-                    second = c("b", "c")
-                ),
-                comparators = list(first = c("==", ">"))
-            )
-        },
-        regexp = .param_names_not_equal_err(),
-        fixed = TRUE
-    )
-
-    ### Length params not equal
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = list(
-                    first = c(1, 2, 3),
-                    second = c(2, 3)
-                ),
-                cols_to_compare = list(
-                    first = c("a", "b"),
-                    second = c("b", "c")
-                ),
-                comparators = list(
-                    first = c("==", ">"),
-                    second = c("==", ">")
-                )
-            )
-        },
-        regexp = .diff_leng_args(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = list(
-                    first = c(1, 2),
-                    second = c(2, 3)
-                ),
-                cols_to_compare = list(
-                    first = c("a", "b"),
-                    second = c("b")
-                ),
-                comparators = list(
-                    first = c("==", ">"),
-                    second = c("==")
-                )
-            )
-        },
-        regexp = .diff_leng_args(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = c(1, 2),
-                cols_to_compare = c("V1", "V2", "V3"),
-                comparators = c("<", ">")
-            )
-        },
-        regexp = .diff_leng_args(),
-        fixed = TRUE
-    )
-    expect_error(
-        {
-            threshold_filter(example_list,
-                threshold = c(1),
-                cols_to_compare = c("V1", "V2", "V3"),
-                comparators = c("<", ">")
-            )
-        },
-        regexp = .diff_leng_args(),
-        fixed = TRUE
-    )
-
-    ### Cols not in df
-    expect_error({
-        threshold_filter(example_list,
-            threshold = 1,
-            cols_to_compare = list(
-                first = c("a", "b"),
-                second = c("aa", "bb")
-            ),
-            comparators = c("<", ">")
-        )
-    })
-    expect_error({
-        threshold_filter(example_list,
-            threshold = 1,
-            cols_to_compare = c("aa", "bb"),
-            comparators = c("<", ">")
-        )
-    })
-    expect_error({
-        threshold_filter(example_list,
-            threshold = list(first = c(1, 2), second = c(2, 3)),
-            cols_to_compare = c("aa", "bb"),
-            comparators = c("<", ">")
-        )
-    })
-
-    ### Cols not numeric
-    expect_error({
-        threshold_filter(example_list,
-            threshold = 1,
-            cols_to_compare = list(
-                first = c("a", "b"),
-                second = c("c", "d")
-            ),
-            comparators = c("<", ">")
-        )
-    })
-    expect_error({
-        threshold_filter(example_list,
-            threshold = 1,
-            cols_to_compare = c("c", "b"),
-            comparators = c("<", ">")
-        )
-    })
-    expect_error({
-        threshold_filter(example_list,
-            threshold = list(first = c(1, 2), second = c(2, 3)),
-            cols_to_compare = c("c", "b"),
-            comparators = c("<", ">")
-        )
-    })
-})
-
-test_that("threshold_filter gives result with list", {
-    ### Unnamed list
-    filtered <- threshold_filter(example_list2,
-        threshold = c(25, 55),
-        cols_to_compare = c("a", "b"),
-        comparators = ">"
-    )
-    expected <- tibble::tibble(a = c(40), b = c(60), c = c("c"), d = c(5))
-    expect_equal(filtered, list(
-        expected,
-        expected,
-        expected
-    ))
-    ### All vector params, named list
-    filtered <- threshold_filter(example_list,
-        threshold = c(25, 55),
-        cols_to_compare = c("a", "b"),
-        comparators = ">"
-    )
-    expected <- tibble::tibble(a = c(40), b = c(60), c = c("c"), d = c(5))
-    expect_equal(filtered, list(
-        first = expected,
-        second = expected,
-        third = expected
-    ))
-    ### All list params, named list
-    filtered <- threshold_filter(example_list,
-        threshold = list(
-            first = c(20, 40),
-            second = c(25)
-        ),
-        cols_to_compare = list(
-            first = c("a", "b"),
-            second = c("a")
-        ),
-        comparators = list(
-            first = c("==", "=="),
-            second = c(">")
-        )
-    )
-    expected1 <- tibble::tibble(a = c(20), b = c(40), c = c("a"), d = c(3))
-    expected2 <- tibble::tibble(
-        a = c(30, 40), b = c(50, 60),
-        c = c("b", "c"), d = c(4, 5)
-    )
-    expect_equal(filtered, list(
-        first = expected1,
-        second = expected2,
-        third = example_df
-    ))
-    ### Mixed params, named list
-    filtered <- threshold_filter(example_list,
-        threshold = list(
-            first = c(20, 40),
-            second = c(25, 60)
-        ),
-        cols_to_compare = c("a", "b"),
-        comparators = list(
-            first = c("==", "=="),
-            second = c(">", "<")
-        )
-    )
-    expected1 <- tibble::tibble(a = c(20), b = c(40), c = c("a"), d = c(3))
-    expected2 <- tibble::tibble(
-        a = c(30), b = c(50),
-        c = c("b"), d = c(4)
-    )
-    expect_equal(filtered, list(
-        first = expected1,
-        second = expected2,
-        third = example_df
-    ))
-})
-
-#------------------------------------------------------------------------------#
 # Test sample_statistics
 #------------------------------------------------------------------------------#
 test_that("sample_statistics works as expected with default functions", {
@@ -653,7 +148,7 @@ test_that("cumulative_is produces correct output", {
 })
 
 test_that("cumulative_is works as expected with tp 0", {
-    all_zeros <- minimal_agg_example %>%
+    all_zeros <- minimal_agg_example |>
         dplyr::mutate(TimePoint = "0000")
     expect_message(
         {
@@ -792,7 +287,7 @@ expected_res1 <- list(
             "PT01_Whole_BM_1", "PT01_Whole_BM_2",
             "PT01_Whole_BM_1", "PT01_Whole_BM_2",
             "PT01_Whole_BM_1", "PT01_Whole_BM_2"
-        ),
+        ) |> paste0("-1"),
         g1_SubjectID = c(
             "PT01", "PT01", "PT01", "PT01",
             "PT01", "PT01", "PT01", "PT01",
@@ -838,7 +333,7 @@ expected_res1 <- list(
             "PT01_CD13_PB_08", "PT01_CD13_PB_08",
             "PT01_CD14_PB_03", "PT01_CD14_PB_03",
             "PT01_CD13_PB_01", "PT01_CD13_PB_01"
-        ),
+        ) |> paste0("-2"),
         g2_SubjectID = c(
             "PT01", "PT01", "PT01", "PT01",
             "PT01", "PT01", "PT01", "PT01",
@@ -893,8 +388,8 @@ expected_res1 <- list(
             100, 0, 0, 0, 50, 0, 50, 0, 100, 0,
             0, 100, 0, 50, 100, 0, 0, 0
         )
-    ) %>%
-        dplyr::arrange(.data$g1),
+    ) |>
+        dplyr::arrange(.data$g1, .data$g2),
     PT02 = tibble::tibble(
         g1 = c(
             "PT02_CD34_BM_3", "PT02_CD34_BM_1",
@@ -909,7 +404,7 @@ expected_res1 <- list(
             "PT02_Whole_BM_6", "PT02_Whole_BM_1",
             "PT02_Whole_BM_6", "PT02_Whole_BM_1",
             "PT02_Whole_BM_6", "PT02_Whole_BM_1"
-        ),
+        ) |> paste0("-1"),
         g1_SubjectID = c(
             "PT02", "PT02", "PT02", "PT02",
             "PT02", "PT02", "PT02", "PT02",
@@ -949,7 +444,7 @@ expected_res1 <- list(
             "PT02_CD15_PB_01", "PT02_CD15_PB_01",
             "PT02_CD15_PB_06", "PT02_CD15_PB_06",
             "PT02_CD14_PB_02", "PT02_CD14_PB_02"
-        ),
+        ) |> paste0("-2"),
         g2_SubjectID = c(
             "PT02", "PT02", "PT02", "PT02",
             "PT02", "PT02", "PT02", "PT02",
@@ -999,8 +494,8 @@ expected_res1 <- list(
             0, 0, 0, 0, 0, 0, 0, 0, 0, 100,
             100, 0, 0, 0
         )
-    ) %>%
-        dplyr::arrange(.data$g1)
+    ) |>
+        dplyr::arrange(.data$g1, .data$g2)
 )
 
 expected_res2 <- tibble::tibble(
@@ -1038,7 +533,7 @@ expected_res2 <- tibble::tibble(
         "PT02_Whole_BM_6", "PT02_Whole_BM_1", "PT02_Whole_BM_6",
         "PT02_Whole_BM_1", "PT02_Whole_BM_6", "PT02_Whole_BM_1",
         "PT02_Whole_BM_6", "PT02_Whole_BM_1"
-    ),
+    ) |> paste0("-1"),
     g1_SubjectID = c(
         "PT01", "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
         "PT01", "PT01", "PT01", "PT01", "PT01", "PT01", "PT01",
@@ -1131,7 +626,7 @@ expected_res2 <- tibble::tibble(
         "PT02_CD15_PB_01", "PT02_CD15_PB_01", "PT02_CD15_PB_06",
         "PT02_CD15_PB_06", "PT01_CD13_PB_01", "PT01_CD13_PB_01",
         "PT02_CD14_PB_02", "PT02_CD14_PB_02"
-    ),
+    ) |> paste0("-2"),
     g2_SubjectID = c(
         "PT02", "PT02", "PT02", "PT02", "PT01", "PT01", "PT01",
         "PT01", "PT01", "PT01", "PT02", "PT02", "PT01", "PT01",
@@ -1226,16 +721,23 @@ expected_res2 <- tibble::tibble(
         0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 100, 100, 0, 0, 0,
         0, 0
     )
-)
+) |> dplyr::arrange(.data$g1, .data$g2)
 
 test_that("iss_source produces expected output - per patient", {
-    res <- iss_source(test_df2, test_df3) %>%
-        purrr::map(~ dplyr::arrange(.x, .data$g1))
+    withr::local_options(list(
+        ISAnalytics.parallel_processing = FALSE
+    ))
+    res <- iss_source(test_df2, test_df3) |>
+        purrr::map(~ dplyr::arrange(.x, .data$g1, .data$g2))
     expect_equal(res, expected_res1)
 })
 
 test_that("iss_source produces expected output - NO per patient", {
-    res <- iss_source(test_df2, test_df3, by_subject = FALSE)
+    withr::local_options(list(
+        ISAnalytics.parallel_processing = FALSE
+    ))
+    res <- iss_source(test_df2, test_df3, by_subject = FALSE) |>
+        dplyr::arrange(.data$g1, .data$g2)
     expect_equal(res, expected_res2)
 })
 
@@ -1287,7 +789,7 @@ test_that("gene_frequency_fisher produces expected output", {
 # Test top_targeted_genes
 #------------------------------------------------------------------------------#
 test_that("top_targeted_genes produces expected output", {
-    annot_ex <- minimal_agg_example %>%
+    annot_ex <- minimal_agg_example |>
         dplyr::mutate(
             GeneName = c(
                 "GENE1", "GENE1", "GENE1", "GENE2", "GENE2", "GENE3", "GENE4",
@@ -1299,10 +801,10 @@ test_that("top_targeted_genes produces expected output", {
 
     # --- top genes overall
     top_5 <- top_targeted_genes(annot_ex, n = 5, key = NULL)
-    expected <- data.table::data.table(
+    expected <- tibble::tibble(
         GeneName = c("GENE1", "GENE2", "GENE1", "GENE3", "GENE4"),
         GeneStrand = c("+", "-", "+", "-", "+"),
-        chr = c("2", "5", "1", "3", "3"),
+        chr = c("2", "5", "1", "3", "10"),
         n_IS = c(2, 2, 1, 1, 1)
     )
     expect_equal(top_5, expected)
@@ -1310,7 +812,7 @@ test_that("top_targeted_genes produces expected output", {
         n = 5, key = NULL,
         consider_chr = FALSE
     )
-    expected <- data.table::data.table(
+    expected <- tibble::tibble(
         GeneName = c("GENE1", "GENE4", "GENE2", "GENE3"),
         GeneStrand = c("+", "+", "-", "-"),
         n_IS = c(3, 3, 2, 1)
@@ -1321,7 +823,7 @@ test_that("top_targeted_genes produces expected output", {
         consider_chr = FALSE,
         consider_gene_strand = FALSE
     )
-    expected <- data.table::data.table(
+    expected <- tibble::tibble(
         GeneName = c("GENE1", "GENE4", "GENE2", "GENE3"),
         n_IS = c(3, 3, 2, 1)
     )
@@ -1332,7 +834,7 @@ test_that("top_targeted_genes produces expected output", {
         n = 5,
         key = c("SubjectID", "CellMarker")
     )
-    expected <- data.table::data.table(
+    expected <- tibble::tibble(
         SubjectID = c("S1", "S1", "S1", "S2", "S2", "S2", "S2"),
         CellMarker = c("CM1", "CM1", "CM1", "CM2", "CM2", "CM2", "CM2"),
         GeneName = c(
@@ -1348,7 +850,7 @@ test_that("top_targeted_genes produces expected output", {
         key = c("SubjectID", "CellMarker"),
         consider_chr = FALSE
     )
-    expected <- data.table::data.table(
+    expected <- tibble::tibble(
         SubjectID = c("S1", "S1", "S2", "S2"),
         CellMarker = c("CM1", "CM1", "CM2", "CM2"),
         GeneName = c("GENE1", "GENE2", "GENE4", "GENE3"),

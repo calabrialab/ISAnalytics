@@ -86,20 +86,21 @@
 #'     value_column = "seqCount_sum"
 #' )
 #' head(filtered_by_purity)
-purity_filter <- function(x,
-    lineages = blood_lineages_default(),
-    aggregation_key = c(
-        "SubjectID", "CellMarker",
-        "Tissue", "TimePoint"
-    ),
-    group_key = c("CellMarker", "Tissue"),
-    selected_groups = NULL,
-    join_on = "CellMarker",
-    min_value = 3,
-    impurity_threshold = 10,
-    by_timepoint = TRUE,
-    timepoint_column = "TimePoint",
-    value_column = "seqCount_sum") {
+purity_filter <- function(
+        x,
+        lineages = blood_lineages_default(),
+        aggregation_key = c(
+            "SubjectID", "CellMarker",
+            "Tissue", "TimePoint"
+        ),
+        group_key = c("CellMarker", "Tissue"),
+        selected_groups = NULL,
+        join_on = "CellMarker",
+        min_value = 3,
+        impurity_threshold = 10,
+        by_timepoint = TRUE,
+        timepoint_column = "TimePoint",
+        value_column = "seqCount_sum") {
     ## Checks
     #### - Base
     stopifnot(is.data.frame(x))
@@ -159,7 +160,7 @@ purity_filter <- function(x,
     ## Pre-processing
     #### - Join if needed
     if (to_join) {
-        x <- x %>%
+        x <- x |>
             dplyr::left_join(lineages, by = join_on)
     }
     #### - Group and sum
@@ -168,34 +169,32 @@ purity_filter <- function(x,
     } else {
         mandatory_IS_vars()
     }
-    grouped <- x %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(c(is_vars, group_key)))) %>%
+    grouped <- x |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(c(is_vars, group_key)))) |>
         dplyr::summarise(
             Value = sum(.data[[value_column]]),
             .groups = "drop"
         )
     #### - value filter
-    filtered_value <- threshold_filter(
-        x = grouped,
-        threshold = min_value,
-        cols_to_compare = "Value",
-        comparators = ">="
-    )
+    filtered_value <- grouped |>
+        dplyr::filter(
+            .data$Value >= min_value
+        )
     #### - Separating IS 1: group filtering
     pre_filt <- list()
     if (is.null(selected_groups) || purrr::is_empty(selected_groups)) {
         pre_filt[["process"]] <- filtered_value
         pre_filt[["keep"]] <- filtered_value[0, ]
     } else if (is.character(selected_groups)) {
-        pre_filt[["process"]] <- filtered_value %>%
+        pre_filt[["process"]] <- filtered_value |>
             dplyr::filter(.data[[group_key[1]]] %in% selected_groups)
-        pre_filt[["keep"]] <- filtered_value %>%
+        pre_filt[["keep"]] <- filtered_value |>
             dplyr::filter(!.data[[group_key[1]]] %in% selected_groups)
     } else {
         ok_cols <- colnames(selected_groups)[colnames(selected_groups) %in%
             group_key]
-        selected_groups <- selected_groups %>%
-            dplyr::select(dplyr::all_of(ok_cols)) %>%
+        selected_groups <- selected_groups |>
+            dplyr::select(dplyr::all_of(ok_cols)) |>
             dplyr::distinct()
         if (ncol(selected_groups) == 0 ||
             nrow(selected_groups) == 0) {
@@ -225,39 +224,39 @@ purity_filter <- function(x,
     } else {
         is_vars
     }
-    by_is <- pre_filt$process %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(vars_to_group))) %>%
+    by_is <- pre_filt$process |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(vars_to_group))) |>
         dplyr::summarise(n = n(), .groups = "drop")
-    to_process <- by_is %>%
-        dplyr::filter(.data$n > 1) %>%
-        dplyr::select(-dplyr::all_of("n")) %>%
+    to_process <- by_is |>
+        dplyr::filter(.data$n > 1) |>
+        dplyr::select(-dplyr::all_of("n")) |>
         dplyr::inner_join(pre_filt$process, by = vars_to_group)
     if (nrow(to_process) == 0) {
         ## If there are no shared iss there is nothing to process,
         ## return just the filtered matrix
         return(filtered_value)
     }
-    to_keep <- by_is %>%
-        dplyr::filter(.data$n == 1) %>%
-        dplyr::select(-dplyr::all_of("n")) %>%
+    to_keep <- by_is |>
+        dplyr::filter(.data$n == 1) |>
+        dplyr::select(-dplyr::all_of("n")) |>
         dplyr::inner_join(pre_filt$process, by = vars_to_group)
     #### - Process groups
     .filter_by_purity <- function(group) {
         max_val <- max(group$Value)
-        processed <- group %>%
+        processed <- group |>
             dplyr::mutate(remove = (max_val / .data$Value) >
-                impurity_threshold) %>%
-            dplyr::filter(remove == FALSE) %>%
+                impurity_threshold) |>
+            dplyr::filter(remove == FALSE) |>
             dplyr::select(-dplyr::all_of("remove"))
         processed
     }
-    processed_iss <- to_process %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(vars_to_group))) %>%
-        dplyr::group_modify(~ .filter_by_purity(.x)) %>%
+    processed_iss <- to_process |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(vars_to_group))) |>
+        dplyr::group_modify(~ .filter_by_purity(.x)) |>
         dplyr::ungroup()
     #### - Re-compose matrix
-    final <- processed_iss %>%
-        dplyr::bind_rows(to_keep) %>%
+    final <- processed_iss |>
+        dplyr::bind_rows(to_keep) |>
         dplyr::bind_rows(pre_filt$keep)
     final
 }

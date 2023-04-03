@@ -95,24 +95,24 @@ collapse_file_names <- function(names) {
                   names), collapse = "<br/>")
   )
 }
-formatted_files <- params$files_found$Files %>%
+formatted_files <- params$files_found$Files |>
   purrr::map(~ {
-    .x %>%
-      dplyr::group_by(.data$Quantification_type) %>%
+    .x |>
+      dplyr::group_by(.data$Quantification_type) |>
       dplyr::summarise(Files_found = collapse_file_names(.data$Files_found), 
                        .groups = "drop")
   })
 files_details <- purrr::map2(formatted_files, params$files_found$Files_count,
                              ~ {
-                               .x %>%
+                               .x |>
                                  dplyr::inner_join(.y, 
                                                    by = "Quantification_type")
                              })
 
-count_details <- params$files_found %>%
-  dplyr::mutate(files_details = files_details) %>%
-  dplyr::select(-.data$Files, -.data$Anomalies, -.data$Files_count)  %>%
-  tidyr::unnest(.data$files_details) %>%
+count_details <- params$files_found |>
+  dplyr::mutate(files_details = files_details) |>
+  dplyr::select(-.data$Files, -.data$Anomalies, -.data$Files_count)  |>
+  tidyr::unnest(.data$files_details) |>
   dplyr::mutate(
     !!proj_col := as.factor(.data[[proj_col]]),
     !!pool_col := as.factor(.data[[pool_col]]),
@@ -146,7 +146,7 @@ datatable(
       ),
       scrollY = 350
     ),
-) %>% formatStyle(columns = 5, fontWeight = 'bold', textAlign = 'center')
+) |> formatStyle(columns = 5, fontWeight = 'bold', textAlign = 'center')
 ```
 
 ### About
@@ -187,7 +187,7 @@ Row2 {data-height=600 .tabset .tabset-fade}
 -------------------------------------------------------------------------------
 ### Summary of files imported
 ```{r eval=!is.null(params$files_imp)}
-files_imp <- params$files_imp %>%
+files_imp <- params$files_imp |>
   dplyr::mutate(dplyr::across(c(.data[[proj_col]], 
                               .data[[pool_col]], 
                               .data$Quantification_type), .fns = as.factor))
@@ -201,7 +201,7 @@ datatable(
             order = list(list(4, 'asc')),
             scrollY = 350
           )
-) %>% formatStyle(columns = "Imported", 
+) |> formatStyle(columns = "Imported", 
               color = styleEqual(
                 levels = c(TRUE, FALSE),
                 values = c(found_color, not_found_color)

@@ -33,15 +33,16 @@
 #'     association_file = association_file
 #' )
 #' head(aggreg_meta)
-aggregate_metadata <- function(association_file,
-    grouping_keys = c(
-        "SubjectID",
-        "CellMarker",
-        "Tissue",
-        "TimePoint"
-    ),
-    aggregating_functions = default_meta_agg(),
-    import_stats = lifecycle::deprecated()) {
+aggregate_metadata <- function(
+        association_file,
+        grouping_keys = c(
+            "SubjectID",
+            "CellMarker",
+            "Tissue",
+            "TimePoint"
+        ),
+        aggregating_functions = default_meta_agg(),
+        import_stats = lifecycle::deprecated()) {
     # Check parameters
     stopifnot(is.data.frame(association_file))
     stopifnot(!is.null(grouping_keys))
@@ -158,7 +159,7 @@ default_meta_agg <- function() {
 #' It is also possible to specify the namespace of the function in both
 #' ways, for example:
 #'
-#' ```{r}
+#' ```{r eval=FALSE}
 #' lambda = list(sum = sum, desc = psych::describe)
 #' ```
 #' Using purrr-style lambdas allows to specify arguments for the functions,
@@ -224,28 +225,28 @@ default_meta_agg <- function() {
 #'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
 #' head(aggreg)
-aggregate_values_by_key <- function(x,
-    association_file,
-    value_cols = "Value",
-    key = c(
-        "SubjectID",
-        "CellMarker",
-        "Tissue",
-        "TimePoint"
-    ),
-    lambda = list(sum = ~ sum(.x, na.rm = TRUE)),
-    group = c(
-        mandatory_IS_vars(),
-        annotation_IS_vars()
-    ),
-    join_af_by = "CompleteAmplificationID") {
+aggregate_values_by_key <- function(
+        x,
+        association_file,
+        value_cols = "Value",
+        key = c(
+            "SubjectID",
+            "CellMarker",
+            "Tissue",
+            "TimePoint"
+        ),
+        lambda = list(sum = ~ sum(.x, na.rm = TRUE)),
+        group = c(
+            mandatory_IS_vars(),
+            annotation_IS_vars()
+        ),
+        join_af_by = "CompleteAmplificationID") {
     stopifnot(is.data.frame(x) || is.list(x))
     stopifnot(is.character(value_cols))
     stopifnot(is.character(key))
     stopifnot(is.null(group) || is.character(group))
     stopifnot(is.character(join_af_by))
     stopifnot(is.data.frame(association_file))
-    data.table::setDT(association_file)
     stopifnot(is.list(lambda) && !is.null(names(lambda)))
     join_key_err <- c("Join key not present in in both data frames",
         x = paste(
@@ -261,7 +262,7 @@ aggregate_values_by_key <- function(x,
             ~ is.numeric(df[[.x]]) ||
                 is.double(df[[.x]]) ||
                 is.integer(df[[.x]])
-        ) %>% purrr::set_names(value_cols)
+        ) |> purrr::set_names(value_cols)
         if (any(!is_numeric_col)) {
             rlang::abort(.non_num_user_cols_error(
                 names(is_numeric_col)[!is_numeric_col]

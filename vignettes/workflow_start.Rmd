@@ -167,26 +167,23 @@ category.
 
 ```{r echo=FALSE}
 all_tags <- available_tags()
-all_tags[, needed_in := purrr::map_chr(
-    needed_in,
-    ~ paste0(.x, collapse = ", ")
-)]
-mand_tags <- all_tags[
-    eval(rlang::sym("dyn_vars_tbl")) == "mand_vars",
-    mget(c("tag", "needed_in", "description"))
-]
-annot_tags <- all_tags[
-    eval(rlang::sym("dyn_vars_tbl")) == "annot_vars",
-    mget(c("tag", "needed_in", "description"))
-]
-af_tags <- all_tags[
-    eval(rlang::sym("dyn_vars_tbl")) == "af_vars",
-    mget(c("tag", "needed_in", "description"))
-]
-iss_tags <- all_tags[
-    eval(rlang::sym("dyn_vars_tbl")) == "iss_vars",
-    mget(c("tag", "needed_in", "description"))
-]
+all_tags <- all_tags |>
+    dplyr::mutate(needed_in = purrr::map_chr(
+        .data$needed_in,
+        ~ paste0(.x, collapse = ", ")
+    ))
+mand_tags <- all_tags |>
+    dplyr::filter(.data$dyn_vars_tbl == "mand_vars") |>
+    dplyr::select(dplyr::all_of(c("tag", "needed_in", "description")))
+annot_tags <- all_tags |>
+    dplyr::filter(.data$dyn_vars_tbl == "annot_vars") |>
+    dplyr::select(dplyr::all_of(c("tag", "needed_in", "description")))
+af_tags <- all_tags |>
+    dplyr::filter(.data$dyn_vars_tbl == "af_vars") |>
+    dplyr::select(dplyr::all_of(c("tag", "needed_in", "description")))
+iss_tags <- all_tags |>
+    dplyr::filter(.data$dyn_vars_tbl == "iss_vars") |>
+    dplyr::select(dplyr::all_of(c("tag", "needed_in", "description")))
 ```
 
 ```{r echo=FALSE}
@@ -656,10 +653,7 @@ the report should be saved.
 
 ### `mode` argument
 
-This argument can take one of two values, `AUTO` or `INTERACTIVE`.
-The `INTERACTIVE` workflow, as the name suggests, needs user console 
-input but allows a fine tuning of the import process. On the other hand,
-`AUTO` allows a fully automated workflow but has of course some limitations.
+Since `ISAnalytics 1.8.3` this argument can only be set to `AUTO`.
 
 **What do you want to import?**  
 In a fully automated mode, the function will try to import everything that
@@ -667,7 +661,6 @@ is contained in the input association file. This means that if you need to
 import only a specific set of projects/pools, you will need to filter the
 association file accordingly prior calling the function (you can easily
 do that via the `filter_for` argument as explained in Section \@ref(metadata)).
-In interactive mode the function will ask you to type what you want to import.
 
 **How to deal with duplicates?**  
 When scanning folders for files that match a given pattern (in our case the 
@@ -675,23 +668,21 @@ function looks for matrices that match the quantification type and the
 matrix type), it is very possible that the same folder contains multiple files
 for the same quantification. Of course this is not recommended, we suggest to
 move the duplicated files in a sub directory or remove them if they're not 
-necessary, but in case this happens, in interactive mode, the function asks
-directly which files should be considered. Of course this is not possible in
-automated mode, therefore you need to set two other arguments (described
-in the next sub sections) to "help" the function discriminate 
+necessary, but in case this happens, you need to set two other arguments
+(described in the next sub sections) to "help" the function discriminate 
 between duplicates. Please note that if such discrimination is not possible
 no files are imported.
 
 ### `patterns` argument
 
-This argument is relevant only if `mode` is set to `AUTO`. Providing a 
+Providing a 
 set of patterns (interpreted as regular expressions) helps the function to 
 choose between duplicated files if any are found. If you're confident your
 folders don't contain any duplicates feel free to ignore this argument.
 
 ### `matching_opt` argument
 
-This argument is relevant only if `mode` is set to `AUTO` and `patterns` 
+This argument is relevant only if `patterns` 
 isn't `NULL`. Tells the function how to match the given patterns if multiple
 are supplied: `ALL` means keep only those files whose name matches all the
 given patterns, `ANY` means keep only those files whose name matches any of the
@@ -700,8 +691,8 @@ contain the patterns and if you don't find any return whatever you find.
 
 ### `...` argument
 
-Additional named arguments to supply to both `import_association_file()` and
-`comparison_matrix()`.
+Additional named arguments to supply to `comparison_matrix()` and 
+`import_single_Vispa2_matrix`
 
 ## Notes
 

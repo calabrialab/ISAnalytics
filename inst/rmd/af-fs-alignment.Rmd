@@ -65,7 +65,7 @@ datatable(
     order = list(list(3, 'asc')),
     scrollY = "450px"
   )
-) %>%
+) |>
   formatStyle(columns = "Found", 
               color = styleEqual(
                 levels = c(TRUE, FALSE),

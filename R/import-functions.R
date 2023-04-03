@@ -58,7 +58,7 @@
 #'
 #' * All columns declared in `mandatory_IS_vars()`
 #'
-#' @return A data.table object in tidy format
+#' @return A data frame object in tidy format
 #'
 #' @family Import functions
 #' @export
@@ -71,14 +71,15 @@
 #' )
 #' matrix <- import_single_Vispa2Matrix(matrix_path)
 #' head(matrix)
-import_single_Vispa2Matrix <- function(path,
-    separator = "\t",
-    additional_cols = NULL,
-    transformations = NULL,
-    sample_names_to = pcr_id_column(),
-    values_to = "Value",
-    to_exclude = lifecycle::deprecated(),
-    keep_excluded = lifecycle::deprecated()) {
+import_single_Vispa2Matrix <- function(
+        path,
+        separator = "\t",
+        additional_cols = NULL,
+        transformations = NULL,
+        sample_names_to = pcr_id_column(),
+        values_to = "Value",
+        to_exclude = lifecycle::deprecated(),
+        keep_excluded = lifecycle::deprecated()) {
     stopifnot(!missing(path) & is.character(path))
     stopifnot(is.character(separator))
     if (!file.exists(path)) {
@@ -180,8 +181,10 @@ import_single_Vispa2Matrix <- function(path,
 #' and years
 #' - If `TPD` is `NA` --> `NA` (for both months and years)
 #' - `TPM` = 0, `TPY` = 0 if and only if `TPD` = 0
+#'
 #' For conversion in months:
 #' - `TPM` = ceiling(`TPD`/30) if `TPD` < 30 otherwise `TPM` = round(`TPD`/30)
+#'
 #' For conversion in years:
 #' - `TPY` = ceiling(`TPD`/360)
 #'
@@ -190,8 +193,14 @@ import_single_Vispa2Matrix <- function(path,
 #'
 #' ```{r echo=FALSE, results="asis"}
 #' all_tags <- available_tags()
-#' af_needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
-#'  ~ "import_association_file" %in% .x)][["tag"]])
+#' af_needed <- all_tags |>
+#'    dplyr::mutate(
+#'    in_fun = purrr::map_lgl(.data$needed_in,
+#'    ~ "import_association_file" %in% .x)
+#'    ) |>
+#'    dplyr::filter(in_fun == TRUE) |>
+#'    dplyr::distinct(.data$tag) |>
+#'    dplyr::pull("tag")
 #'  cat(paste0("* ", af_needed, collapse="\n"))
 #' ```
 #'
@@ -210,17 +219,18 @@ import_single_Vispa2Matrix <- function(path,
 #'     report_path = NULL
 #' )
 #' head(af)
-import_association_file <- function(path,
-    root = NULL,
-    dates_format = "ymd",
-    separator = "\t",
-    filter_for = NULL,
-    import_iss = FALSE,
-    convert_tp = TRUE,
-    report_path = default_report_path(),
-    transformations = default_af_transform(convert_tp),
-    tp_padding = lifecycle::deprecated(),
-    ...) {
+import_association_file <- function(
+        path,
+        root = NULL,
+        dates_format = "ymd",
+        separator = "\t",
+        filter_for = NULL,
+        import_iss = FALSE,
+        convert_tp = TRUE,
+        report_path = default_report_path(),
+        transformations = default_af_transform(convert_tp),
+        tp_padding = lifecycle::deprecated(),
+        ...) {
     # Check parameters
     stopifnot(is.character(path))
     path <- path[1]
@@ -299,30 +309,23 @@ import_association_file <- function(path,
         NULL
     }
     # Read file and check the correctness
+    get_col_name <- function(tag_name) {
+        if (!is.null(tags_to_cols)) {
+            return(tags_to_cols |>
+                dplyr::filter(.data$tag == tag_name) |>
+                dplyr::pull(.data$names))
+        }
+        return(NULL)
+    }
     af_checks <- .manage_association_file(
         af_path = path,
         root = root,
         format = dates_format,
         delimiter = separator,
         filter = filter_for,
-        proj_fold_col = dplyr::if_else(!is.null(tags_to_cols),
-            tags_to_cols %>%
-                dplyr::filter(.data$tag == "proj_folder") %>%
-                dplyr::pull(.data$names),
-            NULL
-        ),
-        concat_pool_col = dplyr::if_else(!is.null(tags_to_cols),
-            tags_to_cols %>%
-                dplyr::filter(.data$tag == "vispa_concatenate") %>%
-                dplyr::pull(.data$names),
-            NULL
-        ),
-        project_id_col = dplyr::if_else(!is.null(tags_to_cols),
-            tags_to_cols %>%
-                dplyr::filter(.data$tag == "project_id") %>%
-                dplyr::pull(.data$names),
-            NULL
-        )
+        proj_fold_col = get_col_name("proj_folder"),
+        concat_pool_col = get_col_name("vispa_concatenate"),
+        project_id_col = get_col_name("project_id")
     )
     as_file <- af_checks$af
     parsing_problems <- af_checks$parsing_probs
@@ -336,8 +339,8 @@ import_association_file <- function(path,
     }
     col_probs <- list(missing = NULL, non_standard = NULL)
     if (!.check_af_correctness(as_file)) {
-        min_required_cols <- association_file_columns(TRUE) %>%
-            dplyr::filter(.data$flag == "required") %>%
+        min_required_cols <- association_file_columns(TRUE) |>
+            dplyr::filter(.data$flag == "required") |>
             dplyr::pull(.data$names)
         col_probs[["missing"]] <- min_required_cols[
             !min_required_cols %in% colnames(as_file)
@@ -353,11 +356,11 @@ import_association_file <- function(path,
     }
     ## Fix timepoints
     if (convert_tp) {
-        tp_col <- tags_to_cols %>%
-            dplyr::filter(.data$tag == "tp_days") %>%
+        tp_col <- tags_to_cols |>
+            dplyr::filter(.data$tag == "tp_days") |>
             dplyr::pull(.data$names)
         if (!purrr::is_empty(tp_col) && tp_col %in% colnames(as_file)) {
-            as_file <- as_file %>%
+            as_file <- as_file |>
                 dplyr::mutate(
                     TimepointMonths = .timepoint_to_months(.data[[tp_col]]),
                     TimepointYears = .timepoint_to_years(.data[[tp_col]])
@@ -416,14 +419,14 @@ import_association_file <- function(path,
         "cell_marker", "pcr_replicate", "vispa_concatenate",
         "pcr_repl_id", "proj_folder"
     )
-    crit_colnames <- association_file_columns(TRUE) %>%
-        dplyr::filter(.data$tag %in% crit_tags) %>%
+    crit_colnames <- association_file_columns(TRUE) |>
+        dplyr::filter(.data$tag %in% crit_tags) |>
         dplyr::pull(.data$names)
     crit_colnames <- colnames(as_file)[colnames(as_file) %in% crit_colnames]
     crit_nas <- if (length(crit_colnames) > 0) {
         nas_crit <- purrr::map_lgl(crit_colnames, ~ {
             any(is.na(as_file[[.x]]))
-        }) %>%
+        }) |>
             purrr::set_names(crit_colnames)
         nas_crit <- names(purrr::keep(nas_crit, ~ .x == TRUE))
         if (length(nas_crit) == 0) {
@@ -512,8 +515,14 @@ import_association_file <- function(path,
 #'
 #' ```{r echo=FALSE, results="asis"}
 #' all_tags <- available_tags()
-#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
-#'  ~ "import_Vispa2_stats" %in% .x)][["tag"]])
+#' needed <- all_tags |>
+#'    dplyr::mutate(
+#'    in_fun = purrr::map_lgl(.data$needed_in,
+#'    ~ "import_Vispa2_stats" %in% .x)
+#'    ) |>
+#'    dplyr::filter(in_fun == TRUE) |>
+#'    dplyr::distinct(.data$tag) |>
+#'    dplyr::pull("tag")
 #'  cat(paste0("* ", needed, collapse="\n"))
 #' ```
 #'
@@ -537,11 +546,12 @@ import_association_file <- function(path,
 #'     report_path = NULL
 #' )
 #' head(stats_files)
-import_Vispa2_stats <- function(association_file,
-    file_prefixes = default_iss_file_prefixes(),
-    join_with_af = TRUE,
-    pool_col = "concatenatePoolIDSeqRun",
-    report_path = default_report_path()) {
+import_Vispa2_stats <- function(
+        association_file,
+        file_prefixes = default_iss_file_prefixes(),
+        join_with_af = TRUE,
+        pool_col = "concatenatePoolIDSeqRun",
+        report_path = default_report_path()) {
     ## Check param
     if (!is.data.frame(association_file)) {
         rlang::abort(.af_not_imported_err())
@@ -647,28 +657,42 @@ import_Vispa2_stats <- function(association_file,
             rlang::inform(msg, class = "iss_join_missing")
             return(stats)
         }
-        iss_pool_col <- iss_tags_to_cols %>%
-            dplyr::filter(.data$tag == "vispa_concatenate") %>%
+        iss_pool_col <- iss_tags_to_cols |>
+            dplyr::filter(.data$tag == "vispa_concatenate") |>
             dplyr::pull(.data$names)
-        iss_tag_col <- iss_tags_to_cols %>%
-            dplyr::filter(.data$tag == "tag_seq") %>%
+        iss_tag_col <- iss_tags_to_cols |>
+            dplyr::filter(.data$tag == "tag_seq") |>
             dplyr::pull(.data$names)
-        association_file <- association_file %>%
+        og_af_rows <- nrow(association_file)
+        association_file <- association_file |>
             dplyr::left_join(stats, by = c(
                 stats::setNames(iss_pool_col, pool_col),
-                stats::setNames(iss_tag_col, tags_to_cols %>%
-                    dplyr::filter(.data$tag == "tag_seq") %>%
+                stats::setNames(iss_tag_col, tags_to_cols |>
+                    dplyr::filter(.data$tag == "tag_seq") |>
                     dplyr::pull(.data$names))
             ))
+        if (nrow(association_file) > og_af_rows) {
+            warn_dupl <- c(
+                "Warning: detected rows duplication",
+                i = paste(
+                    "Merging of the association file information and VISPA2",
+                    "stats produced an unexpected duplication of rows.",
+                    "This can be caused by the presence of the same tag",
+                    "sequences with different run names. Check your output",
+                    "carefully"
+                )
+            )
+            rlang::inform(warn_dupl, class = "iss_dupl_row")
+        }
         ## Detect potential problems
-        addit_columns <- association_file_columns(TRUE) %>%
+        addit_columns <- association_file_columns(TRUE) |>
             dplyr::filter(.data$tag %in% c(
                 "subject",
                 "tissue",
                 "cell_marker",
                 "tp_days"
             ))
-        addit_columns_names <- addit_columns %>%
+        addit_columns_names <- addit_columns |>
             dplyr::pull(.data$names)
         addit_columns_names <- addit_columns_names[addit_columns_names %in%
             colnames(association_file)]
@@ -676,18 +700,18 @@ import_Vispa2_stats <- function(association_file,
             colnames(association_file) %in% iss_stats_specs()
         ]
 
-        missing_stats <- association_file %>%
+        missing_stats <- association_file |>
             dplyr::filter(dplyr::if_all(
                 dplyr::all_of(iss_cols_in_af),
                 is.na
-            )) %>%
+            )) |>
             dplyr::select(dplyr::all_of(c(
                 tags_to_cols$names,
                 pool_col,
                 addit_columns_names
-            ))) %>%
+            ))) |>
             dplyr::distinct()
-        all_af_tags <- tags_to_cols %>%
+        all_af_tags <- tags_to_cols |>
             dplyr::bind_rows(addit_columns)
         if (!is.null(report_path) && report_path == "INTERNAL") {
             ## If function was called from import_association_file
@@ -749,15 +773,20 @@ import_Vispa2_stats <- function(association_file,
 #'
 #' ```{r echo=FALSE, results="asis"}
 #' all_tags <- available_tags()
-#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
-#'  ~ "import_parallel_Vispa2Matrices" %in% .x)][["tag"]])
+#' needed <- all_tags |>
+#'    dplyr::mutate(
+#'    in_fun = purrr::map_lgl(.data$needed_in,
+#'    ~ "import_parallel_Vispa2Matrices" %in% .x)
+#'    ) |>
+#'    dplyr::filter(in_fun == TRUE) |>
+#'    dplyr::distinct(.data$tag) |>
+#'    dplyr::pull("tag")
 #'  cat(paste0("* ", needed, collapse="\n"))
 #' ```
 #'
 #'
 #' @param association_file Data frame imported via
-#' \link{import_association_file} (with file system alignment) or
-#' a string containing the path to the association file on disk.
+#' \link{import_association_file} (with file system alignment)
 #' @param quantification_type A vector of requested quantification_types.
 #' Possible choices are \link{quantification_types}
 #' @param matrix_type A single string representing the type of matrices
@@ -767,18 +796,14 @@ import_Vispa2_stats <- function(association_file,
 #' @param multi_quant_matrix If set to `TRUE` will produce a
 #' multi-quantification matrix through \link{comparison_matrix}
 #' instead of a list.
-#' @param patterns Relevant only if argument `mode` is set to `AUTO`.
-#' A character vector of additional patterns to match on file
+#' @param patterns A character vector of additional patterns to match on file
 #' names. Please note that patterns must be regular expressions. Can be `NULL`
 #' if no patterns need to be matched.
-#' @param matching_opt Relevant only if argument `mode` is set to `AUTO`.
-#' A single value between \link{matching_options}
-#' @param mode A single value between `AUTO` and `INTERACTIVE`. If
-#' `INTERACTIVE`, the function will ask for input from the user on console,
-#' otherwise the process is fully automated (with limitations, see vignette).
+#' @param matching_opt A single value between \link{matching_options}
+#' @param mode Only `AUTO` is supported. As of `ISAnalytics 1.8.3`, the value
+#' `INTERACTIVE` is officially deprecated.
 #' @param ... <[`dynamic-dots`][rlang::dyn-dots]> Additional named arguments
-#' to pass to `ìmport_association_file`, `comparison_matrix` and
-#' `import_single_Vispa2_matrix`
+#' to pass to `comparison_matrix` and `import_single_Vispa2_matrix`
 #'
 #' @template report_path_param
 #'
@@ -801,16 +826,17 @@ import_Vispa2_stats <- function(association_file,
 #'     mode = "AUTO", report_path = NULL
 #' )
 #' head(matrices)
-import_parallel_Vispa2Matrices <- function(association_file,
-    quantification_type = c("seqCount", "fragmentEstimate"),
-    matrix_type = c("annotated", "not_annotated"),
-    workers = 2,
-    multi_quant_matrix = TRUE,
-    report_path = default_report_path(),
-    patterns = NULL,
-    matching_opt = matching_options(),
-    mode = c("AUTO", "INTERACTIVE"),
-    ...) {
+import_parallel_Vispa2Matrices <- function(
+        association_file,
+        quantification_type = c("seqCount", "fragmentEstimate"),
+        matrix_type = c("annotated", "not_annotated"),
+        workers = 2,
+        multi_quant_matrix = TRUE,
+        report_path = default_report_path(),
+        patterns = NULL,
+        matching_opt = matching_options(),
+        mode = "AUTO",
+        ...) {
     .base_param_check(
         association_file, quantification_type, matrix_type,
         workers, multi_quant_matrix
@@ -818,22 +844,12 @@ import_parallel_Vispa2Matrices <- function(association_file,
     matrix_type <- rlang::arg_match(matrix_type)
     mode <- rlang::arg_match(mode)
     ## Collect dot args
-    if (is.character(association_file) || isTRUE(multi_quant_matrix)) {
-        dots_args <- rlang::dots_list(..., .named = TRUE, .homonyms = "first")
-        if (is.character(association_file)) {
-            import_af_arg_names <- rlang::fn_fmls_names(import_association_file)
-            import_af_arg_names <- import_af_arg_names[
-                !import_af_arg_names %in% c("path", "report_path")
-            ]
-            import_af_args <- dots_args[names(dots_args) %in%
-                import_af_arg_names]
-        }
-        if (isTRUE(multi_quant_matrix)) {
-            mult_arg_names <- rlang::fn_fmls_names(comparison_matrix)
-            mult_arg_names <- mult_arg_names[mult_arg_names != "x"]
-            mult_args <- dots_args[names(dots_args) %in%
-                mult_arg_names]
-        }
+    dots_args <- rlang::dots_list(..., .named = TRUE, .homonyms = "first")
+    if (multi_quant_matrix == TRUE) {
+        mult_arg_names <- rlang::fn_fmls_names(comparison_matrix)
+        mult_arg_names <- mult_arg_names[mult_arg_names != "x"]
+        mult_args <- dots_args[names(dots_args) %in%
+            mult_arg_names]
     }
     import_matrix_arg_names <- rlang::fn_fmls_names(
         import_single_Vispa2Matrix
@@ -846,46 +862,43 @@ import_parallel_Vispa2Matrices <- function(association_file,
     ]
     import_matrix_args <- dots_args[names(dots_args) %in%
         import_matrix_arg_names]
-    association_file <- .pre_manage_af(
-        association_file,
-        import_af_args,
-        report_path
+
+    ### Renaming 2 args in import_matrix_args
+    if ("sample_names_to" %in% names(import_matrix_args)) {
+        arg_index <- which(names(import_matrix_args) == "sample_names_to")
+        names(import_matrix_args)[arg_index] <- "id_col_name"
+    }
+    if ("values_to" %in% names(import_matrix_args)) {
+        arg_index <- which(names(import_matrix_args) == "values_to")
+        names(import_matrix_args)[arg_index] <- "val_col_name"
+    }
+    ### Add additional args to import_matrix_args
+    import_matrix_args <- append(
+        import_matrix_args,
+        list(call_mode = "INTERNAL")
     )
+
+    association_file <- .pre_manage_af(association_file)
     if (nrow(association_file) == 0) {
         rlang::inform(.af_empty_msg())
         return(NULL)
     }
     ## Workflows
     af_tags <- association_file_columns(TRUE)
-    proj_col <- af_tags %>%
-        dplyr::filter(.data$tag == "project_id") %>%
+    proj_col <- af_tags |>
+        dplyr::filter(.data$tag == "project_id") |>
         dplyr::pull(.data$names)
-    pool_col <- af_tags %>%
-        dplyr::filter(.data$tag == "vispa_concatenate") %>%
+    pool_col <- af_tags |>
+        dplyr::filter(.data$tag == "vispa_concatenate") |>
         dplyr::pull(.data$names)
     ### --- Interactive
     if (mode == "INTERACTIVE") {
-        matching_option <- NULL
-        ## User selects projects to keep
-        association_file <- .interactive_select_projects_import(
-            association_file,
-            proj_col = proj_col
-        )
-        ## User selects pools to keep
-        association_file <- .interactive_select_pools_import(association_file,
-            proj_col = proj_col,
-            pool_col = pool_col
-        )
-        ## Scan the appropriate file system paths and look for files
-        files_found <- .lookup_matrices(
-            association_file, quantification_type,
-            matrix_type, proj_col, pool_col
-        )
-        ## Manage missing files and duplicates
-        files_to_import <- .manage_anomalies_interactive(
-            files_found,
-            proj_col,
-            pool_col
+        lifecycle::deprecate_stop(
+            when = "1.8.3",
+            what = paste(
+                "import_parallel_Vispa2Matrices(mode",
+                "= 'does not accept INTERACTIVE anymore')"
+            )
         )
     } else {
         ### --- Auto
@@ -896,8 +909,6 @@ import_parallel_Vispa2Matrices <- function(association_file,
         ## should use the interactive version or filter the association file
         ## appropriately before calling the function.
         ### Evaluate patterns
-        stopifnot(is.logical(multi_quant_matrix) &
-            length(multi_quant_matrix) == 1)
         if (!is.null(patterns)) {
             stopifnot(is.character(patterns))
         }
@@ -987,7 +998,7 @@ import_parallel_Vispa2Matrices <- function(association_file,
 
 #' Import integration matrices from association file.
 #'
-#' @description `r lifecycle::badge("deprecated")`
+#' @description `r lifecycle::badge("defunct")`
 #' This function was deprecated to avoid redundancy.
 #' Please refer to \code{\link{import_parallel_Vispa2Matrices}}.
 #'
@@ -997,14 +1008,15 @@ import_parallel_Vispa2Matrices <- function(association_file,
 #' @export
 #' @keywords internal
 #' @return A data frame or a list
-import_parallel_Vispa2Matrices_interactive <- function(association_file,
-    quantification_type,
-    matrix_type = "annotated",
-    workers = 2,
-    multi_quant_matrix = TRUE,
-    export_report_path = NULL,
-    ...) {
-    lifecycle::deprecate_warn(
+import_parallel_Vispa2Matrices_interactive <- function(
+        association_file,
+        quantification_type,
+        matrix_type = "annotated",
+        workers = 2,
+        multi_quant_matrix = TRUE,
+        export_report_path = NULL,
+        ...) {
+    lifecycle::deprecate_stop(
         when = "1.3.3",
         what = "import_parallel_Vispa2Matrices_interactive()",
         with = "import_parallel_Vispa2Matrices()",
@@ -1017,21 +1029,11 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
             "for automatic mode"
         ))
     )
-    dots <- rlang::list2(...)
-    import_parallel_Vispa2Matrices(association_file,
-        quantification_type,
-        matrix_type = "annotated",
-        workers = 2,
-        multi_quant_matrix = TRUE,
-        report_path = export_report_path,
-        mode = "INTERACTIVE",
-        !!!dots
-    )
 }
 
 #' Import integration matrices from association file.
 #'
-#' @description `r lifecycle::badge("deprecated")`
+#' @description `r lifecycle::badge("defunct")`
 #' This function was deprecated to avoid redundancy.
 #' Please refer to \code{\link{import_parallel_Vispa2Matrices}}.
 #' @importFrom lifecycle deprecate_warn
@@ -1039,16 +1041,17 @@ import_parallel_Vispa2Matrices_interactive <- function(association_file,
 #' @export
 #' @keywords internal
 #' @return A data frame or a list
-import_parallel_Vispa2Matrices_auto <- function(association_file,
-    quantification_type,
-    matrix_type = "annotated",
-    workers = 2,
-    multi_quant_matrix = TRUE,
-    patterns = NULL,
-    matching_opt = matching_options(),
-    export_report_path = NULL,
-    ...) {
-    lifecycle::deprecate_warn(
+import_parallel_Vispa2Matrices_auto <- function(
+        association_file,
+        quantification_type,
+        matrix_type = "annotated",
+        workers = 2,
+        multi_quant_matrix = TRUE,
+        patterns = NULL,
+        matching_opt = matching_options(),
+        export_report_path = NULL,
+        ...) {
+    lifecycle::deprecate_stop(
         when = "1.3.3",
         what = "import_parallel_Vispa2Matrices_auto()",
         with = "import_parallel_Vispa2Matrices()",
@@ -1060,18 +1063,6 @@ import_parallel_Vispa2Matrices_auto <- function(association_file,
             "_Vispa2Matrices(mode = 'AUTO') ",
             "for automatic mode"
         ))
-    )
-    dots <- rlang::list2(...)
-    import_parallel_Vispa2Matrices(association_file,
-        quantification_type,
-        matrix_type = "annotated",
-        workers = 2,
-        multi_quant_matrix = TRUE,
-        mode = "AUTO",
-        patterns = patterns,
-        matching_opt = matching_opt,
-        report_path = export_report_path,
-        !!!dots
     )
 }
 
@@ -1106,18 +1097,18 @@ annotation_issues <- function(matrix) {
             )
             return(NULL)
         }
-        tmp <- m %>%
+        tmp <- m |>
             dplyr::select(dplyr::all_of(c(
                 mandatory_IS_vars(),
                 annotation_IS_vars()
-            ))) %>%
-            dplyr::distinct() %>%
+            ))) |>
+            dplyr::distinct() |>
             dplyr::group_by(dplyr::across(
                 dplyr::all_of(mandatory_IS_vars())
-            )) %>%
+            )) |>
             dplyr::summarise(distinct_genes = dplyr::n())
         if (any(tmp$distinct_genes > 1)) {
-            tmp %>%
+            tmp |>
                 dplyr::filter(.data$distinct_genes > 1)
         } else {
             NULL
@@ -1253,10 +1244,12 @@ default_af_transform <- function(convert_tp) {
         return(list(
             TimepointMonths = ~ stringr::str_pad(
                 as.character(.x),
-                pad = "0", side = "left", width = 2
+                pad = "0", side = "left",
+                width = max(nchar(as.character(.x))) + 1
             ),
             TimepointYears = ~ stringr::str_pad(as.character(.x),
-                pad = "0", side = "left", width = 2
+                pad = "0", side = "left",
+                width = max(nchar(as.character(.x))) + 1
             )
         ))
     }

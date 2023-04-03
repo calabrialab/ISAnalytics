@@ -27,7 +27,7 @@ minimal_test_coll_meta <- tibble::tribble(
     "PJ1", "POOL1", "SJ002", lubridate::as_date(x = "2020-03-11"), 1, "SAMPLE3"
 )
 
-minimal_test_coll_meta_probs <- minimal_test_coll_meta %>%
+minimal_test_coll_meta_probs <- minimal_test_coll_meta |>
     tibble::add_case(
         ProjectID = "PJ1",
         PoolID = "POOL1",
@@ -71,21 +71,21 @@ test_that(".check_same_info returns non empty if more info", {
 })
 
 test_that(".check_same_info reports only projects of interest", {
-    mod_af <- minimal_test_coll_meta_probs %>%
+    mod_af <- minimal_test_coll_meta_probs |>
         tibble::add_case(
             ProjectID = "PJ2", PoolID = "POOL2",
             SubjectID = "SJ003",
             SequencingDate = lubridate::as_date(x = "2021-04-12"),
             ReplicateNumber = 1,
             CompleteAmplificationID = "SAMPLE5"
-        ) %>%
+        ) |>
         tibble::add_case(
             ProjectID = "PJ2", PoolID = "POOL2",
             SubjectID = "SJ004",
             SequencingDate = lubridate::as_date(x = "2021-04-12"),
             ReplicateNumber = 1,
             CompleteAmplificationID = "SAMPLE6"
-        ) %>%
+        ) |>
         tibble::add_case(
             ProjectID = "PJ3", PoolID = "POOL3",
             SubjectID = "SJ005",
@@ -93,7 +93,7 @@ test_that(".check_same_info reports only projects of interest", {
             ReplicateNumber = 1,
             CompleteAmplificationID = "SAMPLE7"
         )
-    mod_matrix <- minimal_test_coll %>%
+    mod_matrix <- minimal_test_coll |>
         tibble::add_case(
             chr = "7", integration_locus = 56753, strand = "+",
             CompleteAmplificationID = "SAMPLE5", seqCount = 432,
@@ -113,10 +113,10 @@ test_that(".check_same_info reports only projects of interest", {
 # Tests .identify_independent_samples
 #------------------------------------------------------------------------------#
 test_that(".identify_independent_samples splits joined_df", {
-    joined <- minimal_test_coll %>%
+    joined <- minimal_test_coll |>
         dplyr::left_join(minimal_test_coll_meta,
             by = "CompleteAmplificationID"
-        ) %>%
+        ) |>
         dplyr::select(dplyr::all_of(c(
             colnames(minimal_test_coll), "SequencingDate",
             "ReplicateNumber", "ProjectID", "SubjectID"
@@ -154,7 +154,7 @@ test_that(".identify_independent_samples works with custom indep sample", {
         "2", 67544, "+", "SAMPLE6", 732, 563.8, "A01", "B02", "C01"
     )
     independent_sample_key <- c("Field1", "Field2", "Field3")
-    split <- .identify_independent_samples(data.table::setDT(custom_matrix),
+    split <- .identify_independent_samples(custom_matrix,
         indep_sample_id = independent_sample_key
     )
     expect_true(nrow(split$collisions) +
@@ -167,13 +167,14 @@ test_that(".identify_independent_samples works with custom indep sample", {
 #------------------------------------------------------------------------------#
 # Tests .discriminate_by_date
 #------------------------------------------------------------------------------#
-example_df_multi <- function(ProjectID,
-    seqCount,
-    fragmentEstimate,
-    SequencingDate,
-    PoolID,
-    SubjectID,
-    Replicate) {
+example_df_multi <- function(
+        ProjectID,
+        seqCount,
+        fragmentEstimate,
+        SequencingDate,
+        PoolID,
+        SubjectID,
+        Replicate) {
     t <- tibble::tibble(
         seqCount = seqCount,
         fragmentEstimate = fragmentEstimate,
@@ -183,7 +184,7 @@ example_df_multi <- function(ProjectID,
         SubjectID = SubjectID,
         ReplicateNumber = Replicate
     )
-    t <- t %>%
+    t <- t |>
         dplyr::mutate(
             CompleteAmplificationID = paste(
                 .data[["ProjectID"]],
@@ -194,7 +195,6 @@ example_df_multi <- function(ProjectID,
             ),
             .before = seqCount
         )
-    t <- data.table::setDT(t)
     return(t)
 }
 
@@ -268,7 +268,7 @@ test_that(".discriminate_by_date returns as expected for single min date", {
         c("ProjectID", "SubjectID")
     )
     expect_true(result$check == TRUE)
-    df <- df %>%
+    df <- df |>
         dplyr::filter(.data$SequencingDate == lubridate::dmy("01/08/2020"))
     expect_equal(result$data, df)
 })
@@ -301,7 +301,7 @@ test_that(".discriminate_by_replicate returns as expected for single max", {
         c("ProjectID", "SubjectID")
     )
     expect_true(result$check == TRUE)
-    df <- df %>% dplyr::filter(.data$SubjectID == "subj2")
+    df <- df |> dplyr::filter(.data$SubjectID == "subj2")
     expect_equal(result$data, df)
 })
 
@@ -390,7 +390,7 @@ test_that(".discriminate_by_seqCount returns as expected for ratio > 10", {
         c("ProjectID", "SubjectID")
     )
     expect_true(result$check == TRUE)
-    df <- df %>% dplyr::filter(.data$SubjectID == "subj2")
+    df <- df |> dplyr::filter(.data$SubjectID == "subj2")
     expect_equal(result$data, df)
 })
 
@@ -417,7 +417,7 @@ test_that(".four_step_check returns as expected for first step", {
         ),
         Replicate = c(1, 2, 2, 1, 2, 3)
     )
-    ex <- df %>%
+    ex <- df |>
         dplyr::mutate(
             chr = "1",
             integration_locus = 10493,
@@ -461,7 +461,7 @@ test_that(".four_step_check returns as expected for second step", {
         ),
         Replicate = c(1, 2, 2, 1, 2, 3)
     )
-    ex <- df %>%
+    ex <- df |>
         dplyr::mutate(
             chr = "1",
             integration_locus = 10493,
@@ -506,7 +506,7 @@ test_that(".four_step_check returns as expected for third step", {
         ),
         Replicate = c(1, 2, 2, 1, 2, 3)
     )
-    ex <- df %>%
+    ex <- df |>
         dplyr::mutate(
             chr = "1",
             integration_locus = 10493,
@@ -552,7 +552,7 @@ test_that(".four_step_check returns as expected for fourth step", {
         ),
         Replicate = c(1, 2, 2, 1, 2, 3)
     )
-    ex <- df %>%
+    ex <- df |>
         dplyr::mutate(
             chr = "1",
             integration_locus = 10493,
@@ -649,16 +649,16 @@ example_collisions_multi <- function() {
         Replicate = c(1, 1, 2, 1, 2, 3)
     )
     t <- tibble::as_tibble(cols)
-    t <- t %>%
+    t <- t |>
         tibble::add_column(tibble::as_tibble_col(
             list(
                 smpl1, smpl2,
                 smpl3, smpl4
             ),
             column_name = "data"
-        )) %>%
+        )) |>
         tidyr::unnest(dplyr::all_of("data"))
-    return(data.table::setDT(t))
+    return(t)
 }
 
 ex_collisions_multi <- example_collisions_multi()
@@ -679,14 +679,14 @@ test_that(".process_collisions returns updated collisions", {
     expect_true(removed == 1)
     expect_true(reassigned == 3)
     # Removed integration should not be in the result
-    rem_integration <- coll %>%
+    rem_integration <- coll |>
         dplyr::filter(
             .data$chr == 4, .data$integration_locus == 12353,
             .data$strand == "-"
         )
     expect_true(nrow(rem_integration) == 0)
     # First integration expected result
-    first <- coll %>%
+    first <- coll |>
         dplyr::filter(
             .data$chr == 1, .data$integration_locus == 103948,
             .data$strand == "+"
@@ -694,7 +694,7 @@ test_that(".process_collisions returns updated collisions", {
     expect_true(all(first$SubjectID == "subj3"))
     expect_true(nrow(first) == 1)
     # Second integration expected result
-    second <- coll %>%
+    second <- coll |>
         dplyr::filter(
             .data$chr == 2, .data$integration_locus == 14390,
             .data$strand == "+"
@@ -702,7 +702,7 @@ test_that(".process_collisions returns updated collisions", {
     expect_true(all(second$SubjectID == "subj2"))
     expect_true(nrow(second) == 2)
     # Third integration expected result
-    third <- coll %>%
+    third <- coll |>
         dplyr::filter(
             .data$chr == 3, .data$integration_locus == 12453,
             .data$strand == "-"
@@ -726,9 +726,9 @@ test_that(paste(
         )
     )
     issues1 <- separated_m
-    issues1$fragmentEstimate <- issues1$fragmentEstimate %>%
+    issues1$fragmentEstimate <- issues1$fragmentEstimate |>
         dplyr::rename(chrom = "chr")
-    issues1$seqCount <- issues1$seqCount %>%
+    issues1$seqCount <- issues1$seqCount |>
         dplyr::rename(sample_id = "CompleteAmplificationID")
     expect_error(
         {
@@ -788,7 +788,7 @@ test_that(".collisions_check_input_af works as expected", {
     ## in the data frame
     expect_error({
         checks <- .collisions_check_input_af(
-            minimal_test_coll_meta %>%
+            minimal_test_coll_meta |>
                 dplyr::rename(Project = "ProjectID"),
             date_col = "SequencingDate",
             independent_sample_id = c("SubjectID")
@@ -798,7 +798,7 @@ test_that(".collisions_check_input_af works as expected", {
     expect_error(
         {
             checks <- .collisions_check_input_af(
-                minimal_test_coll_meta %>%
+                minimal_test_coll_meta |>
                     dplyr::mutate(SequencingDate = as.character(
                         .data$SequencingDate
                     )),
@@ -856,12 +856,12 @@ test_that("remove_collisions succeeds", {
         association_file = minimal_test_coll_meta_probs,
         report_path = NULL, max_workers = 4
     )
-    expected <- coll_rem %>%
+    expected <- coll_rem |>
         dplyr::filter(
             .data$chr == "4",
             .data$integration_locus == 23435,
             .data$strand == "+"
-        ) %>%
+        ) |>
         dplyr::distinct(.data$CompleteAmplificationID)
     expect_true(
         all(expected$CompleteAmplificationID %in% c("SAMPLE1", "SAMPLE2"))

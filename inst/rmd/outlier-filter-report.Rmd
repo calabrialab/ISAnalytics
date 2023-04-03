@@ -59,7 +59,9 @@ valueBox(value = length(test_results), icon = "fa-list", color = secondary_col)
 ```{r echo=FALSE, eval=TRUE}
 out <- purrr::map2_chr(test_results, names(test_results), ~ {
   heading <- paste("### Flagged in ", .y)
-  flagged_reads <- nrow(.x[eval(sym("to_remove")) == TRUE, ])
+  flagged_reads <- .x |>
+    dplyr::filter(.data$to_remove == TRUE) |>
+    nrow()
   color <- ifelse(test = flagged_reads == 0, ok_color, ko_color)
   a1 <- knitr::knit_expand(text = heading)
   a2 <- knitr::knit_expand(text = paste0(
@@ -97,7 +99,7 @@ params_as_string <- purrr::map2(call_args, names(call_args), ~ {
   test <- .x
   name <- .y
   single_param_lines <- if (!purrr::is_empty(test)) {
-    purrr::map2_chr(names(test), test,~ paste("\t", "*", .x, "=", .y)) %>%
+    purrr::map2_chr(names(test), test,~ paste("\t", "*", .x, "=", .y)) |>
       purrr::reduce(~ paste(.x, .y, sep = "\n"))
   } else {
     "\t * No args passed to the function\n"
@@ -122,7 +124,7 @@ test_tables <- purrr::map(test_results, ~ {
     options = list(
       order = list(list(to_rem_index, "desc"))
       )
-  ) %>%
+  ) |>
   formatStyle(columns = "to_remove", 
               color = styleEqual(
                 levels = c(TRUE, FALSE),
@@ -155,7 +157,7 @@ datatable(
     options = list(
       order = list(list(to_rem_index_joint, "desc"))
       )
-) %>%
+) |>
   formatStyle(columns = colnames(joint)[colnames(joint) != dyn_vars$pcr_id], 
               color = styleEqual(
                 levels = c(TRUE, FALSE),

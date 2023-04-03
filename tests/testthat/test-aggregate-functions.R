@@ -1,4 +1,3 @@
-
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
@@ -38,7 +37,7 @@ test_that(".aggregate_meta aggregates correct default", {
         "S2", "BM", lubridate::ymd("2020-01-05"), 9827,
         "S2", "PB", lubridate::ymd("2020-01-05"), 2140
     )
-    expect_equal(aggreg_meta %>% dplyr::arrange(dplyr::desc(.data$Value_sum)),
+    expect_equal(aggreg_meta |> dplyr::arrange(dplyr::desc(.data$Value_sum)),
         expected,
         ignore_attr = TRUE
     )
@@ -136,8 +135,8 @@ test_that(".aggregate_lambda aggregates correctly", {
         "5", 65789, "+", "S2", 213
     )
     expect_equal(
-        agg %>% dplyr::arrange(.data$Value_sum),
-        expected %>% dplyr::arrange(.data$Value_sum)
+        agg |> dplyr::arrange(.data$Value_sum),
+        expected |> dplyr::arrange(.data$Value_sum)
     )
 })
 

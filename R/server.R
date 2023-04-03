@@ -1,4 +1,3 @@
-
 #' @import shinyWidgets
 .modal_warning_data <- function() {
     confirmSweetAlert(

@@ -34,7 +34,7 @@ sample_df_old_2 <- tidyr::unite(sample_df,
 sample_df_old_2_path <- withr::local_tempfile(fileext = "tsv.gz")
 readr::write_tsv(x = sample_df_old_2, na = "", file = sample_df_old_2_path)
 
-sample_df_add_columns <- sample_df %>%
+sample_df_add_columns <- sample_df |>
     dplyr::mutate(add1 = "a", add2 = 56, .after = "GeneStrand")
 sample_df_add_path <- withr::local_tempfile(fileext = "tsv.gz")
 readr::write_tsv(x = sample_df_add_columns, na = "", file = sample_df_add_path)
@@ -43,6 +43,7 @@ readr::write_tsv(x = sample_df_add_columns, na = "", file = sample_df_add_path)
 # .read_with_fread
 #------------------------------------------------------------------------------#
 test_that(".read_with_fread works with all matrices - standard mand", {
+    skip_if_not_installed("data.table")
     df <- .read_with_fread(
         path = sample_df_path, additional_cols = NULL,
         annotated = TRUE, sep = "\t"
@@ -152,6 +153,64 @@ test_that(".read_with_readr works with all matrices - standard mand", {
     )
     expect_true(nrow(df) == 8 & ncol(df) == 10)
     expect_true(!c("add2") %in% colnames(df))
+})
+
+#------------------------------------------------------------------------------#
+# .melt_datatable
+#------------------------------------------------------------------------------#
+test_that(".melt_datatable produces expected output", {
+    skip_if_not_installed("data.table")
+    as_dt <- data.table::as.data.table(sample_df)
+    melted <- .melt_datatable(as_dt,
+        id_vars = c(
+            mandatory_IS_vars(),
+            annotation_IS_vars()
+        ),
+        sample_col = "Sample",
+        value_col = "Value",
+        progress = NULL
+    )
+    expect_true(nrow(melted) == 11 & ncol(melted) == 7)
+    expect_true(all(is.character(melted$Sample)))
+    expect_true(all(is.numeric(melted$Value)) || all(is.integer(melted$Value)))
+    expect_false(any(is.na(melted$Value)))
+})
+
+#------------------------------------------------------------------------------#
+# .melt_tidyr
+#------------------------------------------------------------------------------#
+test_that(".melt_tidyr produces expected output", {
+    melted <- .melt_tidyr(sample_df,
+        id_vars = c(
+            mandatory_IS_vars(),
+            annotation_IS_vars()
+        ),
+        sample_col = "Sample",
+        value_col = "Value",
+        progress = NULL
+    )
+    expect_true(nrow(melted) == 11 & ncol(melted) == 7)
+    expect_true(all(is.character(melted$Sample)))
+    expect_true(all(is.numeric(melted$Value)) || all(is.integer(melted$Value)))
+    expect_false(any(is.na(melted$Value)))
+})
+
+#------------------------------------------------------------------------------#
+# .melt_in_parallel
+#------------------------------------------------------------------------------#
+test_that(".melt_in_parallel produces expected output", {
+    melted <- .melt_in_parallel(sample_df,
+        n_chunks = 3, melt_fun = .melt_tidyr,
+        id_vars = c(
+            mandatory_IS_vars(),
+            annotation_IS_vars()
+        ),
+        id_col_name = "Sample", val_col_name = "Value"
+    )
+    expect_true(nrow(melted) == 11 & ncol(melted) == 7)
+    expect_true(all(is.character(melted$Sample)))
+    expect_true(all(is.numeric(melted$Value)) || all(is.integer(melted$Value)))
+    expect_false(any(is.na(melted$Value)))
 })
 
 #------------------------------------------------------------------------------#
@@ -309,7 +368,7 @@ test_that("import_single_Vispa2Matrix warns deprecation", {
 
 ### ---- Testing with custom vars -------------------------------------------###
 test_that("import_single_Vispa2Matrix reads correctly with custom vars", {
-    sample_df_mod <- sample_df %>%
+    sample_df_mod <- sample_df |>
         dplyr::mutate(gap = 100, junction = 100, .after = "GeneStrand")
     tmp_mand_vars <- tibble::tribble(
         ~names, ~types, ~transform, ~flag, ~tag,
@@ -377,7 +436,7 @@ test_that(paste(
     "import_single_Vispa2Matrix",
     "reads correctly with custom vars and dates"
 ), {
-    sample_df_mod <- sample_df %>%
+    sample_df_mod <- sample_df |>
         dplyr::mutate(custom_date = c(
             "2016-11-15", "2017-06-23",
             "2017-06-23", "2017-06-23",

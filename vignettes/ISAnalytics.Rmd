@@ -190,7 +190,7 @@ matrix
 desc_stats <- sample_statistics(matrix, af,
     sample_key = pcr_id_column(),
     value_columns = "Value"
-)$metadata %>%
+)$metadata |>
     dplyr::rename(distinct_barcodes = "nIS")
 desc_stats
 
@@ -219,7 +219,7 @@ agg_meta
 agg_stats <- sample_statistics(agg, agg_meta,
     sample_key = agg_key,
     value_columns = "Value_sum"
-)$metadata %>%
+)$metadata |>
     dplyr::rename(distinct_barcodes = "nIS")
 agg_stats
 

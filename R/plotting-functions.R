@@ -40,8 +40,13 @@
 #'
 #' ```{r echo=FALSE, results="asis"}
 #' all_tags <- available_tags()
-#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
-#'  ~ "CIS_volcano_plot" %in% .x)][["tag"]])
+#' needed <- all_tags |>
+#'    dplyr::mutate(
+#'    in_fun = purrr::map_lgl(.data$needed_in,
+#'    ~ "CIS_volcano_plot" %in% .x)
+#'    ) |>
+#'    dplyr::filter(in_fun == TRUE) |>
+#'    dplyr::pull("tag")
 #'  cat(paste0("* ", needed, collapse="\n"))
 #' ```
 #'
@@ -56,18 +61,19 @@
 #'     title_prefix = "PJ01"
 #' )
 #' cis_plot
-CIS_volcano_plot <- function(x,
-    onco_db_file = "proto_oncogenes",
-    tumor_suppressors_db_file = "tumor_suppressors",
-    species = "human",
-    known_onco = known_clinical_oncogenes(),
-    suspicious_genes =
-        clinical_relevant_suspicious_genes(),
-    significance_threshold = 0.05,
-    annotation_threshold_ontots = 0.1,
-    highlight_genes = NULL,
-    title_prefix = NULL,
-    return_df = FALSE) {
+CIS_volcano_plot <- function(
+        x,
+        onco_db_file = "proto_oncogenes",
+        tumor_suppressors_db_file = "tumor_suppressors",
+        species = "human",
+        known_onco = known_clinical_oncogenes(),
+        suspicious_genes =
+            clinical_relevant_suspicious_genes(),
+        significance_threshold = 0.05,
+        annotation_threshold_ontots = 0.1,
+        highlight_genes = NULL,
+        title_prefix = NULL,
+        return_df = FALSE) {
     ## Check params
     stopifnot(is.data.frame(x))
     stopifnot(is.character(onco_db_file))
@@ -104,8 +110,8 @@ CIS_volcano_plot <- function(x,
     } else {
         x
     }
-    gene_sym_col <- annotation_IS_vars(TRUE) %>%
-        dplyr::filter(.data$tag == "gene_symbol") %>%
+    gene_sym_col <- annotation_IS_vars(TRUE) |>
+        dplyr::filter(.data$tag == "gene_symbol") |>
         dplyr::pull(.data$names)
     ## Add info to CIS
     cis_grubbs_df <- .expand_cis_df(
@@ -113,11 +119,11 @@ CIS_volcano_plot <- function(x,
         onco_db_file, tumor_suppressors_db_file,
         species, known_onco, suspicious_genes
     )
-    cis_grubbs_df <- cis_grubbs_df %>%
+    cis_grubbs_df <- cis_grubbs_df |>
         dplyr::mutate(minus_log_p = -log(.data$tdist_bonferroni_default,
             base = 10
         ))
-    cis_grubbs_df <- cis_grubbs_df %>%
+    cis_grubbs_df <- cis_grubbs_df |>
         dplyr::mutate(
             minus_log_p_fdr = -log(.data$tdist_fdr, base = 10),
             positive_outlier_and_significant = ifelse(
@@ -147,7 +153,8 @@ CIS_volcano_plot <- function(x,
         ggplot2::geom_point(alpha = .5, size = 3) +
         ggplot2::geom_hline(
             yintercept = significance_threshold_minus_log_p,
-            color = "black", size = 1, show.legend = TRUE, linetype = "dashed"
+            color = "black", linewidth = 1, show.legend = TRUE,
+            linetype = "dashed"
         ) +
         ggplot2::scale_y_continuous(limits = c(0, max(c(
             (significance_threshold_minus_log_p + 0.5),
@@ -211,7 +218,7 @@ CIS_volcano_plot <- function(x,
         )
     if (!is.null(highlight_genes) && !purrr::is_empty(highlight_genes)) {
         ## Look for the genes (case insensitive)
-        to_highlight <- cis_grubbs_df %>%
+        to_highlight <- cis_grubbs_df |>
             dplyr::filter(
                 stringr::str_to_lower(.data[[gene_sym_col]]) %in%
                     stringr::str_to_lower(highlight_genes),
@@ -396,32 +403,33 @@ clinical_relevant_suspicious_genes <- function() {
 #' # To re-plot:
 #' # grid::grid.newpage()
 #' # grid::grid.draw(hmaps$PT001$gtable)
-top_cis_overtime_heatmap <- function(x,
-    n_genes = 20,
-    timepoint_col = "TimePoint",
-    group_col = "group",
-    onco_db_file = "proto_oncogenes",
-    tumor_suppressors_db_file = "tumor_suppressors",
-    species = "human",
-    known_onco = known_clinical_oncogenes(),
-    suspicious_genes =
-        clinical_relevant_suspicious_genes(),
-    significance_threshold = 0.05,
-    plot_values = c("minus_log_p", "p"),
-    p_value_correction = c("fdr", "bonferroni"),
-    prune_tp_treshold = 20,
-    gene_selection_param = c(
-        "trimmed", "n", "mean", "sd", "median",
-        "mad", "min", "max"
-    ),
-    fill_0_selection = TRUE,
-    fill_NA_in_heatmap = FALSE,
-    heatmap_color_palette = "default",
-    title_generator = NULL,
-    save_as_files = FALSE,
-    files_format = c("pdf", "png", "tiff", "bmp", "jpg"),
-    folder_path = NULL,
-    ...) {
+top_cis_overtime_heatmap <- function(
+        x,
+        n_genes = 20,
+        timepoint_col = "TimePoint",
+        group_col = "group",
+        onco_db_file = "proto_oncogenes",
+        tumor_suppressors_db_file = "tumor_suppressors",
+        species = "human",
+        known_onco = known_clinical_oncogenes(),
+        suspicious_genes =
+            clinical_relevant_suspicious_genes(),
+        significance_threshold = 0.05,
+        plot_values = c("minus_log_p", "p"),
+        p_value_correction = c("fdr", "bonferroni"),
+        prune_tp_treshold = 20,
+        gene_selection_param = c(
+            "trimmed", "n", "mean", "sd", "median",
+            "mad", "min", "max"
+        ),
+        fill_0_selection = TRUE,
+        fill_NA_in_heatmap = FALSE,
+        heatmap_color_palette = "default",
+        title_generator = NULL,
+        save_as_files = FALSE,
+        files_format = c("pdf", "png", "tiff", "bmp", "jpg"),
+        folder_path = NULL,
+        ...) {
     # --- Preliminary checks
     if (!requireNamespace("pheatmap", quietly = TRUE)) {
         rlang::abort(.missing_pkg_error("pheatmap"))
@@ -487,16 +495,17 @@ top_cis_overtime_heatmap <- function(x,
     dots <- rlang::dots_list(..., .named = TRUE)
     # --- If input is in list form, convert in single df
     if (is.list(x) & !is.data.frame(x)) {
-        x <- purrr::map2_df(x, names(x), ~ {
+        x <- purrr::map2(x, names(x), ~ {
             tmp <- .x
             if (is.list(tmp) & !is.data.frame(tmp)) {
-                purrr::map2_df(
+                purrr::map2(
                     tmp, names(tmp),
-                    ~ .x %>% dplyr::mutate(!!timepoint_col := .y)
-                ) %>%
+                    ~ .x |> dplyr::mutate(!!timepoint_col := .y)
+                ) |>
+                    purrr::list_rbind() |>
                     dplyr::mutate(!!group_col := .y)
             } else if (is.data.frame(tmp)) {
-                tmp %>% dplyr::mutate(!!group_col := .y)
+                tmp |> dplyr::mutate(!!group_col := .y)
             } else {
                 non_list_el <- c("Element is not list or df",
                     x = paste(
@@ -506,10 +515,11 @@ top_cis_overtime_heatmap <- function(x,
                 )
                 rlang::abort(non_list_el)
             }
-        })
+        }) |>
+            purrr::list_rbind()
     }
-    gene_sym_col <- annotation_IS_vars(TRUE) %>%
-        dplyr::filter(.data$tag == "gene_symbol") %>%
+    gene_sym_col <- annotation_IS_vars(TRUE) |>
+        dplyr::filter(.data$tag == "gene_symbol") |>
         dplyr::pull(.data$names)
     # --- Expand the df with gene info
     expanded <- .expand_cis_df(
@@ -519,7 +529,7 @@ top_cis_overtime_heatmap <- function(x,
     )
     # --- Add log conversions if needed
     if (plot_values == "minus_log_p") {
-        expanded <- expanded %>%
+        expanded <- expanded |>
             dplyr::mutate(
                 minus_log_p_bonferroni = -log(.data$tdist_bonferroni,
                     base = 10
@@ -534,48 +544,48 @@ top_cis_overtime_heatmap <- function(x,
         }
         if (plot_values == "p") {
             return(
-                group_df %>%
-                    dplyr::arrange(.data[[values_to_plot]]) %>%
+                group_df |>
+                    dplyr::arrange(.data[[values_to_plot]]) |>
                     dplyr::slice_head(n = n_genes)
             )
         } else {
             return(
-                group_df %>%
-                    dplyr::arrange(dplyr::desc(.data[[values_to_plot]])) %>%
+                group_df |>
+                    dplyr::arrange(dplyr::desc(.data[[values_to_plot]])) |>
                     dplyr::slice_head(n = n_genes)
             )
         }
     }
-    slice_groups_tps <- expanded %>%
+    slice_groups_tps <- expanded |>
         dplyr::select(
             dplyr::all_of(c(
                 gene_sym_col, timepoint_col,
                 group_col, values_to_plot
             ))
-        ) %>%
+        ) |>
         dplyr::group_by(dplyr::across(dplyr::all_of(
             c(group_col, timepoint_col)
-        ))) %>%
-        dplyr::group_map(.f = arrange_slice_top, .keep = TRUE) %>%
+        ))) |>
+        dplyr::group_map(.f = arrange_slice_top, .keep = TRUE) |>
         purrr::reduce(dplyr::bind_rows)
 
     groups <- unique(slice_groups_tps[[group_col]])
 
     # --- Evaluate statistics for genes in top n slices
     eval_candidates <- function(group_id) {
-        df <- slice_groups_tps %>%
-            dplyr::filter(.data[[group_col]] == group_id) %>%
+        df <- slice_groups_tps |>
+            dplyr::filter(.data[[group_col]] == group_id) |>
             dplyr::select(-.data[[group_col]])
         if (fill_0_selection == TRUE) {
             value_fill <- list(0)
             names(value_fill) <- values_to_plot
-            df <- df %>%
+            df <- df |>
                 tidyr::complete(.data[[timepoint_col]], .data[[gene_sym_col]],
                     fill = value_fill
                 )
         }
-        df %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of(gene_sym_col))) %>%
+        df |>
+            dplyr::group_by(dplyr::across(dplyr::all_of(gene_sym_col))) |>
             dplyr::summarise(
                 n = dplyr::n(),
                 mean = mean(.data[[values_to_plot]], na.rm = TRUE),
@@ -591,35 +601,35 @@ top_cis_overtime_heatmap <- function(x,
                 .groups = "drop"
             )
     }
-    candidates <- purrr::map(groups, eval_candidates) %>%
+    candidates <- purrr::map(groups, eval_candidates) |>
         purrr::set_names(groups)
 
     # --- Select from candidates according to gene_selection_param
     select_from_candidates <- function(group_df) {
         if (gene_selection_param == "n") {
             return(
-                group_df %>%
-                    dplyr::arrange(dplyr::desc(.data$n)) %>%
-                    dplyr::slice_head(n = n_genes) %>%
+                group_df |>
+                    dplyr::arrange(dplyr::desc(.data$n)) |>
+                    dplyr::slice_head(n = n_genes) |>
                     dplyr::pull(.data[[gene_sym_col]])
             )
         }
         if (plot_values == "p") {
             ## Order ascending
             return(
-                group_df %>%
-                    dplyr::arrange(.data[[gene_selection_param]]) %>%
-                    dplyr::slice_head(n = n_genes) %>%
+                group_df |>
+                    dplyr::arrange(.data[[gene_selection_param]]) |>
+                    dplyr::slice_head(n = n_genes) |>
                     dplyr::pull(.data[[gene_sym_col]])
             )
         } else {
             ## Order descending
             return(
-                group_df %>%
+                group_df |>
                     dplyr::arrange(dplyr::desc(
                         .data[[gene_selection_param]]
-                    )) %>%
-                    dplyr::slice_head(n = n_genes) %>%
+                    )) |>
+                    dplyr::slice_head(n = n_genes) |>
                     dplyr::pull(.data[[gene_sym_col]])
             )
         }
@@ -627,13 +637,13 @@ top_cis_overtime_heatmap <- function(x,
     gene_selection <- purrr::map(candidates, select_from_candidates)
 
     # --- Extract only relevant genes from input
-    genes_to_map <- purrr::map(groups, ~ expanded %>%
-        dplyr::filter(group == .x) %>%
+    genes_to_map <- purrr::map(groups, ~ expanded |>
+        dplyr::filter(group == .x) |>
         dplyr::filter(.data[[timepoint_col]] %in%
-            unique((slice_groups_tps %>%
-                dplyr::filter(group == .x))[[timepoint_col]])) %>%
+            unique((slice_groups_tps |>
+                dplyr::filter(group == .x))[[timepoint_col]])) |>
         dplyr::filter(.data[[gene_sym_col]] %in%
-            gene_selection[[.x]]) %>%
+            gene_selection[[.x]]) |>
         dplyr::select(
             dplyr::all_of(c(
                 gene_sym_col, timepoint_col,
@@ -641,7 +651,7 @@ top_cis_overtime_heatmap <- function(x,
             )),
             .data$CriticalForInsMut, .data$KnownGeneClass,
             .data$ClinicalRelevance
-        )) %>%
+        )) |>
         purrr::set_names(groups)
 
     # --- Obtain heatmaps
@@ -650,7 +660,8 @@ top_cis_overtime_heatmap <- function(x,
         heatmap_color_palette <- if (plot_values == "minus_log_p") {
             grDevices::colorRampPalette(
                 c(
-                    "steelblue", "white", "red", "firebrick", "firebrick", "darkred",
+                    "steelblue", "white", "red", "firebrick", "firebrick",
+                    "darkred",
                     "darkred", "violet", "violet"
                 )
             )
@@ -691,15 +702,15 @@ top_cis_overtime_heatmap <- function(x,
 
     trace_heatmap <- function(data_df) {
         ## --- Fix annotations (fill na, convert to char)
-        data_df <- data_df %>%
-            tidyr::replace_na(list(ClinicalRelevance = FALSE)) %>%
+        data_df <- data_df |>
+            tidyr::replace_na(list(ClinicalRelevance = FALSE)) |>
             dplyr::mutate(
                 CriticalForInsMut = as.character(.data$CriticalForInsMut),
                 ClinicalRelevance = as.character(.data$ClinicalRelevance)
             )
         ## --- Obtain data matrix and annotations
         wide <- if (fill_NA_in_heatmap == TRUE) {
-            data_df %>%
+            data_df |>
                 tidyr::pivot_wider(
                     names_from = timepoint_col,
                     values_from = values_to_plot,
@@ -708,21 +719,21 @@ top_cis_overtime_heatmap <- function(x,
                     )
                 )
         } else {
-            data_df %>%
+            data_df |>
                 tidyr::pivot_wider(
                     names_from = timepoint_col,
                     values_from = values_to_plot
                 )
         }
-        matrix <- wide %>%
-            dplyr::select(dplyr::all_of(unique(data_df[[timepoint_col]]))) %>%
+        matrix <- wide |>
+            dplyr::select(dplyr::all_of(unique(data_df[[timepoint_col]]))) |>
             as.matrix()
         rownames(matrix) <- wide[[gene_sym_col]]
-        annotations <- wide %>%
+        annotations <- wide |>
             dplyr::select(
                 .data$CriticalForInsMut, .data$KnownGeneClass,
                 .data$ClinicalRelevance
-            ) %>%
+            ) |>
             as.data.frame()
         rownames(annotations) <- wide[[gene_sym_col]]
         ## --- Obtain other params
@@ -873,52 +884,53 @@ top_cis_overtime_heatmap <- function(x,
 #'     min_is_per_gene = 2
 #' )
 #' fisher_scatterplot(fisher)
-fisher_scatterplot <- function(fisher_df,
-    p_value_col = "Fisher_p_value_fdr",
-    annot_threshold = 0.05,
-    annot_color = "red",
-    gene_sym_col = "GeneName",
-    do_not_highlight = NULL,
-    keep_not_highlighted = TRUE) {
+fisher_scatterplot <- function(
+        fisher_df,
+        p_value_col = "Fisher_p_value_fdr",
+        annot_threshold = 0.05,
+        annot_color = "red",
+        gene_sym_col = "GeneName",
+        do_not_highlight = NULL,
+        keep_not_highlighted = TRUE) {
     stopifnot(is.null(do_not_highlight) || is.character(do_not_highlight) ||
         rlang::is_expression(do_not_highlight))
     if (is.null(do_not_highlight)) {
-        below_threshold <- fisher_df %>%
+        below_threshold <- fisher_df |>
             dplyr::filter(.data[[p_value_col]] < annot_threshold)
-        above_threshold <- fisher_df %>%
+        above_threshold <- fisher_df |>
             dplyr::filter(.data[[p_value_col]] >= annot_threshold)
     } else if (is.character(do_not_highlight)) {
-        below_threshold <- fisher_df %>%
+        below_threshold <- fisher_df |>
             dplyr::filter(.data[[p_value_col]] < annot_threshold &
                 !.data[[gene_sym_col]] %in% do_not_highlight)
         if (keep_not_highlighted) {
-            above_threshold <- fisher_df %>%
+            above_threshold <- fisher_df |>
                 dplyr::anti_join(below_threshold, by = gene_sym_col)
         } else {
-            above_threshold <- fisher_df %>%
+            above_threshold <- fisher_df |>
                 dplyr::filter(.data[[p_value_col]] >= annot_threshold)
         }
     } else if (rlang::is_formula(do_not_highlight)) {
-        below_threshold <- fisher_df %>%
+        below_threshold <- fisher_df |>
             dplyr::filter(.data[[p_value_col]] < annot_threshold &
                 !rlang::as_function(do_not_highlight)(
                     .data[[gene_sym_col]]))
         if (keep_not_highlighted) {
-            above_threshold <- fisher_df %>%
+            above_threshold <- fisher_df |>
                 dplyr::anti_join(below_threshold, by = gene_sym_col)
         } else {
-            above_threshold <- fisher_df %>%
+            above_threshold <- fisher_df |>
                 dplyr::filter(.data[[p_value_col]] >= annot_threshold)
         }
     } else {
-        below_threshold <- fisher_df %>%
+        below_threshold <- fisher_df |>
             dplyr::filter(.data[[p_value_col]] < annot_threshold &
                 (rlang::eval_tidy(do_not_highlight)))
         if (keep_not_highlighted) {
-            above_threshold <- fisher_df %>%
+            above_threshold <- fisher_df |>
                 dplyr::anti_join(below_threshold, by = gene_sym_col)
         } else {
-            above_threshold <- fisher_df %>%
+            above_threshold <- fisher_df |>
                 dplyr::filter(.data[[p_value_col]] >= annot_threshold)
         }
     }
@@ -986,15 +998,16 @@ fisher_scatterplot <- function(fisher_df,
 #' )
 #' p <- HSC_population_plot(estimate$est, "PJ01")
 #' p
-HSC_population_plot <- function(estimates,
-    project_name,
-    timepoints = "Consecutive",
-    models = "Mth Chao (LB)") {
+HSC_population_plot <- function(
+        estimates,
+        project_name,
+        timepoints = "Consecutive",
+        models = "Mth Chao (LB)") {
     if (is.null(estimates)) {
         return(NULL)
     }
     ## Pre-filter
-    df <- estimates %>%
+    df <- estimates |>
         dplyr::filter(
             .data$Timepoints %in% timepoints,
             .data$Model %in% models
@@ -1009,7 +1022,7 @@ HSC_population_plot <- function(estimates,
         na.rm = TRUE, se = TRUE
     ) +
         ggplot2::geom_point(alpha = .5) +
-        ggplot2::geom_line(size = 2, alpha = .7) +
+        ggplot2::geom_line(linewidth = 2, alpha = .7) +
         ggplot2::theme(
             axis.text.x = ggplot2::element_text(size = 14),
             axis.text.y = ggplot2::element_text(size = 14),
@@ -1135,19 +1148,20 @@ HSC_population_plot <- function(estimates,
 #'         x = "Time point (days after GT)"
 #'     )
 #' print(ex_plot)
-integration_alluvial_plot <- function(x,
-    group = c(
-        "SubjectID",
-        "CellMarker",
-        "Tissue"
-    ),
-    plot_x = "TimePoint",
-    plot_y = "fragmentEstimate_sum_PercAbundance",
-    alluvia = mandatory_IS_vars(),
-    alluvia_plot_y_threshold = 1,
-    top_abundant_tbl = TRUE,
-    empty_space_color = "grey90",
-    ...) {
+integration_alluvial_plot <- function(
+        x,
+        group = c(
+            "SubjectID",
+            "CellMarker",
+            "Tissue"
+        ),
+        plot_x = "TimePoint",
+        plot_y = "fragmentEstimate_sum_PercAbundance",
+        alluvia = mandatory_IS_vars(),
+        alluvia_plot_y_threshold = 1,
+        top_abundant_tbl = TRUE,
+        empty_space_color = "grey90",
+        ...) {
     if (!requireNamespace("ggalluvial", quietly = TRUE)) {
         rlang::abort(.missing_pkg_error("ggalluvial"))
     }
@@ -1166,26 +1180,27 @@ integration_alluvial_plot <- function(x,
             %in% colnames(x)]
         ))
     }
-    groups_to_plot <- x %>%
+    groups_to_plot <- x |>
         dplyr::group_by(dplyr::across({{ group }}))
-    group_names <- groups_to_plot %>%
-        dplyr::group_keys() %>%
-        tidyr::unite(col = "id", dplyr::everything()) %>%
+    group_names <- groups_to_plot |>
+        dplyr::group_keys() |>
+        tidyr::unite(col = "id", dplyr::everything()) |>
         dplyr::pull(.data$id)
-    groups_to_plot <- groups_to_plot %>%
-        dplyr::group_split() %>%
+    groups_to_plot <- groups_to_plot |>
+        dplyr::group_split() |>
         purrr::set_names(group_names)
 
     # # Compute plots in parallel
-    FUN <- function(group_df,
-    plot_x,
-    plot_y,
-    alluvia,
-    alluvia_plot_y_threshold,
-    top_abundant_tbl,
-    empty_space_color,
-    other_params,
-    progress) {
+    FUN <- function(
+        group_df,
+        plot_x,
+        plot_y,
+        alluvia,
+        alluvia_plot_y_threshold,
+        top_abundant_tbl,
+        empty_space_color,
+        other_params,
+        progress) {
         cleaned <- .clean_data(
             group_df, plot_x, plot_y,
             alluvia, alluvia_plot_y_threshold
@@ -1259,8 +1274,8 @@ integration_alluvial_plot <- function(x,
         ),
         stop_on_error = FALSE
     )
-    if (!all(is.null(results$err))) {
-        errors_msg <- purrr::flatten_chr(results$err)
+    if (!all(purrr::map_lgl(results$err, is.null))) {
+        errors_msg <- purrr::list_c(results$err)
         names(errors_msg) <- "x"
         errors_msg <- c(
             "Errors occurred during computation",
@@ -1274,42 +1289,46 @@ integration_alluvial_plot <- function(x,
 # Internal, used in integration_alluvial_plot to obtain the data frame
 # with data to plot
 #' @importFrom tidyr unite
-#' @importFrom data.table setDT .SD
 #' @importFrom dplyr group_by across summarise n filter distinct pull rename
 #' @importFrom rlang .data
-.clean_data <- function(df,
-    plot_x,
-    plot_y,
-    alluvia,
-    alluvia_plot_y_threshold) {
+.clean_data <- function(
+        df,
+        plot_x,
+        plot_y,
+        alluvia,
+        alluvia_plot_y_threshold) {
     tbl <- if (length(alluvia) > 1) {
-        df %>%
+        df |>
             tidyr::unite(col = "alluvia_id", {{ alluvia }})
     } else {
-        df %>%
+        df |>
             dplyr::rename(alluvia_id = alluvia)
     }
-    data.table::setDT(tbl)
     ## Getting counts by x
-    counts_by_x <- tbl %>%
-        dplyr::group_by(dplyr::across({{ plot_x }})) %>%
+    counts_by_x <- tbl |>
+        dplyr::group_by(dplyr::across({{ plot_x }})) |>
         dplyr::summarise(count = dplyr::n(), .groups = "drop")
     # Filtering alluvia to plot
-    alluvia_to_plot <- tbl %>%
-        dplyr::filter(.data[[plot_y]] >= alluvia_plot_y_threshold[1]) %>%
-        dplyr::distinct(.data[["alluvia_id"]]) %>%
+    alluvia_to_plot <- tbl |>
+        dplyr::filter(.data[[plot_y]] >= alluvia_plot_y_threshold[1]) |>
+        dplyr::distinct(.data[["alluvia_id"]]) |>
         dplyr::pull(.data[["alluvia_id"]])
     # Modify ids - identifiers that are below threshold are converted to
     # NA and the quantities in y are aggregated
-    tbl[
-        !eval(sym("alluvia_id")) %in% alluvia_to_plot,
-        c("alluvia_id") := NA_character_
-    ]
-    tbl <- tbl[, setNames(list(sum(.SD)), plot_y),
-        by = c(plot_x, "alluvia_id"), .SDcols = plot_y
-    ]
+    tbl <- tbl |>
+        dplyr::mutate(
+            alluvia_id = dplyr::if_else(
+                .data$alluvia_id %in% alluvia_to_plot,
+                .data$alluvia_id, NA_character_
+            )
+        ) |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(c(plot_x, "alluvia_id")))) |>
+        dplyr::summarise(!!plot_y := sum(.data[[plot_y]], na.rm = TRUE),
+            .groups = "drop"
+        )
     # Add counts
-    tbl <- merge(tbl, counts_by_x)
+    tbl <- tbl |>
+        dplyr::left_join(counts_by_x, by = plot_x)
     tbl
 }
 
@@ -1319,22 +1338,23 @@ integration_alluvial_plot <- function(x,
 #' @importFrom ggplot2 ggplot geom_text scale_fill_viridis_d sym
 #' @importFrom dplyr group_by summarise pull across all_of
 #' @importFrom rlang .data
-.alluvial_plot <- function(tbl, plot_x, plot_y,
-    empty_space_color) {
-    sums_y <- tbl %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
-        dplyr::summarise(sums = sum(.data[[plot_y]])) %>%
+.alluvial_plot <- function(
+        tbl, plot_x, plot_y,
+        empty_space_color) {
+    sums_y <- tbl |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) |>
+        dplyr::summarise(sums = sum(.data[[plot_y]])) |>
         dplyr::pull(.data$sums)
     max_y <- max(sums_y)
-    labels <- tbl %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
+    labels <- tbl |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) |>
         dplyr::summarise(count = .data$count[1], .groups = "drop")
-    tbl <- tbl %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) %>%
+    tbl <- tbl |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(plot_x))) |>
         dplyr::arrange(dplyr::desc(dplyr::across(dplyr::all_of(plot_y))),
             .by_group = TRUE
-        ) %>%
-        dplyr::mutate(alluvia_id = forcats::as_factor(.data$alluvia_id)) %>%
+        ) |>
+        dplyr::mutate(alluvia_id = forcats::as_factor(.data$alluvia_id)) |>
         dplyr::ungroup()
     alluv <- ggplot2::ggplot(
         tbl,
@@ -1354,7 +1374,7 @@ integration_alluvial_plot <- function(x,
             aes.bind = "alluvia"
         )
     alluv <- alluv +
-        ggplot2::scale_fill_hue(na.value = NA_character_) +
+        ggplot2::scale_fill_viridis_d(na.value = NA_character_) +
         ggplot2::theme_bw() +
         ggplot2::theme(legend.position = "none") +
         ggplot2::geom_text(
@@ -1432,17 +1452,18 @@ integration_alluvial_plot <- function(x,
 #'
 #' # with transform
 #' grob <- top_abund_tableGrob(abund, transform_by = ~ as.numeric(.x))
-top_abund_tableGrob <- function(df,
-    id_cols = mandatory_IS_vars(),
-    quant_col = "fragmentEstimate_sum_PercAbundance",
-    by = "TimePoint",
-    alluvial_plot = NULL,
-    top_n = 10,
-    tbl_cols = "GeneName",
-    include_id_cols = FALSE,
-    digits = 2,
-    perc_symbol = TRUE,
-    transform_by = NULL) {
+top_abund_tableGrob <- function(
+        df,
+        id_cols = mandatory_IS_vars(),
+        quant_col = "fragmentEstimate_sum_PercAbundance",
+        by = "TimePoint",
+        alluvial_plot = NULL,
+        top_n = 10,
+        tbl_cols = "GeneName",
+        include_id_cols = FALSE,
+        digits = 2,
+        perc_symbol = TRUE,
+        transform_by = NULL) {
     if (!requireNamespace("gridExtra", quietly = TRUE)) {
         rlang::abort(.missing_pkg_error("gridExtra"))
     }
@@ -1453,41 +1474,43 @@ top_abund_tableGrob <- function(df,
         any(class(alluvial_plot) %in% c("gg", "ggplot")))
     color_map <- if (!is.null(alluvial_plot)) {
         g <- ggplot2::ggplot_build(alluvial_plot)
-        tibble::tibble(g$data[[2]]["alluvium"], g$data[[2]]["fill"]) %>%
+        tibble::tibble(g$data[[2]]["alluvium"], g$data[[2]]["fill"]) |>
             dplyr::rename(alluvia_id = "alluvium")
     } else {
         NULL
     }
     if (!is.null(transform_by)) {
-      df <- df %>%
-        dplyr::mutate(
-          dplyr::across(.cols = dplyr::all_of(by),
-                        .fns = transform_by)
-        )
+        df <- df |>
+            dplyr::mutate(
+                dplyr::across(
+                    .cols = dplyr::all_of(by),
+                    .fns = transform_by
+                )
+            )
     }
-    top <- df %>%
-        tidyr::unite({{ id_cols }}, col = "alluvia_id") %>%
+    top <- df |>
+        tidyr::unite({{ id_cols }}, col = "alluvia_id") |>
         dplyr::select(dplyr::all_of(c(
             "alluvia_id", tbl_cols,
             quant_col, by
-        ))) %>%
-        dplyr::group_by(dplyr::across({{ by }})) %>%
+        ))) |>
+        dplyr::group_by(dplyr::across({{ by }})) |>
         dplyr::group_modify(~ {
-            .x %>%
-                dplyr::arrange(dplyr::desc(.data[[quant_col[1]]])) %>%
+            .x |>
+                dplyr::arrange(dplyr::desc(.data[[quant_col[1]]])) |>
                 dplyr::slice_head(n = top_n)
-        }) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate(font_col = "black") %>%
+        }) |>
+        dplyr::ungroup() |>
+        dplyr::mutate(font_col = "black") |>
         dplyr::rename(Ab = quant_col)
     if (perc_symbol == TRUE) {
-        top <- top %>%
+        top <- top |>
             dplyr::mutate(Ab = paste(format(
                 round(.data$Ab, digits = digits),
                 nsmall = digits
             ), "%"))
     } else {
-        top <- top %>%
+        top <- top |>
             dplyr::mutate(Ab = format(
                 round(.data$Ab,
                     digits = digits
@@ -1496,55 +1519,55 @@ top_abund_tableGrob <- function(df,
             ))
     }
     if (!is.null(color_map)) {
-        top <- top %>%
-            dplyr::left_join(color_map, by = c("alluvia_id")) %>%
+        top <- top |>
+            dplyr::left_join(color_map, by = c("alluvia_id")) |>
             dplyr::distinct()
     }
     if (include_id_cols == FALSE) {
-        top <- top %>%
+        top <- top |>
             dplyr::select(-.data$alluvia_id)
     }
     distinct_x <- unique(top[[by]])
     sep_x <- function(x) {
-      tmp <- if (is.na(x)) {
-        top %>%
-          dplyr::filter(
-            is.na(.data[[by]])
-          )
-      } else {
-        top %>%
-          dplyr::filter(
-            .data[[by]] == x
-          )
-      }
-      tmp <- tmp %>%
-        dplyr::select(-dplyr::all_of(by))
-      if (nrow(tmp) < top_n) {
-        index_1 <- nrow(tmp) + 1
-        tmp[seq(from = index_1, to = top_n, by = 1), ] <-
-          as.list(c(
-            rep_len(
-              NA,
-              length(colnames(tmp)[colnames(tmp) != "font_col"])
-            ),
-            "transparent"
-          ))
-      }
-      tmp <- tmp %>%
-        dplyr::rename_with(.fn = ~ paste0(.x, " ", x))
+        tmp <- if (is.na(x)) {
+            top |>
+                dplyr::filter(
+                    is.na(.data[[by]])
+                )
+        } else {
+            top |>
+                dplyr::filter(
+                    .data[[by]] == x
+                )
+        }
+        tmp <- tmp |>
+            dplyr::select(-dplyr::all_of(by))
+        if (nrow(tmp) < top_n) {
+            index_1 <- nrow(tmp) + 1
+            tmp[seq(from = index_1, to = top_n, by = 1), ] <-
+                as.list(c(
+                    rep_len(
+                        NA,
+                        length(colnames(tmp)[colnames(tmp) != "font_col"])
+                    ),
+                    "transparent"
+                ))
+        }
+        tmp <- tmp |>
+            dplyr::rename_with(.fn = ~ paste0(.x, " ", x))
     }
-    tops_by_x <- purrr::map(distinct_x, sep_x) %>% purrr::set_names(distinct_x)
+    tops_by_x <- purrr::map(distinct_x, sep_x) |> purrr::set_names(distinct_x)
 
     obtain_grobs <- function(df, x) {
         fill_var <- colnames(df)[stringr::str_detect(colnames(df), "fill")]
         col_var <- colnames(df)[stringr::str_detect(colnames(df), "font_col")]
         fill_vec <- if (!length(fill_var) == 0) {
-            df %>% dplyr::pull(fill_var)
+            df |> dplyr::pull(fill_var)
         } else {
             NULL
         }
-        col_vec <- df %>% dplyr::pull(col_var)
-        df_minus <- df %>%
+        col_vec <- df |> dplyr::pull(col_var)
+        df_minus <- df |>
             dplyr::select(
                 -dplyr::starts_with("fill"),
                 -dplyr::starts_with("font_col")
@@ -1619,15 +1642,16 @@ top_abund_tableGrob <- function(df,
 #' sharing_heatmaps$absolute
 #' sharing_heatmaps$on_g1
 #' sharing_heatmaps$on_union
-sharing_heatmap <- function(sharing_df,
-    show_on_x = "g1",
-    show_on_y = "g2",
-    absolute_sharing_col = "shared",
-    title_annot = NULL,
-    plot_relative_sharing = TRUE,
-    rel_sharing_col = c("on_g1", "on_union"),
-    show_perc_symbol_rel = TRUE,
-    interactive = FALSE) {
+sharing_heatmap <- function(
+        sharing_df,
+        show_on_x = "g1",
+        show_on_y = "g2",
+        absolute_sharing_col = "shared",
+        title_annot = NULL,
+        plot_relative_sharing = TRUE,
+        rel_sharing_col = c("on_g1", "on_union"),
+        show_perc_symbol_rel = TRUE,
+        interactive = FALSE) {
     ## Check inputs
     stopifnot(is.data.frame(sharing_df))
     stopifnot(is.character(show_on_x))
@@ -1684,7 +1708,7 @@ sharing_heatmap <- function(sharing_df,
     ### --- Relative sharing
     heatmap_rel <- NULL
     if (plot_relative_sharing) {
-        sharing_df_rounding <- sharing_df %>%
+        sharing_df_rounding <- sharing_df |>
             dplyr::mutate(dplyr::across(
                 .cols = dplyr::all_of(rel_sharing_col),
                 .fns = ~ round(.x, digits = 2)
@@ -1752,7 +1776,7 @@ sharing_heatmap <- function(sharing_df,
         heatmap_rel <- purrr::map(
             unique(rel_sharing_col),
             ~ plot_rel_heat(.x, df = sharing_df_rounding)
-        ) %>%
+        ) |>
             purrr::set_names(rel_sharing_col)
     }
 
@@ -1813,9 +1837,10 @@ sharing_heatmap <- function(sharing_df,
 #' venn_tbls <- sharing_venn(sharing, row_range = 1:3, euler = FALSE)
 #' venn_tbls
 #' plot(venn_tbls[[1]])
-sharing_venn <- function(sharing_df,
-    row_range = NULL,
-    euler = TRUE) {
+sharing_venn <- function(
+        sharing_df,
+        row_range = NULL,
+        euler = TRUE) {
     if (!requireNamespace("eulerr", quietly = TRUE)) {
         rlang::abort(.missing_pkg_error("eulerr"))
     }
@@ -1843,24 +1868,26 @@ sharing_venn <- function(sharing_df,
         rlang::abort(no_truth_tbl_msg)
     }
     # Filter data
-    filtered_df <- sharing_df[row_range]
+    filtered_df <- sharing_df[row_range, ]
     if (nrow(filtered_df) == 0) {
         rlang::inform("Empty table, nothing to compute")
         return(NULL)
     }
-    fixed_tbls <- if (euler) {
-        purrr::map(filtered_df$truth_tbl_venn, function(x) {
-            as_matrix <- as.matrix(x, rownames = "int_id")
-            eul <- eulerr::euler(as_matrix)
-            eul
-        })
+    plot_fun <- if (euler) {
+        eulerr::euler
     } else {
-        purrr::map(filtered_df$truth_tbl_venn, function(x) {
-            as_matrix <- as.matrix(x, rownames = "int_id")
-            eul <- eulerr::venn(as_matrix)
-            eul
-        })
+        eulerr::venn
     }
+    transform_and_compute <- function(x, plot_fun) {
+        as_matrix <- x |>
+            tibble::column_to_rownames("int_id") |>
+            as.matrix()
+        rlang::exec(plot_fun, combinations = as_matrix)
+    }
+    fixed_tbls <- purrr::map(filtered_df$truth_tbl_venn,
+        transform_and_compute,
+        plot_fun = plot_fun
+    )
     fixed_tbls
 }
 
@@ -1926,26 +1953,27 @@ sharing_venn <- function(sharing_df,
 #'     association_file = association_file,
 #'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
-#' by_subj <- aggreg %>%
-#'     dplyr::group_by(.data$SubjectID) %>%
+#' by_subj <- aggreg |>
+#'     dplyr::group_by(.data$SubjectID) |>
 #'     dplyr::group_split()
 #' circos_genomic_density(by_subj,
 #'     track_colors = c("navyblue", "gold"),
 #'     grDevice = "default", track.height = 0.1
 #' )
 #' }
-circos_genomic_density <- function(data,
-    gene_labels = NULL,
-    label_col = NULL,
-    cytoband_specie = "hg19",
-    track_colors = "navyblue",
-    grDevice = c(
-        "png", "pdf", "svg",
-        "jpeg", "bmp", "tiff",
-        "default"
-    ),
-    file_path = getwd(),
-    ...) {
+circos_genomic_density <- function(
+        data,
+        gene_labels = NULL,
+        label_col = NULL,
+        cytoband_specie = "hg19",
+        track_colors = "navyblue",
+        grDevice = c(
+            "png", "pdf", "svg",
+            "jpeg", "bmp", "tiff",
+            "default"
+        ),
+        file_path = getwd(),
+        ...) {
     if (!requireNamespace("circlize", quietly = TRUE)) {
         rlang::abort(.missing_pkg_error("circlize"))
     }
@@ -1968,14 +1996,14 @@ circos_genomic_density <- function(data,
         if (!.check_mandatory_vars(df)) {
             rlang::abort(.missing_mand_vars())
         }
-        df %>%
-            dplyr::select(dplyr::all_of(mandatory_IS_vars())) %>%
-            dplyr::distinct() %>%
+        df |>
+            dplyr::select(dplyr::all_of(mandatory_IS_vars())) |>
+            dplyr::distinct() |>
             dplyr::mutate(
                 chr = paste0("chr", .data$chr),
                 end = .data$integration_locus
-            ) %>%
-            dplyr::rename(start = "integration_locus") %>%
+            ) |>
+            dplyr::rename(start = "integration_locus") |>
             dplyr::select(.data$chr, .data$start, .data$end, .data$strand)
     }
     data_mod <- if (mode == "DF") {

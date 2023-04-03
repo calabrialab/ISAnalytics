@@ -44,8 +44,9 @@
 # Produces a mini-report to print after file reading only if verbose is active
 # USED IN:
 # - import_associaton_file
-.summary_af_import_msg <- function(pars_prob, dates_prob, cols_prob, crit_na,
-    checks) {
+.summary_af_import_msg <- function(
+        pars_prob, dates_prob, cols_prob, crit_na,
+        checks) {
     c(
         "*** Association file import summary ***",
         i = paste(
@@ -112,10 +113,11 @@
 # Produces a mini-report to print after file reading only if verbose is active
 # USED IN:
 # - import_single_Vispa2Matrix
-.summary_ism_import_msg <- function(annotated,
-    dims,
-    mode,
-    sample_count) {
+.summary_ism_import_msg <- function(
+        annotated,
+        dims,
+        mode,
+        sample_count) {
     c(
         "*** File info *** ",
         paste("--- Annotated:", annotated),
