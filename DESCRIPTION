@@ -1,20 +1,21 @@
 Package: ISAnalytics
 Title: Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies
-Version: 1.9.2
+Version: 1.9.3
 Date: 2020-07-03
 Authors@R: c(
+  person(given = "Giulia",
+         family = "Pais",
+         role = c("aut", "cre"),
+         email = "giuliapais1@gmail.com",
+         comment = c(ORCID = "0009-0005-5621-4803")),
   person(given = "Andrea",
          family = "Calabria",
-         role = c("aut", "cre"),
+         role = c("aut"),
          email = "calabria.andrea@hsr.it"),
   person(given = "Giulio",
          family = "Spinozzi",
          role = c("aut"),
-         email = "spinozzi.giulio@hsr.it"),
-  person(given = "Giulia",
-         family = "Pais",
-         role = c("aut"),
-         email = "giuliapais1@gmail.com"))
+         email = "spinozzi.giulio@hsr.it"))
 Description: In gene therapy, stem cells are modified using viral vectors to deliver the therapeutic transgene and replace functional properties since the genetic modification is stable and inherited in all cell progeny. The retrieval and mapping of the sequences flanking the virus-host DNA junctions allows the identification of insertion sites (IS), essential for monitoring the evolution of genetically modified cells in vivo. A comprehensive toolkit for the analysis of IS is required to foster clonal trackign studies and supporting the assessment of safety and long term efficacy in vivo. This package is aimed at (1) supporting automation of IS workflow, (2) performing base and advance analysis for IS tracking (clonal abundance, clonal expansions and statistics for insertional mutagenesis, etc.), (3) providing basic biology insights of transduced stem cells in vivo.
 License: CC BY 4.0
 URL: https://calabrialab.github.io/ISAnalytics,
