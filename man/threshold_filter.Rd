@@ -23,164 +23,15 @@ character vectors. Must be one of the allowed values between
 A data frame or a list of data frames
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This function is deprecated and it's likely going to be dropped in the
+next release cycle.
+
 Filter a single data frame or a list of data frames with custom
 predicates assembled from the function parameters.
 }
-\details{
-\subsection{A single data frame as input}{
-
-If the user chooses to operate on a single data frame, the other parameters
-should only be vectors: numeric vector for \code{threshold} and character
-vectors for both \code{cols_to_compare} and \code{comparators}.
-A filtering condition is obtained by combining element by element
-\code{cols_to_compare} + \code{comparators} + \code{threshold} (similarly to the
-\code{paste} function). For example:
-
-\verb{
-threshold = c(20, 35, 50)
-cols_to_compare = c("a", "b", "c")
-comparators = "<"
-}
-
-given these vectors, the input data frame
-will be filtered by checking which values in column "a" are less
-than 20 \strong{AND} which values in column "b" are less than 35 \strong{AND}
-which values in column "c" are less than 50.
-Things the user should keep in mind are:
-\itemize{
-\item The vectors of length 1 are going to be recycled if one or
-more parameters are longer (in the example, the \code{comparators} value)
-\item If vectors are not of length 1 they must have the same length
-\item Columns to compare, of course, need to be included in the
-input data frame and need to be numeric/integer
-\item The filtering will perform a logical "AND" on all the conditions,
-only rows that satisfy ALL the conditions are preserved
-}
-}
-
-\subsection{A list of data frames as input}{
-
-The input for the function may also be a list of data frames,
-either named or unnamed.
-\subsection{Unnamed list}{
-
-If the input is a simple unnamed list, the other parameters should
-be simple vectors (as for data frames). All the predicates will
-simply be applied to every data frame in the list: this is useful
-if it's desirable to filter for the same conditions different data frames
-that have the same structure but different data.
-}
-
-\subsection{Named list}{
-
-It is also possible to filter different data frames with different
-sets of conditions. Besides having the possibility of defining the
-other parameters as simple vector, which has the same results as
-operating on an unnamed list, the user can define the parameters as
-named lists containing vectors. For example:
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{
-example_df <- tibble::tibble(a = c(20, 30, 40),
-                             b = c(40, 50, 60),
-                             c = c("a", "b", "c"),
-                             d = c(3L, 4L, 5L))
-example_list <- list(first = example_df,
-                     second = example_df,
-                     third = example_df)
-print(example_list)
-#> $first
-#> # A tibble: 3 x 4
-#>       a     b c         d
-#>   <dbl> <dbl> <chr> <int>
-#> 1    20    40 a         3
-#> 2    30    50 b         4
-#> 3    40    60 c         5
-#> 
-#> $second
-#> # A tibble: 3 x 4
-#>       a     b c         d
-#>   <dbl> <dbl> <chr> <int>
-#> 1    20    40 a         3
-#> 2    30    50 b         4
-#> 3    40    60 c         5
-#> 
-#> $third
-#> # A tibble: 3 x 4
-#>       a     b c         d
-#>   <dbl> <dbl> <chr> <int>
-#> 1    20    40 a         3
-#> 2    30    50 b         4
-#> 3    40    60 c         5
-
-filtered <- threshold_filter(example_list,
-threshold = list(first = c(20, 60),
-third = c(25)),
-cols_to_compare = list(first = c("a", "b"),
-third = c("a")),
-comparators = list(first = c(">", "<"),
-third = c(">=")))
-print(filtered)
-#> $first
-#> # A tibble: 1 x 4
-#>       a     b c         d
-#>   <dbl> <dbl> <chr> <int>
-#> 1    30    50 b         4
-#> 
-#> $second
-#> # A tibble: 3 x 4
-#>       a     b c         d
-#>   <dbl> <dbl> <chr> <int>
-#> 1    20    40 a         3
-#> 2    30    50 b         4
-#> 3    40    60 c         5
-#> 
-#> $third
-#> # A tibble: 2 x 4
-#>       a     b c         d
-#>   <dbl> <dbl> <chr> <int>
-#> 1    30    50 b         4
-#> 2    40    60 c         5
-}\if{html}{\out{</div>}}
-
-The above signature will roughly be translated as:
-\itemize{
-\item Filter the element "first" in the list by checking that values in
-column "a" are bigger than 20 AND values in column "b" are less than
-60
-\item Don't apply any filter to the element "second" (returns the
-data frame as is)
-\item Filter the element "third" by checking that values in column "a"
-are equal or bigger than 25.
-}
-
-It is also possible to use some parameters as vectors and some as
-lists: vectors will be recycled for every element filtered.
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{filtered <- threshold_filter(example_list,
-threshold = list(first = c(20, 60),
-third = c(25, 65)),
-cols_to_compare = c("a", "b"),
-comparators = list(first = c(">", "<"),
-third = c(">=", "<=")))
-}\if{html}{\out{</div>}}
-
-In this example, different threshold and comparators will be applied
-to the same columns in all data frames.
-
-Things the user should keep in mind are:
-\itemize{
-\item Names for the list parameters must be the same names in the
-input list
-\item Only elements explicited in list parameters as names will
-be filtered
-\item Lengths of both vectors and lists must be consistent
-}
-}
-
-}
-}
 \examples{
+\dontrun{
 example_df <- tibble::tibble(
     a = c(20, 30, 40),
     b = c(40, 50, 60),
@@ -209,6 +60,7 @@ filtered <- threshold_filter(example_list,
 )
 filtered
 }
+}
 \seealso{
 Other Data cleaning and pre-processing: 
 \code{\link{aggregate_metadata}()},
@@ -222,3 +74,4 @@ Other Data cleaning and pre-processing:
 \code{\link{remove_collisions}()}
 }
 \concept{Data cleaning and pre-processing}
+\keyword{internal}

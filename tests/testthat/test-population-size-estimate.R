@@ -2,22 +2,15 @@ withr::local_options(list(ISAnalytics.verbose = FALSE))
 #------------------------------------------------------------------------------#
 # Global vars
 #------------------------------------------------------------------------------#
-test_meta <- readRDS(system.file("testdata", "test_population_meta.Rds",
-    package = "ISAnalytics"
-))
+test_meta <- readRDS(fs::path(testdata_path, "test_population_meta.Rds"))
 
-test_data <- readRDS(system.file("testdata", "test_population_iss.Rds",
-    package = "ISAnalytics"
-))
+test_data <- readRDS(fs::path(testdata_path, "test_population_iss.Rds"))
 
-test_expected <- readRDS(system.file("testdata", "test_population_expected.Rds",
-    package = "ISAnalytics"
-))
+test_expected <- readRDS(fs::path(testdata_path,
+                                  "test_population_expected.Rds"))
 
 test_filter_expected <- readRDS(
-    system.file("testdata", "test_population_filter_df_expected.Rds",
-        package = "ISAnalytics"
-    )
+  fs::path(testdata_path, "test_population_filter_df_expected.Rds")
 )
 
 meta_with_lineage <- test_meta |>
@@ -189,31 +182,27 @@ test_that(".closed_m0_est works as expected", {
         subject = "PATIENT01", stable = FALSE
     )
     expected_df <- tibble::tibble(
-        Model = c("M0", "Mh Chao (LB)", "Mh Poisson2", "Mh Darroch", "Mh Gamma3.5"),
-        abundance = c(
-            5121.04002304384, 5561.8125, 5530.54501895936,
-            6044.43297754501, 6787.4831931083
-        ),
-        stderr = c(
-            29.6524454059072, 59.5674353240835, 58.9086290049903,
-            115.962545291672, 222.211267809243
-        ),
-        SubjectID = c(
-            "PATIENT01", "PATIENT01", "PATIENT01", "PATIENT01",
-            "PATIENT01"
-        ),
-        Timepoints = c("All", "All", "All", "All", "All"),
-        CellType = c("Myeloid", "Myeloid", "Myeloid", "Myeloid", "Myeloid"),
-        Tissue = c("PB", "PB", "PB", "PB", "PB"),
-        TimePoint_from = c(6, 6, 6, 6, 6),
-        TimePoint_to = c(24, 24, 24, 24, 24),
-        Timepoints_included = c(4, 4, 4, 4, 4),
-        ModelType = c(
-            "ClosedPopulation", "ClosedPopulation", "ClosedPopulation",
-            "ClosedPopulation", "ClosedPopulation"
-        ),
-        ModelSetUp = c("models0", "models0", "models0", "models0", "models0")
-    )
+      Model = c('M0', 'Mh Chao (LB)', 'Mh Poisson2', 'Mh Darroch',
+                'Mh Gamma3.5'),
+      abundance = c(3728.42791320413, 3812.05951417004,
+                    3791.87510620205, 3852.04875115893,
+                    3919.18254958108),
+      stderr = c(16.9534089361061, 26.382222136728, 24.6483695631177,
+                 35.820450572057, 51.6639000626023),
+      SubjectID = c('PATIENT01', 'PATIENT01', 'PATIENT01', 'PATIENT01',
+                    'PATIENT01'),
+      Timepoints = c('All', 'All', 'All', 'All', 'All'),
+      CellType = c('Myeloid', 'Myeloid', 'Myeloid', 'Myeloid',
+                   'Myeloid'),
+      Tissue = c('PB', 'PB', 'PB', 'PB', 'PB'),
+      TimePoint_from = c(6, 6, 6, 6, 6),
+      TimePoint_to = c(24, 24, 24, 24, 24),
+      Timepoints_included = c(4, 4, 4, 4, 4),
+      ModelType = c('ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation'),
+      ModelSetUp = c('models0', 'models0', 'models0', 'models0',
+                     'models0'))
     expect_equal(estimates_df, expected_df)
 })
 
@@ -237,20 +226,18 @@ test_that(".closed_m0_est works with 2 tps", {
         ),
         subject = "PATIENT01", stable = FALSE
     )
-    expected_df <- tibble::tibble(
-        Model = c("M0"),
-        abundance = c(5501.62988505747),
-        stderr = c(189.60998875155),
-        SubjectID = c("PATIENT01"),
-        Timepoints = c("All"),
-        CellType = c("Myeloid"),
-        Tissue = c("PB"),
-        TimePoint_from = c(6),
-        TimePoint_to = c(12),
-        Timepoints_included = c(2),
-        ModelType = c("ClosedPopulation"),
-        ModelSetUp = c("models0")
-    )
+    expected_df <- tibble::tibble(Model = c('M0'),
+                                  abundance = c(4237.52083333333),
+                                  stderr = c(138.781572395047),
+                                  SubjectID = c('PATIENT01'),
+                                  Timepoints = c('All'),
+                                  CellType = c('Myeloid'),
+                                  Tissue = c('PB'),
+                                  TimePoint_from = c(6),
+                                  TimePoint_to = c(12),
+                                  Timepoints_included = c(2),
+                                  ModelType = c('ClosedPopulation'),
+                                  ModelSetUp = c('models0'))
     expect_equal(estimates_df, expected_df)
 })
 
@@ -277,19 +264,19 @@ test_that(".closed_mthchaobc_est works as expected", {
         subject = "PATIENT01", stable = FALSE
     )
     expected_df <- tibble::tibble(
-        Model = c("M0", "Mt", "Mth Chao (LB)"),
-        abundance = c(5120.93487419653, 4894.01421908738, 5274.78170071141),
-        stderr = c(29.6477624987035, 21.245676052532, 45.501074231151),
-        SubjectID = c("PATIENT01", "PATIENT01", "PATIENT01"),
-        Timepoints = c("All", "All", "All"),
-        CellType = c("Myeloid", "Myeloid", "Myeloid"),
-        Tissue = c("PB", "PB", "PB"),
-        TimePoint_from = c(6, 6, 6),
-        TimePoint_to = c(24, 24, 24),
-        Timepoints_included = c(4, 4, 4),
-        ModelType = c("ClosedPopulation", "ClosedPopulation", "ClosedPopulation"),
-        ModelSetUp = c("mthchaobc", "mthchaobc", "mthchaobc")
-    )
+      Model = c('M0', 'Mt', 'Mth Chao (LB)'),
+      abundance = c(3728.39194399291, 3611.286068073, 3703.79712337948),
+      stderr = c(16.9512894097357, 10.6507907639934, 19.058670892136),
+      SubjectID = c('PATIENT01', 'PATIENT01', 'PATIENT01'),
+      Timepoints = c('All', 'All', 'All'),
+      CellType = c('Myeloid', 'Myeloid', 'Myeloid'),
+      Tissue = c('PB', 'PB', 'PB'),
+      TimePoint_from = c(6, 6, 6),
+      TimePoint_to = c(24, 24, 24),
+      Timepoints_included = c(4, 4, 4),
+      ModelType = c('ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation'),
+      ModelSetUp = c('mthchaobc', 'mthchaobc', 'mthchaobc'))
     expect_equal(estimates_df, expected_df)
 })
 
@@ -315,19 +302,18 @@ test_that(".closed_mthchaobc_est works with 2 tps", {
         subject = "PATIENT01", stable = FALSE
     )
     expected_df <- tibble::tibble(
-        Model = c("M0", "Mt"),
-        abundance = c(5493.83500573394, 3841.89678899083),
-        stderr = c(189.007141446797, 101.991051253258),
-        SubjectID = c("PATIENT01", "PATIENT01"),
-        Timepoints = c("All", "All"),
-        CellType = c("Myeloid", "Myeloid"),
-        Tissue = c("PB", "PB"),
-        TimePoint_from = c(6, 6),
-        TimePoint_to = c(12, 12),
-        Timepoints_included = c(2, 2),
-        ModelType = c("ClosedPopulation", "ClosedPopulation"),
-        ModelSetUp = c("mthchaobc", "mthchaobc")
-    )
+      Model = c('M0', 'Mt'),
+      abundance = c(4231.92277713625, 3019.07159353349),
+      stderr = c(138.340184265819, 72.0050170227728),
+      SubjectID = c('PATIENT01', 'PATIENT01'),
+      Timepoints = c('All', 'All'),
+      CellType = c('Myeloid', 'Myeloid'),
+      Tissue = c('PB', 'PB'),
+      TimePoint_from = c(6, 6),
+      TimePoint_to = c(12, 12),
+      Timepoints_included = c(2, 2),
+      ModelType = c('ClosedPopulation', 'ClosedPopulation'),
+      ModelSetUp = c('mthchaobc', 'mthchaobc'))
     expect_equal(estimates_df, expected_df)
 })
 
@@ -354,19 +340,18 @@ test_that(".consecutive_m0bc_est works as expected", {
         subject = "PATIENT01"
     )
     expected_df <- tibble::tibble(
-        Model = c("M0", "M0", "M0"),
-        abundance = c(5493.83500573394, 4061.20124501992, 4831.28292631282),
-        stderr = c(189.007141446797, 50.921704530876, 45.3038415111286),
-        SubjectID = c("PATIENT01", "PATIENT01", "PATIENT01"),
-        Timepoints = c("Consecutive", "Consecutive", "Consecutive"),
-        CellType = c("Myeloid", "Myeloid", "Myeloid"),
-        Tissue = c("PB", "PB", "PB"),
-        TimePoint_from = c(6, 12, 18),
-        TimePoint_to = c(12, 18, 24),
-        Timepoints_included = c(2, 2, 2),
-        ModelType = c("ClosedPopulation", "ClosedPopulation", "ClosedPopulation"),
-        ModelSetUp = c("models0BC", "models0BC", "models0BC")
-    )
+      Model = c('M0', 'M0', 'M0'),
+      abundance = c(4231.92277713625, 3213.31381578947, 3639.2570458528),
+      stderr = c(138.340184265819, 34.7602331515537, 27.6367496532401),
+      SubjectID = c('PATIENT01', 'PATIENT01', 'PATIENT01'),
+      Timepoints = c('Consecutive', 'Consecutive', 'Consecutive'),
+      CellType = c('Myeloid', 'Myeloid', 'Myeloid'),
+      Tissue = c('PB', 'PB', 'PB'),
+      TimePoint_from = c(6, 12, 18),
+      TimePoint_to = c(12, 18, 24),
+      Timepoints_included = c(2, 2, 2),
+      ModelType = c('ClosedPopulation', 'ClosedPopulation', 'ClosedPopulation'),
+      ModelSetUp = c('models0BC', 'models0BC', 'models0BC'))
     expect_equal(estimates_df, expected_df)
 })
 
@@ -390,20 +375,18 @@ test_that(".consecutive_m0bc_est works for 2 tps", {
         ),
         subject = "PATIENT01"
     )
-    expected_df <- tibble::tibble(
-        Model = c("M0"),
-        abundance = c(5493.83500573394),
-        stderr = c(189.007141446797),
-        SubjectID = c("PATIENT01"),
-        Timepoints = c("Consecutive"),
-        CellType = c("Myeloid"),
-        Tissue = c("PB"),
-        TimePoint_from = c(6),
-        TimePoint_to = c(12),
-        Timepoints_included = c(2),
-        ModelType = c("ClosedPopulation"),
-        ModelSetUp = c("models0BC")
-    )
+    expected_df <- tibble::tibble(Model = c('M0'),
+                                  abundance = c(4231.92277713625),
+                                  stderr = c(138.340184265819),
+                                  SubjectID = c('PATIENT01'),
+                                  Timepoints = c('Consecutive'),
+                                  CellType = c('Myeloid'),
+                                  Tissue = c('PB'),
+                                  TimePoint_from = c(6),
+                                  TimePoint_to = c(12),
+                                  Timepoints_included = c(2),
+                                  ModelType = c('ClosedPopulation'),
+                                  ModelSetUp = c('models0BC'))
     expect_equal(estimates_df, expected_df)
 })
 
@@ -430,19 +413,18 @@ test_that(".consecutive_mth_est works as expected", {
         subject = "PATIENT01"
     )
     expected_df <- tibble::tibble(
-        Model = c("Mth Chao (LB)", "Mth Chao (LB)"),
-        abundance = c(4403.02434948464, 5119.05887032526),
-        stderr = c(60.5582122530621, 42.8131170229558),
-        SubjectID = c("PATIENT01", "PATIENT01"),
-        Timepoints = c("Consecutive", "Consecutive"),
-        CellType = c("Myeloid", "Myeloid"),
-        Tissue = c("PB", "PB"),
-        TimePoint_from = c(6, 12),
-        TimePoint_to = c(18, 24),
-        Timepoints_included = c(3, 3),
-        ModelType = c("ClosedPopulation", "ClosedPopulation"),
-        ModelSetUp = c("modelMTHBC", "modelMTHBC")
-    )
+      Model = c('Mth Chao (LB)', 'Mth Chao (LB)'),
+      abundance = c(3389.66173863073, 3642.4428335005),
+      stderr = c(38.9612415429626, 18.5479954820153),
+      SubjectID = c('PATIENT01', 'PATIENT01'),
+      Timepoints = c('Consecutive', 'Consecutive'),
+      CellType = c('Myeloid', 'Myeloid'),
+      Tissue = c('PB', 'PB'),
+      TimePoint_from = c(6, 12),
+      TimePoint_to = c(18, 24),
+      Timepoints_included = c(3, 3),
+      ModelType = c('ClosedPopulation', 'ClosedPopulation'),
+      ModelSetUp = c('modelMTHBC', 'modelMTHBC'))
     expect_equal(estimates_df, expected_df)
 })
 
@@ -464,55 +446,41 @@ test_that(".estimate_pop works as expected", {
         tissue_col = "Tissue"
     )
     expected_df <- tibble::tibble(
-        Model = c(
-            "M0", "Mh Chao (LB)", "Mh Poisson2", "Mh Darroch",
-            "Mh Gamma3.5", "M0", "Mt", "Mth Chao (LB)", "M0", "M0", "M0"
-        ),
-        abundance = c(
-            5121.04002304384, 5561.8125, 5530.54501895936,
-            6044.43297754501, 6787.4831931083, 5120.93487419653,
-            4894.01421908738, 5274.78170071141, 5493.83500573394,
-            4061.20124501992, 4831.28292631282
-        ),
-        stderr = c(
-            29.6524454059072, 59.5674353240835, 58.9086290049903,
-            115.962545291672, 222.211267809243, 29.6477624987035,
-            21.245676052532, 45.501074231151, 189.007141446797,
-            50.921704530876, 45.3038415111286
-        ),
-        SubjectID = c(
-            "PATIENT01", "PATIENT01", "PATIENT01", "PATIENT01",
-            "PATIENT01", "PATIENT01", "PATIENT01", "PATIENT01",
-            "PATIENT01", "PATIENT01", "PATIENT01"
-        ),
-        Timepoints = c(
-            "All", "All", "All", "All", "All", "All", "All", "All",
-            "Consecutive", "Consecutive", "Consecutive"
-        ),
-        CellType = c(
-            "Myeloid", "Myeloid", "Myeloid", "Myeloid", "Myeloid",
-            "Myeloid", "Myeloid", "Myeloid", "Myeloid", "Myeloid",
-            "Myeloid"
-        ),
-        Tissue = c(
-            "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-            "PB"
-        ),
-        TimePoint_from = c(6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 18),
-        TimePoint_to = c(24, 24, 24, 24, 24, 24, 24, 24, 12, 18, 24),
-        Timepoints_included = c(4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2),
-        ModelType = c(
-            "ClosedPopulation", "ClosedPopulation", "ClosedPopulation",
-            "ClosedPopulation", "ClosedPopulation", "ClosedPopulation",
-            "ClosedPopulation", "ClosedPopulation", "ClosedPopulation",
-            "ClosedPopulation", "ClosedPopulation"
-        ),
-        ModelSetUp = c(
-            "models0", "models0", "models0", "models0", "models0",
-            "mthchaobc", "mthchaobc", "mthchaobc", "models0BC",
-            "models0BC", "models0BC"
-        )
-    )
+      Model = c('M0', 'Mh Chao (LB)', 'Mh Poisson2', 'Mh Darroch',
+                'Mh Gamma3.5', 'M0', 'Mt', 'Mth Chao (LB)', 'M0',
+                'M0', 'M0'),
+      abundance = c(3728.42791320413, 3812.05951417004,
+                    3791.87510620205, 3852.04875115893,
+                    3919.18254958108, 3728.39194399291,
+                    3611.286068073, 3703.79712337948,
+                    4231.92277713625, 3213.31381578947,
+                    3639.2570458528),
+      stderr = c(16.9534089361061, 26.382222136728, 24.6483695631177,
+                 35.820450572057, 51.6639000626023, 16.9512894097357,
+                 10.6507907639934, 19.058670892136, 138.340184265819,
+                 34.7602331515537, 27.6367496532401),
+      SubjectID = c('PATIENT01', 'PATIENT01', 'PATIENT01', 'PATIENT01',
+                    'PATIENT01', 'PATIENT01', 'PATIENT01', 'PATIENT01',
+                    'PATIENT01', 'PATIENT01', 'PATIENT01'),
+      Timepoints = c('All', 'All', 'All', 'All', 'All', 'All', 'All',
+                     'All', 'Consecutive', 'Consecutive', 'Consecutive'),
+      CellType = c('Myeloid', 'Myeloid', 'Myeloid', 'Myeloid', 'Myeloid',
+                   'Myeloid', 'Myeloid', 'Myeloid', 'Myeloid', 'Myeloid',
+                   'Myeloid'),
+      Tissue = c('PB', 'PB', 'PB', 'PB', 'PB', 'PB', 'PB', 'PB', 'PB',
+                 'PB', 'PB'),
+      TimePoint_from = c(6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 18),
+      TimePoint_to = c(24, 24, 24, 24, 24, 24, 24, 24, 12, 18, 24),
+      Timepoints_included = c(4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2),
+      ModelType = c('ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation'),
+      ModelSetUp = c('models0', 'models0', 'models0', 'models0',
+                     'models0', 'mthchaobc', 'mthchaobc', 'mthchaobc',
+                     'models0BC', 'models0BC', 'models0BC'))
     expect_equal(estimates$est, expected_df)
     expect_true(length(estimates$logger) == 3)
 
@@ -527,86 +495,67 @@ test_that(".estimate_pop works as expected", {
         tissue_col = "Tissue"
     )
     expected_df <- tibble::tibble(
-        Model = c(
-            "M0", "Mh Chao (LB)", "Mh Poisson2", "Mh Darroch",
-            "Mh Gamma3.5", "M0", "Mh Chao (LB)", "Mh Poisson2",
-            "Mh Darroch", "Mh Gamma3.5", "M0", "Mt", "Mth Chao (LB)",
-            "M0", "Mt", "Mth Chao (LB)", "M0", "M0", "M0", "Mth Chao (LB)",
-            "Mth Chao (LB)"
-        ),
-        abundance = c(
-            5121.04002304384, 5561.8125, 5530.54501895936,
-            6044.43297754501, 6787.4831931083, 4925.2909486433,
-            5343.28561501042, 6005.49169587238, 7187.70770661454,
-            9334.62149492534, 5120.93487419653, 4894.01421908738,
-            5274.78170071141, 4925.14379335418, 4798.86115433166,
-            5119.05887032526, 5493.83500573394, 4061.20124501992,
-            4831.28292631282, 4403.02434948464, 5119.05887032526
-        ),
-        stderr = c(
-            29.6524454059072, 59.5674353240835, 58.9086290049903,
-            115.962545291672, 222.211267809243, 26.925642017495,
-            53.181852179626, 125.385406646309, 296.997069135912,
-            680.47720113112, 29.6477624987035, 21.245676052532,
-            45.501074231151, 26.9188940699876, 22.1521744975422,
-            42.8131170229558, 189.007141446797, 50.921704530876,
-            45.3038415111286, 60.5582122530621, 42.8131170229558
-        ),
-        SubjectID = c(
-            "PATIENT01", "PATIENT01", "PATIENT01", "PATIENT01",
-            "PATIENT01", "PATIENT01", "PATIENT01", "PATIENT01",
-            "PATIENT01", "PATIENT01", "PATIENT01", "PATIENT01",
-            "PATIENT01", "PATIENT01", "PATIENT01", "PATIENT01",
-            "PATIENT01", "PATIENT01", "PATIENT01", "PATIENT01",
-            "PATIENT01"
-        ),
-        Timepoints = c(
-            "All", "All", "All", "All", "All", "Stable", "Stable",
-            "Stable", "Stable", "Stable", "All", "All", "All", "Stable",
-            "Stable", "Stable", "Consecutive", "Consecutive",
-            "Consecutive", "Consecutive", "Consecutive"
-        ),
-        CellType = c(
-            "Myeloid", "Myeloid", "Myeloid", "Myeloid", "Myeloid",
-            "Myeloid", "Myeloid", "Myeloid", "Myeloid", "Myeloid",
-            "Myeloid", "Myeloid", "Myeloid", "Myeloid", "Myeloid",
-            "Myeloid", "Myeloid", "Myeloid", "Myeloid", "Myeloid",
-            "Myeloid"
-        ),
-        Tissue = c(
-            "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-            "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB", "PB",
-            "PB"
-        ),
-        TimePoint_from = c(
-            6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 6, 6, 6, 12, 12, 12,
-            6, 12, 18, 6, 12
-        ),
-        TimePoint_to = c(
-            24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
-            24, 24, 12, 18, 24, 18, 24
-        ),
-        Timepoints_included = c(
-            4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 4, 4, 4, 3, 3, 3,
-            2, 2, 2, 3, 3
-        ),
-        ModelType = c(
-            "ClosedPopulation", "ClosedPopulation", "ClosedPopulation",
-            "ClosedPopulation", "ClosedPopulation", "ClosedPopulation",
-            "ClosedPopulation", "ClosedPopulation", "ClosedPopulation",
-            "ClosedPopulation", "ClosedPopulation", "ClosedPopulation",
-            "ClosedPopulation", "ClosedPopulation", "ClosedPopulation",
-            "ClosedPopulation", "ClosedPopulation", "ClosedPopulation",
-            "ClosedPopulation", "ClosedPopulation", "ClosedPopulation"
-        ),
-        ModelSetUp = c(
-            "models0", "models0", "models0", "models0", "models0",
-            "models0", "models0", "models0", "models0", "models0",
-            "mthchaobc", "mthchaobc", "mthchaobc", "mthchaobc",
-            "mthchaobc", "mthchaobc", "models0BC", "models0BC",
-            "models0BC", "modelMTHBC", "modelMTHBC"
-        )
-    )
+      Model = c('M0', 'Mh Chao (LB)', 'Mh Poisson2', 'Mh Darroch',
+                'Mh Gamma3.5', 'M0', 'Mh Chao (LB)', 'Mh Poisson2',
+                'Mh Darroch', 'Mh Gamma3.5', 'M0', 'Mt',
+                'Mth Chao (LB)', 'M0', 'Mt', 'Mth Chao (LB)',
+                'M0', 'M0', 'M0', 'Mth Chao (LB)', 'Mth Chao (LB)'),
+      abundance = c(3728.42791320413, 3812.05951417004, 3791.87510620205,
+                    3852.04875115893, 3919.18254958108, 3624.15261606024,
+                    3738.0582174137, 3859.94234449885, 4037.04032298801,
+                    4298.38860033931, 3728.39194399291, 3611.286068073,
+                    3703.79712337948, 3624.09305004649, 3561.16510345987,
+                    3642.4428335005, 4231.92277713625, 3213.31381578947,
+                    3639.2570458528, 3389.66173863073, 3642.4428335005),
+      stderr = c(16.9534089361061, 26.382222136728, 24.6483695631177,
+                 35.820450572057, 51.6639000626023, 14.6949984853492,
+                 24.6645237658986, 42.7923810992611, 77.030081870443,
+                 137.914165992544, 16.9512894097357, 10.6507907639934,
+                 19.058670892136, 14.6913550528532, 11.1577713011559,
+                 18.5479954820153, 138.340184265819, 34.7602331515537,
+                 27.6367496532401, 38.9612415429626, 18.5479954820153),
+      SubjectID = c('PATIENT01', 'PATIENT01', 'PATIENT01', 'PATIENT01',
+                    'PATIENT01', 'PATIENT01', 'PATIENT01', 'PATIENT01',
+                    'PATIENT01', 'PATIENT01', 'PATIENT01', 'PATIENT01',
+                    'PATIENT01', 'PATIENT01', 'PATIENT01', 'PATIENT01',
+                    'PATIENT01', 'PATIENT01', 'PATIENT01', 'PATIENT01',
+                    'PATIENT01'),
+      Timepoints = c('All', 'All', 'All', 'All', 'All', 'Stable',
+                     'Stable', 'Stable', 'Stable', 'Stable', 'All',
+                     'All', 'All', 'Stable', 'Stable', 'Stable',
+                     'Consecutive', 'Consecutive', 'Consecutive',
+                     'Consecutive', 'Consecutive'),
+      CellType = c('Myeloid', 'Myeloid', 'Myeloid', 'Myeloid', 'Myeloid',
+                   'Myeloid', 'Myeloid', 'Myeloid', 'Myeloid', 'Myeloid',
+                   'Myeloid', 'Myeloid', 'Myeloid', 'Myeloid', 'Myeloid',
+                   'Myeloid', 'Myeloid', 'Myeloid', 'Myeloid', 'Myeloid',
+                   'Myeloid'),
+      Tissue = c('PB', 'PB', 'PB', 'PB', 'PB', 'PB', 'PB', 'PB', 'PB',
+                 'PB', 'PB', 'PB', 'PB', 'PB', 'PB', 'PB', 'PB', 'PB',
+                 'PB', 'PB', 'PB'),
+      TimePoint_from = c(6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 6, 6, 6, 12,
+                         12, 12, 6, 12, 18, 6, 12),
+      TimePoint_to = c(24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
+                       24, 24, 24, 12, 18, 24, 18, 24),
+      Timepoints_included = c(4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 4, 4, 4, 3, 3,
+                              3, 2, 2, 2, 3, 3),
+      ModelType = c('ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation', 'ClosedPopulation',
+                    'ClosedPopulation'),
+      ModelSetUp = c('models0', 'models0', 'models0', 'models0',
+                     'models0', 'models0', 'models0', 'models0',
+                     'models0', 'models0', 'mthchaobc', 'mthchaobc',
+                     'mthchaobc', 'mthchaobc', 'mthchaobc',
+                     'mthchaobc', 'models0BC', 'models0BC',
+                     'models0BC', 'modelMTHBC', 'modelMTHBC'))
     expect_equal(estimates$est, expected_df)
     expect_true(length(estimates$logger) == 0)
 })

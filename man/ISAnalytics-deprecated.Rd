@@ -12,14 +12,15 @@ and will be defunct at the next release.
 The following functions are deprecated and will be made defunct;
 use the replacement indicated below:
 \itemize{
-\item import_parallel_Vispa2Matrices_auto:
+\item import_parallel_Vispa2Matrices_auto (defunct):
 \code{\link{import_parallel_Vispa2Matrices}}
-\item import_parallel_Vispa2Matrices_interactive:
+\item import_parallel_Vispa2Matrices_interactive (defunct):
 \code{\link{import_parallel_Vispa2Matrices}}
 \item unzip_file_system:
 \code{\link{generate_default_folder_structure}}
-\item cumulative_count_union:
+\item cumulative_count_union (defunct):
 \code{\link{cumulative_is}}
+\item threshold_filter
 }
 }
 \keyword{internal}

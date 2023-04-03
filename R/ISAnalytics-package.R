@@ -25,8 +25,6 @@
 #'
 #' @section Vignettes:
 #' * \code{vignette("workflow_start", package = "ISAnalytics")}
-#' * \code{vignette("sharing_analyses",
-#' package = "ISAnalytics")}
 #'
 #' @docType package
 #' @name ISAnalytics

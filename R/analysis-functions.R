@@ -1404,7 +1404,7 @@ cumulative_is <- function(
 #'
 #' The function accepts multiple inputs for different scenarios, please refer
 #' to the vignette
-#' \code{vignette("sharing_analyses", package = "ISAnalytics")}
+#' \code{vignette("workflow_start", package = "ISAnalytics")}
 #' for a more in-depth explanation.
 #'
 #' ## Output

@@ -247,7 +247,11 @@ mandatory_specs <- tibble::tribble(
 set_mandatory_IS_vars(mandatory_specs)
 
 # Files ----
-data_folder <- system.file("testdata", package = "ISAnalytics")
+data_folder <- tempdir()
+utils::unzip(zipfile = system.file("testdata", 
+                                   "testdata.zip",
+                                   package = "ISAnalytics"), 
+             exdir = data_folder, overwrite = TRUE)
 meta_file <- "barcodes_example_af.tsv.xz"
 matrix_file <- "GSE144340_Matrix_542.tsv.xz"
 

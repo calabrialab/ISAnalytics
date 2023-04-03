@@ -56,9 +56,9 @@ aggreg <- aggregate_values_by_key(
     association_file = association_file,
     value_cols = c("seqCount", "fragmentEstimate")
 )
-df1 <- aggreg \%>\%
+df1 <- aggreg |>
     dplyr::filter(.data$Tissue == "BM")
-df2 <- aggreg \%>\%
+df2 <- aggreg |>
     dplyr::filter(.data$Tissue == "PB")
 source <- iss_source(df1, df2)
 source

@@ -35,8 +35,6 @@ and Annotation of Vector Integration Sites}
 
 \itemize{
 \item \code{vignette("workflow_start", package = "ISAnalytics")}
-\item \code{vignette("sharing_analyses",
-package = "ISAnalytics")}
 }
 }
 

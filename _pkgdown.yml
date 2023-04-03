@@ -35,8 +35,6 @@ navbar:
       menu:
       - text: Setting up the workflow and first steps
         href: articles/workflow_start.html
-      - text: Sharing analyses with ISAnalytics
-        href: articles/sharing_analyses.html
     release-v:
       icon: fas fa-code-branch
       text: RELEASE
@@ -60,7 +58,6 @@ reference:
     - outliers_by_pool_fragments
     - aggregate_metadata
     - aggregate_values_by_key
-    - threshold_filter
   - title: "Analysis functions"
   - contents:
     - compute_abundance
@@ -141,6 +138,7 @@ reference:
     - import_parallel_Vispa2Matrices_auto
     - cumulative_count_union
     - unzip_file_system
+    - threshold_filter
   - title: "Data"
   - contents:
     - association_file

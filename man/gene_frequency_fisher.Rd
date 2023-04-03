@@ -91,7 +91,9 @@ parameter (DOIReference column is optional):
 \section{Required tags}{
 
 The function will explicitly check for the presence of these tags:
-*
+\itemize{
+\item gene_symbol
+}
 }
 
 \examples{

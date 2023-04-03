@@ -24,8 +24,7 @@ URL: https://calabrialab.github.io/ISAnalytics,
 BugReports: https://github.com/calabrialab/ISAnalytics/issues
 biocViews: BiomedicalInformatics, Sequencing, SingleCell
 Depends: 
-    R (>= 4.2),
-    magrittr
+    R (>= 4.2)
 Imports: 
     utils,
     dplyr,
@@ -41,18 +40,16 @@ Imports:
     ggplot2,
     ggrepel,
     stats,
-    psych,
-    data.table,
     readxl,
     tools,
-    Rcapture,
     grDevices,
     forcats,
     glue,
     shiny,
     shinyWidgets,
     datamods,
-    bslib
+    bslib,
+    DT
 Encoding: UTF-8
 LazyData: false
 Roxygen: list(markdown = TRUE)
@@ -74,7 +71,6 @@ Suggests:
     R.utils,
     RefManageR,
     flexdashboard,
-    DT,
     circlize,
     plotly,
     gtools,
@@ -86,7 +82,10 @@ Suggests:
     progressr,
     future,
     doFuture,
-    foreach
+    foreach,
+    psych,
+    data.table,
+    Rcapture
 VignetteBuilder: knitr
 RdMacros: 
     lifecycle
