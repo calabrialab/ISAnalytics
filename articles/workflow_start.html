@@ -126,88 +126,6 @@ reads for clonal tracking studies.</p>
 and the first steps of data import and data cleaning.</p>
 </div>
 <div class="section level2">
-<h2 id="installation-and-options">Installation and options<a class="anchor" aria-label="anchor" href="#installation-and-options"></a>
-</h2>
-<p><code>ISAnalytics</code> can be installed quickly in different
-ways:</p>
-<ul>
-<li>You can install it via <a href="http://bioconductor.org" class="external-link">Bioconductor</a>
-</li>
-<li>You can install it via GitHub using the package
-<code>devtools</code>
-</li>
-</ul>
-<p>There are always 2 versions of the package active:</p>
-<ul>
-<li>
-<code>RELEASE</code> is the latest stable version</li>
-<li>
-<code>DEVEL</code> is the development version, it is the most
-up-to-date version where all new features are introduced</li>
-</ul>
-<div class="section level3">
-<h3 id="installation-from-bioconductor">Installation from bioconductor<a class="anchor" aria-label="anchor" href="#installation-from-bioconductor"></a>
-</h3>
-<p>RELEASE version:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></span></code></pre></div>
-<p>DEVEL version:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># The following initializes usage of Bioc devel</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span>version<span class="op">=</span><span class="st">'devel'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="installation-from-github">Installation from GitHub<a class="anchor" aria-label="anchor" href="#installation-from-github"></a>
-</h3>
-<p>RELEASE:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,</span>
-<span>                         ref <span class="op">=</span> <span class="st">"RELEASE_3_16"</span>,</span>
-<span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>DEVEL:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,</span>
-<span>                         ref <span class="op">=</span> <span class="st">"master"</span>,</span>
-<span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="setting-options">Setting options<a class="anchor" aria-label="anchor" href="#setting-options"></a>
-</h3>
-<p><code>ISAnalytics</code> has a verbose option that allows some
-functions to print additional information to the console while they’re
-executing. To disable this feature do:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># DISABLE</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># ENABLE</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Some functions also produce report in a user-friendly HTML format, to
-set this feature:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># DISABLE HTML REPORTS</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># ENABLE HTML REPORTS</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
 <h2 id="setting-up-your-workflow-with-dynamic-vars">Setting up your workflow with dynamic vars<a class="anchor" aria-label="anchor" href="#setting-up-your-workflow-with-dynamic-vars"></a>
 </h2>
 <p>This section demonstrates how to properly setup your workflow with
@@ -322,7 +240,7 @@ require the presence of specific tags (and associated column names) in
 the input to work properly. You can always check what a tag means and
 where it is used by using the function <code><a href="../reference/inspect_tags.html">inspect_tags()</a></code> and
 providing in input the tags you want to check as a character vector.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/inspect_tags.html">inspect_tags</a></span><span class="op">(</span><span class="st">"chromosome"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; * TAG: chromosome</span></span>
 <span><span class="co">#&gt; <span style="color: #0000BB;">ℹ</span> Description: Number of the chromosome</span></span>
@@ -334,8 +252,8 @@ the critical tags for each category.</p>
 <div class="section level4">
 <h4 id="mandatory-is-vars">Mandatory IS vars<a class="anchor" aria-label="anchor" href="#mandatory-is-vars"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-83cf9d62914e33573998" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-83cf9d62914e33573998">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-36f0d653474ce95cc9db" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-36f0d653474ce95cc9db">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in
 other functions - for example, when importing matrices it is ensured
 that all mandatory variables are present in the input, as declared in
 the look up table. Some functions may require information that needs to
@@ -345,8 +263,8 @@ doubts.</p>
 <div class="section level4">
 <h4 id="annotation-is-vars">Annotation IS vars<a class="anchor" aria-label="anchor" href="#annotation-is-vars"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-dae9b21a6ec63dd0df2e" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-dae9b21a6ec63dd0df2e">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot, gene_frequency_fisher","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-2022d492c016c99722c6" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2022d492c016c99722c6">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot, gene_frequency_fisher","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work
 with ISAnalytics, some operations do require annotation - if you’re
 working with matrices that are not annotated you can either annotate
 them with a tool of your choice or skip the steps that require
@@ -355,16 +273,16 @@ annotation.</p>
 <div class="section level4">
 <h4 id="association-file-columns">Association file columns<a class="anchor" aria-label="anchor" href="#association-file-columns"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-82d594c4044233cf7e90" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-82d594c4044233cf7e90">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-db68c57ecdff7aa91f09" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-db68c57ecdff7aa91f09">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but
 they exist for potential new features that will be added in the
 future.</p>
 </div>
 <div class="section level4">
 <h4 id="vispa2-stats-specs">VISPA2 stats specs<a class="anchor" aria-label="anchor" href="#vispa2-stats-specs"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-a259ba7b2b71128c739e" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-a259ba7b2b71128c739e">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq","barcode_mux"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats",""],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence","The barcode demultiplexed reads"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions.
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-51452dbd7920e7f006b1" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-51452dbd7920e7f006b1">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq","barcode_mux"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats",""],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence","The barcode demultiplexed reads"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions.
 If the pipeline launch was configured with default parameters, do not
 change this lookup table.</p>
 </div>
@@ -386,7 +304,7 @@ a list of the missing ones.</p>
 <p>Let’s take a look at some examples.</p>
 <p>On package loading, all lookup tables are set to default values. For
 example, for mandatory IS vars we have:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/mandatory_IS_vars.html">mandatory_IS_vars</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 5</span></span></span>
 <span><span class="co">#&gt;   names             types transform flag     tag       </span></span>
@@ -424,7 +342,7 @@ contains random data):</p>
 </table>
 <p>To make this work with ISAnalytics functions, we need to compile the
 lookup table like this:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_mand_vars</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>    <span class="op">~</span><span class="va">names</span>, <span class="op">~</span><span class="va">types</span>, <span class="op">~</span><span class="va">transform</span>, <span class="op">~</span><span class="va">flag</span>, <span class="op">~</span><span class="va">tag</span>,</span>
 <span>    <span class="st">"chrom"</span>, <span class="st">"char"</span>, <span class="op">~</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html" class="external-link">str_replace_all</a></span><span class="op">(</span><span class="va">.x</span>, <span class="st">"chr"</span>, <span class="st">""</span><span class="op">)</span>, <span class="st">"required"</span>,</span>
@@ -439,7 +357,7 @@ tag: in this case we would like to have only the number of the
 chromosome without the prefix “chr” - this lambda will get executed
 immediately after import.</p>
 <p>To set the new variables simply do:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/set_mandatory_IS_vars.html">set_mandatory_IS_vars</a></span><span class="op">(</span><span class="va">new_mand_vars</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Mandatory IS vars successfully changed</span></span>
 <span><span class="fu"><a href="../reference/mandatory_IS_vars.html">mandatory_IS_vars</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
@@ -453,7 +371,7 @@ immediately after import.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> junction int   <span style="color: #949494;">&lt;NULL&gt;</span>    required <span style="color: #BB0000;">NA</span></span></span></code></pre></div>
 <p>If you don’t specify a critical tag, a warning message is
 displayed:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_mand_vars</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">$</span><span class="va">tag</span> <span class="op">&lt;-</span> <span class="cn">NA_character_</span></span>
 <span><span class="fu"><a href="../reference/set_mandatory_IS_vars.html">set_mandatory_IS_vars</a></span><span class="op">(</span><span class="va">new_mand_vars</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Warning: important tags missing</span></span>
@@ -471,7 +389,7 @@ displayed:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> gap      int   <span style="color: #949494;">&lt;NULL&gt;</span>    required <span style="color: #BB0000;">NA</span>       </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> junction int   <span style="color: #949494;">&lt;NULL&gt;</span>    required <span style="color: #BB0000;">NA</span></span></span></code></pre></div>
 <p>If you change your mind and want to go back to defaults:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/reset_mandatory_IS_vars.html">reset_mandatory_IS_vars</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Mandatory IS vars reset to default</span></span>
 <span><span class="fu"><a href="../reference/mandatory_IS_vars.html">mandatory_IS_vars</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
@@ -503,7 +421,7 @@ each:</p>
 </li>
 </ul>
 <p>Matrix files suffixes work slightly different:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/mandatory_IS_vars.html">matrix_file_suffixes</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 3</span></span></span>
 <span><span class="co">#&gt;    quantification   matrix_type   file_suffix                                 </span></span>
@@ -550,7 +468,7 @@ to a json file, which can then be imported for the next workflow.</p>
 parallel workers or process long tasks report progress via the functions
 offered by <a href="https://progressr.futureverse.org/" class="external-link">progressr</a>.
 To enable progress bars for all functions in ISAnalytics do</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/enable_progress_bars.html">enable_progress_bars</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>before calling other functions. For customizing the appearance of the
 progress bar please refer to <code>progressr</code> documentation.</p>
@@ -664,7 +582,7 @@ if the corresponding folders (contained in the appropriate column) can
 be found. Remember that to work properly, this operation expects a
 standard folder structure, such as the one provided by VISPA2. This
 function also produces an interactive HTML report.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fs_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_default_folder_structure.html">generate_default_folder_structure</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ISAnalytics.reports <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, code <span class="op">=</span> <span class="op">{</span></span>
 <span>    <span class="va">af</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">fs_path</span><span class="op">$</span><span class="va">af</span>, root <span class="op">=</span> <span class="va">fs_path</span><span class="op">$</span><span class="va">root</span><span class="op">)</span></span>
@@ -777,7 +695,7 @@ imported or folders are missing</li>
 information that can be useful for other analyses downstream, so it is
 recommended to import them in the first steps of the workflow. To do
 that, you can use <code>import_VISPA2_stats</code>:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vispa_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_Vispa2_stats.html">import_Vispa2_stats</a></span><span class="op">(</span></span>
 <span>    association_file <span class="op">=</span> <span class="va">af</span>,</span>
 <span>    join_with_af <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -815,7 +733,7 @@ using the <code><a href="../reference/import_single_Vispa2Matrix.html">import_si
 function reads the file and converts it into a tidy structure: several
 different formats can be read, since you can specify the column
 separator.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">matrix_path</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span></span>
 <span>    <span class="va">fs_path</span><span class="op">$</span><span class="va">root</span>,</span>
 <span>    <span class="st">"PJ01"</span>,</span>
@@ -851,7 +769,7 @@ association file is imported with the file system alignment option.
 <code>ISAnalytics</code> provides a function,
 <code><a href="../reference/import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices()</a></code>, that allows to do just
 that in a fast and efficient way.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ISAnalytics.reports <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="op">{</span></span>
 <span>    <span class="va">matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices</a></span><span class="op">(</span><span class="va">af</span>,</span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>,</span>
@@ -1149,7 +1067,7 @@ integration is simply removed from the matrix.</p>
 <div class="section level4">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h4>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="co">## Multi quantification matrix</span></span>
@@ -1212,7 +1130,7 @@ call the function <code><a href="../reference/realign_after_collisions.html">rea
 input the processed sequence count matrix and the named list of other
 matrices to realign. <strong>NOTE: the names in the list must be
 quantification types.</strong></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">other_realigned</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/realign_after_collisions.html">realign_after_collisions</a></span><span class="op">(</span></span>
 <span>    sc_matrix <span class="op">=</span> <span class="va">no_coll_single</span>,</span>
 <span>    other_matrices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fragmentEstimate <span class="op">=</span> <span class="va">separated</span><span class="op">$</span><span class="va">fragmentEstimate</span><span class="op">)</span></span>
@@ -1275,7 +1193,7 @@ import function please view the vignette “How to use import functions”:
 <code>vignette("how_to_import_functions", package="ISAnalytics")</code>.</li>
 <li>Perform aggregation</li>
 </ol>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="va">aggregated_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_metadata.html">aggregate_metadata</a></span><span class="op">(</span>association_file <span class="op">=</span> <span class="va">association_file</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 20 × 19</span></span></span>
@@ -1326,7 +1244,7 @@ that are related to the samples.</p>
 </li>
 <li>Perform aggregation</li>
 </ol>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="va">aggreg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
@@ -1377,7 +1295,7 @@ aggregation. The default value is set to
 <code>c("SubjectID", "CellMarker", "Tissue", "TimePoint")</code> (same
 default key as the <code>aggregate_metadata</code> function).</li>
 </ol>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
 <span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
@@ -1424,7 +1342,7 @@ as input and produce a SINGLE value as output. Valid options for this
 purpose might be: <code>sum</code>, <code>mean</code>,
 <code>median</code>, <code>min</code>, <code>max</code> and so on.</li>
 </ol>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
 <span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
@@ -1464,7 +1382,7 @@ set as usual.</p>
 <p>You can also use in <code>lambda</code> functions that produce data
 frames or lists. In this case all variables from the produced data frame
 will be included in the final data frame. For example:</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
 <span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
@@ -1507,7 +1425,7 @@ function contained in <code>lambda</code> will be applied to every
 column in <code>value_cols</code>: resulting columns will be named as
 “original name_function applied”.</li>
 </ol>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
 <span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
@@ -1551,7 +1469,7 @@ contains
 You can change this grouping as you see fit, if you don’t want to add
 any other variable to the key, just set it to <code>NULL</code>.</li>
 </ol>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
 <span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
