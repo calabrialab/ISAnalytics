@@ -22,3 +22,9 @@ local_af_inc <- import_association_file(fs_path$af,
     root = fs_path$root_inc,
     report_path = NULL
 )
+
+# Unzip testdata
+testdata_path <- tempdir()
+utils::unzip(zipfile = system.file("testdata", "testdata.zip",
+                                   package = "ISAnalytics"),
+             exdir = testdata_path)

@@ -35,8 +35,6 @@ navbar:
       menu:
       - text: Setting up the workflow and first steps
         href: articles/workflow_start.html
-      - text: Sharing analyses with ISAnalytics
-        href: articles/sharing_analyses.html
     devel-v:
       icon: fas fa-code-branch
       text: DEVEL

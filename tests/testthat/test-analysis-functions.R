@@ -747,9 +747,7 @@ test_that("iss_source produces expected output - NO per patient", {
 #------------------------------------------------------------------------------#
 test_that("gene_frequency_fisher produces expected output", {
     withr::local_options(list(ISAnalytics.verbose = TRUE))
-    test_cis <- readRDS(system.file("testdata", "test_cis_for_fisher.Rds",
-        package = "ISAnalytics"
-    ))
+    test_cis <- readRDS(fs::path(testdata_path, "test_cis_for_fisher.Rds"))
     ## -- Testing intersection
     fisher_df <- gene_frequency_fisher(test_cis[[1]], test_cis[[2]],
         min_is_per_gene = 1,
