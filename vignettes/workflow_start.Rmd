@@ -72,13 +72,6 @@ ISAnalytics is an R package developed to analyze gene therapy vector insertion s
 In this vignette we will explain how to properly setup the workflow and
 the first steps of data import and data cleaning.
 
-```{r echo=FALSE}
-inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAnalytics")
-```
-
-```{r child=inst_chunk_path}
-```
-
 # Setting up your workflow with dynamic vars
 
 This section demonstrates how to properly setup your workflow 

@@ -53,13 +53,6 @@ bib <- c(
 In this vignette we explain in more detail how to perform sharing analyses 
 with `r Biocpkg("ISAnalytics")` and its dedicated sharing functions.
 
-```{r echo=FALSE}
-inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAnalytics")
-```
-
-```{r child=inst_chunk_path}
-```
-
 # Shared integration sites
 
 An integration site is always characterized by a triple of values:

@@ -65,11 +65,87 @@ ngs_exp_fig <- fs::path("../man", "figures", "ngs_data_exp.png")
 
 ISAnalytics is an R package developed to analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies.
 
-```{r echo=FALSE}
-inst_chunk_path <- system.file("rmd", "install_and_options.Rmd", package = "ISAnalytics")
+# Installation and options
+
+`ISAnalytics` can be installed quickly in different ways:
+
+* You can install it via [Bioconductor](http://bioconductor.org)
+* You can install it via GitHub using the package `devtools`
+
+There are always 2 versions of the package active:
+
+* `RELEASE` is the latest stable version
+* `DEVEL` is the development version, it is the most up-to-date version where
+all new features are introduced
+
+## Installation from bioconductor
+
+RELEASE version:
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("ISAnalytics")
 ```
 
-```{r child=inst_chunk_path}
+DEVEL version:
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("ISAnalytics")
+```
+
+## Installation from GitHub
+
+RELEASE:
+```{r eval=FALSE}
+if (!require(devtools)) {
+  install.packages("devtools")
+}
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "RELEASE_3_16",
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
+```
+
+DEVEL:
+```{r eval=FALSE}
+if (!require(devtools)) {
+  install.packages("devtools")
+}
+devtools::install_github("calabrialab/ISAnalytics",
+                         ref = "master",
+                         dependencies = TRUE,
+                         build_vignettes = TRUE)
+```
+
+## Setting options
+
+`ISAnalytics` has a verbose option that allows some functions to print 
+additional information to the console while they're executing. 
+To disable this feature do:
+
+```{r OptVerbose, eval=FALSE}
+# DISABLE
+options("ISAnalytics.verbose" = FALSE)
+
+# ENABLE
+options("ISAnalytics.verbose" = TRUE)
+
+```
+
+Some functions also produce report in a user-friendly HTML format, 
+to set this feature:
+
+```{r OptWidg, eval=FALSE}
+# DISABLE HTML REPORTS
+options("ISAnalytics.reports" = FALSE)
+
+# ENABLE HTML REPORTS
+options("ISAnalytics.reports" = TRUE)
 ```
 
 # Setting up the workflow
