@@ -58,7 +58,6 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -338,7 +337,11 @@ the authors and it is available in the package additional files.</p>
 <span><span class="co">#&gt; Mandatory IS vars successfully changed</span></span>
 <span></span>
 <span><span class="co"># Files ----</span></span>
-<span><span class="va">data_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
+<span><span class="va">data_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/unzip.html" class="external-link">unzip</a></span><span class="op">(</span>zipfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata"</span>, </span>
+<span>                                   <span class="st">"testdata.zip"</span>,</span>
+<span>                                   package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>, </span>
+<span>             exdir <span class="op">=</span> <span class="va">data_folder</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">meta_file</span> <span class="op">&lt;-</span> <span class="st">"barcodes_example_af.tsv.xz"</span></span>
 <span><span class="va">matrix_file</span> <span class="op">&lt;-</span> <span class="st">"GSE144340_Matrix_542.tsv.xz"</span></span>
 <span></span>

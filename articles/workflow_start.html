@@ -58,7 +58,6 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -252,8 +251,8 @@ the critical tags for each category.</p>
 <div class="section level4">
 <h4 id="mandatory-is-vars">Mandatory IS vars<a class="anchor" aria-label="anchor" href="#mandatory-is-vars"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-36f0d653474ce95cc9db" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-36f0d653474ce95cc9db">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-3c60a1a576689eb1086f" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3c60a1a576689eb1086f">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in
 other functions - for example, when importing matrices it is ensured
 that all mandatory variables are present in the input, as declared in
 the look up table. Some functions may require information that needs to
@@ -263,8 +262,8 @@ doubts.</p>
 <div class="section level4">
 <h4 id="annotation-is-vars">Annotation IS vars<a class="anchor" aria-label="anchor" href="#annotation-is-vars"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-2022d492c016c99722c6" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-2022d492c016c99722c6">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot, gene_frequency_fisher","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-accdaf1b687d5646e7fe" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-accdaf1b687d5646e7fe">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot, gene_frequency_fisher","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work
 with ISAnalytics, some operations do require annotation - if you’re
 working with matrices that are not annotated you can either annotate
 them with a tool of your choice or skip the steps that require
@@ -273,16 +272,16 @@ annotation.</p>
 <div class="section level4">
 <h4 id="association-file-columns">Association file columns<a class="anchor" aria-label="anchor" href="#association-file-columns"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-db68c57ecdff7aa91f09" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-db68c57ecdff7aa91f09">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b62a75011366a0cc37ea" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b62a75011366a0cc37ea">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but
 they exist for potential new features that will be added in the
 future.</p>
 </div>
 <div class="section level4">
 <h4 id="vispa2-stats-specs">VISPA2 stats specs<a class="anchor" aria-label="anchor" href="#vispa2-stats-specs"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-51452dbd7920e7f006b1" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-51452dbd7920e7f006b1">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq","barcode_mux"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats",""],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence","The barcode demultiplexed reads"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions.
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-6f36b631880d7ac3a9d8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6f36b631880d7ac3a9d8">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq","barcode_mux"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats",""],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence","The barcode demultiplexed reads"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions.
 If the pipeline launch was configured with default parameters, do not
 change this lookup table.</p>
 </div>
@@ -1510,6 +1509,450 @@ any other variable to the key, just set it to <code>NULL</code>.</li>
 </div>
 </div>
 <div class="section level2">
+<h2 id="analysis-use-case-example-shared-integration-sites">Analysis use-case example: shared integration sites<a class="anchor" aria-label="anchor" href="#analysis-use-case-example-shared-integration-sites"></a>
+</h2>
+<p>An integration site is always characterized by a triple of values:
+<code>(chr, integration_locus, strand)</code>, hence these attributes
+are always present in integration matrices.</p>
+<p>We can aggregate our data in different ways according to our needs,
+obtaining therefore different groups. Each group has an associated set
+of integration sites.</p>
+<p>NOTE: aggregating data is not mandatory, since sharing functions in
+ISAnalytics only count distinct integration sites and do not require any
+quantification. The only important thing is that columns that are
+included in the specified key are also included in the input
+matrices.</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Aggregation by standard key</span></span>
+<span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span><span class="va">integration_matrices</span>,</span>
+<span>    <span class="va">association_file</span>,</span>
+<span>    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0030"</span>, <span class="st">"0060"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 419 × 11</span></span></span>
+<span><span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand SubjectID CellMarker</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 1               8<span style="text-decoration: underline;">464</span>757 -      RERE     -          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 1               8<span style="text-decoration: underline;">464</span>757 -      RERE     -          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 1               8<span style="text-decoration: underline;">607</span>357 +      RERE     -          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 1              11<span style="text-decoration: underline;">339</span>120 +      UBIAD1   +          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 1              11<span style="text-decoration: underline;">339</span>120 +      UBIAD1   +          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 1              16<span style="text-decoration: underline;">186</span>297 -      SPEN     +          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 1              16<span style="text-decoration: underline;">186</span>297 -      SPEN     +          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 1              16<span style="text-decoration: underline;">602</span>483 +      FBXO42   -          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 1              25<span style="text-decoration: underline;">337</span>264 -      MIR4425  +          PT002     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 1              25<span style="text-decoration: underline;">337</span>264 -      MIR4425  +          PT002     MNC       </span></span>
+<span><span class="co">#&gt;    Tissue TimePoint seqCount_sum fragmentEstimate_sum</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> BM     0030               542                 3.01</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> BM     0060                 1                 1.00</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> BM     0060                 1                 1.00</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> BM     0060              <span style="text-decoration: underline;">1</span>605                 8.03</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PB     0060                 1                 1.00</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> BM     0030                 1                 1.00</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PB     0060                 1                 1.00</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> BM     0060              <span style="text-decoration: underline;">2</span>947                 9.04</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> BM     0030                23                 9.14</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PB     0060                36                 7.07</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 409 more rows</span></span></span></code></pre>
+<p>An integration site is <em>shared</em> between two or more groups if
+the same triple is observed in all the groups considered.</p>
+<div class="section level3">
+<h3 id="automated-sharing-counts">Automated sharing counts<a class="anchor" aria-label="anchor" href="#automated-sharing-counts"></a>
+</h3>
+<p>ISAnalytics provides the function <code><a href="../reference/is_sharing.html">is_sharing()</a></code> for
+computing automated sharing counts. The function has several arguments
+that can be tuned according to user needs.</p>
+</div>
+<div class="section level3">
+<h3 id="scenario-1-single-input-data-frame-and-single-grouping-key">SCENARIO 1: single input data frame and single grouping key<a class="anchor" aria-label="anchor" href="#scenario-1-single-input-data-frame-and-single-grouping-key"></a>
+</h3>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,</span>
+<span>    group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>        <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    n_comp <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>    is_count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    minimal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    include_self_comp <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    keep_genomic_coord <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_1</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 28 × 10</span></span></span>
+<span><span class="co">#&gt;    g1           g2    shared count_g1 count_g2 count_union  on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_MNC_B… PT00…     21       54      114         147 38.9   18.4    14.3  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_MNC_B… PT00…      7       54       28          75 13.0   25       9.33 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_MNC_B… PT00…      8       54       59         105 14.8   13.6     7.62 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT001_MNC_B… PT00…      0       54       98         152  0      0       0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT001_MNC_B… PT00…      1       54       33          86  1.85   3.03    1.16 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT001_MNC_B… PT00…      0       54       15          69  0      0       0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_MNC_B… PT00…      0       54       18          72  0      0       0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT001_MNC_B… PT00…      7      114       28         135  6.14  25       5.19 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_MNC_B… PT00…     29      114       59         144 25.4   49.2    20.1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_MNC_B… PT00…      1      114       98         211  0.877  1.02    0.474</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 18 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: is_coord &lt;list&gt;</span></span></span></code></pre></div>
+<p>In this configuration we set:</p>
+<ul>
+<li>A single input data frame: <code>agg</code>
+</li>
+<li>A single grouping key by setting the argument
+<code>grouping_key</code>. In this specific case, our groups will be
+identified by a unique combination of <code>SubjectID</code>,
+<code>CellMarker</code>, <code>Tissue</code> and
+<code>TimePoint</code>
+</li>
+<li>
+<code>n_comp</code> represents the number of comparisons to compute:
+2 means we’re interested in knowing the sharing for PAIRS of distinct
+groups</li>
+<li>We want to keep the counts of distinct integration sites for each
+group by setting <code>is_count</code> to <code>TRUE</code>
+</li>
+<li>
+<code>relative_is_sharing</code> if set to <code>TRUE</code> adds
+sharing expressed as a percentage, more precisely it adds a column
+<code>on_g1</code> that is calculated as the absolute number of shared
+integrations divided by the cardinality of the first group,
+<code>on_g2</code> is analogous but is computed on the cardinality of
+the second group and finally <code>on_union</code> is computed on the
+cardinality of the union of the two groups.</li>
+<li>By setting the argument <code>minimal</code> to <code>TRUE</code> we
+tell the function to avoid redundant comparisons: in this way only
+<strong>combinations</strong> and not permutations are included in the
+output table</li>
+<li>
+<code>include_self_comp</code> adds rows in the table that are
+labelled with the same group: these rows always have a 100% sharing with
+all other groups. There are few scenarios where this is useful, but for
+now we set it to <code>FALSE</code> since we don’t need it</li>
+<li>
+<code>keep_genomic_coord</code> allows us to keep the genomic
+coordinates of the shared integration sites as a separate table</li>
+</ul>
+<div class="section level5">
+<h5 id="changing-the-number-of-comparisons">Changing the number of comparisons<a class="anchor" aria-label="anchor" href="#changing-the-number-of-comparisons"></a>
+</h5>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_1_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,</span>
+<span>    group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>        <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    n_comp <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>    is_count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    minimal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    include_self_comp <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    keep_genomic_coord <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_1_a</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 56 × 13</span></span></span>
+<span><span class="co">#&gt;    g1      g2    g3    shared count_g1 count_g2 count_g3 count_union on_g1 on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_… PT00… PT00…      5       54      114       28         166  9.26  4.39</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_… PT00… PT00…      6       54      114       59         175 11.1   5.26</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_… PT00… PT00…      0       54      114       98         244  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT001_… PT00… PT00…      0       54      114       33         179  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT001_… PT00… PT00…      0       54      114       15         161  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT001_… PT00… PT00…      0       54      114       18         165  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_… PT00… PT00…      1       54       28       59         117  1.85  3.57</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT001_… PT00… PT00…      0       54       28       98         173  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_… PT00… PT00…      0       54       28       33         107  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_… PT00… PT00…      0       54       28       15          90  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 46 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;, is_coord &lt;list&gt;</span></span></span></code></pre></div>
+<p>Changing the <code>n_comp</code> to 3 means that we want to calculate
+the sharing between 3 different groups. Note that the
+<code>shared</code> column contains the counts of integrations that are
+shared by <strong>ALL</strong> groups, which is equivalent to a set
+intersection.</p>
+<p>Beware of the fact that the more comparisons are requested the more
+time the computation requires.</p>
+</div>
+<div class="section level5">
+<h5 id="a-case-when-it-is-useful-to-set-minimal-false">A case when it is useful to set <code>minimal = FALSE</code><a class="anchor" aria-label="anchor" href="#a-case-when-it-is-useful-to-set-minimal-false"></a>
+</h5>
+<p>Setting <code>minimal = FALSE</code> produces all possible
+permutations of the groups and the corresponding values. In combination
+with <code>include_self_comp = TRUE</code>, this is useful when we want
+to know the sharing between pairs of groups and plot results as a
+heatmap.</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_1_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,</span>
+<span>    group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>        <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    n_comp <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>    is_count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    minimal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    include_self_comp <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_1_b</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 64 × 9</span></span></span>
+<span><span class="co">#&gt;    g1            g2    shared count_g1 count_g2 count_union on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_MNC_BM… PT00…     54       54       54          54 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_MNC_BM… PT00…    114      114      114         114 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_MNC_PB… PT00…     59       59       59          59 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT002_MNC_BM… PT00…     98       98       98          98 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT002_MNC_PB… PT00…     18       18       18          18 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT002_MNC_PB… PT00…     15       15       15          15 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_MNC_PB… PT00…     28       28       28          28 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT002_MNC_BM… PT00…     33       33       33          33 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_MNC_BM… PT00…     21       54      114         147  38.9  18.4     14.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_MNC_BM… PT00…     21      114       54         147  18.4  38.9     14.3</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 54 more rows</span></span></span>
+<span><span class="va">heatmaps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_heatmap.html">sharing_heatmap</a></span><span class="op">(</span><span class="va">sharing_1_b</span><span class="op">)</span></span></code></pre></div>
+<p>The function <code><a href="../reference/sharing_heatmap.html">sharing_heatmap()</a></code> automatically plots
+sharing between 2 groups. There are several arguments to this function
+that allow us to obtain heatmaps for the absolute sharing values or the
+relative (percentage) values.</p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">heatmaps</span><span class="op">$</span><span class="va">absolute</span></span></code></pre></div>
+<p><img src="workflow_start_files/figure-html/unnamed-chunk-45-1.png" width="700"></p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">heatmaps</span><span class="op">$</span><span class="va">on_g1</span></span></code></pre></div>
+<p><img src="workflow_start_files/figure-html/unnamed-chunk-45-2.png" width="700"></p>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">heatmaps</span><span class="op">$</span><span class="va">on_union</span></span></code></pre></div>
+<p><img src="workflow_start_files/figure-html/unnamed-chunk-45-3.png" width="700"></p>
+<p>Beware of the fact that calculating all permutations takes longer
+than calculating only distinct combinations, therefore if you don’t need
+your results plotted or you have more than 2 groups to compare you
+should stick with <code>minimal = TRUE</code> and
+<code>include_self_comp = FALSE</code>.</p>
+</div>
+<div class="section level4">
+<h4 id="scenario-2-single-input-data-frame-and-multiple-grouping-keys">SCENARIO 2: single input data frame and multiple grouping keys<a class="anchor" aria-label="anchor" href="#scenario-2-single-input-data-frame-and-multiple-grouping-keys"></a>
+</h4>
+<p>In the first scenario, groups were homogeneous, that is, they were
+grouped all with the same key. In this other scenario we want to start
+with data contained in just one data frame but we want to compare sets
+of integrations that are grouped differently. To do this we give as
+input a <strong>list of keys</strong> through the argument
+<code>group_keys</code>.</p>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,</span>
+<span>    group_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>            <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>            <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>        <span class="op">)</span>,</span>
+<span>        g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span><span class="op">)</span>,</span>
+<span>        g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_2</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 32 × 12</span></span></span>
+<span><span class="co">#&gt;    g1    g2    g3    shared count_g1 count_g2 count_g3 count_union  on_g1  on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT00… PT00… MNC_…     54       54      186      271         310 100    29.0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT00… PT00… MNC_…     14       54      186      103         211  25.9   7.53 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT00… PT00… MNC_…      1       54      137      271         281   1.85  0.730</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT00… PT00… MNC_…      0       54      137      103         252   0     0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT00… PT00… MNC_…    114      114      186      271         310 100    61.3  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT00… PT00… MNC_…     35      114      186      103         211  30.7  18.8  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT00… PT00… MNC_…      2      114      137      271         281   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT00… PT00… MNC_…      2      114      137      103         292   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT00… PT00… MNC_…      9       28      186      271         310  32.1   4.84 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT00… PT00… MNC_…     28       28      186      103         211 100    15.1  </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 22 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;</span></span></span></code></pre></div>
+<p>There are a few things to keep in mind in this case:</p>
+<ul>
+<li>The arguments <code>group_key</code> (notice the absence of plural),
+<code>n_comp</code> and <code>include_self_comp</code> are ignored: the
+number of comparisons is automatically detected by counting the provided
+keys and a self comparison doesn’t make sense since group labels are
+different</li>
+<li>If you provide a list of identical keys or just one key you fall
+back to scenario 1</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="scenario-3-multiple-input-data-frame-and-single-grouping-key">SCENARIO 3: multiple input data frame and single grouping key<a class="anchor" aria-label="anchor" href="#scenario-3-multiple-input-data-frame-and-single-grouping-key"></a>
+</h4>
+<p>Providing multiple input data frames and the same grouping key is an
+effective way to reduce the number of comparisons performed. Let’s make
+an example: suppose we’re interested in comparing groups labelled by a
+unique combination of <code>SubjectID</code>, <code>CellMarker</code>,
+<code>Tissue</code> and <code>TimePoint</code>, but this time we want
+the first group to contain only integrations relative to
+<code>PT001_MNC_BM_0030</code> and the second group to contain only
+integrations relative to <code>PT001_MNC_BM_0060</code>.</p>
+<p>We’re going to filter the original data frame in order to obtain only
+relevant data in 2 separated tables and then proceed by calling the
+function.</p>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">first_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">SubjectID</span> <span class="op">==</span> <span class="st">"PT001"</span>, <span class="va">CellMarker</span> <span class="op">==</span> <span class="st">"MNC"</span>, <span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span>,</span>
+<span>        <span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0030"</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="va">second_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">SubjectID</span> <span class="op">==</span> <span class="st">"PT001"</span>, <span class="va">CellMarker</span> <span class="op">==</span> <span class="st">"MNC"</span>, <span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span>,</span>
+<span>        <span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0060"</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="va">sharing_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">first_sample</span>, <span class="va">second_sample</span>,</span>
+<span>    group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>        <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    is_count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    minimal <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_3</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 9</span></span></span>
+<span><span class="co">#&gt;   g1             g2    shared count_g1 count_g2 count_union on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> PT001_MNC_BM_… PT00…     21       54      114         147  38.9  18.4     14.3</span></span></code></pre></div>
+<p>Once again the arguments <code>n_comp</code> and
+<code>include_self_comp</code> are ignored: the number of comparisons is
+equal to the number of data frames in input.</p>
+<p>To handle special limit cases, the output group ids are appended with
+a dash and a number (<code>-1</code>, <code>-2</code>, …) that indicates
+the data frame of origin: this is useful in the case group ids are
+duplicated in the inputs. To understand better let’s make an
+example:</p>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_3_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span></span>
+<span>    <span class="va">first_sample</span>, <span class="va">second_sample</span>,</span>
+<span>    group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    is_count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    minimal <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_3_a</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 9</span></span></span>
+<span><span class="co">#&gt;   g1       g2       shared count_g1 count_g2 count_union on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> MNC_BM-1 MNC_BM-2     21       54      114         147  38.9  18.4     14.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> MNC_BM-2 MNC_BM-1     21      114       54         147  18.4  38.9     14.3</span></span></code></pre></div>
+<p>As you can see, the IDs of group 1 and group 2 are duplicated and
+without a suffix it would be impossible to know which one came from
+which data frame. In this way we know that the group “MNC_BM-1” comes
+from table 1 and has 54 ISs, while “MNC_BM-2” comes from the second
+input table and has 114 ISs.</p>
+</div>
+<div class="section level4">
+<h4 id="scenario-4-multiple-input-data-frame-and-multiple-grouping-keys">SCENARIO 4: multiple input data frame and multiple grouping
+keys<a class="anchor" aria-label="anchor" href="#scenario-4-multiple-input-data-frame-and-multiple-grouping-keys"></a>
+</h4>
+<p>Finally, the most general scenario is when we have multiple data
+frames with multiple keys. In this case the number of data frames must
+be equal to the number of provided keys and grouping keys are applied in
+order ( data frame 1 is grouped with key 1, data frame 2 is grouped with
+key 2, and so on).</p>
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0030"</span><span class="op">)</span></span>
+<span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0060"</span><span class="op">)</span></span>
+<span><span class="va">df3</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">keys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span>,</span>
+<span>    g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"Tissue"</span><span class="op">)</span>,</span>
+<span>    g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sharing_4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">df1</span>, <span class="va">df2</span>, <span class="va">df3</span>, group_keys <span class="op">=</span> <span class="va">keys</span><span class="op">)</span></span>
+<span><span class="va">sharing_4</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 32 × 12</span></span></span>
+<span><span class="co">#&gt;    g1      g2    g3    shared count_g1 count_g2 count_g3 count_union on_g1 on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_… PT00… PT00…     21       54      114      147         147 38.9  18.4 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_… PT00… PT00…      0       54      114      126         271  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_… PT00… PT00…      8       54       59      147         175 14.8  13.6 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT001_… PT00… PT00…      0       54       59      126         229  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT001_… PT00… PT00…      1       54       33      147         179  1.85  3.03</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT001_… PT00… PT00…      1       54       33      126         179  1.85  3.03</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_… PT00… PT00…      0       54       18      147         165  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT001_… PT00… PT00…      0       54       18      126         185  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_… PT00… PT00…      7       28      114      147         166 25     6.14</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_… PT00… PT00…      0       28      114      126         260  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 22 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;</span></span></span></code></pre></div>
+<p>Notice that in this example the keys for g1 and g3 are the same,
+meaning the labels of the groups are actually the same, however you
+should remember that the groups contain a <strong>different set of
+integration sites</strong> since they come from different data
+frames.</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="plotting-sharing-results">Plotting sharing results<a class="anchor" aria-label="anchor" href="#plotting-sharing-results"></a>
+</h3>
+<p>When we have more than 2 comparisons it is convenient to plot them as
+venn or euler diagrams. ISAnalytics has a fast way to do that through
+the functions <code><a href="../reference/is_sharing.html">is_sharing()</a></code> and
+<code><a href="../reference/sharing_venn.html">sharing_venn()</a></code>.</p>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,</span>
+<span>    group_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>            <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>            <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>        <span class="op">)</span>,</span>
+<span>        g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span><span class="op">)</span>,</span>
+<span>        g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>, table_for_venn <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_5</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 32 × 13</span></span></span>
+<span><span class="co">#&gt;    g1    g2    g3    shared count_g1 count_g2 count_g3 count_union  on_g1  on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT00… PT00… MNC_…     54       54      186      271         310 100    29.0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT00… PT00… MNC_…     14       54      186      103         211  25.9   7.53 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT00… PT00… MNC_…      1       54      137      271         281   1.85  0.730</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT00… PT00… MNC_…      0       54      137      103         252   0     0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT00… PT00… MNC_…    114      114      186      271         310 100    61.3  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT00… PT00… MNC_…     35      114      186      103         211  30.7  18.8  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT00… PT00… MNC_…      2      114      137      271         281   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT00… PT00… MNC_…      2      114      137      103         292   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT00… PT00… MNC_…      9       28      186      271         310  32.1   4.84 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT00… PT00… MNC_…     28       28      186      103         211 100    15.1  </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 22 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;, truth_tbl_venn &lt;list&gt;</span></span></span></code></pre></div>
+<p>The argument <code>table_for_venn = TRUE</code> will add a new column
+<code>truth_tbl_venn</code> that contains corresponding truth tables for
+each row.</p>
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_plots1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_venn.html">sharing_venn</a></span><span class="op">(</span><span class="va">sharing_5</span>, row_range <span class="op">=</span> <span class="fl">1</span>, euler <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">sharing_plots2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_venn.html">sharing_venn</a></span><span class="op">(</span><span class="va">sharing_5</span>, row_range <span class="op">=</span> <span class="fl">1</span>, euler <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>Say that we’re interested in plotting just the first row of our
+sharing data frame. Then we can call the function
+<code>sharing_venn</code> and specify in the <code>row_range</code>
+argument the index 1. Note that this function requires the package
+<em><a href="https://CRAN.R-project.org/package=eulerr" class="external-link">eulerr</a></em>
+to work. The argument <code>euler</code> indicates if the function
+should produce euler or venn diagrams instead.</p>
+<p>Once obtained the lists of euler/venn objects we can plot them by
+simply calling the function <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>:</p>
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sharing_plots1</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p><img src="workflow_start_files/figure-html/unnamed-chunk-52-1.png" width="700"></p>
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sharing_plots2</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p><img src="workflow_start_files/figure-html/unnamed-chunk-52-2.png" width="700"></p>
+<p>There are several options that can be set, for this please refer to
+<a href="https://jolars.github.io/eulerr/reference/plot.euler.html" class="external-link">eulerr
+docs</a>.</p>
+</div>
+</div>
+<div class="section level2">
 <h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
 </h2>
 <p><code>R</code> session information.</p>
@@ -1553,8 +1996,10 @@ any other variable to the key, just set it to <code>NULL</code>.</li>
 <span><span class="co">#&gt;  dplyr           1.1.1   <span style="color: #555555;">2023-03-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  DT            * 0.27    <span style="color: #555555;">2023-01-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  ellipsis        0.3.2   <span style="color: #555555;">2021-04-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  eulerr          7.0.0   <span style="color: #555555;">2022-12-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  evaluate        0.20    <span style="color: #555555;">2023-01-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  fansi           1.0.4   <span style="color: #555555;">2023-01-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  farver          2.1.1   <span style="color: #555555;">2022-07-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  fastmap         1.1.1   <span style="color: #555555;">2023-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  forcats         1.0.0   <span style="color: #555555;">2023-01-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  foreach         1.5.2   <span style="color: #555555;">2022-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
@@ -1567,7 +2012,9 @@ any other variable to the key, just set it to <code>NULL</code>.</li>
 <span><span class="co">#&gt;  globals         0.16.2  <span style="color: #555555;">2022-11-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  glue            1.6.2   <span style="color: #555555;">2022-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  gtable          0.3.3   <span style="color: #555555;">2023-03-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  gtools          3.9.4   <span style="color: #555555;">2022-11-27</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  haven           2.5.2   <span style="color: #555555;">2023-02-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  highr           0.10    <span style="color: #555555;">2022-12-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  hms             1.1.3   <span style="color: #555555;">2023-03-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  htmltools       0.5.5   <span style="color: #555555;">2023-03-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  htmlwidgets     1.6.2   <span style="color: #555555;">2023-03-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
@@ -1596,6 +2043,8 @@ any other variable to the key, just set it to <code>NULL</code>.</li>
 <span><span class="co">#&gt;  pkgconfig       2.0.3   <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  pkgdown         2.0.7   <span style="color: #555555;">2022-12-14</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">any (@2.0.7)</span></span></span>
 <span><span class="co">#&gt;  plyr            1.8.8   <span style="color: #555555;">2022-11-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  polyclip        1.10-4  <span style="color: #555555;">2022-10-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  polylabelr      0.2.0   <span style="color: #555555;">2020-04-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  progressr       0.13.0  <span style="color: #555555;">2023-01-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  promises        1.2.0.1 <span style="color: #555555;">2021-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  psych           2.3.3   <span style="color: #555555;">2023-03-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
