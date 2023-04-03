@@ -40,8 +40,14 @@
 #'
 #' ```{r echo=FALSE, results="asis"}
 #' all_tags <- available_tags()
-#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
-#'  ~ "remove_collisions" %in% .x)][["tag"]])
+#' needed <- all_tags |>
+#'    dplyr::mutate(
+#'    in_fun = purrr::map_lgl(.data$needed_in,
+#'    ~ "remove_collisions" %in% .x)
+#'    ) |>
+#'    dplyr::filter(in_fun == TRUE) |>
+#'    dplyr::distinct(.data$tag) |>
+#'    dplyr::pull("tag")
 #'  cat(paste0("* ", needed, collapse="\n"))
 #' ```
 #'
@@ -62,19 +68,19 @@
 #'     report_path = NULL
 #' )
 #' head(no_coll)
-remove_collisions <- function(x,
-    association_file,
-    independent_sample_id = c("ProjectID", "SubjectID"),
-    date_col = "SequencingDate",
-    reads_ratio = 10,
-    quant_cols = c(
-        seqCount = "seqCount",
-        fragmentEstimate = "fragmentEstimate"
-    ),
-    report_path = default_report_path(),
-    max_workers = NULL) {
+remove_collisions <- function(
+        x,
+        association_file,
+        independent_sample_id = c("ProjectID", "SubjectID"),
+        date_col = "SequencingDate",
+        reads_ratio = 10,
+        quant_cols = c(
+            seqCount = "seqCount",
+            fragmentEstimate = "fragmentEstimate"
+        ),
+        report_path = default_report_path(),
+        max_workers = NULL) {
     # Check basic parameter correctness
-    association_file <- data.table::setDT(association_file)
     ### --- For matrices
     mode <- .collisions_check_input_matrices(x, quant_cols)
     ### --- For AF
@@ -85,7 +91,6 @@ remove_collisions <- function(x,
         date_col,
         independent_sample_id
     )
-    req_tag_cols <- data.table::setDT(req_tag_cols)
     ### --- Other checks
     stopifnot(is.null(max_workers[1]) || is.numeric(max_workers[1]))
     max_workers <- max_workers[1]
@@ -142,11 +147,14 @@ remove_collisions <- function(x,
 
     # Begin workflow
     ## - Join based on pcr identifier
-    replicate_n_col <- req_tag_cols[eval(sym("tag")) ==
-        "pcr_replicate"][["names"]]
-    pool_col <- req_tag_cols[eval(sym("tag")) == "pool_id"][["names"]]
-    joined <- pre_process %>%
-        dplyr::left_join(association_file, by = pcr_col) %>%
+    replicate_n_col <- req_tag_cols |>
+        dplyr::filter(.data$tag == "pcr_replicate") |>
+        dplyr::pull(.data$names)
+    pool_col <- req_tag_cols |>
+        dplyr::filter(.data$tag == "pool_id") |>
+        dplyr::pull(.data$names)
+    joined <- pre_process |>
+        dplyr::left_join(association_file, by = pcr_col) |>
         dplyr::select(dplyr::all_of(
             c(
                 colnames(pre_process), date_col,
@@ -188,20 +196,19 @@ remove_collisions <- function(x,
     reassigned <- fixed_collisions$reassigned
     removed <- fixed_collisions$removed
     fixed_collisions <- fixed_collisions$coll
-    final_matr <- data.table::rbindlist(list(
-        fixed_collisions,
-        split_df$non_collisions
-    ))
-    final_matr <- final_matr[, mget(colnames(pre_process))]
+    final_matr <- fixed_collisions |>
+        dplyr::bind_rows(split_df$non_collisions)
+    final_matr <- final_matr[, colnames(pre_process)]
 
     ## ---- REPORT PRODUCTION
     if (getOption("ISAnalytics.reports", TRUE) == TRUE &
         !is.null(report_path)) {
-        post_joined <- association_file[final_matr, on = pcr_col]
-        post_joined <- post_joined[, mget(c(
+        post_joined <- final_matr |>
+            dplyr::left_join(association_file, by = pcr_col)
+        post_joined <- post_joined[, c(
             colnames(final_matr), date_col,
             replicate_n_col, independent_sample_id, pool_col
-        ))]
+        )]
         summaries <- .collisions_obtain_report_summaries(
             x = x, association_file = association_file,
             quant_cols = quant_cols, missing_ind = missing_ind,
@@ -298,9 +305,10 @@ remove_collisions <- function(x,
 #'     other_matrices = list(fragmentEstimate = separated$fragmentEstimate)
 #' )
 #' realigned
-realign_after_collisions <- function(sc_matrix,
-    other_matrices,
-    sample_column = pcr_id_column()) {
+realign_after_collisions <- function(
+        sc_matrix,
+        other_matrices,
+        sample_column = pcr_id_column()) {
     stopifnot(is.list(other_matrices) & !is.null(names(other_matrices)))
     stopifnot(all(names(other_matrices) %in% quantification_types()))
     stopifnot(is.character(sample_column))
@@ -317,7 +325,7 @@ realign_after_collisions <- function(sc_matrix,
         rlang::abort(.missing_needed_cols(sample_column))
     }
     realigned <- purrr::map(other_matrices, function(x) {
-        x %>% dplyr::semi_join(sc_matrix,
+        x |> dplyr::semi_join(sc_matrix,
             by = c(
                 mandatory_IS_vars(),
                 sample_column

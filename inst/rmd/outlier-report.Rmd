@@ -40,9 +40,9 @@ Col1
 -------------------------------------------------------------------------------
 
 ```{r}
-abs_unprocessed_reads <- nrow(params$flag_df %>%
+abs_unprocessed_reads <- nrow(params$flag_df |>
             dplyr::filter(.data$processed == FALSE))
-perc_unprocessed_reads <- (nrow(params$flag_df %>%
+perc_unprocessed_reads <- (nrow(params$flag_df |>
             dplyr::filter(.data$processed == FALSE)) /
             nrow(params$flag_df))
 unprocessed_perc_diff <- tibble::tibble(
@@ -53,7 +53,7 @@ unprocessed_perc_diff <- tibble::tibble(
         reason = c("NAs in key")
     )
 if (params$log2_req) {
-        unprocessed_perc_diff <- unprocessed_perc_diff %>%
+        unprocessed_perc_diff <- unprocessed_perc_diff |>
             tibble::add_row(
                 abs = c(nrow(params$removed_zeros)),
                 perc_on_unprocessed = c(nrow(params$removed_zeros) /
@@ -62,7 +62,7 @@ if (params$log2_req) {
                 reason = c("Values <= 0")
             )
 }
-unprocessed_perc_diff <- unprocessed_perc_diff %>%
+unprocessed_perc_diff <- unprocessed_perc_diff |>
         tibble::add_row(
             abs = c(abs_unprocessed_reads -
                 sum(unprocessed_perc_diff$abs)),
@@ -153,7 +153,7 @@ cat("#### Parameters and options chosen\n\n", choice_msg)
 
 ### NAs in key columns
 ```{r eval=!is.null(params$removed_nas)}
-na_df <- params$removed_nas %>%
+na_df <- params$removed_nas |>
             dplyr::select(
                 dplyr::all_of(c(params$pool_col,
                                 params$dyn_vars$pcr_id,
@@ -200,9 +200,9 @@ Post-processing info {data-orientation=rows}
 Row1 
 -------------------------------------------------------------------------------
 ```{r}
-flagged_abs <- nrow(params$flag_df %>%
+flagged_abs <- nrow(params$flag_df |>
             dplyr::filter(.data$to_remove == TRUE))
-flagged_perc <- nrow(params$flag_df %>%
+flagged_perc <- nrow(params$flag_df |>
             dplyr::filter(.data$to_remove == TRUE)) /
             nrow(params$flag_df)
 ```
@@ -226,7 +226,7 @@ Row2
 ```{r}
 cols_to_factor <- c(params$pool_col, params$dyn_vars$project_id)
 datatable(
-  params$flag_df %>%
+  params$flag_df |>
     dplyr::mutate(dplyr::across(dplyr::all_of(cols_to_factor),
                                 as.factor)),
   rownames = FALSE,
@@ -234,12 +234,12 @@ datatable(
   options = list(
             order = list(list(1, 'desc'))
           )
-) %>% 
+) |> 
   formatStyle(columns = "processed", 
               color = styleEqual(
                 levels = c(TRUE, FALSE),
                 values = c(ok_color, ko_color)
-              ), fontWeight = "bold", textTransform = "uppercase") %>%
+              ), fontWeight = "bold", textTransform = "uppercase") |>
   formatStyle(columns = "to_remove", 
               color = styleEqual(
                 levels = c(TRUE, FALSE),

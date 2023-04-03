@@ -82,8 +82,14 @@
 #'
 #' ```{r echo=FALSE, results="asis"}
 #' all_tags <- available_tags()
-#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
-#'  ~ "compute_near_integrations" %in% .x)][["tag"]])
+#' needed <- all_tags |>
+#'    dplyr::mutate(
+#'    in_fun = purrr::map_lgl(.data$needed_in,
+#'    ~ "compute_near_integrations" %in% .x)
+#'    ) |>
+#'    dplyr::filter(in_fun == TRUE) |>
+#'    dplyr::distinct(.data$tag) |>
+#'    dplyr::pull("tag")
 #'  cat(paste0("* ", needed, collapse="\n"))
 #' ```
 #'
@@ -134,18 +140,19 @@
 #'     x = integration_matrices, map_as_file = FALSE
 #' )
 #' head(rec)
-compute_near_integrations <- function(x,
-    threshold = 4,
-    is_identity_tags = c("chromosome", "is_strand"),
-    keep_criteria = c("max_value", "keep_first"),
-    value_columns = c("seqCount", "fragmentEstimate"),
-    max_value_column = "seqCount",
-    sample_id_column = pcr_id_column(),
-    additional_agg_lambda = list(.default = default_rec_agg_lambdas()),
-    max_workers = 4,
-    map_as_file = TRUE,
-    file_path = default_report_path(),
-    strand_specific = lifecycle::deprecated()) {
+compute_near_integrations <- function(
+        x,
+        threshold = 4,
+        is_identity_tags = c("chromosome", "is_strand"),
+        keep_criteria = c("max_value", "keep_first"),
+        value_columns = c("seqCount", "fragmentEstimate"),
+        max_value_column = "seqCount",
+        sample_id_column = pcr_id_column(),
+        additional_agg_lambda = list(.default = default_rec_agg_lambdas()),
+        max_workers = 4,
+        map_as_file = TRUE,
+        file_path = default_report_path(),
+        strand_specific = lifecycle::deprecated()) {
     ## --- Check parameters
     stopifnot(is.data.frame(x))
     stopifnot(is.numeric(threshold) || is.integer(threshold))
@@ -189,7 +196,7 @@ compute_near_integrations <- function(x,
     required_tags <- list("locus" = c("int", "numeric"))
     if (!is.null(is_identity_tags)) {
         is_identity_tags <- is_identity_tags[is_identity_tags != "locus"]
-        id_tags_types <- purrr::map(is_identity_tags, ~NULL) %>%
+        id_tags_types <- purrr::map(is_identity_tags, ~NULL) |>
             purrr::set_names(is_identity_tags)
         required_tags <- append(required_tags, id_tags_types)
     }
@@ -224,15 +231,25 @@ compute_near_integrations <- function(x,
         col_type <- typeof(x[[.x]])
         return(defaults[[col_type]])
     }
-    add_cols_lambdas <- purrr::map(additional_cols, find_lambda) %>%
+    add_cols_lambdas <- purrr::map(additional_cols, find_lambda) |>
         purrr::set_names(additional_cols)
     add_cols_lambdas <- add_cols_lambdas[purrr::map_lgl(
         add_cols_lambdas,
         ~ !is.null(.x)
     )]
     # Process
+    rec_map <- if (map_as_file) {
+        RecalibrationMap$new(required_tag_cols)
+    } else {
+        NULL
+    }
     if (is.null(is_identity_tags) || purrr::is_empty(is_identity_tags)) {
-        result <- .sliding_window(
+        prgrs <- if (rlang::is_installed("progressr")) {
+            progressr::progressor(steps = nrow(x))
+        } else {
+            NULL
+        }
+        recalibr_m <- .sliding_window(
             x = x,
             threshold = threshold,
             keep_criteria = criteria,
@@ -242,19 +259,17 @@ compute_near_integrations <- function(x,
             sample_col = sample_id_column,
             req_tags = required_tag_cols,
             add_col_lambdas = add_cols_lambdas,
-            produce_map = map_as_file
+            rec_map = rec_map, progress = prgrs
         )
-        recalibr_m <- result$recalibrated_matrix
-        maps <- result$map
     } else {
         stopifnot(is.numeric(max_workers))
         max_workers <- max_workers[1]
-        is_identity_names <- required_tag_cols %>%
-            dplyr::filter(.data$tag != "locus") %>%
+        is_identity_names <- required_tag_cols |>
+            dplyr::filter(.data$tag != "locus") |>
             dplyr::pull(.data$names)
         # Split data for parallel execution
-        split <- x %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of(is_identity_names))) %>%
+        split <- x |>
+            dplyr::group_by(dplyr::across(dplyr::all_of(is_identity_names))) |>
             dplyr::group_split()
         ## Select only groups with 2 or more rows
         split_to_process <- split[purrr::map_lgl(split, ~ nrow(.x) > 1)]
@@ -270,50 +285,28 @@ compute_near_integrations <- function(x,
                 sample_col = sample_id_column,
                 req_tags = required_tag_cols,
                 add_col_lambdas = add_cols_lambdas,
-                produce_map = map_as_file
+                rec_map = rec_map
             ),
             stop_on_error = TRUE,
             max_workers = max_workers
         )
         ## Obtain single list
-        recalibr_m <- purrr::map(result$res, ~ .x$recalibrated_matrix)
-        recalibr_m <- data.table::rbindlist(recalibr_m)
-        maps <- purrr::map(result$res, ~ .x$map)
-        maps <- data.table::rbindlist(maps)
+        recalibr_m <- purrr::list_rbind(result$res)
         ## Add all rows that were not part of recalibration
         split_fine <- split[purrr::map_lgl(split, ~ !nrow(.x) > 1)]
         if (length(split_fine) > 0) {
-            split_fine <- purrr::reduce(
-                split_fine,
-                function(g1, g2) {
-                    g1 <- data.table::setDT(g1)
-                    g2 <- data.table::setDT(g2)
-                    data.table::rbindlist(list(g1, g2))
-                }
+            split_fine <- purrr::list_rbind(split_fine)
+            rec_map$update(
+                before = split_fine[, required_tag_cols$names],
+                after = split_fine[, required_tag_cols$names]
             )
-            data.table::setDT(split_fine)
-            map_fine <- unique(split_fine[, mget(required_tag_cols$names)])
-            data.table::setnames(
-                x = map_fine,
-                old = required_tag_cols$names,
-                new = paste0(required_tag_cols$names, "_before")
-            )
-            map_fine[, c(
-                paste0(required_tag_cols$names, "_after")
-            ) :=
-                purrr::map(
-                    required_tag_cols$names,
-                    ~ eval(sym(paste0(.x, "_before")))
-                )]
-            recalibr_m <- data.table::rbindlist(list(recalibr_m, split_fine))
-            maps <- data.table::rbindlist(list(maps, map_fine))
         }
     }
     if (map_as_file & !is.null(file_path)) {
         ### Manage file
         withCallingHandlers(
             {
-                .write_recalibr_map(maps, file_path)
+                rec_map$write_recalibr_map(file_path)
             },
             error = function(e) {
                 r <- findRestart("skip_write")

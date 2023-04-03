@@ -3,10 +3,44 @@
 #------------------------------------------------------------------------------#
 ## All functions in this file are NOT exported, to be used internally only.
 
+#### ---- General utilities  ----####
+# Splits a data frame in a predefined number of chunks
+#' @importFrom purrr map2 list_c
+#' @importFrom dplyr mutate group_by group_split select
+.split_df_in_chunks <- function(df, n_chunks, keep_chunk_id = TRUE) {
+    max_rows <- round(nrow(df) / n_chunks)
+    chunk_load <- rep(max_rows, n_chunks)
+    names(chunk_load) <- seq_len(n_chunks)
+    delta <- sum(chunk_load) - nrow(df)
+    i <- length(chunk_load)
+    while (delta > 0) {
+        chunk_load[i] <- chunk_load[i] - 1
+        delta <- sum(chunk_load) - nrow(df)
+        i <- i - 1
+    }
+    chunk_id_vec <- purrr::map2(names(chunk_load), chunk_load, ~ rep(.x, .y)) |>
+        purrr::list_c()
+    df <- df |>
+        dplyr::mutate(
+            chunk_id = chunk_id_vec
+        )
+    chunks <- df |>
+        dplyr::group_by(.data$chunk_id) |>
+        dplyr::group_split()
+    if (!keep_chunk_id) {
+        chunks <- purrr::map(chunks, ~ .x |> dplyr::select(-"chunk_id"))
+    }
+
+    return(chunks)
+}
+
 #### ---- Internals for dynamic variables  ----####
 # Internal for setting mandatory or annotation is vars
 # tbl_type must be in {mand_vars, annot_vars, af_vars, iss_vars}
-#' @importFrom rlang sym
+#' @importFrom purrr map_lgl is_empty
+#' @importFrom rlang is_formula abort warn .data
+#' @importFrom dplyr filter
+#' @importFrom tibble tibble_row
 .new_IS_vars_checks <- function(specs, err, tbl_type) {
     new_vars <- if (is.data.frame(specs)) {
         # if data frame supplied
@@ -52,7 +86,7 @@
             .types_mapping()[["types"]])) {
             rlang::abort(err)
         }
-        purrr::map2_dfr(
+        purrr::map2(
             names(specs), specs,
             ~ tibble::tibble_row(
                 names = .x,
@@ -61,15 +95,17 @@
                 flag = "required",
                 tag = NA_character_
             )
-        )
+        ) |>
+            purrr::list_rbind()
     }
     # -- check critical tags
     if (!is.null(tbl_type)) {
-        available_tags <- available_tags()
-        to_check <- available_tags[eval(sym("dyn_vars_tbl")) == tbl_type &
-            !purrr::map_lgl(
-                eval(sym("needed_in")), ~ purrr::is_empty(.x)
-            ), ]
+        available_tags_tbl <- available_tags()
+        to_check <- available_tags_tbl |>
+            dplyr::filter(
+                .data$dyn_vars_tbl == tbl_type,
+                !purrr::map_lgl(.data$needed_in, purrr::is_empty)
+            )
         if (!all(to_check$tag %in% new_vars$tag)) {
             missing_tags <- to_check$tag[!to_check$tag %in% new_vars$tag]
             inspect_cmd <- paste0(
@@ -105,13 +141,14 @@
 # expects specs to be in data frame format
 .apply_col_transform <- function(df, specs) {
     # Extract and associate names and transf
-    non_null <- purrr::pmap(specs, function(names, types,
-    transform, flags, tag) {
+    non_null <- purrr::pmap(specs, function(
+        names, types,
+        transform, flags, tag) {
         if (is.null(transform)) {
             return(NULL)
         }
         return(transform)
-    }) %>%
+    }) |>
         purrr::set_names(specs$names)
     # Retain only non-null transform
     non_null <- non_null[purrr::map_lgl(non_null, ~ !is.null(.x))]
@@ -129,7 +166,8 @@
                 do.call(what = transformation, args = list(col))
             }
         }
-        df <- purrr::map2_dfc(df, colnames(df), apply_transform)
+        df <- purrr::map2(df, colnames(df), apply_transform) |>
+            tibble::as_tibble()
     }
     df
 }
@@ -156,34 +194,37 @@
 
 # Generates a data frame holding file suffixes combinations for
 # matrices
-.generate_suffix_specs <- function(quantification_suffix,
-    annotation_suffix,
-    file_ext,
-    glue_file_spec) {
+.generate_suffix_specs <- function(
+        quantification_suffix,
+        annotation_suffix,
+        file_ext,
+        glue_file_spec) {
     # Calculate combinations
-    combinations <- purrr::cross(list(
-        quantification_suffix = quantification_suffix,
-        annotation_suffix = annotation_suffix,
+    combinations <- tidyr::expand_grid(
+        quantification_suffixes = purrr::list_c(quantification_suffix),
+        annotation_suffixes = purrr::list_c(annotation_suffix),
         file_ext = file_ext
-    ))
-    glue_combo <- function(x) {
-        quantif <- names(quantification_suffix[
-            quantification_suffix == x$quantification_suffix
-        ])
-        matrix_type <- names(annotation_suffix[
-            annotation_suffix == x$annotation_suffix
-        ])
-        quantification_suffix <- x$quantification_suffix
-        annotation_suffix <- x$annotation_suffix
-        file_ext <- x$file_ext
-        glued <- glue::glue(glue_file_spec)
-        tibble::tibble(
-            quantification = quantif,
-            matrix_type = matrix_type,
-            file_suffix = glued
-        )
-    }
-    final_specs <- purrr::map_df(combinations, glue_combo)
+    )
+    final_specs <- combinations |>
+        dplyr::mutate(
+            file_suffix = paste(.data$quantification_suffixes, "_matrix",
+                .data$annotation_suffixes, ".",
+                .data$file_ext,
+                sep = ""
+            ),
+            matrix_type = purrr::map_chr(
+                .data$annotation_suffixes,
+                ~ names(annotation_suffix[annotation_suffix == .x])
+            ),
+            quantification = purrr::map_chr(
+                .data$quantification_suffixes,
+                ~ names(quantification_suffix[quantification_suffix == .x])
+            )
+        ) |>
+        dplyr::select(dplyr::all_of(c(
+            "quantification", "matrix_type",
+            "file_suffix"
+        )))
     final_specs
 }
 
@@ -217,9 +258,9 @@
                 colnames(association_file)]
         ), class = "missing_req_col_err")
     }
-    tag_to_cols_af_list <- purrr::map(tag_to_cols_af$tag, ~ tag_to_cols_af %>%
-        dplyr::filter(.data$tag == .x) %>%
-        dplyr::pull(.data$names)) %>%
+    tag_to_cols_af_list <- purrr::map(tag_to_cols_af$tag, ~ tag_to_cols_af |>
+        dplyr::filter(.data$tag == .x) |>
+        dplyr::pull(.data$names)) |>
         purrr::set_names(tag_to_cols_af$tag)
 
     return(list(af = association_file, tag_list = tag_to_cols_af_list))
@@ -249,9 +290,9 @@
         ), class = "missing_req_col_err")
     }
     # First separate by project
-    sep_matrices <- integration_matrices %>%
+    sep_matrices <- integration_matrices |>
         dplyr::left_join(
-            af %>%
+            af |>
                 dplyr::select(
                     dplyr::all_of(c(
                         tag_list$pcr_repl_id,
@@ -260,25 +301,25 @@
                     ))
                 ),
             by = tag_list$pcr_repl_id
-        ) %>%
+        ) |>
         dplyr::group_by(dplyr::across(dplyr::all_of(tag_list$project_id)))
-    proj_names <- sep_matrices %>%
-        dplyr::group_keys() %>%
+    proj_names <- sep_matrices |>
+        dplyr::group_keys() |>
         dplyr::pull(dplyr::all_of(tag_list$project_id))
-    sep_matrices <- sep_matrices %>%
-        dplyr::group_split(.keep = FALSE) %>%
+    sep_matrices <- sep_matrices |>
+        dplyr::group_split(.keep = FALSE) |>
         purrr::set_names(proj_names)
     # Then separate by pool
     sep_matrices <- purrr::map(sep_matrices, ~ {
-        tmp <- .x %>%
+        tmp <- .x |>
             dplyr::group_by(dplyr::across(
                 dplyr::all_of(tag_list$vispa_concatenate)
             ))
-        pool_names <- tmp %>%
-            dplyr::group_keys() %>%
+        pool_names <- tmp |>
+            dplyr::group_keys() |>
             dplyr::pull(dplyr::all_of(tag_list$vispa_concatenate))
-        tmp <- tmp %>%
-            dplyr::group_split(.keep = FALSE) %>%
+        tmp <- tmp |>
+            dplyr::group_split(.keep = FALSE) |>
             purrr::set_names(pool_names)
         return(tmp)
     })
@@ -289,14 +330,14 @@
 # file, not provided as separate files
 .process_iss_for_gen <- function(association_file, tag_list) {
     # Find VISPA stats minimal required columns
-    minimal_iss_cols <- iss_stats_specs(TRUE) %>%
+    minimal_iss_cols <- iss_stats_specs(TRUE) |>
         dplyr::filter(
             .data$flag == "required",
             !.data$tag %in% c(
                 "vispa_concatenate",
                 "tag_seq"
             )
-        ) %>%
+        ) |>
         dplyr::pull(.data$names)
     # If the minimal cols are not found in af, nothing to do, return
     if (!all(minimal_iss_cols %in% colnames(association_file))) {
@@ -311,16 +352,16 @@
         vars_df = iss_stats_specs(TRUE),
         duplicate_politic = "error"
     )
-    iss_tags <- purrr::map(iss_specs$tag, ~ iss_specs %>%
-        dplyr::filter(.data$tag == .x) %>%
-        dplyr::pull(.data$names)) %>%
+    iss_tags <- purrr::map(iss_specs$tag, ~ iss_specs |>
+        dplyr::filter(.data$tag == .x) |>
+        dplyr::pull(.data$names)) |>
         purrr::set_names(iss_specs$tag)
-    iss_cols <- iss_stats_specs(TRUE) %>%
-        dplyr::filter(!.data$tag %in% c("vispa_concatenate", "tag_seq")) %>%
+    iss_cols <- iss_stats_specs(TRUE) |>
+        dplyr::filter(!.data$tag %in% c("vispa_concatenate", "tag_seq")) |>
         dplyr::pull(.data$names)
     iss_cols <- colnames(association_file)[colnames(association_file) %in%
         iss_cols]
-    iss_data <- association_file %>%
+    iss_data <- association_file |>
         dplyr::select(
             dplyr::all_of(c(
                 tag_list$project_id,
@@ -328,34 +369,34 @@
                 tag_list$tag_seq,
                 iss_cols
             ))
-        ) %>%
+        ) |>
         dplyr::rename(
             !!iss_tags$tag_seq := tag_list$tag_seq,
             !!iss_tags$vispa_concatenate :=
                 tag_list$vispa_concatenate
-        ) %>%
-        dplyr::distinct() %>%
+        ) |>
+        dplyr::distinct() |>
         dplyr::filter(!dplyr::if_all(dplyr::all_of(iss_cols), is.na))
     # Separate by project
-    stats_split <- iss_data %>%
+    stats_split <- iss_data |>
         dplyr::group_by(dplyr::across(dplyr::all_of(tag_list$project_id)))
-    proj_names <- stats_split %>%
-        dplyr::group_keys() %>%
+    proj_names <- stats_split |>
+        dplyr::group_keys() |>
         dplyr::pull(dplyr::all_of(tag_list$project_id))
-    stats_split <- stats_split %>%
-        dplyr::group_split(.keep = FALSE) %>%
+    stats_split <- stats_split |>
+        dplyr::group_split(.keep = FALSE) |>
         purrr::set_names(proj_names)
     # Separate by pool
     stats_split <- purrr::map(stats_split, ~ {
-        tmp <- .x %>%
+        tmp <- .x |>
             dplyr::group_by(dplyr::across(
                 dplyr::all_of(iss_tags$vispa_concatenate)
             ))
-        pool_names <- tmp %>%
-            dplyr::group_keys() %>%
+        pool_names <- tmp |>
+            dplyr::group_keys() |>
             dplyr::pull(dplyr::all_of(iss_tags$vispa_concatenate))
-        tmp <- tmp %>%
-            dplyr::group_split() %>%
+        tmp <- tmp |>
+            dplyr::group_split() |>
             purrr::set_names(pool_names)
         return(tmp)
     })
@@ -601,7 +642,7 @@
     } else {
         required_tags
     }
-    cols_in_tags <- vars_df %>%
+    cols_in_tags <- vars_df |>
         dplyr::filter(.data$tag %in% tags_names)
     # No tags found
     if (nrow(cols_in_tags) == 0) {
@@ -634,8 +675,8 @@
 #       are found for that specific column, "first" to keep only first
 .eval_tag_duplicates <- function(df, duplicate_politic) {
     if (any(duplicate_politic != "keep")) {
-        tags_split <- df %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of("tag"))) %>%
+        tags_split <- df |>
+            dplyr::group_by(dplyr::across(dplyr::all_of("tag"))) |>
             dplyr::group_split()
 
         first_politic <- function(sub_df) {
@@ -734,7 +775,7 @@
             )
             rlang::inform(single_warn, class = "tag_dupl_warn")
         }
-        out_df <- purrr::map(dupl_eval, ~ .x$result) %>%
+        out_df <- purrr::map(dupl_eval, ~ .x$result) |>
             purrr::reduce(dplyr::bind_rows)
         return(out_df)
     }
@@ -744,15 +785,15 @@
 
 # Types is a named vec in the form of c("tag" = "col_type")
 .eval_tag_types <- function(df, types) {
-    tag_split <- df %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of("tag"))) %>%
+    tag_split <- df |>
+        dplyr::group_by(dplyr::across(dplyr::all_of("tag"))) |>
         dplyr::group_split()
     single_type_eval <- function(sub_df) {
         tag_type <- types[[sub_df$tag[1]]]
         if (is.null(tag_type) || purrr::is_empty(tag_type)) {
             return(list(type = "DF", result = sub_df))
         }
-        out <- sub_df %>%
+        out <- sub_df |>
             dplyr::filter(.data$types %in% tag_type)
         if (nrow(out) == 0) {
             err <- c(paste("Wrong col class for tag '", sub_df$tag[1], "'"),
@@ -781,7 +822,7 @@
         )
         rlang::abort(compact_msg, class = "tag_type_err")
     }
-    result <- purrr::map(result, ~ .x$result) %>%
+    result <- purrr::map(result, ~ .x$result) |>
         purrr::reduce(dplyr::bind_rows)
     return(result)
 }
@@ -816,6 +857,28 @@
     }
 }
 
+# Gets the default number of parallel workers
+# If pkgs_check = FALSE, checks the presence of parallel packages first,
+# otherwise gives for granted the check has already been done
+.get_def_workers <- function(pkgs_check = FALSE) {
+    if (!pkgs_check) {
+        .check_parallel_packages()
+    }
+    def_workers <- if (getOption("ISAnalytics.parallel_processing",
+        default = TRUE
+    ) == TRUE) {
+        # Manage workers
+        if (.Platform$OS.type == "windows") {
+            BiocParallel::snowWorkers()
+        } else {
+            BiocParallel::multicoreWorkers()
+        }
+    } else {
+        1
+    }
+    return(def_workers)
+}
+
 # Establishes whether a map job can be executed in parallel (multi-threading)
 # or needs to be executed sequentially and calls appropriate functions.
 #
@@ -825,24 +888,32 @@
 # The list of args must contain everything needed by the function except for
 # the first argument (passed in data_list) and progress (internally managed)
 #' @importFrom purrr map map_lgl
-.execute_map_job <- function(data_list,
-    fun_to_apply,
-    fun_args,
-    stop_on_error,
-    max_workers = NULL) {
+.execute_map_job <- function(
+        data_list,
+        fun_to_apply,
+        fun_args,
+        stop_on_error,
+        max_workers = NULL,
+        progrs = NULL) {
     # Set up progressor if package available
-    prog <- if (rlang::is_installed("progressr")) {
+    prog <- if (rlang::is_installed("progressr") & is.null(progrs)) {
         progressr::progressor(steps = length(data_list))
     } else {
-        NULL
+        progrs
     }
     .check_parallel_packages()
-    if (getOption("ISAnalytics.parallel_processing", default = TRUE) == TRUE) {
-        # Manage workers
-        if (.Platform$OS.type == "windows" & is.null(max_workers)) {
-            max_workers <- BiocParallel::snowWorkers()
-        } else if (.Platform$OS.type != "windows" & is.null(max_workers)) {
-            max_workers <- BiocParallel::multicoreWorkers()
+    if (length(data_list) == 1) {
+        max_workers <- 1
+    } else {
+        if (getOption("ISAnalytics.parallel_processing",
+            default = TRUE
+        ) == TRUE) {
+            bioc_workers <- .get_def_workers(TRUE)
+            if (is.null(max_workers)) {
+                max_workers <- min(length(data_list), bioc_workers)
+            } else {
+                max_workers <- min(length(data_list), max_workers)
+            }
         }
     }
 
@@ -861,8 +932,10 @@
             },
             add = TRUE
         )
-        p <- BiocParallel::DoparParam(stop.on.error = stop_on_error)
-
+        p <- BiocParallel::DoparParam()
+        if (!stop_on_error) {
+            fun_to_apply <- purrr::safely(fun_to_apply)
+        }
         # Execute
         arg_list <- append(fun_args, list(
             X = data_list,
@@ -874,6 +947,12 @@
             BiocParallel::bplapply,
             !!!arg_list
         )
+        if (!stop_on_error) {
+            return(list(
+                res = purrr::map(results, ~ .x$result),
+                mode = "par", err = purrr::map(results, ~ .x$error)
+            ))
+        }
         return(list(res = results, mode = "par"))
     }
 
@@ -890,9 +969,10 @@
         results <- rlang::exec(purrr::map, !!!arg_list)
         return(list(res = results, mode = "seq"))
     } else {
-        results <- rlang::exec(purrr::safely(purrr::map), !!!arg_list)
-        errs <- results$error
-        results <- results$result
+        arg_list[[".f"]] <- purrr::safely(fun_to_apply)
+        results <- rlang::exec(purrr::map, !!!arg_list)
+        errs <- purrr::map(results, ~ .x$error)
+        results <- purrr::map(results, ~ .x$result)
         return(list(res = results, mode = "seq", err = errs))
     }
 }
@@ -977,7 +1057,9 @@
 #---- USED IN : import_single_Vispa2Matrix ----
 
 # Reads an integration matrix using data.table::fread
-#' @importFrom data.table fread
+# note: this function is never called if data.table is not installed
+#' @importFrom purrr map2 map_lgl is_empty
+#' @importFrom dplyr bind_rows filter mutate pull
 .read_with_fread <- function(path, additional_cols, annotated, sep) {
     col_types <- .mandatory_IS_types("fread")
     if (annotated) {
@@ -996,8 +1078,8 @@
         to_drop <- names(additional_cols[additional_cols == "_"])
         others <- additional_cols[!names(additional_cols) %in% to_drop]
         others <- purrr::map(others, ~ {
-            .types_mapping() %>%
-                dplyr::filter(.data$types == .x) %>%
+            .types_mapping() |>
+                dplyr::filter(.data$types == .x) |>
                 dplyr::pull(.data$fread)
         })
         col_types <- purrr::map2(
@@ -1019,16 +1101,16 @@
 
     vars <- mandatory_IS_vars(TRUE)
     if (annotated) {
-        vars <- vars %>%
+        vars <- vars |>
             dplyr::bind_rows(annotation_IS_vars(TRUE))
     }
     # Check if there are dates to convert
-    dates <- vars %>%
+    dates <- vars |>
         dplyr::filter(.data$types %in% c(date_formats(), "date"))
     if (nrow(dates) > 0) {
         as_list <- setNames(dates$types, dates$names)
         for (col in names(as_list)) {
-            tmp <- tmp %>%
+            tmp <- tmp |>
                 dplyr::mutate(!!col := .convert_dates(
                     .data[[col]],
                     as_list[[col]]
@@ -1043,7 +1125,8 @@
 
 # Reads an integration matrix using readr::read_delim
 #' @importFrom readr read_delim cols
-#' @importFrom data.table setDT
+#' @importFrom purrr is_empty map
+#' @importFrom dplyr bind_rows filter mutate pull
 .read_with_readr <- function(path, additional_cols, annotated, sep) {
     col_types <- .mandatory_IS_types("classic")
     if (annotated) {
@@ -1056,8 +1139,8 @@
         to_drop <- additional_cols[additional_cols == "_"]
         others <- additional_cols[!names(additional_cols) %in% names(to_drop)]
         others <- purrr::map(others, ~ {
-            .types_mapping() %>%
-                dplyr::filter(.data$types == .x) %>%
+            .types_mapping() |>
+                dplyr::filter(.data$types == .x) |>
                 dplyr::pull(.data$mapping)
         })
         for (x in names(to_drop)) {
@@ -1078,16 +1161,16 @@
     )
     vars <- mandatory_IS_vars(TRUE)
     if (annotated) {
-        vars <- vars %>%
+        vars <- vars |>
             dplyr::bind_rows(annotation_IS_vars(TRUE))
     }
     # Check if there are dates to convert
-    dates <- vars %>%
+    dates <- vars |>
         dplyr::filter(.data$types %in% c(date_formats(), "date"))
     if (nrow(dates) > 0) {
         as_list <- setNames(dates$types, dates$names)
         for (col in names(as_list)) {
-            df <- df %>%
+            df <- df |>
                 dplyr::mutate(!!col := .convert_dates(
                     .data[[col]],
                     as_list[[col]]
@@ -1096,21 +1179,82 @@
     }
     ## Apply transformations if present
     df <- .apply_col_transform(df, vars)
-    df <- data.table::setDT(df)
     return(df)
 }
+
+# Melts dataframe (chunks) with data.table melt
+# This function is never called if data.table is not installed
+.melt_datatable <- function(data, id_vars, sample_col, value_col, progress) {
+    mtd <- data.table::melt.data.table(data,
+        id.vars = id_vars,
+        variable.name = sample_col,
+        value.name = value_col,
+        na.rm = TRUE,
+        verbose = FALSE,
+        variable.factor = FALSE,
+        value.factor = FALSE
+    )
+    if (!is.null(progress)) {
+        progress()
+    }
+    return(mtd)
+}
+
+.melt_tidyr <- function(data, id_vars, sample_col, value_col, progress) {
+    mtd <- tidyr::pivot_longer(
+        data = data,
+        cols = !dplyr::all_of(id_vars),
+        names_to = sample_col,
+        values_to = value_col,
+        values_drop_na = TRUE
+    )
+    if (!is.null(progress)) {
+        progress()
+    }
+    return(mtd)
+}
+
+# Melts a big matrix divided in chunks in parallel if possible (otherwise
+# does the job sequentially after notifying)
+#' @importFrom purrr reduce
+#' @importFrom dplyr bind_rows
+.melt_in_parallel <- function(df, n_chunks, melt_fun, id_vars,
+    id_col_name, val_col_name) {
+    ### - Split in chunks
+    chunks <- .split_df_in_chunks(df, n_chunks,
+        keep_chunk_id = FALSE
+    )
+    ### - Distribute work
+    tidy_chunks <- .execute_map_job(
+        data_list = chunks,
+        fun_to_apply = melt_fun,
+        fun_args = list(
+            id_vars = id_vars,
+            sample_col = id_col_name,
+            value_col = val_col_name
+        ),
+        stop_on_error = TRUE,
+        max_workers = n_chunks
+    )
+    tidy <- purrr::reduce(tidy_chunks$res, dplyr::bind_rows)
+    return(tidy)
+}
+
 
 # - call_mode: either INTERNAL or EXTERNAL. First is used when calling
 #              the function
 #              from parallel importing function, second one when calling
 #              import_single_Vispa2_matrix
-.import_single_matrix <- function(path,
-    separator = "\t",
-    additional_cols = NULL,
-    transformations = NULL,
-    call_mode = "INTERNAL",
-    id_col_name = pcr_id_column(),
-    val_col_name = "Value") {
+#' @importFrom rlang abort inform is_installed
+#' @importFrom readr read_delim cols
+.import_single_matrix <- function(
+        path,
+        separator = "\t",
+        additional_cols = NULL,
+        transformations = NULL,
+        call_mode = "INTERNAL",
+        id_col_name = pcr_id_column(),
+        val_col_name = "Value") {
     ## - Check additional cols specs: must be named vector or list or NULL
     stopifnot(is.null(additional_cols) ||
         (is.character(additional_cols) &
@@ -1134,23 +1278,6 @@
         )
         rlang::abort(add_types_err, class = "add_types_err")
     }
-    mode <- "fread"
-    ## Is the file compressed?
-    is_compressed <- fs::path_ext(path) %in% .compressed_formats()
-    if (is_compressed) {
-        ## The compression type is supported by data.table::fread?
-        compression_type <- fs::path_ext(path)
-        if (!compression_type %in% .supported_fread_compression_formats()) {
-            ### If not, switch to classic for reading
-            mode <- "classic"
-            if (call_mode == "EXTERNAL" &&
-                getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-                rlang::inform(.unsupported_comp_format_inf(),
-                    class = "unsup_comp_format"
-                )
-            }
-        }
-    }
     ### Peak headers
     peek_headers <- readr::read_delim(path,
         delim = separator, n_max = 0,
@@ -1167,6 +1294,28 @@
     is_annotated <- .is_annotated(peek_headers)
     additional_cols <- additional_cols[names(additional_cols) %in%
         colnames(peek_headers)]
+    mode <- "classic"
+    add_pkg_installed <- rlang::is_installed("data.table")
+    ## OPTIONAL - if data.table is available
+    if (add_pkg_installed) {
+        mode <- "fread"
+        ## Is the file compressed?
+        is_compressed <- fs::path_ext(path) %in% .compressed_formats()
+        if (is_compressed) {
+            ## The compression type is supported by data.table::fread?
+            compression_type <- fs::path_ext(path)
+            if (!compression_type %in% .supported_fread_compression_formats()) {
+                ### If not, switch to classic for reading
+                mode <- "classic"
+                if (call_mode == "EXTERNAL" &&
+                    getOption("ISAnalytics.verbose", TRUE) == TRUE) {
+                    rlang::inform(.unsupported_comp_format_inf(),
+                        class = "unsup_comp_format"
+                    )
+                }
+            }
+        }
+    }
     ## - Start reading
     if (call_mode == "EXTERNAL" &&
         getOption("ISAnalytics.verbose", TRUE) == TRUE) {
@@ -1184,6 +1333,7 @@
         )
     }
     df_dim <- dim(df)
+
     ## - Melt
     id_vars <- c(
         mandatory_IS_vars(),
@@ -1192,58 +1342,31 @@
     if (is_annotated) {
         id_vars <- c(id_vars, annotation_IS_vars())
     }
-    mt <- function(data, id_vars, sample_col, value_col, progress) {
-        if (!is.null(progress)) {
-            progress()
-        }
-        data.table::melt.data.table(data,
-            id.vars = id_vars,
-            variable.name = sample_col,
-            value.name = value_col,
-            na.rm = TRUE,
-            verbose = FALSE
-        )
+    mt <- if (mode == "fread") {
+        .melt_datatable
+    } else {
+        .melt_tidyr
     }
     if (call_mode == "EXTERNAL" &&
         getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform("Reshaping...")
     }
-    max_workers <- trunc(BiocParallel::snowWorkers() / 3)
+
+    max_workers <- trunc(.get_def_workers())
     if (call_mode == "INTERNAL" || nrow(df) <= 500000 || max_workers <= 1) {
         tidy <- mt(df, id_vars, id_col_name, val_col_name, NULL)
     } else if (nrow(df) > 500000 & max_workers > 1) {
         ## - Melt in parallel
-        ### - Split in chunks
-        chunk_id_vec <- rep(seq_len(max_workers - 1),
-            each = trunc(nrow(df) / max_workers)
+        tidy <- .melt_in_parallel(
+            df = df, n_chunks = max_workers,
+            melt_fun = mt, id_vars = id_vars,
+            id_col_name = id_col_name,
+            val_col_name = val_col_name
         )
-        chunk_id_vec <- c(
-            chunk_id_vec,
-            rep_len(chunk_id_vec[length(chunk_id_vec)] + 1,
-                length.out = nrow(df) - length(chunk_id_vec)
-            )
-        )
-        df[, c("chunk_id") := chunk_id_vec]
-        chunks <- split(df,
-            by = c("chunk_id"),
-            verbose = FALSE,
-            keep.by = FALSE
-        )
-        tidy_chunks <- .execute_map_job(
-            data_list = chunks,
-            fun_to_apply = mt,
-            fun_args = list(
-                id_vars = id_vars,
-                sample_col = id_col_name,
-                value_col = val_col_name
-            ),
-            stop_on_error = TRUE,
-            max_workers = max_workers
-        )
-
-        tidy <- data.table::rbindlist(tidy_chunks$res)
     }
-    tidy <- tidy[get(val_col_name) > 0]
+    tidy <- tidy |>
+        dplyr::filter(.data[[val_col_name]] > 0) |>
+        tibble::as_tibble()
     ## Transform cols
     if (call_mode == "EXTERNAL" &&
         getOption("ISAnalytics.verbose", TRUE) == TRUE &&
@@ -1278,8 +1401,8 @@
 .check_af_correctness <- function(df) {
     af_cols_specs <- association_file_columns(TRUE)
     ### Retrieves the column names flagged as required
-    min_required <- af_cols_specs %>%
-        dplyr::filter(.data$flag == "required") %>%
+    min_required <- af_cols_specs |>
+        dplyr::filter(.data$flag == "required") |>
         dplyr::pull(.data$names)
     if (length(min_required) == 0) {
         return(TRUE) # No required columns
@@ -1293,13 +1416,17 @@
 
 # Imports association file from disk. Converts dates and pads timepoints,
 # reporting parsing problems.
+#' @importFrom rlang is_installed inform abort
+#' @importFrom readr read_delim cols problems
+#' @importFrom purrr map_chr pluck map2_lgl is_empty
+#' @importFrom tibble tibble
 .read_af <- function(path, date_format, delimiter) {
     mode <- "readr"
     ## - Check file extension
     file_ext <- .check_file_extension(path)
     if (file_ext %in% c("xls", "xlsx")) {
         mode <- "readxl"
-        if (!requireNamespace("readxl", quietly = TRUE)) {
+        if (!rlang::is_installed("readxl")) {
             rlang::abort(.missing_pkg_error("readxl"))
         }
         if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
@@ -1361,27 +1488,27 @@
 
         vars <- association_file_columns(TRUE)
         # Check if there are dates to convert
-        dates <- vars %>%
-            dplyr::filter(.data$types %in% c(date_formats(), "date")) %>%
+        dates <- vars |>
+            dplyr::filter(.data$types %in% c(date_formats(), "date")) |>
             dplyr::mutate(types = dplyr::if_else(.data$types == "date",
                 true = date_format,
                 false = .data$types
             ))
-        dates <- dates %>%
+        dates <- dates |>
             dplyr::filter(.data$names %in% colnames(as_file))
         date_failures <- NULL
         if (nrow(dates) > 0) {
-            before <- as_file %>%
+            before <- as_file |>
                 dplyr::select(dplyr::all_of(dates$names))
             as_list <- setNames(dates$types, dates$names)
             for (col in names(as_list)) {
-                as_file <- as_file %>%
+                as_file <- as_file |>
                     dplyr::mutate(!!col := .convert_dates(
                         .data[[col]],
                         as_list[[col]]
                     ))
             }
-            date_failures <- purrr::map_dfr(dates$names, function(col) {
+            date_failures <- purrr::map(dates$names, function(col) {
                 before_col <- purrr::pluck(before, col)
                 row_failed <- which(
                     purrr::map2_lgl(
@@ -1404,11 +1531,11 @@
                 } else {
                     return(NULL)
                 }
-            })
+            }) |>
+                purrr::list_rbind()
         }
         ## Apply transformations if present
         as_file <- .apply_col_transform(as_file, vars)
-        as_file <- data.table::setDT(as_file)
     })
     return(list(af = as_file, probs = problems, date_fail = date_failures))
 }
@@ -1418,29 +1545,31 @@
 #
 # - df: The imported association file (data.frame or tibble)
 # - root_folder: Path to the root folder
-#' @importFrom rlang .data `:=`
+#' @importFrom rlang .data `:=` abort inform
+#' @importFrom fs path dir_ls
 # Returns a data frame with this format:
 # ProjectID - ConcatenatePoolIDSeqRun - PathToFolderProjectID - Found - Path -
 # Path_quant - Path_iss (NOTE: headers are dynamic!)
-.check_file_system_alignment <- function(df,
-    root_folder,
-    proj_fold_col,
-    concat_pool_col,
-    project_id_col) {
+.check_file_system_alignment <- function(
+        df,
+        root_folder,
+        proj_fold_col,
+        concat_pool_col,
+        project_id_col) {
     if (!proj_fold_col %in% colnames(df)) {
         rlang::abort(.af_missing_pathfolder_error(proj_fold_col))
     }
-    temp_df <- df %>%
+    temp_df <- df |>
         dplyr::select(dplyr::all_of(c(
             project_id_col,
             concat_pool_col,
             proj_fold_col
-        ))) %>%
+        ))) |>
         dplyr::distinct()
     path_cols <- .path_cols_names()
-    proj_folders_exist <- temp_df %>%
-        dplyr::select(dplyr::all_of(proj_fold_col)) %>%
-        dplyr::distinct() %>%
+    proj_folders_exist <- temp_df |>
+        dplyr::select(dplyr::all_of(proj_fold_col)) |>
+        dplyr::distinct() |>
         dplyr::mutate(Found = !is.na(
             .data[[proj_fold_col]]
         ) &
@@ -1450,12 +1579,12 @@
                     .data[[proj_fold_col]]
                 )
             )))
-    partial_check <- temp_df %>%
+    partial_check <- temp_df |>
         dplyr::left_join(proj_folders_exist, by = proj_fold_col)
-    temp_df <- partial_check %>%
+    temp_df <- partial_check |>
         dplyr::filter(.data$Found == TRUE)
-    partial_check <- partial_check %>%
-        dplyr::filter(.data$Found == FALSE) %>%
+    partial_check <- partial_check |>
+        dplyr::filter(.data$Found == FALSE) |>
         dplyr::mutate(
             !!path_cols$project := NA_character_,
             !!path_cols$quant := NA_character_,
@@ -1510,7 +1639,7 @@
             iss_found <- NA_character_
         }
         return(
-            cur %>%
+            cur |>
                 dplyr::mutate(
                     !!path_cols$project := project_folder,
                     !!path_cols$quant := quant_found,
@@ -1518,24 +1647,26 @@
                 )
         )
     }
-    results_df <- purrr::pmap_dfr(
+    results_df <- purrr::pmap(
         temp_df,
         FUN
-    )
-    checker_df <- results_df %>%
+    ) |>
+        purrr::list_rbind()
+    checker_df <- results_df |>
         dplyr::bind_rows(partial_check)
     checker_df
 }
 
 # Updates the association file after the alignment check --> adds the columns
 # containing paths to project folder, quant folders and iss folders
-.update_af_after_alignment <- function(as_file, checks,
-    proj_fold_col,
-    concat_pool_col,
-    project_id_col) {
-    as_file <- as_file %>%
+.update_af_after_alignment <- function(
+        as_file, checks,
+        proj_fold_col,
+        concat_pool_col,
+        project_id_col) {
+    as_file <- as_file |>
         dplyr::left_join(
-            checks %>%
+            checks |>
                 dplyr::select(
                     -dplyr::all_of(c(proj_fold_col, "Found"))
                 ),
@@ -1545,14 +1676,16 @@
 }
 
 # Helper function to be used internally to treat association file.
-.manage_association_file <- function(af_path,
-    root,
-    format,
-    delimiter,
-    filter,
-    proj_fold_col,
-    concat_pool_col,
-    project_id_col) {
+#' @importFrom rlang enexpr parse_expr eval_tidy
+.manage_association_file <- function(
+        af_path,
+        root,
+        format,
+        delimiter,
+        filter,
+        proj_fold_col,
+        concat_pool_col,
+        project_id_col) {
     # Import the association file
     association_file <- .read_af(
         path = af_path,
@@ -1687,30 +1820,31 @@
 #---- USED IN : import_Vispa2_stats ----
 
 # Finds automatically the path on disk to each stats file.
-#' @importFrom purrr pmap_dfr detect_index
+#' @importFrom purrr detect_index
 #' @importFrom tibble tibble
 #' @importFrom fs dir_ls
 #' @importFrom rlang .data
 # @keywords internal
 # @return A tibble with columns: ProjectID, concatenatePoolIDSeqRun,
 # Path_iss (or designated dynamic name), stats_files, info
-.stats_report <- function(association_file,
-    prefixes,
-    proj_col,
-    pool_col,
-    path_iss_col) {
-    temp <- association_file %>%
+.stats_report <- function(
+        association_file,
+        prefixes,
+        proj_col,
+        pool_col,
+        path_iss_col) {
+    temp <- association_file |>
         dplyr::select(
             dplyr::all_of(c(proj_col, pool_col, path_iss_col))
-        ) %>%
-        dplyr::distinct() %>%
+        ) |>
+        dplyr::distinct() |>
         dplyr::mutate(
             !!proj_col := as.factor(.data[[proj_col]]),
             !!pool_col := as.factor(.data[[pool_col]])
         )
     # If paths are all NA return
     if (all(is.na(temp[[path_iss_col]]))) {
-        return(temp %>% dplyr::mutate(
+        return(temp |> dplyr::mutate(
             stats_files = NA_character_,
             info = list("NO FOLDER FOUND")
         ))
@@ -1733,22 +1867,23 @@
         }
         tibble::tibble(pattern = pattern, file = files)
     }
-    stats_paths <- purrr::pmap_dfr(temp, function(...) {
+    stats_paths <- purrr::pmap(temp, function(...) {
         temp_row <- tibble::tibble(...)
-        matches <- purrr::map_dfr(prefixes, ~ match_pattern(.x, temp_row))
+        matches <- purrr::map(prefixes, ~ match_pattern(.x, temp_row)) |>
+            purrr::list_rbind()
         if (all(is.na(matches$file))) {
             # No stats files found for all prefixes
-            return(temp_row %>%
+            return(temp_row |>
                 dplyr::mutate(
                     stats_files = NA_character_,
                     info = list("NOT FOUND")
                 ))
         }
         if (length(which(!is.na(matches$file))) == 1) {
-            return(temp_row %>%
+            return(temp_row |>
                 dplyr::mutate(
-                    stats_files = (matches %>%
-                        dplyr::filter(!is.na(.data$file)) %>%
+                    stats_files = (matches |>
+                        dplyr::filter(!is.na(.data$file)) |>
                         dplyr::pull(.data$file)),
                     info = list("NULL")
                 ))
@@ -1756,38 +1891,39 @@
         # Get the count of files found for each pattern and order them
         # as preference - preferred pattern is the first in the prefixes
         # parameter
-        pattern_counts <- matches %>%
+        pattern_counts <- matches |>
             dplyr::mutate(pattern = factor(.data$pattern,
                 levels = prefixes
-            )) %>%
-            dplyr::filter(!is.na(.data$file)) %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of("pattern"))) %>%
-            dplyr::tally() %>%
+            )) |>
+            dplyr::filter(!is.na(.data$file)) |>
+            dplyr::group_by(dplyr::across(dplyr::all_of("pattern"))) |>
+            dplyr::tally() |>
             dplyr::arrange(.data$pattern)
         one_index <- purrr::detect_index(pattern_counts$n, ~ .x == 1)
         if (one_index == 0) {
             ## Means there are duplicates for all patterns, gets reported
             ## but no files will be imported
-            return(temp_row %>%
+            return(temp_row |>
                 dplyr::mutate(
                     stats_files = NA_character_,
-                    info = list(matches %>%
-                        dplyr::filter(!is.na(.data$file)) %>%
+                    info = list(matches |>
+                        dplyr::filter(!is.na(.data$file)) |>
                         dplyr::mutate(info = "DUPLICATE"))
                 ))
         } else {
             ## Pick the file with the pattern that has a count of 1 (no
             ## duplicates)
             chosen_pattern <- pattern_counts$pattern[one_index]
-            return(temp_row %>%
+            return(temp_row |>
                 dplyr::mutate(
-                    stats_files = matches %>%
-                        dplyr::filter(.data$pattern == chosen_pattern) %>%
+                    stats_files = matches |>
+                        dplyr::filter(.data$pattern == chosen_pattern) |>
                         dplyr::pull(.data$file),
                     info = list("NULL")
                 ))
         }
-    })
+    }) |>
+        purrr::list_rbind()
     stats_paths
 }
 
@@ -1812,13 +1948,14 @@
 #
 # @return A list with the imported stats and a report of imported files. If no
 # files were imported returns NULL instead
-.import_stats_iss <- function(association_file,
-    prefixes,
-    pool_col,
-    path_iss_col,
-    tags) {
-    proj_col <- tags %>%
-        dplyr::filter(.data$tag == "project_id") %>%
+.import_stats_iss <- function(
+        association_file,
+        prefixes,
+        pool_col,
+        path_iss_col,
+        tags) {
+    proj_col <- tags |>
+        dplyr::filter(.data$tag == "project_id") |>
         dplyr::pull(.data$names)
     # Obtain paths
     stats_paths <- .stats_report(association_file,
@@ -1827,29 +1964,28 @@
         pool_col = pool_col,
         path_iss_col = path_iss_col
     )
-    stats_paths <- stats_paths %>%
+    stats_paths <- stats_paths |>
         tidyr::unnest(dplyr::all_of("info"))
     if (all(is.na(stats_paths$stats_files))) {
-        stats_paths <- stats_paths %>%
+        stats_paths <- stats_paths |>
             dplyr::mutate(
                 Imported = FALSE,
                 reason = as.factor(.data$info)
-            ) %>%
+            ) |>
             dplyr::mutate(-.data$info)
         return(list(stats = NULL, report = stats_paths))
     }
-    vispa_stats_req <- iss_stats_specs(TRUE) %>%
-        dplyr::filter(.data$flag == "required") %>%
+    vispa_stats_req <- iss_stats_specs(TRUE) |>
+        dplyr::filter(.data$flag == "required") |>
         dplyr::pull(.data$names)
 
     FUN <- function(x, req_cols, progress) {
         if (is.na(x)) {
             return(NULL)
         }
-        stats <- data.table::fread(
-            file = x, sep = "\t",
-            na.strings = c("", "NA", "na", "NONE"),
-            data.table = TRUE
+        stats <- readr::read_delim(
+            file = x, delim = "\t", na = c("", "NA", "na", "NONE"),
+            col_types = readr::cols()
         )
         ok <- .check_stats(stats, req_cols)
         if (ok == TRUE) {
@@ -1883,9 +2019,9 @@
             x
         }
     })
-    stats_paths <- stats_paths %>%
+    stats_paths <- stats_paths |>
         dplyr::mutate(Imported = correct)
-    stats_paths <- purrr::pmap_dfr(stats_paths, function(...) {
+    stats_paths <- purrr::pmap(stats_paths, function(...) {
         row <- tibble::tibble(...)
         condition <- if (row$Imported == "MALFORMED") {
             "MALFORMED"
@@ -1894,15 +2030,16 @@
         } else {
             row$info
         }
-        row %>%
-            dplyr::mutate(reason = as.factor(condition)) %>%
+        row |>
+            dplyr::mutate(reason = as.factor(condition)) |>
             dplyr::mutate(Imported = dplyr::if_else(
                 condition = (.data$Imported == "MALFORMED"),
                 true = FALSE,
                 false = as.logical(.data$Imported)
             ))
-    })
-    stats_paths <- stats_paths %>%
+    }) |>
+        purrr::list_rbind()
+    stats_paths <- stats_paths |>
         dplyr::select(-dplyr::all_of("info"))
     stats_dfs <- stats_dfs$res[stats_paths$Imported]
     # Bind rows in single tibble for all files
@@ -1910,8 +2047,8 @@
         return(list(stats = NULL, report = stats_paths))
     }
     stats_dfs <- purrr::reduce(stats_dfs, function(x, y) {
-        x %>%
-            dplyr::bind_rows(y) %>%
+        x |>
+            dplyr::bind_rows(y) |>
             dplyr::distinct()
     })
     list(stats = stats_dfs, report = stats_paths)
@@ -1919,384 +2056,33 @@
 
 #---- USED IN : import_parallel_Vispa2Matrices ----
 # Base arg check (valid for both versions)
-.base_param_check <- function(association_file,
-    quantification_type,
-    matrix_type,
-    workers,
-    multi_quant_matrix) {
+.base_param_check <- function(
+        association_file,
+        quantification_type,
+        matrix_type,
+        workers,
+        multi_quant_matrix) {
     # Check parameters
-    stopifnot((is.character(association_file) &
-        length(association_file) == 1) ||
-        is.data.frame(association_file))
+    stopifnot(is.data.frame(association_file))
     stopifnot(is.numeric(workers) & length(workers) == 1)
     stopifnot(!missing(quantification_type))
     stopifnot(all(quantification_type %in% quantification_types()))
     stopifnot(is.logical(multi_quant_matrix) & length(multi_quant_matrix) == 1)
 }
 
-# Import AF if necessary, if already imported check it is aligned with
-# file system
-.pre_manage_af <- function(association_file, import_af_args, report_path) {
-    if (!is.null(report_path) && !fs::is_dir(report_path)) {
-        report_path <- fs::path_dir(report_path)
-    }
-    ## Import association file if provided a path
-    if (is.character(association_file)) {
-        association_file <- rlang::eval_tidy(
-            rlang::call2("import_association_file",
-                path = association_file,
-                report_path = report_path,
-                !!!import_af_args
-            )
-        )
-    }
+# Check AF is aligned with file system
+.pre_manage_af <- function(association_file) {
     ## Check there are the appropriate columns
     if (!.path_cols_names()$quant %in% colnames(association_file)) {
         rlang::abort(.af_missing_path_error(.path_cols_names()$quant),
             class = "missing_path_col"
         )
     }
-    association_file <- association_file %>%
+    association_file <- association_file |>
         dplyr::filter(!is.na(.data[[.path_cols_names()$quant]]))
     return(association_file)
 }
 
-
-# Allows the user to choose interactively the projects
-# to consider for import.
-#
-# @param association_file The tibble representing the imported association file
-# @keywords internal
-#' @importFrom dplyr distinct select filter
-#' @importFrom rlang .data
-#' @importFrom stringr str_split
-#' @importFrom purrr map_dbl
-#
-# @return A modified version of the association file where only selected
-# projects are present
-.interactive_select_projects_import <- function(association_file,
-    proj_col) {
-    repeat {
-        cat("Which projects would you like to import?\n")
-        cat("[1] ALL", "\n", "[2] ONLY SOME\n", "[0] QUIT\n", sep = "")
-        # Keep asking user until the choice is valid
-        repeat {
-            cat("Your choice: ")
-            connection <- getOption("ISAnalytics.connection", stdin())
-            if (length(connection) > 1) {
-                con <- connection[1]
-            } else {
-                con <- connection
-            }
-            n_projects_to_import <- readLines(con = con, n = 1)
-            n_projects_to_import <- as.numeric(n_projects_to_import)
-            if (!is.na(n_projects_to_import) &
-                is.numeric(n_projects_to_import) &
-                n_projects_to_import %in% c(0, 1, 2)) {
-                if (n_projects_to_import == 0) {
-                    rlang::abort("Quitting")
-                } else {
-                    break
-                }
-            } else {
-                rlang::inform(paste(
-                    "Invalid choice,",
-                    "please choose between the above."
-                ))
-            }
-        }
-        # If only some projects selected
-        if (n_projects_to_import == 2) {
-            cat(
-                "Here is the list of available projects, type the indexes",
-                "separated by a comma:\n",
-                sep = ""
-            )
-            project_list <- association_file %>%
-                dplyr::distinct(.data[[proj_col]]) %>%
-                dplyr::pull(.data[[proj_col]])
-            cat(paste0("[", seq_along(project_list), "] ", project_list),
-                "[0] QUIT\n",
-                sep = "\n"
-            )
-            # Keep asking user until a valid choice
-            repeat {
-                cat("Your choice: ")
-                if (length(connection) > 1) {
-                    con <- connection[2]
-                } else {
-                    con <- connection
-                }
-                projects_to_import <- readLines(con = con, n = 1)
-                projects_to_import <- purrr::map_dbl(unlist(
-                    stringr::str_split(projects_to_import, ",")
-                ), as.numeric)
-                if (!any(is.na(projects_to_import)) &
-                    all(is.numeric(projects_to_import)) &
-                    all(projects_to_import %in% c(
-                        seq_along(project_list),
-                        0
-                    ))) {
-                    if (any(projects_to_import == 0)) {
-                        stop("Quitting", call. = FALSE)
-                    } else {
-                        break
-                    }
-                } else {
-                    message(paste(
-                        "Invalid choice, please select valid indexes separated",
-                        "by a comma (example: 1, 2, 3) "
-                    ))
-                }
-            }
-            # Ask confirm
-            cat("\nYour choices: ",
-                paste(project_list[projects_to_import], collapse = ","),
-                "\n",
-                "Confirm your choices? [y/n]",
-                sep = ""
-            )
-            repeat {
-                if (length(connection) > 1) {
-                    con <- connection[3]
-                } else {
-                    con <- connection
-                }
-                confirm <- readLines(con = con, n = 1)
-                if (!confirm %in% c("y", "n")) {
-                    message(paste(
-                        "Invalid choice, please select one between y",
-                        "or n"
-                    ))
-                } else {
-                    break
-                }
-            }
-            if (confirm == "y") {
-                result <- association_file %>%
-                    dplyr::filter(.data[[proj_col]] %in%
-                        project_list[projects_to_import])
-                return(result)
-            } else {
-                next
-            }
-        } else {
-            # Ask confirm
-            cat("\nYour choices: ", "import all projects", "\n",
-                "Confirm your choices? [y/n]",
-                sep = ""
-            )
-            repeat {
-                if (length(connection) > 1) {
-                    con <- connection[3]
-                } else {
-                    con <- connection
-                }
-                confirm <- readLines(con = con, n = 1)
-                if (!confirm %in% c("y", "n")) {
-                    message(paste(
-                        "Invalid choice, please select one between y",
-                        "or n"
-                    ))
-                } else {
-                    break
-                }
-            }
-            if (confirm == "y") {
-                return(association_file)
-            } else {
-                next
-            }
-        }
-    }
-}
-
-# Simple internal helper function to handle user input for selection
-# of number of pools.
-# @keywords internal
-#
-# @return Numeric representing user selection (1 for all pools, 2 for
-# only some pools, 0 to exit)
-.pool_number_IN <- function() {
-    cat("Which pools for each project would you like to import?\n")
-    cat("[1] ALL", "[2] ONLY SOME", "[0] QUIT", sep = "\n")
-    repeat {
-        cat("Your choice: ")
-        connection <- getOption("ISAnalytics.connection", stdin())
-        if (length(connection) > 1) {
-            connection <- connection[4]
-        }
-        n_pools_to_import <- readLines(con = connection, n = 1)
-        n_pools_to_import <- as.numeric(n_pools_to_import)
-        if (!is.na(n_pools_to_import) & is.numeric(n_pools_to_import) &
-            n_pools_to_import %in% c(0, 1, 2)) {
-            if (n_pools_to_import == 0) {
-                stop("Quitting", call. = FALSE)
-            } else {
-                break
-            }
-        } else {
-            message("Invalid choice, please choose between the above.")
-        }
-    }
-    n_pools_to_import
-}
-
-# Simple helper interal function to handle user input for actual
-# pool choices.
-#
-# @param indexes A vector of integer indexes available
-# @keywords internal
-#' @importFrom stringr str_split
-#' @importFrom purrr map_dbl
-#
-# @return The user selection as a numeric vector
-.pool_choices_IN <- function(indexes) {
-    repeat {
-        cat("\nYour choice: ")
-        connection <- getOption("ISAnalytics.connection", stdin())
-        if (length(connection) > 1) {
-            connection <- connection[5]
-        }
-        to_imp <- readLines(
-            con = connection,
-            n = 1
-        )
-        to_imp <- purrr::map_dbl(unlist(
-            stringr::str_split(to_imp, ",")
-        ), as.numeric)
-        if (!any(is.na(to_imp)) & all(is.numeric(to_imp))) {
-            if (all(to_imp %in%
-                c(indexes, 0))) {
-                if (any(to_imp == 0)) {
-                    stop("Quitting", call. = FALSE)
-                } else {
-                    break
-                }
-            } else {
-                message(paste(
-                    "Invalid choice, please select valid indexes",
-                    "separated by a comma (example: 1, 2, 3) "
-                ))
-                next
-            }
-        } else {
-            message(paste(
-                "Invalid choice, please select valid indexes separated",
-                "by a comma (example: 1, 2, 3) "
-            ))
-        }
-    }
-    to_imp
-}
-
-# Allows the user to choose interactively
-# the pools to consider for import.
-#' @importFrom rlang .data
-#'
-# @return A modified version of the association file where only selected
-# pools for each project are present
-.interactive_select_pools_import <- function(association_file,
-    proj_col,
-    pool_col) {
-    repeat {
-        n_pools_to_import <- .pool_number_IN()
-        if (n_pools_to_import == 2) {
-            cat("Here is the list of available pools for each project,",
-                "type the indexes separated by a comma or 0 to quit: \n\n",
-                sep = ""
-            )
-            available <- association_file %>%
-                dplyr::select(
-                    dplyr::all_of(c(proj_col, pool_col))
-                ) %>%
-                dplyr::distinct() %>%
-                tidyr::nest(data = dplyr::all_of(pool_col))
-            pools_to_import <- purrr::pmap(available, function(...) {
-                l <- list(...)
-                current <- l[proj_col]
-                current_data <- tibble::as_tibble(
-                    purrr::flatten(l["data"])
-                )
-                indexes <- seq_along(current_data[[pool_col]])
-                cat("Project: ", current[[proj_col]], "\n\n")
-                cat("[0] QUIT\n")
-                purrr::walk2(
-                    current_data[[pool_col]],
-                    indexes,
-                    function(x, y) {
-                        cat(paste0("[", y, "] ", x),
-                            sep = "\n"
-                        )
-                    }
-                )
-                to_imp <- .pool_choices_IN(indexes)
-                tibble::tibble(
-                    !!proj_col := current[[proj_col]],
-                    !!pool_col := current_data[[pool_col]][to_imp]
-                )
-            })
-            pools_to_import <- purrr::reduce(pools_to_import, function(x, y) {
-                dplyr::bind_rows(x, y)
-            })
-            cat("\nYour choices: ", sep = "\n")
-            print(pools_to_import)
-            cat("\nConfirm your choices? [y/n]", sep = "")
-            repeat {
-                connection <- getOption("ISAnalytics.connection", stdin())
-                if (length(connection) > 1) {
-                    connection <- connection[6]
-                }
-                confirm <- readLines(con = connection, n = 1)
-                if (!confirm %in% c("y", "n")) {
-                    message(paste(
-                        "Invalid choice, please select one between y",
-                        "or n"
-                    ))
-                } else {
-                    break
-                }
-            }
-            if (confirm == "y") {
-                association_file <- association_file %>%
-                    dplyr::inner_join(pools_to_import,
-                        by = c(proj_col, pool_col)
-                    )
-                return(association_file)
-            } else {
-                next
-            }
-        } else {
-            cat("\nYour choices: ", sep = "\n")
-            print(association_file %>%
-                dplyr::select(
-                    dplyr::all_of(c(proj_col, pool_col))
-                ) %>%
-                dplyr::distinct())
-            cat("\nConfirm your choices? [y/n]", sep = "")
-            repeat {
-                connection <- getOption("ISAnalytics.connection", stdin())
-                if (length(connection) > 1) {
-                    connection <- connection[6]
-                }
-                confirm <- readLines(con = connection, n = 1)
-                if (!confirm %in% c("y", "n")) {
-                    message(paste(
-                        "Invalid choice, please select one between y",
-                        "or n"
-                    ))
-                } else {
-                    break
-                }
-            }
-            if (confirm == "y") {
-                return(association_file)
-            } else {
-                next
-            }
-        }
-    }
-}
 
 # Updates a files_found tibble with Files_count and Anomalies column.
 #
@@ -2309,10 +2095,10 @@
     files_count <- purrr::pmap(lups, function(...) {
         temp <- tibble::tibble(...)
         an <- temp$Files
-        an <- an %>%
+        an <- an |>
             dplyr::group_by(
                 dplyr::across(dplyr::all_of("Quantification_type"))
-            ) %>%
+            ) |>
             dplyr::summarise(
                 Found = sum(!is.na(.data$Files_found)),
                 .groups = "drop_last"
@@ -2320,8 +2106,8 @@
         an
     })
 
-    lups <- lups %>%
-        dplyr::mutate(Files_count = files_count) %>%
+    lups <- lups |>
+        dplyr::mutate(Files_count = files_count) |>
         dplyr::mutate(
             Anomalies = purrr::map_lgl(
                 .data$Files_count,
@@ -2343,39 +2129,39 @@
 # @keywords internal
 #' @importFrom tibble tibble
 #' @importFrom fs dir_ls as_fs_path
-#' @importFrom purrr pmap_dfr cross_df
 #' @importFrom stringr str_replace_all
 #' @importFrom tidyr nest
 #
 # @return A tibble containing all found files, including duplicates and missing
-.lookup_matrices <- function(association_file,
-    quantification_type,
-    m_type,
-    proj_col,
-    pool_col) {
+.lookup_matrices <- function(
+        association_file,
+        quantification_type,
+        m_type,
+        proj_col,
+        pool_col) {
     path_col_names <- .path_cols_names()
-    temp <- association_file %>%
+    temp <- association_file |>
         dplyr::select(
             dplyr::all_of(c(proj_col, pool_col, path_col_names$quant))
-        ) %>%
+        ) |>
         dplyr::distinct()
 
     ## Obtain a df with all possible combination of suffixes for each
     ## quantification
-    suffixes <- matrix_file_suffixes() %>%
+    suffixes <- matrix_file_suffixes() |>
         dplyr::filter(
             .data$matrix_type == m_type,
             .data$quantification %in% quantification_type
-        ) %>%
+        ) |>
         dplyr::mutate(suffix_regex = paste0(stringr::str_replace_all(
             .data$file_suffix, "\\.", "\\\\."
         ), "$"))
 
     ## For each row in temp (aka for each ProjectID and
     ## concatenatePoolIDSeqRun) scan the quantification folder
-    lups <- purrr::pmap_dfr(temp, function(...) {
+    lups <- purrr::pmap(temp, function(...) {
         temp_row <- tibble::tibble(...)
-        found <- purrr::pmap_dfr(suffixes, function(...) {
+        found <- purrr::pmap(suffixes, function(...) {
             ## For each quantification scan the folder for the
             ## corresponding suffixes
             cross_row <- tibble::tibble(...)
@@ -2390,17 +2176,18 @@
                 Quantification_type = cross_row$quantification,
                 Files_found = matches
             )
-        })
-        found <- found %>%
+        }) |>
+            purrr::list_rbind()
+        found <- found |>
             dplyr::group_by(
                 dplyr::across(dplyr::all_of("Quantification_type"))
-            ) %>%
-            dplyr::distinct() %>%
+            ) |>
+            dplyr::distinct() |>
             dplyr::group_modify(~ {
                 if (nrow(.x) > 1) {
                     if (any(is.na(.x$Files_found)) &
                         !all(is.na(.x$Files_found))) {
-                        .x %>%
+                        .x |>
                             dplyr::filter(!is.na(.data$Files_found))
                     } else {
                         .x
@@ -2414,188 +2201,14 @@
             !!pool_col := temp_row[[pool_col]],
             found
         )
-    })
-    lups <- lups %>%
+    }) |>
+        purrr::list_rbind()
+    lups <- lups |>
         tidyr::nest(Files = dplyr::all_of(
             c("Quantification_type", "Files_found")
         ))
     lups <- .trace_anomalies(lups)
     lups
-}
-
-
-# Simple function to manage user input for duplicate file choices for each
-# quantification type in a single project/pool pair (use internally in
-# `.manage_anomalies_interactive`).
-#
-# @param q_types Vector of characters containing the unique quantification
-# types that are detected as duplicates
-# @param dupl The tibble containing quantification types and path to the files
-# found for a single project/pool pair
-# @keywords internal
-#' @importFrom dplyr filter slice bind_rows
-#' @importFrom purrr map reduce
-#' @importFrom rlang .data
-#
-# @return An updated tibble containing files chosen for each type
-.choose_duplicates_files_interactive <- function(q_types, dupl) {
-    non_dup <- dupl %>% dplyr::filter(!.data$Quantification_type %in% q_types)
-    type_choice <- purrr::map(q_types, function(x) {
-        cat("---Quantification type: ", x, "---\n\n")
-        temp <- dupl %>% dplyr::filter(.data$Quantification_type == x)
-        cat("[0] QUIT\n",
-            paste0("[", seq_along(temp$Files_found), "] ", temp$Files_found,
-                collapse = "\n\n"
-            ),
-            sep = "\n"
-        )
-        repeat {
-            cat("\n\nType the index number: ")
-            connection <- getOption("ISAnalytics.connection", stdin())
-            if (length(connection) > 1) {
-                connection <- connection[7]
-            }
-            ch <- readLines(con = connection, n = 1)
-            ch <- as.numeric(ch)
-            if (!is.na(ch) &
-                is.numeric(ch) &
-                ch >= 0 & ch <= length(temp$Files_found)) {
-                if (ch == 0) {
-                    stop("Quitting", call. = FALSE)
-                } else {
-                    break
-                }
-            }
-        }
-        temp %>%
-            dplyr::slice(ch) %>%
-            dplyr::bind_rows(non_dup)
-    })
-    type_choice <- purrr::reduce(type_choice, dplyr::bind_rows)
-}
-
-# Manages anomalies for files found.
-#
-# The function manages anomalies found for files after scanning appropriate
-# folders by:
-# * Removing files not found (files for which Files_count$Found == 0 and Path
-# is NA) and printing a message to notify user
-# * Removing duplicates by asking the user which files to keep for each
-# quantification type, pool and project
-#
-# @param files_found The tibble obtained via calling `.lookup_matrices`
-# @keywords internal
-#' @importFrom dplyr filter select rename bind_rows arrange
-#' @importFrom tidyr unnest
-#' @importFrom tibble as_tibble tibble
-#' @importFrom purrr pmap flatten reduce
-#
-# @return A tibble containing for each project, pool and quantification type
-# the files chosen (ideally 1 for each quantification type if found, no more
-# than 1 per type)
-.manage_anomalies_interactive <- function(files_found, proj_col, pool_col) {
-    # Isolate anomalies in files found
-    anomalies <- files_found %>% dplyr::filter(.data$Anomalies == TRUE)
-    files_found <- files_found %>% dplyr::filter(.data$Anomalies == FALSE)
-    # If there are no anomalies to fix, return chosen files
-    if (nrow(anomalies) == 0) {
-        files_to_import <- files_found %>%
-            dplyr::select(
-                dplyr::all_of(c(proj_col, pool_col, "Files"))
-            ) %>%
-            tidyr::unnest(dplyr::all_of("Files")) %>%
-            dplyr::rename(Files_chosen = "Files_found")
-        return(files_to_import)
-    }
-    repeat {
-        # For each ProjectID and PoolID
-        files_to_import <-
-            purrr::pmap(anomalies, function(...) {
-                l <- list(...)
-                current <- tibble::as_tibble(l[c(
-                    proj_col,
-                    pool_col
-                )])
-                current_files <- tibble::as_tibble(purrr::flatten(l["Files"]))
-                current_count <- tibble::as_tibble(
-                    purrr::flatten(l["Files_count"])
-                )
-                # Find missing files first
-                missing <- current_count %>% dplyr::filter(.data$Found == 0)
-                if (nrow(missing) > 0) {
-                    rlang::inform("Some files are missing and will be ignored")
-                    current_files <- current_files %>%
-                        dplyr::filter(!.data$Quantification_type %in%
-                            missing$Quantification_type)
-                }
-                # Manage duplicates
-                duplicate <- current_count %>% dplyr::filter(.data$Found > 1)
-                if (nrow(duplicate) > 0) {
-                    rlang::inform("Duplicates found for some files")
-                    cat("Plese select one file for each group, type the index ",
-                        "as requested\n\n",
-                        sep = ""
-                    )
-                    cat("#### Project: ", current[[proj_col]], "####\n\n")
-                    cat(
-                        "#### Pool: ", current[[pool_col]],
-                        "####\n\n"
-                    )
-                    current_files <- .choose_duplicates_files_interactive(
-                        duplicate$Quantification_type, current_files
-                    )
-                }
-                to_import <- tibble::tibble(
-                    !!proj_col := current[[proj_col]],
-                    !!pool_col := current[[pool_col]],
-                    current_files
-                )
-                to_import <- to_import %>%
-                    dplyr::rename(Files_chosen = "Files_found")
-            })
-        # Obtain single tibble for all anomalies
-        files_to_import <- purrr::reduce(files_to_import, dplyr::bind_rows)
-        cat("\nYour choices: ", sep = "\n")
-        print(files_to_import)
-        cat("\nFiles chosen details:\n")
-        cat(paste0(
-            seq_along(files_to_import$Files_chosen), "-",
-            files_to_import$Files_chosen
-        ), sep = "\n\n")
-        cat("\nConfirm your choices? [y/n]", sep = "")
-        repeat {
-            connection <- getOption("ISAnalytics.connection", stdin())
-            if (length(connection) > 1) {
-                connection <- connection[8]
-            }
-            confirm <- readLines(con = connection, n = 1)
-            if (!confirm %in% c("y", "n")) {
-                message(paste(
-                    "Invalid choice, please select one between",
-                    "y or n"
-                ))
-            } else {
-                break
-            }
-        }
-        if (confirm == "y") {
-            # Add non-anomalies
-            if (nrow(files_found) > 0) {
-                files_found <- files_found %>%
-                    dplyr::select(
-                        dplyr::all_of(c(proj_col, pool_col, "Files"))
-                    ) %>%
-                    tidyr::unnest(dplyr::all_of("Files")) %>%
-                    dplyr::rename(Files_chosen = "Files_found")
-                files_to_import <- files_to_import %>%
-                    dplyr::bind_rows(files_found) %>%
-                    dplyr::arrange(.data[[proj_col]])
-            }
-            return(files_to_import)
-        } else {
-            next
-        }
-    }
 }
 
 
@@ -2617,7 +2230,7 @@
         tibble::as_tibble_col(mtc, column_name = x)
     })
     p_matches <- purrr::reduce(p_matches, function(x, y) {
-        x %>% dplyr::bind_cols(y)
+        x |> dplyr::bind_cols(y)
     })
     p_matches
 }
@@ -2659,24 +2272,24 @@
 .update_as_option <- function(files_nested, p_matches, matching_opt) {
     patterns <- colnames(p_matches)
     # Bind columns of Files nested tbl with pattern matches results
-    p_matches <- files_nested %>% dplyr::bind_cols(p_matches)
+    p_matches <- files_nested |> dplyr::bind_cols(p_matches)
     # Find the different quantification types in the files_found
-    types <- p_matches %>%
-        dplyr::select(dplyr::all_of("Quantification_type")) %>%
-        dplyr::distinct() %>%
+    types <- p_matches |>
+        dplyr::select(dplyr::all_of("Quantification_type")) |>
+        dplyr::distinct() |>
         dplyr::pull(.data$Quantification_type)
     # For each quantification type
     select_matches <- function(x) {
         # Obtain a summary of matches (matches ALL patterns or ANY pattern)
-        temp <- p_matches %>%
-            dplyr::filter(.data$Quantification_type == x) %>%
-            dplyr::rowwise() %>%
+        temp <- p_matches |>
+            dplyr::filter(.data$Quantification_type == x) |>
+            dplyr::rowwise() |>
             dplyr::mutate(
                 ALL = .all_match(
                     dplyr::c_across(dplyr::all_of(patterns))
                 ),
                 ANY = .any_match(dplyr::c_across(dplyr::all_of(patterns)))
-            ) %>%
+            ) |>
             dplyr::ungroup()
         # If the matching option is "ANY" - preserve files that match any of the
         # given patterns
@@ -2684,8 +2297,8 @@
             if (!all(is.na(temp$ANY)) & any(temp$ANY)) {
                 # If there is at least 1 match in the group, files that match
                 # are kept
-                files_keep <- temp %>%
-                    dplyr::filter(.data$ANY == TRUE) %>%
+                files_keep <- temp |>
+                    dplyr::filter(.data$ANY == TRUE) |>
                     dplyr::select(
                         dplyr::all_of(c(
                             "Quantification_type", "Files_found"
@@ -2694,11 +2307,11 @@
             } else {
                 # If none of the files match, none is preserved, file is
                 # converted to NA
-                files_keep <- temp %>%
-                    dplyr::slice(1) %>%
+                files_keep <- temp |>
+                    dplyr::slice(1) |>
                     dplyr::mutate(Files_found = fs::as_fs_path(
                         NA_character_
-                    )) %>%
+                    )) |>
                     dplyr::select(dplyr::all_of(c(
                         "Quantification_type", "Files_found"
                     )))
@@ -2710,19 +2323,19 @@
             if (!all(is.na(temp$ALL)) & any(temp$ALL)) {
                 # If there is at least 1 match in the group, files that match
                 # are kept
-                files_keep <- temp %>%
-                    dplyr::filter(.data$ALL == TRUE) %>%
+                files_keep <- temp |>
+                    dplyr::filter(.data$ALL == TRUE) |>
                     dplyr::select(dplyr::all_of(c(
                         "Quantification_type", "Files_found"
                     )))
             } else {
                 # If none of the files match none is preserved, file is
                 # converted to NA
-                files_keep <- temp %>%
-                    dplyr::slice(1) %>%
+                files_keep <- temp |>
+                    dplyr::slice(1) |>
                     dplyr::mutate(Files_found = fs::as_fs_path(
                         NA_character_
-                    )) %>%
+                    )) |>
                     dplyr::select(dplyr::all_of(c(
                         "Quantification_type", "Files_found"
                     )))
@@ -2735,23 +2348,23 @@
             # Check first if some files match all the patterns
             if (!all(is.na(temp$ALL)) & any(temp$ALL)) {
                 # Preserve only the ones that match
-                files_keep <- temp %>%
-                    dplyr::filter(.data$ALL == TRUE) %>%
+                files_keep <- temp |>
+                    dplyr::filter(.data$ALL == TRUE) |>
                     dplyr::select(dplyr::all_of(c(
                         "Quantification_type", "Files_found"
                     )))
             } else if (!all(is.na(temp$ANY)) & any(temp$ANY)) {
                 # If none match all the patterns check files that match any of
                 # the patterns and preserve only those
-                files_keep <- temp %>%
-                    dplyr::filter(.data$ANY == TRUE) %>%
+                files_keep <- temp |>
+                    dplyr::filter(.data$ANY == TRUE) |>
                     dplyr::select(dplyr::all_of(c(
                         "Quantification_type", "Files_found"
                     )))
             } else {
                 # If there are no files that match any of the patterns simply
                 # preserve the files found
-                files_keep <- temp %>%
+                files_keep <- temp |>
                     dplyr::select(dplyr::all_of(c(
                         "Quantification_type", "Files_found"
                     )))
@@ -2768,13 +2381,14 @@
 # root of the file system for AUTO mode.
 #
 # @return A tibble containing all found files, including duplicates and missing
-.lookup_matrices_auto <- function(association_file,
-    quantification_type,
-    matrix_type,
-    patterns,
-    matching_opt,
-    proj_col,
-    pool_col) {
+.lookup_matrices_auto <- function(
+        association_file,
+        quantification_type,
+        matrix_type,
+        patterns,
+        matching_opt,
+        proj_col,
+        pool_col) {
     files_found <- .lookup_matrices(
         association_file,
         quantification_type,
@@ -2785,7 +2399,7 @@
     if (nrow(files_found) > 0 & !is.null(patterns)) {
         pre_filtering <- function(...) {
             l <- list(...)
-            files_nested <- tibble::as_tibble(purrr::flatten(l["Files"]))
+            files_nested <- l[["Files"]]
             split <- stringr::str_split(files_nested$Files_found, "\\/")
             filenames <- unlist(purrr::map(split, function(x) {
                 utils::tail(x, n = 1)
@@ -2795,8 +2409,8 @@
             to_keep
         }
         matching_patterns <- purrr::pmap(files_found, pre_filtering)
-        files_found <- files_found %>%
-            dplyr::mutate(Files = matching_patterns) %>%
+        files_found <- files_found |>
+            dplyr::mutate(Files = matching_patterns) |>
             dplyr::select(
                 dplyr::all_of(c(proj_col, pool_col, "Files"))
             )
@@ -2819,22 +2433,22 @@
 #' @importFrom rlang .data
 #' @importFrom tidyr unnest
 #' @importFrom tibble as_tibble tibble
-#' @importFrom purrr pmap flatten
 #
 # @return A tibble containing for each project, pool and quantification type
 # the files chosen
-.manage_anomalies_auto <- function(files_found, proj_col,
-    pool_col) {
+.manage_anomalies_auto <- function(
+        files_found, proj_col,
+        pool_col) {
     # Isolate anomalies in files found
-    anomalies <- files_found %>% dplyr::filter(.data$Anomalies == TRUE)
-    files_found <- files_found %>% dplyr::filter(.data$Anomalies == FALSE)
+    anomalies <- files_found |> dplyr::filter(.data$Anomalies == TRUE)
+    files_found <- files_found |> dplyr::filter(.data$Anomalies == FALSE)
     # If there are no anomalies to fix, return chosen files
     if (nrow(anomalies) == 0) {
-        files_to_import <- files_found %>%
+        files_to_import <- files_found |>
             dplyr::select(
                 dplyr::all_of(c(proj_col, pool_col, "Files"))
-            ) %>%
-            tidyr::unnest(dplyr::all_of("Files")) %>%
+            ) |>
+            tidyr::unnest(dplyr::all_of("Files")) |>
             dplyr::rename(Files_chosen = "Files_found")
         return(files_to_import)
     }
@@ -2845,8 +2459,8 @@
             proj_col,
             pool_col
         )])
-        current_files <- tibble::as_tibble(purrr::flatten(l["Files"]))
-        current_count <- tibble::as_tibble(purrr::flatten(l["Files_count"]))
+        current_files <- l[["Files"]]
+        current_count <- l[["Files_count"]]
         reported_missing_or_dupl <- tibble::tibble(
             !!proj_col := character(),
             !!pool_col := character(),
@@ -2855,40 +2469,40 @@
             Duplicated = logical()
         )
         # Find missing files first
-        missing <- current_count %>% dplyr::filter(.data$Found == 0)
+        missing <- current_count |> dplyr::filter(.data$Found == 0)
         if (nrow(missing) > 0) {
-            current_files <- current_files %>%
+            current_files <- current_files |>
                 dplyr::filter(!.data$Quantification_type %in%
                     missing$Quantification_type)
             reported_missing_or_dupl <- dplyr::bind_rows(
                 reported_missing_or_dupl,
-                missing %>%
-                    dplyr::select(dplyr::all_of("Quantification_type")) %>%
+                missing |>
+                    dplyr::select(dplyr::all_of("Quantification_type")) |>
                     dplyr::mutate(
                         !!proj_col := current[[proj_col]],
                         !!pool_col := current[[pool_col]],
                         Missing = TRUE,
                         Duplicated = FALSE
-                    ) %>%
+                    ) |>
                     dplyr::rename(Quantification = "Quantification_type")
             )
         }
         # Manage duplicates
-        duplicate <- current_count %>% dplyr::filter(.data$Found > 1)
+        duplicate <- current_count |> dplyr::filter(.data$Found > 1)
         if (nrow(duplicate) > 0) {
-            current_files <- current_files %>%
+            current_files <- current_files |>
                 dplyr::filter(!.data$Quantification_type %in%
                     duplicate$Quantification_type)
             reported_missing_or_dupl <- dplyr::bind_rows(
                 reported_missing_or_dupl,
-                duplicate %>%
-                    dplyr::select(dplyr::all_of("Quantification_type")) %>%
+                duplicate |>
+                    dplyr::select(dplyr::all_of("Quantification_type")) |>
                     dplyr::mutate(
                         !!proj_col := current[[proj_col]],
                         !!pool_col := current[[pool_col]],
                         Missing = FALSE,
                         Duplicated = TRUE
-                    ) %>%
+                    ) |>
                     dplyr::rename(Quantification = "Quantification_type")
             )
         }
@@ -2898,12 +2512,14 @@
                 current[[pool_col]],
             current_files
         )
-        to_import <- to_import %>% dplyr::rename(Files_chosen = "Files_found")
+        to_import <- to_import |> dplyr::rename(Files_chosen = "Files_found")
         return(list(to_import = to_import, reported = reported_missing_or_dupl))
     }
     files_to_import <- purrr::pmap(anomalies, process_anomalie)
-    reported_anomalies <- purrr::map_df(files_to_import, ~ .x$reported)
-    files_to_import <- purrr::map_df(files_to_import, ~ .x$to_import)
+    reported_anomalies <- purrr::map(files_to_import, ~ .x$reported) |>
+        purrr::list_rbind()
+    files_to_import <- purrr::map(files_to_import, ~ .x$to_import) |>
+        purrr::list_rbind()
     # Report missing or duplicated
     if (getOption("ISAnalytics.verbose", TRUE) == TRUE &&
         nrow(reported_anomalies) > 0) {
@@ -2913,8 +2529,8 @@
                     "Here is a summary of missing files:\n",
                     paste0(
                         utils::capture.output(print(
-                            reported_anomalies %>%
-                                dplyr::filter(.data$Missing == TRUE) %>%
+                            reported_anomalies |>
+                                dplyr::filter(.data$Missing == TRUE) |>
                                 dplyr::select(
                                     dplyr::all_of(c("Duplicated", "Missing"))
                                 )
@@ -2937,8 +2553,8 @@
                     "Here is a summary of duplicated files:\n",
                     paste0(utils::capture.output(
                         print(
-                            reported_anomalies %>%
-                                dplyr::filter(.data$Duplicated == TRUE) %>%
+                            reported_anomalies |>
+                                dplyr::filter(.data$Duplicated == TRUE) |>
                                 dplyr::select(
                                     dplyr::all_of(c("Duplicated", "Missing"))
                                 )
@@ -2951,14 +2567,14 @@
     }
     # Add non-anomalies
     if (nrow(files_found) > 0) {
-        files_found <- files_found %>%
+        files_found <- files_found |>
             dplyr::select(
                 dplyr::all_of(c(proj_col, pool_col, "Files"))
-            ) %>%
-            tidyr::unnest(dplyr::all_of("Files")) %>%
+            ) |>
+            tidyr::unnest(dplyr::all_of("Files")) |>
             dplyr::rename(Files_chosen = "Files_found")
-        files_to_import <- files_to_import %>%
-            dplyr::bind_rows(files_found) %>%
+        files_to_import <- files_to_import |>
+            dplyr::bind_rows(files_found) |>
             dplyr::arrange(.data[[proj_col]], .data[[pool_col]])
     }
     files_to_import
@@ -2967,102 +2583,75 @@
 
 # Internal function for parallel import of a single quantification
 # type files.
-#
-# @param q_type The quantification type (single string)
-# @param files Files_found table where absolute paths of chosen files
-# are stored
-# @param workers Number of parallel workers
-# @keywords internal
-#' @importFrom dplyr filter mutate bind_rows distinct
-#' @importFrom purrr is_empty reduce
-#
-# @return A single tibble with all data from matrices of same quantification
-# type in tidy format
-.import_type <- function(q_type, files, cluster,
-    progress, import_matrix_args) {
-    files <- files %>%
-        dplyr::filter(.data$Quantification_type == q_type)
-    sample_col_name <- if ("id_col_name" %in% names(import_matrix_args)) {
-        import_matrix_args[["id_col_name"]]
-    } else {
-        pcr_id_column()
-    }
-    FUN <- function(x, arg_list) {
-        matrix <- do.call(.import_single_matrix, args = append(
-            list(path = x),
-            arg_list
-        ))
+# - type_df is files_to_import df filtered for a single quantification type
+# (potentially contains more pools but all the same type)
+.import_type <- function(type_df, import_matrix_args, progr, max_workers) {
+    wrapper <- function(path, import_matrix_args, progress) {
+        matrix <- rlang::exec(.import_single_matrix,
+            path = path,
+            !!!import_matrix_args
+        )
         if (!is.null(progress)) {
             progress()
         }
         return(matrix)
     }
-    if (!is.null(cluster)) {
-        # Import every file
-        suppressWarnings({
-            matrices <- BiocParallel::bptry(
-                BiocParallel::bplapply(files$Files_chosen,
-                    FUN = FUN,
-                    arg_list = import_matrix_args,
-                    BPPARAM = cluster
-                )
-            )
-        })
-        correct <- BiocParallel::bpok(matrices)
+    type_matrices <- .execute_map_job(
+        data_list = type_df$Files_chosen,
+        fun_to_apply = wrapper,
+        fun_args = list(import_matrix_args = import_matrix_args),
+        stop_on_error = FALSE,
+        progrs = progr,
+        max_workers = max_workers
+    )
+    correct <- if (is.null(type_matrices$err)) {
+        rep_len(TRUE, length(type_matrices$res))
     } else {
-        arg_list <- append(
-            import_matrix_args,
-            list(
-                .x = files$Files_chosen,
-                .f = FUN
-            )
-        )
-        matrices <- rlang::exec(
-            purrr::safely(purrr::map),
-            !!!arg_list
-        )
-        correct <- purrr::map_lgl(matrices$error, ~ is.null(.x))
-        matrices <- matrices$result
+        purrr::map_lgl(type_matrices$err, ~ is.null(.x))
     }
-
-    samples_count <- purrr::map2_int(matrices, correct, ~ {
+    errors <- type_matrices$err
+    type_matrices <- type_matrices$res
+    sample_col_name <- if ("id_col_name" %in% names(import_matrix_args)) {
+        import_matrix_args[["id_col_name"]]
+    } else {
+        pcr_id_column()
+    }
+    samples_count <- purrr::map2_int(type_matrices, correct, ~ {
         if (.y) {
-            .x %>%
-                dplyr::distinct(.data[[sample_col_name]]) %>%
-                dplyr::pull(.data[[sample_col_name]]) %>%
+            .x |>
+                dplyr::distinct(.data[[sample_col_name]]) |>
+                dplyr::pull(.data[[sample_col_name]]) |>
                 length()
         } else {
             NA_integer_
         }
     })
-    distinct_is <- purrr::map2_int(matrices, correct, ~ {
+    distinct_is <- purrr::map2_int(type_matrices, correct, ~ {
         if (.y) {
-            .x %>%
+            .x |>
                 dplyr::distinct(dplyr::across(
                     dplyr::all_of(mandatory_IS_vars())
-                )) %>%
+                )) |>
                 nrow()
         } else {
             NA_integer_
         }
     })
-    imported_files <- files %>%
+    imported_files <- type_df |>
         dplyr::mutate(
             Imported = correct,
             Number_of_samples = samples_count,
-            Distinct_is = distinct_is
+            Distinct_is = distinct_is,
+            Errors = errors
         )
-    matrices <- matrices[correct]
+    type_matrices <- type_matrices[correct]
     # Bind rows in single tibble for all files
-    if (purrr::is_empty(matrices)) {
+    if (purrr::is_empty(type_matrices)) {
         return(list(matrix = NULL, imported_files = imported_files))
     }
-    matrices <- purrr::reduce(matrices, function(x, y) {
-        x %>%
-            dplyr::bind_rows(y) %>%
-            dplyr::distinct()
-    })
-    list(matrix = matrices, imported_files = imported_files)
+    type_matrices <- purrr::reduce(type_matrices, ~ dplyr::bind_rows(.x, .y) |>
+        dplyr::distinct())
+    list(matrix = type_matrices, imported_files = imported_files)
 }
 
 # Internal function for importing all files for each quantification type.
@@ -3073,61 +2662,27 @@
 # @return A named list of tibbles
 .parallel_import_merge <- function(files_to_import, workers,
     import_matrix_args) {
-    # Find the actual quantification types included
-    q_types <- files_to_import %>%
-        dplyr::distinct(.data$Quantification_type) %>%
-        dplyr::pull(.data$Quantification_type)
-    .check_parallel_packages()
-    if (getOption("ISAnalytics.parallel_processing", TRUE) == TRUE) {
-        # Register backend + progressor
-        old_be <- doFuture::registerDoFuture()
-        old_plan <- future::plan(future::multisession, workers = workers)
-        on.exit(
-            {
-                future::plan(old_plan)
-                foreach::setDoPar(
-                    fun = old_be$fun,
-                    data = old_be$data, info = old_be$info
-                )
-            },
-            add = TRUE
-        )
-        p <- BiocParallel::DoparParam(stop.on.error = FALSE)
-        prog <- if (rlang::is_installed("progressr")) {
-            progressr::progressor(steps = nrow(files_to_import))
-        } else {
-            NULL
-        }
-        # Import and merge for every quantification type
-        imported_matrices <- purrr::map(q_types,
-            .f = ~ .import_type(
-                .x,
-                files_to_import,
-                p,
-                prog,
-                import_matrix_args
-            )
-        ) %>%
-            purrr::set_names(q_types)
+    split_by_quant <- files_to_import |>
+        dplyr::group_by(.data$Quantification_type) |>
+        dplyr::group_split()
+    quants <- purrr::map_chr(split_by_quant, ~ .x$Quantification_type[1])
+    split_by_quant <- purrr::set_names(split_by_quant, quants)
+    progrs <- if (rlang::is_installed("progressr")) {
+        progressr::progressor(steps = nrow(files_to_import))
     } else {
-        p <- NULL
-        # Import and merge for every quantification type
-        imported_matrices <- purrr::map(q_types,
-            .f = ~ .import_type(
-                .x,
-                files_to_import,
-                p,
-                prog,
-                import_matrix_args
-            )
-        ) %>%
-            purrr::set_names(q_types)
+        NULL
     }
-
-
-    summary_files <- purrr::map(imported_matrices, ~ .x$imported_files) %>%
+    imported <- purrr::map(
+        split_by_quant,
+        ~ .import_type(
+            type_df = .x,
+            import_matrix_args = import_matrix_args,
+            progr = progrs, max_workers = workers
+        )
+    )
+    summary_files <- purrr::map(imported, ~ .x$imported_files) |>
         purrr::reduce(dplyr::bind_rows)
-    imported_matrices <- purrr::map(imported_matrices, ~ .x$matrix)
+    imported_matrices <- purrr::map(imported, ~ .x$matrix)
 
     list(matrix = imported_matrices, summary = summary_files)
 }
@@ -3217,9 +2772,10 @@
 # for association file. Checks if all columns provided in input are present
 # and in correct format and checks if required tags are present
 # - Returns the selected and found tags if no errors are raised
-.collisions_check_input_af <- function(association_file,
-    date_col,
-    independent_sample_id) {
+.collisions_check_input_af <- function(
+        association_file,
+        date_col,
+        independent_sample_id) {
     stopifnot(is.data.frame(association_file))
     stopifnot(is.character(independent_sample_id) &&
         !purrr::is_empty(independent_sample_id))
@@ -3263,65 +2819,66 @@
 # the examined matrix there are additional CompleteAmplificationIDs contained
 # in the association file that weren't included in the integration matrix (for
 # example failed runs).
-#' @importFrom rlang .data sym
-.check_same_info <- function(association_file, df, req_tag_cols,
-    indep_sample_id) {
-    data.table::setDT(req_tag_cols)
-    joined <- association_file %>%
+.check_same_info <- function(
+        association_file, df, req_tag_cols,
+        indep_sample_id) {
+    joined <- association_file |>
         dplyr::left_join(df, by = pcr_id_column())
-    proj_col_name <- req_tag_cols[eval(rlang::expr(
-        !!sym("tag") == "project_id"
-    ))][["names"]]
-    projects <- joined %>%
+    proj_col_name <- req_tag_cols |>
+        dplyr::filter(.data$tag == "project_id") |>
+        dplyr::pull(.data$names)
+    projects <- joined |>
         dplyr::filter(!dplyr::if_all(
             .cols = dplyr::all_of(mandatory_IS_vars()),
             .fns = is.na
-        )) %>%
-        dplyr::distinct(.data[[proj_col_name]]) %>%
+        )) |>
+        dplyr::distinct(.data[[proj_col_name]]) |>
         dplyr::pull(.data[[proj_col_name]])
     wanted_tags <- c(
         "subject", "tissue", "cell_marker", "tp_days"
     )
     wanted <- association_file_columns(TRUE)
-    data.table::setDT(wanted)
-    wanted <- wanted[eval(sym("tag")) %in% wanted_tags &
-        eval(sym("names")) %in% colnames(association_file), ]
-    wanted <- data.table::rbindlist(list(req_tag_cols, wanted))
-    missing_in_df <- joined %>%
+    wanted <- wanted |>
+        dplyr::filter(
+            .data$tag %in% wanted_tags,
+            .data$names %in% colnames(association_file)
+        )
+    wanted <- req_tag_cols |>
+        dplyr::bind_rows(wanted)
+    missing_in_df <- joined |>
         dplyr::filter(
             dplyr::if_all(
                 .cols = dplyr::all_of(mandatory_IS_vars()),
                 .fns = is.na
             ) & .data[[proj_col_name]] %in% projects
-        ) %>%
+        ) |>
         dplyr::distinct(dplyr::across(
             dplyr::all_of(c(wanted$names, indep_sample_id))
         ))
-    reduced_af <- association_file %>%
+    reduced_af <- association_file |>
         dplyr::filter(
             .data[[proj_col_name]] %in% projects
         )
-    data.table::setDT(reduced_af)
-    data.table::setDT(missing_in_df)
     list(miss = missing_in_df, reduced_af = reduced_af)
 }
 
 
 # Identifies independent samples and separates the joined_df in
 # collisions and non-collisions
-#' @importFrom data.table .SD
 # @return A named list containing the splitted joined_df for collisions and
 # non-collisions
 .identify_independent_samples <- function(joined, indep_sample_id) {
-    data.table::setDT(joined)
-    data.table::setkeyv(joined, cols = mandatory_IS_vars())
-    vars_to_group <- c(mandatory_IS_vars(), indep_sample_id)
-    joined_red <- joined[, mget(vars_to_group)]
-    temp <- joined_red[, list(N = data.table::uniqueN(.SD)),
-        keyby = eval(mandatory_IS_vars())
-    ]
-    temp <- temp[eval(rlang::sym("N")) > 1, ]
-    non_collisions <- joined[!temp, on = eval(mandatory_IS_vars())]
+    temp <- joined |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) |>
+        dplyr::summarise(
+            N = dplyr::n_distinct(
+                !!!purrr::map(indep_sample_id, ~ rlang::sym(.x))
+            ),
+            .groups = "drop"
+        ) |>
+        dplyr::filter(.data$N > 1)
+    non_collisions <- joined |>
+        dplyr::anti_join(temp, by = mandatory_IS_vars())
     collisions <- dplyr::semi_join(joined, temp, by = mandatory_IS_vars())
     list(collisions = collisions, non_collisions = non_collisions)
 }
@@ -3334,12 +2891,12 @@
 # original input data.
 #
 # @param x - All metadata associated with a single collision event in
-#            a data.table format (does not contain mandatory IS vars)
+#            a data frame format (does not contain mandatory IS vars)
 # @param date_col - The name of the date column chosen for collision removal
 # @param ind_sample_key - character vector containing the columns that identify
 #                       independent samples
 # @return A named list with:
-# * $data: a data.table, containing the data (unmodified or modified)
+# * $data: a data frame, containing the data (unmodified or modified)
 # * $check: a logical value indicating whether the analysis was successful or
 # not (and therefore there is the need to perform the next step)
 .discriminate_by_date <- function(x, date_col, ind_sample_key) {
@@ -3355,11 +2912,10 @@
     if (length(dates[dates %in% dates[1]]) > 1) {
         return(list(data = NULL, check = FALSE))
     }
-    winning_sample <- x[1, mget(ind_sample_key)]
+    winning_sample <- x[1, ind_sample_key]
     # Filter the winning rows
-    x <- x %>%
+    x <- x |>
         dplyr::semi_join(winning_sample, by = ind_sample_key)
-    data.table::setDT(x)
     return(list(data = x, check = TRUE))
 }
 
@@ -3373,28 +2929,25 @@
 # original input to be submitted to the next step.
 #
 # @param x - All metadata associated with a single collision event in
-#            a data.table format (does not contain mandatory IS vars)
+#            a data frame format (does not contain mandatory IS vars)
 # @param repl_col - The name of the column containing the replicate number
 # @param ind_sample_key - character vector containing the columns that identify
 #                       independent samples
-#' @importFrom data.table .N
 # @return A named list with:
-# * $data: a data.table, containing the data (unmodified or modified)
+# * $data: a data frame, containing the data (unmodified or modified)
 # * $check: a logical value indicating whether the analysis was successful or
 # not (and therefore there is the need to perform the next step)
 .discriminate_by_replicate <- function(x, repl_col, ind_sample_key) {
-    temp <- x %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) %>%
-        dplyr::summarise(N = dplyr::n(), .groups = "drop") %>%
+    temp <- x |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) |>
+        dplyr::summarise(N = dplyr::n(), .groups = "drop") |>
         dplyr::arrange(dplyr::desc(.data$N))
-    data.table::setDT(temp)
     if (length(temp$N) != 1 & !temp$N[1] > temp$N[2]) {
         return(list(data = NULL, check = FALSE))
     }
-    temp <- temp[1, mget(ind_sample_key)]
-    x <- x %>%
+    temp <- temp[1, ind_sample_key]
+    x <- x |>
         dplyr::semi_join(temp, by = ind_sample_key)
-    data.table::setDT(x)
     return(list(data = x, check = TRUE))
 }
 
@@ -3408,7 +2961,7 @@
 # the first group, otherwise the analysis fails and returns the original input.
 #
 # @param x - All metadata associated with a single collision event in
-#            a data.table format (does not contain mandatory IS vars)
+#            a data frame format (does not contain mandatory IS vars)
 # @param reads_ratio The value of the ratio between sequence count values to
 # check
 # @param seqCount_col The name of the sequence count column (support
@@ -3419,30 +2972,29 @@
 # * $data: a tibble, containing the data (unmodified or modified)
 # * $check: a logical value indicating whether the analysis was successful or
 # not (and therefore there is the need to perform the next step)
-.discriminate_by_seqCount <- function(x,
-    reads_ratio,
-    seqCount_col,
-    ind_sample_key) {
-    temp <- x %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) %>%
-        dplyr::summarise(sum = sum(.data[[seqCount_col]]), .groups = "drop") %>%
+.discriminate_by_seqCount <- function(
+        x,
+        reads_ratio,
+        seqCount_col,
+        ind_sample_key) {
+    temp <- x |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) |>
+        dplyr::summarise(sum = sum(.data[[seqCount_col]]), .groups = "drop") |>
         dplyr::arrange(dplyr::desc(.data$sum))
-    data.table::setDT(temp)
     ratio <- temp$sum[1] / temp$sum[2]
     if (!ratio > reads_ratio) {
         return(list(data = NULL, check = FALSE))
     }
-    temp <- temp[1, mget(ind_sample_key)]
-    x <- x %>%
+    temp <- temp[1, ind_sample_key]
+    x <- x |>
         dplyr::semi_join(temp, by = ind_sample_key)
-    data.table::setDT(x)
     return(list(data = x, check = TRUE))
 }
 
 # Internal function that performs four-step-check of collisions for
 # a single integration.
 #
-# @param x - Represents the sub-table (data.table) containing coordinates
+# @param x - Represents the sub-table containing coordinates
 #            and metadata about a SINGLE collision event (same values for
 #            mandatory IS vars)
 # @param date_col The date column to consider
@@ -3459,20 +3011,22 @@
 # * $reassigned: 1 if the integration was successfully reassigned, 0 otherwise
 # * $removed: 1 if the integration is removed entirely because no criteria was
 # met, 0 otherwise
-.four_step_check <- function(x,
-    date_col,
-    repl_col,
-    reads_ratio,
-    seqCount_col,
-    ind_sample_key,
-    progress = NULL) {
-    current_data <- x[, !mandatory_IS_vars()]
+.four_step_check <- function(
+        x,
+        date_col,
+        repl_col,
+        reads_ratio,
+        seqCount_col,
+        ind_sample_key,
+        progress = NULL) {
+    current_data <- x |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
     # Try to discriminate by date
     result <- .discriminate_by_date(current_data, date_col, ind_sample_key)
     if (result$check == TRUE) {
         current_data <- result$data
-        coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
-        res <- cbind(coordinates, current_data)
+        coordinates <- x[seq_len(nrow(current_data)), mandatory_IS_vars()]
+        res <- dplyr::bind_cols(coordinates, current_data)
         if (!is.null(progress)) {
             progress()
         }
@@ -3482,8 +3036,8 @@
     result <- .discriminate_by_replicate(current_data, repl_col, ind_sample_key)
     if (result$check == TRUE) {
         current_data <- result$data
-        coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
-        res <- cbind(coordinates, current_data)
+        coordinates <- x[seq_len(nrow(current_data)), mandatory_IS_vars()]
+        res <- dplyr::bind_cols(coordinates, current_data)
         if (!is.null(progress)) {
             progress()
         }
@@ -3496,8 +3050,8 @@
     )
     if (result$check == TRUE) {
         current_data <- result$data
-        coordinates <- x[seq_len(nrow(current_data)), mget(mandatory_IS_vars())]
-        res <- cbind(coordinates, current_data)
+        coordinates <- x[seq_len(nrow(current_data)), mandatory_IS_vars()]
+        res <- dplyr::bind_cols(coordinates, current_data)
         if (!is.null(progress)) {
             progress()
         }
@@ -3516,18 +3070,18 @@
 # @return A list containing the updated collisions, a numeric value
 # representing the number of integrations removed and a numeric value
 # representing the number of integrations reassigned
-.process_collisions <- function(collisions,
-    date_col,
-    repl_col,
-    reads_ratio,
-    seqCount_col,
-    ind_sample_key,
-    max_workers) {
+.process_collisions <- function(
+        collisions,
+        date_col,
+        repl_col,
+        reads_ratio,
+        seqCount_col,
+        ind_sample_key,
+        max_workers) {
     # Split by IS
-    split_data <- collisions %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) %>%
-        dplyr::group_split() %>%
-        purrr::map(.f = data.table::setDT)
+    split_data <- collisions |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(mandatory_IS_vars()))) |>
+        dplyr::group_split()
     result <- .execute_map_job(
         data_list = split_data,
         fun_to_apply = .four_step_check,
@@ -3542,11 +3096,11 @@
         max_workers = max_workers
     )
     # For each element of result extract and bind the 3 components
-    processed_collisions_df <- purrr::map(result$res, ~ .x$data) %>%
-        purrr::reduce(~ data.table::rbindlist(list(.x, .y)))
-    removed_total <- purrr::map(result$res, ~ .x$removed) %>%
+    processed_collisions_df <- purrr::map(result$res, ~ .x$data) |>
+        purrr::list_rbind()
+    removed_total <- purrr::map(result$res, ~ .x$removed) |>
         purrr::reduce(sum)
-    reassigned_total <- purrr::map(result$res, ~ .x$reassigned) %>%
+    reassigned_total <- purrr::map(result$res, ~ .x$reassigned) |>
         purrr::reduce(sum)
     # Return the summary
     list(
@@ -3568,38 +3122,38 @@
 # integrations found before and after, the sum of the value of the sequence
 # count for each sample before and after and the corresponding deltas.
 .summary_table <- function(before, after, seqCount_col, ind_sample_id) {
-    after_matr <- after %>%
+    after_matr <- after |>
         dplyr::select(dplyr::all_of(c(colnames(after), ind_sample_id)))
 
-    n_int_after <- after_matr %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) %>%
+    n_int_after <- after_matr |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) |>
         dplyr::tally(name = "count_integrations_after")
-    sumReads_after <- after_matr %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) %>%
+    sumReads_after <- after_matr |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) |>
         dplyr::summarise(
             sumSeqReads_after = sum(.data[[seqCount_col]]),
             .groups = "drop_last"
         )
-    temp_aft <- n_int_after %>% dplyr::left_join(sumReads_after,
+    temp_aft <- n_int_after |> dplyr::left_join(sumReads_after,
         by = ind_sample_id
     )
 
-    before_matr <- before %>%
+    before_matr <- before |>
         dplyr::select(dplyr::all_of(c(colnames(after), ind_sample_id)))
-    n_int_before <- before_matr %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) %>%
+    n_int_before <- before_matr |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) |>
         dplyr::tally(name = "count_integrations_before")
-    sumReads_before <- before_matr %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) %>%
+    sumReads_before <- before_matr |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_id))) |>
         dplyr::summarise(
             sumSeqReads_before = sum(.data[[seqCount_col]]),
             .groups = "drop_last"
         )
-    temp_bef <- n_int_before %>% dplyr::left_join(sumReads_before,
+    temp_bef <- n_int_before |> dplyr::left_join(sumReads_before,
         by = ind_sample_id
     )
-    summary <- temp_bef %>%
-        dplyr::left_join(temp_aft, by = ind_sample_id) %>%
+    summary <- temp_bef |>
+        dplyr::left_join(temp_aft, by = ind_sample_id) |>
         dplyr::mutate(
             delta_integrations =
                 .data$count_integrations_before -
@@ -3617,11 +3171,11 @@
 .summary_input <- function(input_df, quant_cols) {
     names(quant_cols) <- NULL
     # Distinct integration sites
-    n_IS <- input_df %>%
-        dplyr::distinct(dplyr::across(mandatory_IS_vars())) %>%
+    n_IS <- input_df |>
+        dplyr::distinct(dplyr::across(mandatory_IS_vars())) |>
         nrow()
-    quant_totals <- input_df %>%
-        dplyr::select(dplyr::all_of(quant_cols)) %>%
+    quant_totals <- input_df |>
+        dplyr::select(dplyr::all_of(quant_cols)) |>
         dplyr::summarise(
             dplyr::across(
                 .cols = dplyr::all_of(quant_cols),
@@ -3631,15 +3185,15 @@
                 .names = "{.col}"
             ),
             .groups = "drop"
-        ) %>%
+        ) |>
         as.list()
     list(total_iss = n_IS, quant_totals = quant_totals)
 }
 
 .per_pool_stats <- function(joined, quant_cols, pool_col) {
     ## Joined is the matrix already joined with metadata
-    df_by_pool <- joined %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(pool_col))) %>%
+    df_by_pool <- joined |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(pool_col))) |>
         dplyr::summarise(dplyr::across(
             .cols = dplyr::all_of(quant_cols),
             .fns = list(
@@ -3655,33 +3209,34 @@
         dfss <- purrr::map(df_cols, function(col) {
             exp <- rlang::expr(`$`(df_by_pool, !!col))
             df <- rlang::eval_tidy(exp)
-            df <- df %>% dplyr::rename_with(.fn = ~ paste0(col, "_", .x))
+            df <- df |> dplyr::rename_with(.fn = ~ paste0(col, "_", .x))
             df
-        }) %>% purrr::set_names(df_cols)
+        }) |> purrr::set_names(df_cols)
         for (dfc in df_cols) {
-            df_by_pool <- df_by_pool %>%
-                dplyr::select(-dplyr::all_of(dfc)) %>%
+            df_by_pool <- df_by_pool |>
+                dplyr::select(-dplyr::all_of(dfc)) |>
                 dplyr::bind_cols(dfss[[dfc]])
         }
     }
     df_by_pool
 }
 
-.collisions_obtain_report_summaries <- function(x,
-    association_file,
-    quant_cols, missing_ind,
-    pcr_col, pre_process,
-    collisions,
-    removed, reassigned,
-    joined, post_joined, pool_col,
-    final_matr,
-    replicate_n_col,
-    independent_sample_id,
-    seq_count_col) {
+.collisions_obtain_report_summaries <- function(
+        x,
+        association_file,
+        quant_cols, missing_ind,
+        pcr_col, pre_process,
+        collisions,
+        removed, reassigned,
+        joined, post_joined, pool_col,
+        final_matr,
+        replicate_n_col,
+        independent_sample_id,
+        seq_count_col) {
     input_summary <- .summary_input(x, quant_cols)
     missing_smpl <- if (!is.null(missing_ind)) {
-        x[missing_ind, ] %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of(pcr_col))) %>%
+        x[missing_ind, ] |>
+            dplyr::group_by(dplyr::across(dplyr::all_of(pcr_col))) |>
             dplyr::summarise(
                 n_IS = dplyr::n(),
                 dplyr::across(
@@ -3700,10 +3255,10 @@
     pre_summary <- .summary_input(pre_process, quant_cols)
     per_pool_stats_pre <- .per_pool_stats(joined, quant_cols, pool_col)
     coll_info <- list(
-        coll_n = collisions %>%
+        coll_n = collisions |>
             dplyr::distinct(
                 dplyr::across(dplyr::all_of(mandatory_IS_vars()))
-            ) %>%
+            ) |>
             nrow(),
         removed = removed,
         reassigned = reassigned
@@ -3734,10 +3289,11 @@
     )
 }
 
-.collisions_obtain_sharing_heatmaps <- function(joined,
-    independent_sample_id,
-    post_joined,
-    report_path) {
+.collisions_obtain_sharing_heatmaps <- function(
+        joined,
+        independent_sample_id,
+        post_joined,
+        report_path) {
     sharing_heatmaps_pre <- sharing_heatmaps_post <- NULL
     withCallingHandlers(
         {
@@ -3853,19 +3409,18 @@
 # Aggregates the association file based on the function table.
 #' @importFrom rlang .data is_function is_formula
 #' @importFrom tibble tibble
-#' @importFrom purrr pmap_df
 # @keywords internal
 #
 # @return A tibble
 .aggregate_meta <- function(association_file, grouping_keys, function_tbl) {
     ## Discard columns that are not present in the af
-    function_tbl <- function_tbl %>%
+    function_tbl <- function_tbl |>
         dplyr::filter(.data$Column %in% colnames(association_file))
     ## If no columns are left return
     if (nrow(function_tbl) == 0) {
         return(NULL)
     }
-    function_tbl <- function_tbl %>%
+    function_tbl <- function_tbl |>
         tidyr::nest(cols = dplyr::all_of("Column"))
     apply_function <- function(Function, Args, Output_colname, cols) {
         Function <- list(Function)
@@ -3875,8 +3430,8 @@
             cols = list(cols)
         )
         if (rlang::is_formula(row$Function[[1]])) {
-            res <- association_file %>%
-                dplyr::group_by(dplyr::across(dplyr::all_of(grouping_keys))) %>%
+            res <- association_file |>
+                dplyr::group_by(dplyr::across(dplyr::all_of(grouping_keys))) |>
                 dplyr::summarise(
                     dplyr::across(
                         dplyr::all_of(row$cols[[1]]$Column),
@@ -3893,14 +3448,13 @@
             } else {
                 row$Args[[1]]
             }
-            res <- association_file %>%
-                dplyr::group_by(dplyr::across(dplyr::all_of(grouping_keys))) %>%
+            res <- association_file |>
+                dplyr::group_by(dplyr::across(dplyr::all_of(grouping_keys))) |>
                 dplyr::summarise(
                     dplyr::across(
                         .cols = dplyr::all_of(row$cols[[1]]$Column),
-                        .fns = row$Function[[1]],
-                        .names = row$Output_colname,
-                        !!!args
+                        .fns = \(x) row$Function[[1]](x, !!!args),
+                        .names = row$Output_colname
                     ),
                     .groups = "drop"
                 )
@@ -3918,19 +3472,20 @@
 # Internal function that performs aggregation on values with a lambda
 # operation.
 # - x is a single matrix
-.aggregate_lambda <- function(x, af, key, value_cols, lambda, group,
-    join_af_by) {
+.aggregate_lambda <- function(
+        x, af, key, value_cols, lambda, group,
+        join_af_by) {
     cols_to_check <- c(group, key, value_cols, join_af_by)
-    joint <- x %>%
+    joint <- x |>
         dplyr::left_join(af, by = join_af_by)
     if (any(!cols_to_check %in% colnames(joint))) {
         missing <- cols_to_check[!cols_to_check %in% colnames(joint)]
         rlang::abort(.missing_user_cols_error(missing))
     }
     cols <- c(colnames(x), key)
-    aggregated_matrices <- joint %>%
-        dplyr::select(dplyr::all_of(cols)) %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(c(group, key)))) %>%
+    aggregated_matrices <- joint |>
+        dplyr::select(dplyr::all_of(cols)) |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(c(group, key)))) |>
         dplyr::summarise(dplyr::across(
             .cols = dplyr::all_of(value_cols),
             .fns = lambda
@@ -3978,18 +3533,25 @@
     max_val
 }
 
+.update_rec_map <- function(rec_map, before, after) {
+    if (is.null(rec_map)) {
+        return()
+    }
+    rec_map$update(before, after)
+}
+
 # Internal function that implements the sliding window algorithm.
 #
 # **NOTE: this function is meant to be called on a SINGLE GROUP,
 # meaning a subset of an integration matrix in which all rows
 # share the same chr (and optionally same strand).**
-#' @importFrom dplyr arrange
-#' @importFrom purrr is_empty map_dfr
-#' @importFrom rlang expr eval_tidy .data sym
-#' @importFrom data.table setDT setnames `%chin%`
-# @keywords internal
 #
-# @return A named list with recalibrated matrix and recalibration map.
+#' @importFrom dplyr filter pull arrange
+#' @importFrom purrr is_empty map set_names
+#' @importFrom rlang as_function
+#' @importFrom utils tail
+#
+# returns only recalibrated chunk
 .sliding_window <- function(x,
     threshold,
     keep_criteria,
@@ -3999,58 +3561,27 @@
     sample_col,
     req_tags,
     add_col_lambdas,
-    produce_map,
+    rec_map,
     progress = NULL) {
-    locus_col <- req_tags %>%
-        dplyr::filter(.data$tag == "locus") %>%
+    locus_col <- req_tags |>
+        dplyr::filter(.data$tag == "locus") |>
         dplyr::pull(.data$names)
     ## Order by integration_locus
-    x <- x %>% dplyr::arrange(.data[[locus_col]])
-    x <- data.table::setDT(x)
-    map_recalibr <- if (produce_map == TRUE) {
-        req_vars <- req_tags$names
-        rec_map <- unique(x[, mget(req_vars)])
-        data.table::setnames(
-            x = rec_map,
-            old = req_vars,
-            new = paste0(req_vars, "_before")
-        )
-        na_type <- purrr::map(req_vars, ~ {
-            col_type <- typeof(x[, get(.x)])
-            fun_name <- paste0("as.", col_type)
-            return(do.call(what = fun_name, args = list(NA)))
-        })
-        rec_map[, c(paste(req_vars, "after", sep = "_")) := na_type]
-    } else {
-        NULL
-    }
+    x <- x |> dplyr::arrange(.data[[locus_col]])
     index <- 1
     repeat {
         # If index is the last row in the data frame return
         if (index == nrow(x)) {
-            if (produce_map == TRUE) {
-                is_predicate <- purrr::map(req_vars, ~ {
-                    var_before <- sym(paste0(.x, "_before"))
-                    value <- x[index, get(.x)]
-                    rlang::expr(!!var_before == !!value)
-                }) %>%
-                    purrr::reduce(~ rlang::expr(!!.x & !!.y))
-                map_recalibr[
-                    eval(is_predicate),
-                    c(
-                        paste0(req_vars, "_after")
-                    ) :=
-                        purrr::map(
-                            req_vars,
-                            ~ eval(sym(paste0(.x, "_before")))
-                        )
-                ]
-            }
+            .update_rec_map(rec_map,
+                before = x[index, req_tags$names],
+                after = x[index, req_tags$names]
+            )
             if (!is.null(progress)) {
                 progress()
             }
-            return(list(recalibrated_matrix = x, map = map_recalibr))
+            return(x)
         }
+        # Otherwise
         ## Compute interval for row
         interval <- x[index, ][[locus_col]] + 1 + threshold
         ## Look ahead for every integration that falls in the interval
@@ -4071,58 +3602,27 @@
         window <- c(index, near)
         row_to_keep <- index
         if (!purrr::is_empty(near)) {
+            # If there are integrations in the interval (recalibration necessary)
             ## Change loci according to criteria
             ######## CRITERIA PROCESSING
             if (keep_criteria == "max_value") {
-                expr <- rlang::expr(`$`(x[window, ], !!max_val_col))
-                to_check <- rlang::eval_tidy(expr)
+                to_check <- x[window, ][[max_val_col]]
                 max <- .find_unique_max(to_check)
                 if (!purrr::is_empty(max)) {
                     row_to_keep <- window[which(to_check == max)]
                     near <- window[!window == row_to_keep]
                 }
             }
-            # Fill map if needed
-            if (produce_map == TRUE) {
-                is_predicate <- purrr::map(req_vars, ~ {
-                    var_before <- sym(paste0(.x, "_before"))
-                    value <- x[window, get(.x)]
-                    if (!is.character(value)) {
-                        return(rlang::expr(!!var_before %in% !!value))
-                    }
-                    rlang::expr(!!var_before %chin% !!value)
-                }) %>%
-                    purrr::reduce(~ rlang::expr(!!.x & !!.y))
-                map_recalibr[
-                    eval(is_predicate),
-                    c(
-                        paste0(req_vars, "_after")
-                    ) :=
-                        purrr::map(
-                            req_vars,
-                            ~ x[row_to_keep][[.x]]
-                        )
-                ]
-            }
+            .update_rec_map(rec_map,
+                before = x[window, req_tags$names],
+                after = x[row_to_keep, req_tags$names]
+            )
             # Change loci and other ids of near integrations
             fields_to_change <- req_tags$names
             if (annotated) {
                 fields_to_change <- c(fields_to_change, annotation_IS_vars())
-                x[near, c(
-                    req_tags$names,
-                    annotation_IS_vars()
-                ) := x[
-                    row_to_keep,
-                    mget(fields_to_change)
-                ]]
-            } else {
-                x[near, c(
-                    req_tags$names
-                ) := x[
-                    row_to_keep,
-                    mget(fields_to_change)
-                ]]
             }
+            x[near, fields_to_change] <- x[row_to_keep, fields_to_change]
             ## Aggregate same IDs
             starting_rows <- nrow(x)
             repeat {
@@ -4132,10 +3632,10 @@
                     break
                 }
                 dupl_indexes <- which(t == d[1])
-                values_sum <- colSums(x[window[dupl_indexes], mget(num_cols)],
+                values_sum <- colSums(x[window[dupl_indexes], num_cols],
                     na.rm = TRUE
                 )
-                x[window[dupl_indexes[1]], c(num_cols) := as.list(values_sum)]
+                x[window[dupl_indexes[1]], num_cols] <- as.list(values_sum)
                 ### Aggregate additional cols
                 if (!is.null(add_col_lambdas) &&
                     !purrr::is_empty(add_col_lambdas)) {
@@ -4147,11 +3647,10 @@
                         return(rlang::as_function(
                             add_col_lambdas[[.x]]
                         )(values))
-                    })
-                    x[window[dupl_indexes[1]], c(names(add_col_lambdas)) :=
-                        agg_cols]
+                    }) |>
+                        purrr::set_names(names(add_col_lambdas))
+                    x[window[dupl_indexes[1]], names(add_col_lambdas)] <- agg_cols
                 }
-
                 x <- x[-window[dupl_indexes[-1]], ]
                 to_drop <- seq(
                     from = length(window),
@@ -4167,114 +3666,18 @@
                 index <- utils::tail(window, n = 1) + 1
             }
         } else {
-            if (produce_map == TRUE) {
-                is_predicate <- purrr::map(req_vars, ~ {
-                    var_before <- sym(paste0(.x, "_before"))
-                    value <- x[window, get(.x)]
-                    if (!is.character(value)) {
-                        return(rlang::expr(!!var_before %in% !!value))
-                    }
-                    rlang::expr(!!var_before %chin% !!value)
-                }) %>%
-                    purrr::reduce(~ rlang::expr(!!.x & !!.y))
-                map_recalibr[
-                    eval(is_predicate),
-                    c(
-                        paste0(req_vars, "_after")
-                    ) :=
-                        purrr::map(
-                            req_vars,
-                            ~ x[row_to_keep][[.x]]
-                        )
-                ]
-            }
+            # If no integrations in interval (no recalibration necessary)
+            .update_rec_map(rec_map,
+                before = x[window, req_tags$names],
+                after = x[row_to_keep, req_tags$names]
+            )
             index <- index + 1
         }
     }
     if (!is.null(progress)) {
         progress()
     }
-    return(list(recalibrated_matrix = x, map = map_recalibr))
-}
-
-
-# Generates a file name for recalibration maps.
-#
-# Unique file names include current date and timestamp.
-# @keywords internal
-#' @importFrom stringr str_replace_all
-#
-# @return A string
-.generate_rec_map_filename <- function() {
-    def <- "recalibration_map.tsv.gz"
-    date <- lubridate::today()
-    return(paste0(date, "_", def))
-}
-
-# Tries to write the recalibration map to a tsv file.
-#
-# @param map The recalibration map
-# @param file_path The file path as a string
-#' @importFrom fs dir_create path_wd path
-#' @importFrom readr write_tsv
-# @keywords internal
-#
-# @return Nothing
-.write_recalibr_map <- function(map, file_path) {
-    if (!fs::file_exists(file_path)) {
-        ext <- fs::path_ext(file_path)
-        ## if ext is empty assume it's a folder
-        if (ext == "") {
-            fs::dir_create(file_path)
-            gen_filename <- .generate_rec_map_filename()
-            tmp_filename <- fs::path(file_path, gen_filename)
-        } else {
-            tmp_filename <- fs::path_ext_remove(file_path)
-            if (ext %in% .compressed_formats()) {
-                ext <- paste(fs::path_ext(tmp_filename), ext, sep = ".")
-                tmp_filename <- fs::path_ext_remove(tmp_filename)
-            }
-            if (!ext %in% c(
-                "tsv", paste("tsv", .compressed_formats(), sep = "."),
-                "csv", paste("csv", .compressed_formats(), sep = "."),
-                "txt", paste("txt", .compressed_formats(), sep = ".")
-            )) {
-                if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-                    warn <- c("Recalibration file format unsupported",
-                        i = "Writing file in 'tsv.gz' format"
-                    )
-                    rlang::inform(warn, class = "rec_unsupp_ext")
-                }
-                tmp_filename <- paste0(tmp_filename, ".tsv.gz")
-            } else {
-                tmp_filename <- paste0(tmp_filename, ".", ext)
-            }
-        }
-    } else if (fs::is_dir(file_path)) {
-        gen_filename <- .generate_rec_map_filename()
-        tmp_filename <- fs::path(file_path, gen_filename)
-    } else {
-        tmp_filename <- file_path
-    }
-    withRestarts(
-        {
-            data.table::fwrite(map, file = tmp_filename, sep = "\t", na = "")
-            saved_msg <- paste(
-                "Recalibration map saved to: ",
-                tmp_filename
-            )
-            if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-                rlang::inform(saved_msg)
-            }
-        },
-        skip_write = function() {
-            skip_msg <- paste(
-                "Could not write recalibration map file.",
-                "Skipping."
-            )
-            rlang::inform(skip_msg)
-        }
-    )
+    return(x)
 }
 
 #### ---- Internals for analysis functions ----####
@@ -4474,7 +3877,6 @@
 #
 #' @importFrom purrr pmap_chr reduce
 #' @importFrom rlang eval_tidy parse_expr .data
-#' @importFrom magrittr `%>%`
 #
 # @keywords internal
 # @return A data frame
@@ -4508,7 +3910,7 @@
         paste0(c1, ", ", c2)
     })
     single_predicate_string <- paste0(
-        "x %>% dplyr::filter(",
+        "x |> dplyr::filter(",
         single_predicate_string,
         ")"
     )
@@ -4525,7 +3927,6 @@
 # @param comparators Vector or named list for comparators
 #
 #' @importFrom purrr map_lgl is_empty map pmap_chr reduce map2
-#' @importFrom magrittr `%>%`
 #' @importFrom rlang .data parse_expr eval_tidy
 # @keywords internal
 #
@@ -4587,7 +3988,7 @@
                 }
             )
             single_predicate_string <- paste0(
-                "df %>% dplyr::filter(",
+                "df |> dplyr::filter(",
                 single_predicate_string,
                 ")"
             )
@@ -4634,7 +4035,7 @@
                 }
             )
             single_predicate_string <- paste0(
-                "df %>% dplyr::filter(",
+                "df |> dplyr::filter(",
                 single_predicate_string,
                 ")"
             )
@@ -4653,38 +4054,41 @@
 #   some genes span over different chromosomes? If TRUE keeps same
 #   (gene_sym, gene_strand) but different chr separated (different rows)
 # - include_gene_strand: same but for gene strand
-#' @importFrom data.table %chin%
 #' @importFrom rlang sym
-.count_distinct_is_per_gene <- function(x, include_chr,
-    include_gene_strand,
-    gene_sym_col,
-    gene_strand_col,
-    chr_col,
-    mand_vars_to_check) {
-    data.table::setDT(mand_vars_to_check)
-    data.table::setDT(x)
-    present_mand_vars <- mand_vars_to_check[eval(sym("names")) %chin% colnames(x)]
+.count_distinct_is_per_gene <- function(
+        x, include_chr,
+        include_gene_strand,
+        gene_sym_col,
+        gene_strand_col,
+        chr_col,
+        mand_vars_to_check) {
+    present_mand_vars <- mand_vars_to_check |>
+        dplyr::filter(.data$names %in% colnames(x))
     group_key <- c(gene_sym_col)
     if (include_gene_strand) {
         group_key <- c(group_key, gene_strand_col)
     }
     if (include_chr) {
         group_key <- c(group_key, chr_col)
-        present_mand_vars <- present_mand_vars[!eval(sym("names")) %chin% chr_col]
+        present_mand_vars <- present_mand_vars |>
+            dplyr::filter(!.data$names %in% chr_col)
     }
     is_vars <- present_mand_vars$names
-    count_by_gene <- x[, list(n_IS = dplyr::n_distinct(
-        .SD[, mget(is_vars)]
-    )), by = eval(group_key)]
+    count_by_gene <- x |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(group_key))) |>
+        dplyr::summarise(n_IS = dplyr::n_distinct(
+            dplyr::across(dplyr::all_of(is_vars))
+        ), .groups = "drop")
     count_by_gene
 }
 
 #---- USED IN : CIS_grubbs, CIS_grubbs_overtime ----
 # Param check for CIS functions
-.cis_param_check <- function(x, genomic_annotation_file,
-    grubbs_flanking_gene_bp,
-    threshold_alpha,
-    return_missing_as_df) {
+.cis_param_check <- function(
+        x, genomic_annotation_file,
+        grubbs_flanking_gene_bp,
+        threshold_alpha,
+        return_missing_as_df) {
     ## Check x has the correct structure
     stopifnot(is.data.frame(x))
     check_res <- list()
@@ -4693,15 +4097,15 @@
         vars_df = mandatory_IS_vars(TRUE),
         duplicate_politic = "error"
     )
-    check_res$chrom_col <- check_res$req_mand_vars %>%
-        dplyr::filter(.data$tag == "chromosome") %>%
+    check_res$chrom_col <- check_res$req_mand_vars |>
+        dplyr::filter(.data$tag == "chromosome") |>
         dplyr::pull(.data$names)
-    check_res$locus_col <- check_res$req_mand_vars %>%
-        dplyr::filter(.data$tag == "locus") %>%
+    check_res$locus_col <- check_res$req_mand_vars |>
+        dplyr::filter(.data$tag == "locus") |>
         dplyr::pull(.data$names)
     check_res$strand_col <- if ("is_strand" %in% mandatory_IS_vars(TRUE)$tag) {
-        col <- mandatory_IS_vars(TRUE) %>%
-            dplyr::filter(.data$tag == "is_strand") %>%
+        col <- mandatory_IS_vars(TRUE) |>
+            dplyr::filter(.data$tag == "is_strand") |>
             dplyr::pull(.data$names)
         if (col %in% colnames(x)) {
             col
@@ -4716,11 +4120,11 @@
         vars_df = annotation_IS_vars(TRUE),
         "error"
     )
-    check_res$gene_symbol_col <- check_res$req_annot_col %>%
-        dplyr::filter(.data$tag == "gene_symbol") %>%
+    check_res$gene_symbol_col <- check_res$req_annot_col |>
+        dplyr::filter(.data$tag == "gene_symbol") |>
         dplyr::pull(.data$names)
-    check_res$gene_strand_col <- check_res$req_annot_col %>%
-        dplyr::filter(.data$tag == "gene_strand") %>%
+    check_res$gene_strand_col <- check_res$req_annot_col |>
+        dplyr::filter(.data$tag == "gene_strand") |>
         dplyr::pull(.data$names)
     check_res$cols_required <- c(
         check_res$chrom_col, check_res$locus_col,
@@ -4761,7 +4165,7 @@
         if (!all(refGene_table_cols() %in% colnames(refgenes))) {
             rlang::abort(.non_standard_annotation_structure())
         }
-        check_res$refgenes <- tibble::as_tibble(refgenes) %>%
+        check_res$refgenes <- tibble::as_tibble(refgenes) |>
             dplyr::mutate(chrom = stringr::str_replace_all(
                 .data$chrom,
                 "chr", ""
@@ -4781,8 +4185,8 @@
 .cis_join_ref <- function(x, res_checks) {
     result <- list()
     # Join input with refgenes - inner join only
-    result$joint_ref <- x %>%
-        dplyr::inner_join(res_checks$refgenes %>%
+    result$joint_ref <- x |>
+        dplyr::inner_join(res_checks$refgenes |>
             dplyr::select(
                 dplyr::all_of(
                     c("name2", "chrom", "strand", "average_TxLen")
@@ -4796,7 +4200,7 @@
             )
         ))
     # Retrieve eventual missing genes
-    missing_genes <- x %>%
+    missing_genes <- x |>
         dplyr::anti_join(result$joint_ref,
             by = c(
                 res_checks$gene_symbol_col,
@@ -4804,7 +4208,7 @@
             )
         )
     missing_is_tot <- nrow(missing_genes)
-    missing_genes <- missing_genes %>%
+    missing_genes <- missing_genes |>
         dplyr::distinct(dplyr::across(dplyr::all_of(
             c(
                 res_checks$gene_symbol_col, res_checks$gene_strand_col,
@@ -4854,22 +4258,23 @@
 }
 
 # Internal computation of CIS_grubbs test
-.cis_grubb_calc <- function(x,
-    grubbs_flanking_gene_bp,
-    threshold_alpha,
-    gene_symbol_col,
-    gene_strand_col,
-    chr_col,
-    locus_col,
-    strand_col) {
+.cis_grubb_calc <- function(
+        x,
+        grubbs_flanking_gene_bp,
+        threshold_alpha,
+        gene_symbol_col,
+        gene_strand_col,
+        chr_col,
+        locus_col,
+        strand_col) {
     ## -- Grouping by gene
     df_by_gene <- if (requireNamespace("psych", quietly = TRUE)) {
-        x %>%
+        x |>
             dplyr::group_by(
                 dplyr::across(
                     dplyr::all_of(c(gene_symbol_col, gene_strand_col, chr_col))
                 )
-            ) %>%
+            ) |>
             dplyr::summarise(
                 n = dplyr::n(),
                 mean = mean(.data[[locus_col]]),
@@ -4904,12 +4309,12 @@
                 .groups = "drop"
             )
     } else {
-        x %>%
+        x |>
             dplyr::group_by(
                 dplyr::across(
                     dplyr::all_of(c(gene_symbol_col, gene_strand_col, chr_col))
                 )
-            ) %>%
+            ) |>
             dplyr::summarise(
                 n = dplyr::n(),
                 mean = mean(.data[[locus_col]]),
@@ -4946,7 +4351,7 @@
     n_elements <- nrow(df_by_gene)
     ### Grubbs test
     ### --- Gene Frequency
-    df_bygene_withannotation <- df_by_gene %>%
+    df_bygene_withannotation <- df_by_gene |>
         dplyr::mutate(
             raw_gene_integration_frequency =
                 .data$n_IS_perGene / .data$average_TxLen,
@@ -4960,7 +4365,7 @@
         sqrt((n_elements * (n_elements - 2) * x^2) /
             (((n_elements - 1)^2) - (n_elements * x^2)))
     }
-    df_bygene_withannotation <- df_bygene_withannotation %>%
+    df_bygene_withannotation <- df_bygene_withannotation |>
         dplyr::mutate(
             zscore_minus_log2_int_freq_tolerance =
                 scale(.data$minus_log2_integration_freq_withtolerance)[, 1],
@@ -4974,7 +4379,7 @@
     t_dist_2t <- function(x, deg) {
         return((1 - stats::pt(x, deg)) * 2)
     }
-    df_bygene_withannotation <- df_bygene_withannotation %>%
+    df_bygene_withannotation <- df_bygene_withannotation |>
         dplyr::mutate(
             tdist2t = t_dist_2t(.data$t_z_mlif, n_elements - 2),
             tdist_pt = stats::pt(
@@ -5001,7 +4406,7 @@
                 n = length(.data$tdist2t)
             )
         )
-    df_bygene_withannotation <- df_bygene_withannotation %>%
+    df_bygene_withannotation <- df_bygene_withannotation |>
         dplyr::mutate(
             tdist_positive_and_corrected =
                 ifelse(
@@ -5022,7 +4427,7 @@
             !is.na(df_bygene_withannotation$tdist_positive)
         ]
     )
-    df_bygene_withannotation <- df_bygene_withannotation %>%
+    df_bygene_withannotation <- df_bygene_withannotation |>
         dplyr::mutate(
             tdist_positive_and_correctedEM =
                 ifelse(
@@ -5039,9 +4444,10 @@
 #---- USED IN : CIS_volcano_plot ----
 #' @importFrom rlang arg_match abort inform current_env
 #' @importFrom utils read.delim
-.load_onco_ts_genes <- function(onco_db_file,
-    tumor_suppressors_db_file,
-    species) {
+.load_onco_ts_genes <- function(
+        onco_db_file,
+        tumor_suppressors_db_file,
+        species) {
     onco_db <- if (onco_db_file == "proto_oncogenes") {
         utils::data("proto_oncogenes", envir = rlang::current_env())
         rlang::current_env()$proto_oncogenes
@@ -5106,31 +4512,29 @@
 }
 
 #' @importFrom rlang .data
-#' @importFrom magrittr `%>%`
 .filter_db <- function(onco_db, species, output_col_name) {
-    filtered_db <- onco_db %>%
-        dplyr::filter(.data$Organism %in% species) %>%
+    filtered_db <- onco_db |>
+        dplyr::filter(.data$Organism %in% species) |>
         dplyr::filter(.data$Status == "reviewed" &
-            !is.na(.data$`Gene names`)) %>%
-        dplyr::select(.data$`Gene names`) %>%
+            !is.na(.data$`Gene names`)) |>
+        dplyr::select(.data$`Gene names`) |>
         dplyr::distinct()
 
-    filtered_db <- filtered_db %>%
+    filtered_db <- filtered_db |>
         dplyr::mutate(`Gene names` = stringr::str_split(
             .data$`Gene names`, " "
-        )) %>%
-        tidyr::unnest("Gene names") %>%
-        dplyr::mutate({{ output_col_name }} := .data$`Gene names`) %>%
+        )) |>
+        tidyr::unnest("Gene names") |>
+        dplyr::mutate({{ output_col_name }} := .data$`Gene names`) |>
         dplyr::rename("GeneName" = "Gene names")
 
     return(filtered_db)
 }
 
 #' @importFrom rlang .data
-#' @importFrom magrittr `%>%`
 .merge_onco_tumsup <- function(onco_df, tum_df) {
-    onco_tumsup <- onco_df %>%
-        dplyr::full_join(tum_df, by = "GeneName") %>%
+    onco_tumsup <- onco_df |>
+        dplyr::full_join(tum_df, by = "GeneName") |>
         dplyr::mutate(Onco1_TS2 = ifelse(
             !is.na(.data$OncoGene) & !is.na(.data$TumorSuppressor),
             yes = 3,
@@ -5141,19 +4545,20 @@
                     no = NA
                 )
             )
-        )) %>%
-        dplyr::select(-c("OncoGene", "TumorSuppressor")) %>%
+        )) |>
+        dplyr::select(-c("OncoGene", "TumorSuppressor")) |>
         dplyr::distinct()
     return(onco_tumsup)
 }
 
-.expand_cis_df <- function(cis_grubbs_df,
-    gene_sym_col,
-    onco_db_file,
-    tumor_suppressors_db_file,
-    species,
-    known_onco,
-    suspicious_genes) {
+.expand_cis_df <- function(
+        cis_grubbs_df,
+        gene_sym_col,
+        onco_db_file,
+        tumor_suppressors_db_file,
+        species,
+        known_onco,
+        suspicious_genes) {
     ## Load onco and ts
     oncots_to_use <- .load_onco_ts_genes(
         onco_db_file,
@@ -5161,12 +4566,12 @@
         species
     )
     ## Join all dfs by gene
-    cis_grubbs_df <- cis_grubbs_df %>%
-        dplyr::left_join(oncots_to_use, by = gene_sym_col) %>%
-        dplyr::left_join(known_onco, by = gene_sym_col) %>%
+    cis_grubbs_df <- cis_grubbs_df |>
+        dplyr::left_join(oncots_to_use, by = gene_sym_col) |>
+        dplyr::left_join(known_onco, by = gene_sym_col) |>
         dplyr::left_join(suspicious_genes, by = gene_sym_col)
     ## Add info
-    cis_grubbs_df <- cis_grubbs_df %>%
+    cis_grubbs_df <- cis_grubbs_df |>
         dplyr::mutate(
             KnownGeneClass = ifelse(
                 is.na(.data$Onco1_TS2),
@@ -5185,15 +4590,16 @@
 
 
 #---- USED IN : outliers_by_pool_fragments ----
-.outlier_pool_frag_base_checks <- function(metadata,
-    key,
-    outlier_p_value_threshold,
-    normality_test,
-    normality_p_value_threshold,
-    transform_log2,
-    min_samples_per_pool,
-    per_pool_test,
-    pool_col, pcr_id_col) {
+.outlier_pool_frag_base_checks <- function(
+        metadata,
+        key,
+        outlier_p_value_threshold,
+        normality_test,
+        normality_p_value_threshold,
+        transform_log2,
+        min_samples_per_pool,
+        per_pool_test,
+        pool_col, pcr_id_col) {
     stopifnot(is.data.frame(metadata))
     stopifnot(is.character(key))
     if (!all(key %in% colnames(metadata))) {
@@ -5297,17 +4703,17 @@
 }
 
 # Actual computation of statistical test on pre-filtered metadata (no NA values)
-#' @importFrom data.table .N
 #' @importFrom rlang sym
-.pool_frag_calc <- function(meta,
-    key,
-    by_pool,
-    normality_test,
-    normality_threshold,
-    pool_col,
-    min_samples_per_pool,
-    log2,
-    pcr_id_col) {
+.pool_frag_calc <- function(
+        meta,
+        key,
+        by_pool,
+        normality_test,
+        normality_threshold,
+        pool_col,
+        min_samples_per_pool,
+        log2,
+        pcr_id_col) {
     log2_removed_report <- NULL
     if (log2) {
         ## discard values < = 0 and report removed
@@ -5315,24 +4721,28 @@
             rlang::inform("Log2 transformation, removing values <= 0")
         }
         old_meta <- meta
-        predicate_g0 <- purrr::map(key, ~ {
-            rlang::expr(!!sym(.x) > 0)
-        }) %>% purrr::reduce(~ rlang::expr(!!.x & !!.y))
-        meta <- meta[eval(predicate_g0), ]
-        log2_removed_report <- old_meta[!meta, on = pcr_id_col]
-        log2_removed_report <- unique(
-            log2_removed_report[, mget(c(pool_col, pcr_id_col, key))]
-        )
+        meta <- meta |>
+            dplyr::filter(dplyr::if_all(
+                .cols = dplyr::all_of(key),
+                .fns = ~ .x > 0
+            ))
+        log2_removed_report <- old_meta |>
+            dplyr::anti_join(meta, by = pcr_id_col) |>
+            dplyr::distinct(dplyr::across(dplyr::all_of(c(
+                pool_col, pcr_id_col, key
+            ))))
     }
     if (by_pool) {
         # Group by pool
-        pool_sample_count <- meta[, .N, by = eval(pool_col)]
-        to_process <- pool_sample_count[
-            eval(sym("N")) >= min_samples_per_pool,
-            get(pool_col)
-        ]
-        pools_to_process <- meta[eval(sym(pool_col)) %in% to_process, ]
-        split <- split(pools_to_process, by = pool_col)
+        pool_sample_count <- meta |>
+            dplyr::group_by(dplyr::across(dplyr::all_of(pool_col))) |>
+            dplyr::summarise(N = dplyr::n(), .groups = "drop") |>
+            dplyr::filter(.data$N >= min_samples_per_pool)
+        pools_to_process <- meta |>
+            dplyr::semi_join(pool_sample_count, by = pool_col)
+        split <- pools_to_process |>
+            dplyr::group_by(dplyr::across(dplyr::all_of(pool_col))) |>
+            dplyr::group_split()
         test_res <- purrr::map(
             split,
             ~ .process_pool_frag(
@@ -5340,23 +4750,26 @@
                 normality_threshold, log2
             )
         )
-        test_res <- purrr::reduce(
-            test_res,
-            ~ data.table::rbindlist(list(.x, .y))
-        )
-        test_res <- test_res[, c("processed") := TRUE]
+        test_res <- purrr::list_rbind(test_res) |>
+            dplyr::mutate(processed = TRUE)
+
         # Groups not processed because not enough samples
-        not_to_process <- pool_sample_count[
-            eval(sym("N")) < min_samples_per_pool, get(pool_col)
-        ]
-        non_proc <- meta[eval(sym(pool_col)) %in% not_to_process, ]
-        non_proc <- non_proc[, c("processed") := FALSE]
-        final <- data.table::rbindlist(list(test_res, non_proc), fill = TRUE)
+        non_proc <- meta |>
+            dplyr::anti_join(pool_sample_count, by = pool_col) |>
+            dplyr::mutate(processed = FALSE)
+        final <- test_res |>
+            dplyr::bind_rows(non_proc)
+
         # Rows not processed because log2 requested and value <= 0
         if (exists("old_meta")) {
-            log2_removed <- old_meta[!meta, on = pcr_id_col]
-            log2_removed <- log2_removed[, c("processed") := FALSE]
-            final <- data.table::rbindlist(list(final, log2_removed), fill = TRUE)
+            log2_removed <- old_meta |>
+                dplyr::anti_join(
+                    meta,
+                    by = pcr_id_col
+                ) |>
+                dplyr::mutate(processed = FALSE)
+            final <- final |>
+                dplyr::bind_rows(log2_removed)
         }
         return(list(
             metadata = final,
@@ -5365,19 +4778,24 @@
         ))
     } else {
         test_res <- .process_pool_frag(
-            chunk = data.table::copy(meta),
+            chunk = meta,
             key = key,
             normality_test = normality_test,
             normality_threshold = normality_threshold,
             log2 = log2
         )
-        final <- test_res[, c("processed") := TRUE]
+        final <- test_res |>
+            dplyr::mutate(processed = TRUE)
         # Rows not processed because log2 requested and value <= 0
         if (exists("old_meta")) {
-            negate_predicate_g0 <- rlang::expr(!(!!predicate_g0))
-            log2_removed <- old_meta[eval(negate_predicate_g0), ]
-            log2_removed <- log2_removed[, c("processed") := FALSE]
-            final <- data.table::rbindlist(list(final, log2_removed), fill = TRUE)
+            log2_removed <- old_meta |>
+                dplyr::filter(dplyr::if_any(
+                    .cols = dplyr::all_of(key),
+                    .fns = ~ .x <= 0
+                )) |>
+                dplyr::mutate(processed = FALSE)
+            final <- final |>
+                dplyr::bind_rows(log2_removed)
         }
         return(list(
             metadata = final,
@@ -5388,11 +4806,12 @@
 
 # Only computes for each key the actual calculations (either on pool chunk
 # or entire df)
-#' @importFrom purrr map reduce flatten
+#' @importFrom purrr map reduce
 #' @importFrom dplyr bind_cols
-.process_pool_frag <- function(chunk, key, normality_test,
-    normality_threshold,
-    log2) {
+.process_pool_frag <- function(
+        chunk, key, normality_test,
+        normality_threshold,
+        log2) {
     res <- purrr::map(key, ~ .tests_pool_frag(
         x = chunk[[.x]],
         suffix = .x,
@@ -5400,20 +4819,20 @@
         normality_threshold = normality_threshold,
         log2 = log2
     ))
-    res <- purrr::reduce(
-        list(og = chunk, data.table::as.data.table(purrr::flatten(res))),
-        cbind
-    )
+    res <- purrr::list_cbind(res)
+    res <- chunk |>
+        dplyr::bind_cols(res)
     res
 }
 
 # Computation on single vectors (columns)
 #' @importFrom stats dt shapiro.test
 #' @importFrom tibble tibble
-.tests_pool_frag <- function(x,
-    suffix, normality_test,
-    normality_threshold,
-    log2) {
+.tests_pool_frag <- function(
+        x,
+        suffix, normality_test,
+        normality_threshold,
+        log2) {
     if (log2) {
         x <- log2(x)
     }
@@ -5461,13 +4880,13 @@
         res_colnames <- paste(res_colnames, suffix, sep = "_")
         res <- setNames(res, res_colnames[seq(3, 5)])
         res <- append(setNames(list(x, norm), res_colnames[c(1, 2)]), res)
-        data.table::as.data.table(res)
+        tibble::as_tibble(res)
     } else {
         res_colnames <- c("normality", "zscore", "tstudent", "tdist")
         res_colnames <- paste(res_colnames, suffix, sep = "_")
         res <- setNames(res, res_colnames[seq(2, 4)])
         res <- append(setNames(list(norm), res_colnames[1]), res)
-        data.table::as.data.table(res)
+        tibble::as_tibble(res)
     }
     return(results)
 }
@@ -5475,10 +4894,11 @@
 # Flag logic to use on a single key component
 # returns a logical vector
 #' @importFrom purrr pmap_lgl
-.flag_cond_outliers_pool_frag <- function(proc,
-    tdist,
-    zscore,
-    outlier_threshold) {
+.flag_cond_outliers_pool_frag <- function(
+        proc,
+        tdist,
+        zscore,
+        outlier_threshold) {
     # basic flag condition is tdist < out.thresh AND zscore < 0
     purrr::pmap_lgl(list(proc, tdist, zscore), function(p, t, z) {
         if (p == FALSE) {
@@ -5576,17 +4996,70 @@
 }
 
 #---- USED IN : HSC_population_size_estimate ----
+# Matches the vector of celltypes to tissues to form a list of groups to
+# process
+.match_celltypes_tissues <- function(cell_type, tissue) {
+    if (length(cell_type) > 1 | length(tissue) > 1) {
+        if (length(cell_type) == 1) {
+            cell_type <- rep_len(cell_type, length(tissue))
+        } else if (length(tissue) == 1) {
+            tissue <- rep_len(tissue, length(cell_type))
+        } else if (length(cell_type) != length(tissue)) {
+            err_length <- c(
+                "Cell types and tissue vectors have mismatching lengths",
+                i = "See ?HSC_population_size_estimate details"
+            )
+            rlang::abort(err_length, class = "pop_size_err_length")
+        }
+    }
+    groups_to_proc <- purrr::map2(cell_type, tissue, ~ c(.x, .y))
+    duplicated_ind <- duplicated(groups_to_proc)
+    groups_to_proc <- groups_to_proc[!duplicated_ind]
+    return(groups_to_proc)
+}
+
+# Converts a group slice df to a captures matrix - input df contains only
+# timepoints relative to same patient, tissue and cell type
+.convert_to_captures_matrix <- function(df, quant_cols,
+    tissue_col,
+    timepoint_column,
+    annotation_cols) {
+    captures_matrix <- df |>
+        dplyr::mutate(
+            !!timepoint_column := as.numeric(.data[[timepoint_column]])
+        ) |>
+        dplyr::mutate(bin = 1) |>
+        dplyr::select(-dplyr::all_of(quant_cols)) |>
+        tidyr::pivot_wider(
+            names_from = dplyr::all_of(c(
+                "CellType",
+                tissue_col,
+                timepoint_column
+            )),
+            values_from = dplyr::all_of("bin"),
+            names_sort = TRUE,
+            values_fill = 0
+        ) |>
+        dplyr::select(-dplyr::all_of(c(
+            mandatory_IS_vars(),
+            annotation_cols
+        ))) |>
+        as.matrix()
+    return(captures_matrix)
+}
+
 # Calculates population estimates (all)
 #' @importFrom purrr map_lgl detect_index
 #' @importFrom tidyr pivot_wider
-.estimate_pop <- function(df,
-    seqCount_column,
-    fragmentEstimate_column,
-    timepoint_column,
-    annotation_cols,
-    stable_timepoints,
-    subject,
-    tissue_col) {
+.estimate_pop <- function(
+        df,
+        seqCount_column,
+        fragmentEstimate_column,
+        timepoint_column,
+        annotation_cols,
+        stable_timepoints,
+        subject,
+        tissue_col) {
     quant_cols <- if (is.null(fragmentEstimate_column)) {
         seqCount_column
     } else {
@@ -5610,54 +5083,33 @@
         FALSE
     }
     # --- OBTAIN MATRIX (ALL TPs)
-    matrix_desc <- df %>%
-        dplyr::mutate(bin = 1) %>%
-        dplyr::select(-dplyr::all_of(quant_cols)) %>%
-        tidyr::pivot_wider(
-            names_from = dplyr::all_of(c(
-                "CellType",
-                tissue_col,
-                timepoint_column
-            )),
-            values_from = dplyr::all_of("bin"),
-            names_sort = TRUE,
-            values_fill = 0
-        ) %>%
-        dplyr::select(-dplyr::all_of(c(
-            mandatory_IS_vars(),
-            annotation_cols
-        ))) %>%
-        as.matrix()
+    matrix_desc <- .convert_to_captures_matrix(
+        df,
+        quant_cols = quant_cols,
+        tissue_col = tissue_col,
+        timepoint_column = timepoint_column,
+        annotation_cols = annotation_cols
+    )
     # --- OBTAIN MATRIX (STABLE TPs)
     patient_slice_stable <- if (first_stable_index > 0) {
         first_stable <- stable_timepoints[first_stable_index]
-        df %>%
-            dplyr::filter(as.numeric(.data[[timepoint_column]]) >=
-                first_stable) %>%
-            dplyr::mutate(bin = 1) %>%
-            dplyr::select(-dplyr::all_of(quant_cols)) %>%
-            tidyr::pivot_wider(
-                names_from = dplyr::all_of(c(
-                    "CellType",
-                    tissue_col,
-                    timepoint_column
-                )),
-                values_from = dplyr::all_of("bin"),
-                names_sort = TRUE,
-                values_fill = 0
-            ) %>%
-            dplyr::select(-dplyr::all_of(c(
-                mandatory_IS_vars(),
-                annotation_cols
-            ))) %>%
-            as.matrix()
+        .convert_to_captures_matrix(
+            df |>
+                dplyr::filter(as.numeric(.data[[timepoint_column]]) >=
+                    first_stable),
+            quant_cols = quant_cols,
+            tissue_col = tissue_col,
+            timepoint_column = timepoint_column,
+            annotation_cols = annotation_cols
+        )
     } else {
         NULL
     }
 
-    timecaptures <- length(colnames(matrix_desc))
-    cols_estimate_mcm <- c("Model", "abundance", "stderr")
     # --- ESTIMATES
+    timecaptures <- ncol(matrix_desc)
+    cols_estimate_mcm <- c("Model", "abundance", "stderr")
+
     ## models0
     ### Estimate abundance without bias correction nor het
     #### For all tps
@@ -5669,7 +5121,13 @@
     )
     if (is.null(models0_all) || nrow(models0_all) == 0) {
         logger <- append(logger, list(
-            paste("Patient", subject, "- Models0 estimates tp 'All' is empty")
+            glue::glue_collapse(
+                c(
+                    glue::glue("{subject}, {df$CellType[1]}, "),
+                    glue::glue("{df[[tissue_col]][1]}"),
+                    " - Models0 estimates tp 'All' is empty"
+                )
+            )
         ))
     }
     #### For the slice (first stable - last tp)
@@ -5677,7 +5135,7 @@
         ncol(patient_slice_stable) > 1) {
         .closed_m0_est(
             matrix_desc = patient_slice_stable,
-            timecaptures = length(colnames(patient_slice_stable)),
+            timecaptures = ncol(patient_slice_stable),
             cols_estimate_mcm = cols_estimate_mcm,
             subject = subject, stable = TRUE
         )
@@ -5686,11 +5144,17 @@
     }
     if (is.null(models0_stable) || nrow(models0_stable) == 0) {
         logger <- append(logger, list(
-            paste("Patient", subject, "- Models0 estimates tp 'Stable' is empty")
+            glue::glue_collapse(
+                c(
+                    glue::glue("{subject}, {df$CellType[1]}, "),
+                    glue::glue("{df[[tissue_col]][1]}"),
+                    " - Models0 estimates tp 'Stable' is empty"
+                )
+            )
         ))
     }
     ## BC models
-    ### Estimate abundance without bias correction nor het
+    ### Estimate abundance with bias correction
     models_bc_all <- .closed_mthchaobc_est(
         matrix_desc = matrix_desc,
         timecaptures = timecaptures,
@@ -5699,7 +5163,13 @@
     )
     if (is.null(models_bc_all) || nrow(models_bc_all) == 0) {
         logger <- append(logger, list(
-            paste("Patient", subject, "- ModelsBC estimates tp 'All' is empty")
+            glue::glue_collapse(
+                c(
+                    glue::glue("{subject}, {df$CellType[1]}, "),
+                    glue::glue("{df[[tissue_col]][1]}"),
+                    " - ModelsBC estimates tp 'All' is empty"
+                )
+            )
         ))
     }
     models_bc_stable <- if (!is.null(patient_slice_stable) &&
@@ -5715,7 +5185,13 @@
     }
     if (is.null(models_bc_stable) || nrow(models_bc_stable) == 0) {
         logger <- append(logger, list(
-            paste("Patient", subject, "- ModelsBC estimates tp 'Stable' is empty")
+            glue::glue_collapse(
+                c(
+                    glue::glue("{subject}, {df$CellType[1]}, "),
+                    glue::glue("{df[[tissue_col]][1]}"),
+                    " - ModelsBC estimates tp 'Stable' is empty"
+                )
+            )
         ))
     }
     ## Consecutive timepoints
@@ -5732,9 +5208,12 @@
     if (is.null(estimate_consecutive_m0) ||
         nrow(estimate_consecutive_m0) == 0) {
         logger <- append(logger, list(
-            paste(
-                "Patient", subject,
-                "- Models0 estimates tp 'Consecutive' is empty"
+            glue::glue_collapse(
+                c(
+                    glue::glue("{subject}, {df$CellType[1]}, "),
+                    glue::glue("{df[[tissue_col]][1]}"),
+                    " - Models0 estimates tp 'Consecutive' is empty"
+                )
             )
         ))
     }
@@ -5752,44 +5231,47 @@
     if (is.null(estimate_consecutive_mth) ||
         nrow(estimate_consecutive_mth) == 0) {
         logger <- append(logger, list(
-            paste(
-                "Patient", subject,
-                "- ModelsMth estimates tp 'Consecutive' is empty"
+            glue::glue_collapse(
+                c(
+                    glue::glue("{subject}, {df$CellType[1]}, "),
+                    glue::glue("{df[[tissue_col]][1]}"),
+                    " - ModelsMth estimates tp 'Consecutive' is empty"
+                )
             )
         ))
     }
-    results <- models0_all %>%
-        dplyr::bind_rows(models0_stable) %>%
-        dplyr::bind_rows(models_bc_all) %>%
-        dplyr::bind_rows(models_bc_stable) %>%
-        dplyr::bind_rows(estimate_consecutive_m0) %>%
+    results <- models0_all |>
+        dplyr::bind_rows(models0_stable) |>
+        dplyr::bind_rows(models_bc_all) |>
+        dplyr::bind_rows(models_bc_stable) |>
+        dplyr::bind_rows(estimate_consecutive_m0) |>
         dplyr::bind_rows(estimate_consecutive_mth)
     return(list(est = results, logger = logger))
 }
 
-#' @importFrom Rcapture closedp.0
-#' @importFrom purrr flatten_chr
+
 #' @importFrom stringr str_split
 #' @importFrom tibble as_tibble add_column
 #' @importFrom dplyr select all_of
-.closed_m0_est <- function(matrix_desc, timecaptures, cols_estimate_mcm,
-    subject, stable) {
+.closed_m0_est <- function(
+        matrix_desc, timecaptures, cols_estimate_mcm,
+        subject, stable) {
     ### Estimate abundance without bias correction nor het
-    models0 <- Rcapture::closedp.0(matrix_desc,
+    models0 <- Rcapture::closedp.0(
+        matrix_desc,
         dfreq = FALSE,
         dtype = "hist",
         t = timecaptures,
-        t0 = timecaptures,
         neg = FALSE
     )
-    splitted_col_nms1 <- purrr::flatten_chr(stringr::str_split(
+    splitted_col_nms1 <- (stringr::str_split(
         colnames(matrix_desc)[1],
         pattern = "_"
-    ))
-    splitted_col_nmsn <- purrr::flatten_chr(stringr::str_split(
+    ))[[1]]
+    splitted_col_nmsn <- (stringr::str_split(
         colnames(matrix_desc)[ncol(matrix_desc)],
         pattern = "_"
-    ))
+    ))[[1]]
     tp_string <- if (stable) {
         "Stable"
     } else {
@@ -5797,8 +5279,8 @@
     }
     estimate_results <- tibble::as_tibble(models0$results,
         rownames = "Model"
-    ) %>%
-        dplyr::select(dplyr::all_of(cols_estimate_mcm)) %>%
+    ) |>
+        dplyr::select(dplyr::all_of(cols_estimate_mcm)) |>
         tibble::add_column(
             SubjectID = subject,
             Timepoints = tp_string,
@@ -5806,43 +5288,74 @@
             Tissue = splitted_col_nms1[2],
             TimePoint_from = as.numeric(splitted_col_nms1[3]),
             TimePoint_to = as.numeric(splitted_col_nmsn[3]),
+            Timepoints_included = timecaptures,
             ModelType = "ClosedPopulation",
             ModelSetUp = "models0"
         )
     estimate_results
 }
 
-#' @importFrom Rcapture closedp.bc
-#' @importFrom purrr flatten_chr
 #' @importFrom stringr str_split
 #' @importFrom tibble as_tibble add_column
 #' @importFrom dplyr select all_of
-.closed_mthchaobc_est <- function(matrix_desc, timecaptures, cols_estimate_mcm,
-    subject, stable) {
-    mthchaobc <- Rcapture::closedp.bc(matrix_desc,
+.closed_mthchaobc_est <- function(
+        matrix_desc, timecaptures, cols_estimate_mcm,
+        subject, stable) {
+    mthchaobc_m0 <- Rcapture::closedp.bc(
+        matrix_desc,
         dfreq = FALSE,
         dtype = "hist",
-        t = timecaptures,
         t0 = timecaptures,
-        m = c("M0", "Mt", "Mth")
+        m = c("M0")
     )
-    splitted_col_nms1 <- purrr::flatten_chr(stringr::str_split(
+    mthchaobc_m0 <- tibble::as_tibble(mthchaobc_m0$results,
+        rownames = "Model"
+    )
+    mthchaobc_mt <- Rcapture::closedp.bc(
+        matrix_desc,
+        dfreq = FALSE,
+        dtype = "hist",
+        t0 = timecaptures,
+        m = c("Mt")
+    )
+    mthchaobc_mt <- tibble::as_tibble(mthchaobc_mt$results,
+        rownames = "Model"
+    )
+    mthchaobc_mth <- if (timecaptures > 2) {
+        tmp <- Rcapture::closedp.bc(
+            matrix_desc,
+            dfreq = FALSE,
+            dtype = "hist",
+            t0 = timecaptures,
+            m = c("Mth")
+        )
+        tibble::as_tibble(tmp$results,
+            rownames = "Model"
+        )
+    } else {
+        NULL
+    }
+    splitted_col_nms1 <- (stringr::str_split(
         colnames(matrix_desc)[1],
         pattern = "_"
-    ))
-    splitted_col_nmsn <- purrr::flatten_chr(stringr::str_split(
+    ))[[1]]
+    splitted_col_nmsn <- (stringr::str_split(
         colnames(matrix_desc)[ncol(matrix_desc)],
         pattern = "_"
-    ))
+    ))[[1]]
     tp_string <- if (stable) {
         "Stable"
     } else {
         "All"
     }
-    estimate_results_chaobc <- tibble::as_tibble(mthchaobc$results,
-        rownames = "Model"
-    ) %>%
-        dplyr::select(dplyr::all_of(cols_estimate_mcm)) %>%
+    estimate_results_chaobc <- mthchaobc_m0 |>
+        dplyr::bind_rows(mthchaobc_mt)
+    if (!is.null(mthchaobc_mth)) {
+        estimate_results_chaobc <- estimate_results_chaobc |>
+            dplyr::bind_rows(mthchaobc_mth)
+    }
+    estimate_results_chaobc <- estimate_results_chaobc |>
+        dplyr::select(dplyr::all_of(cols_estimate_mcm)) |>
         tibble::add_column(
             SubjectID = subject,
             Timepoints = tp_string,
@@ -5850,44 +5363,43 @@
             Tissue = splitted_col_nms1[2],
             TimePoint_from = as.numeric(splitted_col_nms1[3]),
             TimePoint_to = as.numeric(splitted_col_nmsn[3]),
+            Timepoints_included = timecaptures,
             ModelType = "ClosedPopulation",
             ModelSetUp = "mthchaobc"
         )
     estimate_results_chaobc
 }
 
-#' @importFrom Rcapture closedp.bc
-#' @importFrom purrr flatten_chr map2_dfr
 #' @importFrom stringr str_split
 #' @importFrom tibble as_tibble add_column
 #' @importFrom dplyr select all_of
 .consecutive_m0bc_est <- function(matrix_desc, cols_estimate_mcm, subject) {
     ## Consecutive timepoints
     indexes <- seq(from = 1, to = ncol(matrix_desc) - 1, by = 1)
-    purrr::map2_dfr(
+    purrr::map2(
         indexes,
         indexes + 1,
         function(t1, t2) {
             sub_matrix <- matrix_desc[, seq(from = t1, to = t2, by = 1)]
-            splitted_col_nms1 <- purrr::flatten_chr(stringr::str_split(
+            splitted_col_nms1 <- (stringr::str_split(
                 colnames(sub_matrix)[1],
                 pattern = "_"
-            ))
-            splitted_col_nmsn <- purrr::flatten_chr(stringr::str_split(
+            ))[[1]]
+            splitted_col_nmsn <- (stringr::str_split(
                 colnames(sub_matrix)[ncol(sub_matrix)],
                 pattern = "_"
-            ))
-            patient_trend_M0 <- Rcapture::closedp.bc(sub_matrix,
+            ))[[1]]
+            patient_trend_M0 <- Rcapture::closedp.bc(
+                sub_matrix,
                 dfreq = FALSE,
                 dtype = "hist",
-                t = 2,
                 t0 = 2,
                 m = c("M0")
             )
             results <- tibble::as_tibble(patient_trend_M0$results,
                 rownames = "Model"
-            ) %>%
-                dplyr::select(dplyr::all_of(cols_estimate_mcm)) %>%
+            ) |>
+                dplyr::select(dplyr::all_of(cols_estimate_mcm)) |>
                 tibble::add_column(
                     SubjectID = subject,
                     Timepoints = "Consecutive",
@@ -5895,45 +5407,46 @@
                     Tissue = splitted_col_nms1[2],
                     TimePoint_from = as.numeric(splitted_col_nms1[3]),
                     TimePoint_to = as.numeric(splitted_col_nmsn[3]),
+                    Timepoints_included = 2,
                     ModelType = "ClosedPopulation",
                     ModelSetUp = "models0BC"
                 )
             results
         }
-    )
+    ) |>
+        purrr::list_rbind()
 }
 
-#' @importFrom Rcapture closedp.bc
-#' @importFrom purrr flatten_chr map2_dfr
 #' @importFrom stringr str_split
 #' @importFrom tibble as_tibble add_column
 #' @importFrom dplyr select all_of
 .consecutive_mth_est <- function(matrix_desc, cols_estimate_mcm, subject) {
     indexes_s <- seq(from = 1, to = ncol(matrix_desc) - 2, by = 1)
-    purrr::map2_dfr(
+    purrr::map2(
         indexes_s,
         indexes_s + 2,
         function(t1, t2) {
             sub_matrix <- matrix_desc[, seq(from = t1, to = t2, by = 1)]
-            splitted_col_nms1 <- purrr::flatten_chr(stringr::str_split(
+            splitted_col_nms1 <- (stringr::str_split(
                 colnames(sub_matrix)[1],
                 pattern = "_"
-            ))
-            splitted_col_nmsn <- purrr::flatten_chr(stringr::str_split(
+            ))[[1]]
+            splitted_col_nmsn <- (stringr::str_split(
                 colnames(sub_matrix)[ncol(sub_matrix)],
                 pattern = "_"
-            ))
-            patient_trend_Mth <- Rcapture::closedp.bc(sub_matrix,
+            ))[[1]]
+            patient_trend_Mth <- Rcapture::closedp.bc(
+                sub_matrix,
                 dfreq = FALSE,
                 dtype = "hist",
-                t = 3, t0 = 3,
+                t0 = 3,
                 m = c("Mth"),
                 h = "Chao"
             )
             result <- tibble::as_tibble(patient_trend_Mth$results,
                 rownames = "Model"
-            ) %>%
-                dplyr::select(dplyr::all_of(cols_estimate_mcm)) %>%
+            ) |>
+                dplyr::select(dplyr::all_of(cols_estimate_mcm)) |>
                 tibble::add_column(
                     SubjectID = subject,
                     Timepoints = "Consecutive",
@@ -5941,37 +5454,37 @@
                     Tissue = splitted_col_nms1[2],
                     TimePoint_from = as.numeric(splitted_col_nms1[3]),
                     TimePoint_to = as.numeric(splitted_col_nmsn[3]),
+                    Timepoints_included = 3,
                     ModelType = "ClosedPopulation",
                     ModelSetUp = "modelMTHBC"
                 )
             result
         }
-    )
+    ) |>
+        purrr::list_rbind()
 }
 
-## Internal to call on each slice (a slice typically corresponding to 1 patient)
-.re_agg_and_estimate <- function(df,
-    metadata,
-    fragmentEstimate_column,
-    seqCount_column,
-    tissue_col,
-    timepoint_column,
-    aggregation_key,
-    seqCount_threshold,
-    fragmentEstimate_threshold,
-    cell_type,
-    tissue_type,
-    annotation_cols,
-    subj_col,
-    stable_timepoints,
-    progress = NULL) {
+# Re-aggregates a patient IS df and applies filters
+# - df contains ONLY one patient
+.re_agg_and_filter <- function(
+        df,
+        metadata,
+        fragmentEstimate_column,
+        seqCount_column,
+        tissue_col,
+        timepoint_column,
+        aggregation_key,
+        seqCount_threshold,
+        fragmentEstimate_threshold,
+        groups_to_proc,
+        annotation_cols,
+        subj_col) {
     # --- RE-AGGREGATION - by cell type, tissue and time point
     val_cols <- if (!is.null(fragmentEstimate_column)) {
         c(seqCount_column, fragmentEstimate_column)
     } else {
         seqCount_column
     }
-    logger <- NULL
     re_agg <- aggregate_values_by_key(
         x = df,
         association_file = metadata,
@@ -5979,13 +5492,13 @@
         key = c("CellType", tissue_col, timepoint_column),
         join_af_by = aggregation_key
     )
-    re_agg <- re_agg %>%
+    re_agg <- re_agg |>
         dplyr::filter(!is.na(.data$CellType))
-    seqCount_column <- colnames(re_agg)[stringr::str_detect(
+    new_seqCount_column <- colnames(re_agg)[stringr::str_detect(
         colnames(re_agg),
         seqCount_column
     )]
-    fragmentEstimate_column <- if (!is.null(fragmentEstimate_column)) {
+    new_fragmentEstimate_column <- if (!is.null(fragmentEstimate_column)) {
         colnames(re_agg)[stringr::str_detect(
             colnames(re_agg),
             fragmentEstimate_column
@@ -5993,93 +5506,171 @@
     } else {
         NULL
     }
+    re_agg <- re_agg |>
+        dplyr::rename(!!seqCount_column := dplyr::all_of(new_seqCount_column))
+    if (!is.null(new_fragmentEstimate_column)) {
+        re_agg <- re_agg |>
+            dplyr::rename(!!fragmentEstimate_column := dplyr::all_of(
+                new_fragmentEstimate_column
+            ))
+    }
     ### Keep only sequence count value greater or equal to
     ### seqCount_threshold (or put it in AND with fe filter)
     ### (for each is)
     per_int_sums_low <- if (is.null(fragmentEstimate_column)) {
-        re_agg %>%
+        re_agg |>
             dplyr::group_by(dplyr::across(
                 dplyr::all_of(mandatory_IS_vars())
-            )) %>%
+            )) |>
             dplyr::summarise(
                 sum_sc = sum(.data[[seqCount_column]]),
                 .groups = "drop"
-            ) %>%
+            ) |>
             dplyr::filter(.data$sum_sc >= seqCount_threshold)
     } else {
-        re_agg %>%
+        re_agg |>
             dplyr::group_by(dplyr::across(
                 dplyr::all_of(mandatory_IS_vars())
-            )) %>%
+            )) |>
             dplyr::summarise(
                 sum_sc = sum(.data[[seqCount_column]]),
                 sum_fe = sum(.data[[fragmentEstimate_column]]),
                 .groups = "drop"
-            ) %>%
+            ) |>
             dplyr::filter(
                 .data$sum_sc >= seqCount_threshold,
                 .data$sum_fe >= fragmentEstimate_threshold |
                     .data$sum_fe == 0
             )
     }
-    re_agg <- re_agg %>%
+    re_agg <- re_agg |>
         dplyr::semi_join(per_int_sums_low, by = mandatory_IS_vars())
     ### Keep values whose cell type is in cell_type, tissue
     ### in tissue_type and
     ### have timepoint greater than zero
-    patient_slice <- re_agg %>%
+    filter_predicate <- purrr::map(groups_to_proc, ~ {
+        string_expr <- glue::glue_collapse(
+            c(
+                glue::glue("(stringr::str_to_upper(.data$CellType) == '{.x[1]}'"),
+                glue::glue("stringr::str_to_upper(.data[[tissue_col]]) == '{.x[2]}')")
+            ),
+            sep = " & "
+        )
+        string_expr
+    }) |>
+        purrr::reduce(~ glue::glue("{.x} | {.y}"))
+    patient_slice <- re_agg |>
         dplyr::filter(
-            stringr::str_to_upper(.data$CellType) %in% cell_type,
-            stringr::str_to_upper(.data[[tissue_col]]) %in% tissue_type,
+            rlang::eval_tidy(rlang::parse_expr(filter_predicate)),
             as.numeric(.data[[timepoint_column]]) > 0
         )
-    ### If selected patient does not have at least 3 distinct timepoints
-    ### simply return (do not consider for population estimate)
-    if (length(unique(patient_slice[[timepoint_column]])) <= 2) {
-        logger <- list(
-            paste(
-                "Patient", df[[subj_col]][1],
-                "- Data contains less than 2 time points,",
-                "returning NULL"
-            )
-        )
-        return(list(est = NULL, log = logger))
-    }
-    estimate <- .estimate_pop(
-        df = patient_slice,
-        seqCount_column = seqCount_column,
-        fragmentEstimate_column = fragmentEstimate_column,
-        timepoint_column = timepoint_column,
-        annotation_cols = annotation_cols,
-        subject = df[[subj_col]][1],
-        stable_timepoints = stable_timepoints,
-        tissue_col = tissue_col
+    return(patient_slice)
+}
+
+## Internal to call on each slice (a slice typically corresponding to 1 patient)
+.re_agg_and_estimate <- function(
+        df,
+        metadata,
+        fragmentEstimate_column,
+        seqCount_column,
+        tissue_col,
+        timepoint_column,
+        aggregation_key,
+        seqCount_threshold,
+        fragmentEstimate_threshold,
+        groups_to_proc,
+        annotation_cols,
+        subj_col,
+        stable_timepoints,
+        progress = NULL) {
+    # --- RE-AGGREGATION - by cell type, tissue and time point
+    patient_slice <- .re_agg_and_filter(
+        df,
+        metadata,
+        fragmentEstimate_column,
+        seqCount_column,
+        tissue_col,
+        timepoint_column,
+        aggregation_key,
+        seqCount_threshold,
+        fragmentEstimate_threshold,
+        groups_to_proc,
+        annotation_cols,
+        subj_col
     )
+    # --- Split by group to process
+    groups_dfs <- patient_slice |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(
+            c("CellType", tissue_col)
+        ))) |>
+        dplyr::group_split()
+
+    # --- Filter out groups with less than 2 time points and log it
+    logger <- NULL
+    for (i in seq_along(groups_dfs)) {
+        group_i <- groups_dfs[[i]]
+        if (length(unique(group_i[[timepoint_column]])) < 2) {
+            logger <- append(logger, list(
+                glue::glue_collapse(
+                    c(
+                        glue::glue("{df[[subj_col]][1]}, {group_i$CellType[1]}, "),
+                        glue::glue("{group_i[[tissue_col]][1]}"),
+                        " - Has less than 2 time points, won't be processed"
+                    )
+                )
+            ))
+            groups_dfs[[i]] <- NULL
+        }
+    }
+    groups_dfs <- purrr::discard(groups_dfs, is.null)
+
+    # --- Calculate estimates
+    estimates_per_group <- purrr::map(
+        groups_dfs, ~ .estimate_pop(
+            df = .x,
+            seqCount_column = seqCount_column,
+            fragmentEstimate_column = fragmentEstimate_column,
+            timepoint_column = timepoint_column,
+            annotation_cols = annotation_cols,
+            subject = df[[subj_col]][1],
+            stable_timepoints = stable_timepoints,
+            tissue_col = tissue_col
+        )
+    )
+    estimates_dfs <- purrr::map(estimates_per_group, ~ .x$est) |>
+        purrr::list_rbind()
+    logs <- append(logger, purrr::map(estimates_per_group, ~ .x$logger) |>
+        purrr::list_flatten())
     if (!is.null(progress)) {
         progress()
     }
-    return(list(est = estimate$est, log = estimate$logger))
+    return(list(est = estimates_dfs, log = logs))
 }
 
 #---- USED IN : is_sharing ----
 ## Internal to find absolute shared number of is between an arbitrary
 ## number of groups
-## Dots are group names in sharing df (actually a data.table)
+## Dots are group names in sharing df
 #' @importFrom rlang sym
 .find_in_common <- function(..., lookup_tbl, keep_genomic_coord) {
-    groups <- as.list(...)
-    in_common <- purrr::pmap(groups, function(...) {
-        grps <- list(...)
-        filt <- lookup_tbl[eval(sym("group_id")) %in% grps, ]
-        common <- purrr::reduce(filt$is, function(l, r) {
-            l[r, on = mandatory_IS_vars(), nomatch = 0]
-        })
-        common
-    })
+    groups <- rlang::list2(...)
+    filt <- lookup_tbl |>
+        dplyr::filter(.data$group_id %in% groups)
+    common <- purrr::reduce(filt$is, ~ .x |>
+        dplyr::inner_join(.y,
+            by = mandatory_IS_vars()
+        ))
     if (!keep_genomic_coord) {
-        return(purrr::map(in_common, ~ nrow(.x)))
+        return(
+            tibble::tibble_row(shared = nrow(common))
+        )
     }
-    return(list(purrr::map(in_common, ~ nrow(.x)), in_common))
+    return(
+        tibble::tibble_row(
+            shared = nrow(common),
+            is_coord = list(common)
+        )
+    )
 }
 
 ## Internal, to use on each row of the combinations df.
@@ -6089,18 +5680,22 @@
 ## - g_names: names of the groups (g1, g2...)
 ## - counts: are counts present? TRUE/FALSE
 .sh_row_permut <- function(..., g_names, counts) {
-    og_row <- list(...)
+    og_row <- rlang::list2(...)
     coord <- if ("is_coord" %in% names(og_row)) {
-        og_row$is_coord <- list(og_row$is_coord)
+        TRUE
+    } else {
+        FALSE
+    }
+    truth_tbls <- if ("truth_tbl_venn" %in% names(og_row)) {
         TRUE
     } else {
         FALSE
     }
     ids <- unlist(og_row[g_names])
-    og_row <- data.table::setDT(og_row)
-    # If row of all equal elements no need for permutations
     if (length(unique(ids)) == 1) {
-        return(og_row)
+        return(
+            tibble::tibble(!!!og_row)
+        )
     }
     # If elements are different
     shared_is <- og_row$shared
@@ -6115,107 +5710,160 @@
         repeats.allowed = FALSE
     )
     colnames(perm) <- g_names
-    perm <- data.table::setDT(as.data.frame(perm))
-    perm[, c("shared") := shared_is]
-    if (coord) {
-        perm[, c("is_coord") := list(og_row$is_coord)]
-    }
+    perm <- tibble::as_tibble(perm)
+    perm <- perm |>
+        dplyr::mutate(shared = shared_is)
     if (counts) {
         for (g in g_names) {
             count_col <- paste0("count_", g)
-            perm[, c(count_col) := paste0("count_", get(g))]
+            perm <- perm |>
+                dplyr::mutate(!!count_col := paste0("count_", .data[[g]]))
         }
-        perm[, count_union := count_union]
+        perm <- perm |>
+            dplyr::mutate(count_union = count_union)
     }
     sub_with_val <- function(val) {
         unlist(purrr::map(val, ~ og_row[[.x]]))
     }
     for (g in g_names) {
-        perm[, c(g) := list(sub_with_val(get(g)))]
+        perm <- perm |>
+            dplyr::mutate(!!g := sub_with_val(.data[[g]]))
         if (counts) {
             count_col <- paste0("count_", g)
-            perm[, c(count_col) := .(sub_with_val(get(count_col)))]
+            perm <- perm |>
+                dplyr::mutate(!!count_col := sub_with_val(.data[[count_col]]))
         }
+    }
+    if (coord) {
+        perm <- perm |>
+            dplyr::mutate(is_coord = og_row$is_coord)
+    }
+    if (truth_tbls) {
+        perm <- perm |>
+            dplyr::mutate(truth_tbl_venn = og_row$truth_tbl_venn)
     }
     return(perm)
 }
 
 # Counts the number of integrations in the union of all groups of a row
 .count_group_union <- function(..., col_groups, lookup_tbl) {
-    dots <- list(...)
-    if ("is_coord" %in% names(dots)) {
-        dots$is_coord <- list(dots$is_coord)
-    }
-    row <- data.table::setDT(dots)
-    groups_in_row <- row[1, mget(col_groups)]
-    sub_lookup <- lookup_tbl[eval(rlang::sym("group_id")) %in% groups_in_row]
-    count_union <- nrow(purrr::reduce(sub_lookup$is, data.table::funion))
-    row[, count_union := count_union]
+    dots <- rlang::list2(...)
+    row <- tibble::as_tibble(dots)
+    groups_in_row <- row[1, col_groups]
+    sub_lookup <- lookup_tbl |>
+        dplyr::filter(.data$group_id %in% groups_in_row)
+    count_union <- nrow(purrr::reduce(sub_lookup$is, dplyr::union))
+    row <- row |>
+        dplyr::mutate(count_union = count_union)
     return(row)
 }
 
 # Obtains lookup table for groups
 .sh_obtain_lookup <- function(key, df) {
-    temp <- df %>%
-        dplyr::select(dplyr::all_of(c(key, mandatory_IS_vars()))) %>%
-        dplyr::group_by(dplyr::across({{ key }})) %>%
+    temp <- df |>
+        dplyr::select(dplyr::all_of(c(key, mandatory_IS_vars()))) |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(key))) |>
         dplyr::distinct(dplyr::across(dplyr::all_of(mandatory_IS_vars())),
             .keep_all = TRUE
-        ) %>%
-        tidyr::unite(col = "group_id", dplyr::all_of(key))
-    temp <- data.table::setDT(temp)
-    temp <- temp[, list(is = list(.SD)), by = "group_id"]
+        ) |>
+        tidyr::unite(col = "group_id", dplyr::all_of(key)) |>
+        tidyr::nest(.by = "group_id", .key = "is")
     return(temp)
 }
 
 # Obtains truth table for venn diagrams. To apply to each row with pmap.
 # - groups : g1, g2, g3...
-# - lookup : either list (mult/mult) or df
+# - lookup : df
 .sh_truth_tbl_venn <- function(..., lookup, groups) {
-    row <- list(...)
-    if (!is.data.frame(lookup)) {
-        # If lookup is a list and not single df
-        retrieve_is <- function(group_name) {
-            label <- row[[group_name]] # a string
-            retrieved <- (lookup[[group_name]])[
-                eval(rlang::sym("group_id")) == label
-            ]
-            retrieved[, c("group_id") := paste0(
-                get("group_id"), "(", group_name, ")"
-            )]
-            retrieved <- retrieved %>%
-                tidyr::unnest(dplyr::all_of("is")) %>%
-                tidyr::unite(
-                    col = "int_id",
-                    dplyr::all_of(mandatory_IS_vars())
+    row <- rlang::list2(...)
+    labels <- unlist(row[groups])
+    retrieved <- lookup |>
+        dplyr::filter(.data$group_id %in% labels)
+    retrieved <- retrieved |>
+        tidyr::unnest(dplyr::all_of("is")) |>
+        tidyr::unite(
+            col = "int_id",
+            dplyr::all_of(mandatory_IS_vars())
+        ) |>
+        dplyr::mutate(observed = TRUE)
+    truth_tbl <- retrieved |>
+        tidyr::pivot_wider(
+            names_from = "group_id",
+            values_from = "observed",
+            values_fill = FALSE
+        )
+    return(truth_tbl)
+}
+
+.single_row_sharing <- function(row, lookup,
+    keep_genomic_coord,
+    is_counts,
+    add_is_count,
+    rel_sharing,
+    venn,
+    minimal,
+    progress) {
+    common_iss <- .find_in_common(!!!row,
+        lookup_tbl = lookup,
+        keep_genomic_coord = keep_genomic_coord
+    )
+    row <- row |>
+        dplyr::bind_cols(common_iss)
+    group_cols <- colnames(row)[!colnames(row) %in% c(
+        "shared",
+        "is_coord"
+    )]
+    if (add_is_count || rel_sharing) {
+        ## Add counts -groups
+        for (col in group_cols) {
+            count_col_name <- paste0("count_", col)
+            counts <- (is_counts |>
+                dplyr::filter(.data$group_id == row[[col]]))$count
+            row <- row |>
+                dplyr::mutate(
+                    !!count_col_name := counts
                 )
-            data.table::setDT(retrieved)
         }
-        retrieved_iss <- purrr::map(groups, retrieve_is)
-        retrieved_iss <- data.table::rbindlist(retrieved_iss)
-        retrieved_iss[, c("observed") := TRUE]
-        truth_tbl <- data.table::dcast(retrieved_iss, int_id ~ group_id,
-            value.var = "observed",
-            fill = FALSE
+        ## Add counts -union
+        row <- .count_group_union(!!!row,
+            col_groups = group_cols,
+            lookup_tbl = lookup
         )
-        return(truth_tbl)
-    } else {
-        labels <- unlist(row[groups])
-        retrieved <- lookup[eval(rlang::sym("group_id")) %in% labels]
-        retrieved <- retrieved %>%
-            tidyr::unnest(dplyr::all_of("is")) %>%
-            tidyr::unite(
-                col = "int_id",
-                dplyr::all_of(mandatory_IS_vars())
-            )
-        data.table::setDT(retrieved)
-        retrieved[, c("observed") := TRUE]
-        truth_tbl <- data.table::dcast(retrieved, int_id ~ group_id,
-            value.var = "observed",
-            fill = FALSE
-        )
-        return(truth_tbl)
     }
+    if (venn) {
+        venn_tbl <- .sh_truth_tbl_venn(!!!row,
+            lookup = lookup,
+            groups = group_cols
+        )
+        row <- row |>
+            dplyr::mutate(
+                truth_tbl_venn = list(venn_tbl)
+            )
+    }
+    if (!minimal) {
+        row <- .sh_row_permut(!!!row,
+            g_names = group_cols,
+            counts = add_is_count || rel_sharing
+        )
+    }
+    if (rel_sharing) {
+        # for groups
+        for (col in group_cols) {
+            rel_col_name <- paste0("on_", col)
+            count_col_name <- paste0("count_", col)
+            row <- row |>
+                dplyr::mutate(!!rel_col_name := (.data$shared /
+                    .data[[count_col_name]]) * 100)
+        }
+        # for union
+        row <- row |>
+            dplyr::mutate(on_union = (.data$shared /
+                .data$count_union) * 100)
+    }
+    if (!is.null(progress)) {
+        progress()
+    }
+    return(row)
 }
 
 ## Computes sharing table for single input df and single key
@@ -6228,16 +5876,17 @@
 ## -rel_sharing: compute relative sharing? (on g_i & on_union)
 ## -include_self_comp: include rows with the same group for each comparison?
 ## useful for heatmaps. Sharing for this rows is always 100%
-.sharing_singledf_single_key <- function(df, key, minimal, n_comp,
-    is_count, rel_sharing,
-    include_self_comp,
-    keep_genomic_coord,
-    venn) {
-    temp <- .sh_obtain_lookup(key, df)
+.sharing_singledf_single_key <- function(
+        df, key, minimal, n_comp,
+        is_count, rel_sharing,
+        include_self_comp,
+        keep_genomic_coord,
+        venn) {
+    lookup <- .sh_obtain_lookup(key, df)
     # Check n and k
-    if (nrow(temp) < n_comp) {
-        if (nrow(temp) >= 2) {
-            n_comp <- nrow(temp)
+    if (nrow(lookup) < n_comp) {
+        if (nrow(lookup) >= 2) {
+            n_comp <- nrow(lookup)
             if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
                 warn_msg <- c("Number of requested comparisons too big",
                     i = paste(
@@ -6264,136 +5913,132 @@
             return(NULL)
         }
     }
-    if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-        rlang::inform("Calculating combinations...")
-    }
-    group_comb <- if (nrow(temp) == 1) {
+    group_comb <- if (nrow(lookup) == 1) {
         gtools::combinations(
-            n = length(temp$group_id),
+            n = length(lookup$group_id),
             r = n_comp,
-            v = temp$group_id,
+            v = lookup$group_id,
             set = TRUE,
             repeats.allowed = TRUE
         )
     } else {
         gtools::combinations(
-            n = length(temp$group_id),
+            n = length(lookup$group_id),
             r = n_comp,
-            v = temp$group_id,
+            v = lookup$group_id,
             set = TRUE,
             repeats.allowed = FALSE
         )
     }
     cols <- paste0("g", seq_len(ncol(group_comb)))
     colnames(group_comb) <- cols
-    group_comb <- data.table::setDT(as.data.frame(group_comb))
-    is_counts <- temp %>%
-        dplyr::mutate(count = purrr::map_int(.data$is, ~ nrow(.x))) %>%
+    group_comb <- tibble::as_tibble(group_comb)
+    is_counts <- lookup |>
+        dplyr::mutate(count = purrr::map_int(.data$is, ~ nrow(.x))) |>
         dplyr::select(-dplyr::all_of("is"))
-    sharing_df <- if (!keep_genomic_coord) {
-        group_comb[, c("shared") := .find_in_common(.SD,
-            lookup_tbl = temp,
-            keep_genomic_coord = keep_genomic_coord
+    sharing_df <- .execute_map_job(
+        data_list = group_comb |>
+            dplyr::group_by(
+                dplyr::across(dplyr::everything())
+            ) |>
+            dplyr::group_split(),
+        fun_to_apply = .single_row_sharing,
+        fun_args = list(
+            lookup = lookup,
+            keep_genomic_coord = keep_genomic_coord,
+            is_counts = is_counts,
+            add_is_count = is_count,
+            rel_sharing = rel_sharing,
+            venn = venn,
+            minimal = minimal
         ),
-        .SDcols = cols
-        ]
-    } else {
-        group_comb[, c("shared", "is_coord") := .find_in_common(.SD,
-            lookup_tbl = temp,
-            keep_genomic_coord = keep_genomic_coord
-        ),
-        .SDcols = cols
-        ]
-    }
-
-    if (include_self_comp & nrow(temp) >= 2) {
+        stop_on_error = TRUE
+    )$res |>
+        purrr::list_rbind()
+    if (include_self_comp & nrow(lookup) >= 2) {
         ## Calculate groups with equal components
-        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-            rlang::inform("Calculating self groups (requested)...")
-        }
-        self_rows <- purrr::map2_df(
+        self_rows <- purrr::map2(
             is_counts$group_id, is_counts$count,
             function(x, y) {
                 row_ls <- as.list(setNames(rep_len(
                     x,
                     length.out = n_comp
                 ), nm = cols))
-                row <- data.table::setDT(row_ls)
-                row[, c("shared") := y]
+                row <- tibble::as_tibble(row_ls) |>
+                    dplyr::mutate(shared = y)
                 if (keep_genomic_coord) {
-                    row[, c("is_coord") := list(temp[
-                        eval(rlang::sym("group_id")) == x
-                    ]$is)]
+                    row <- row |>
+                        dplyr::mutate(
+                            is_coord =
+                                lookup |>
+                                    dplyr::filter(.data$group_id == x) |>
+                                    dplyr::pull("is")
+                        )
                 }
                 return(row)
             }
-        )
-        sharing_df <- data.table::rbindlist(list(
-            self_rows,
-            sharing_df
-        ))
-    }
-    group_cols <- colnames(sharing_df)[!colnames(sharing_df) %in% c(
-        "shared",
-        "is_coord"
-    )]
-    if (is_count || rel_sharing) {
-        ## Add counts -groups
-        for (col in group_cols) {
-            count_col_name <- paste0("count_", col)
-            sharing_df <- sharing_df[
-                dplyr::rename(
-                    is_counts,
-                    !!col := dplyr::all_of("group_id"),
-                    !!count_col_name := dplyr::all_of("count")
-                ),
-                on = col,
-                nomatch = 0
-            ]
+        ) |>
+            purrr::list_rbind()
+        # Add counts if requested
+        if (is_count) {
+            first_group <- colnames(self_rows)[1]
+            self_rows <- self_rows |>
+                dplyr::left_join(
+                    is_counts |>
+                        dplyr::rename(
+                            !!first_group := dplyr::all_of("group_id")
+                        ),
+                    by = first_group
+                )
+            for (col in cols) {
+                self_rows <- self_rows |>
+                    dplyr::mutate(
+                        !!paste0("count_", col) := .data$count
+                    )
+            }
+            self_rows <- self_rows |>
+                dplyr::mutate(
+                    count_union = .data$count
+                ) |>
+                dplyr::select(-dplyr::all_of("count"))
         }
-        ## Add counts -union
-        sharing_df <- purrr::pmap_df(sharing_df, .count_group_union,
-            col_groups = group_cols,
-            lookup_tbl = temp
-        )
-    }
-    if (!minimal) {
-        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-            rlang::inform("Calculating permutations (requested)...")
+        if (rel_sharing) {
+            for (col in cols) {
+                self_rows <- self_rows |>
+                    dplyr::mutate(
+                        !!paste0("on_", col) := 100.0
+                    )
+                self_rows <- self_rows |>
+                    dplyr::mutate(
+                        on_union = 100.0
+                    )
+            }
         }
-        sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
-            g_names = group_cols,
-            counts = is_count || rel_sharing
-        )
-    }
-    if (rel_sharing) {
-        # for groups
-        for (col in group_cols) {
-            rel_col_name <- paste0("on_", col)
-            count_col_name <- paste0("count_", col)
-            sharing_df <- sharing_df %>%
-                dplyr::mutate(!!rel_col_name := (.data$shared /
-                    .data[[count_col_name]]) * 100)
+        if (venn) {
+            venn_tbls <- purrr::pmap(
+                self_rows, .sh_truth_tbl_venn,
+                lookup = lookup,
+                groups = cols
+            )
+            self_rows <- self_rows |>
+                dplyr::mutate(
+                    truth_tbl_venn = venn_tbls
+                )
         }
-        # for union
-        sharing_df <- sharing_df %>%
-            dplyr::mutate(on_union = (.data$shared /
-                .data$count_union) * 100)
+        sharing_df <- self_rows |>
+            dplyr::bind_rows(sharing_df)
     }
-    if (!is_count) {
-        sharing_df <- sharing_df %>%
-            dplyr::select(!dplyr::contains("count_"))
-    }
-    if (venn) {
-        sharing_df <- sharing_df %>%
-            dplyr::mutate(truth_tbl_venn = purrr::pmap(.,
-                .sh_truth_tbl_venn,
-                lookup = temp,
-                groups = group_cols
-            ))
-    }
+    column_order <- c(
+        cols, "shared", paste0("count_", cols),
+        "count_union", paste0("on_", cols),
+        "on_union", "is_coord", "truth_tbl_venn"
+    )
+    column_order <- column_order[column_order %in% colnames(sharing_df)]
+    sharing_df <- sharing_df |>
+        dplyr::select(dplyr::all_of(column_order))
     sharing_df
 }
+
 
 ## Computes sharing table for single input df and multiple keys
 ## -keys: name of the columns to do a group by (it is a named list)
@@ -6401,270 +6046,158 @@
 ## all permutations
 ## -is_count: keep the counts in the table?
 ## -rel_sharing: compute relative sharing? (on g_i & on_union)
-.sharing_singledf_mult_key <- function(df, keys,
-    minimal, is_count,
-    rel_sharing, keep_genomic_coord,
-    venn) {
-    g_names <- names(keys)
+.sharing_singledf_mult_key <- function(
+        df, keys,
+        minimal, is_count,
+        rel_sharing, keep_genomic_coord,
+        venn) {
+    cols <- names(keys)
     ## Obtain lookup table for each key
     lookup <- purrr::map(keys, ~ .sh_obtain_lookup(.x, df))
     group_labels <- purrr::map(lookup, ~ .x$group_id)
     unique_keys <- names(keys[!duplicated(keys)])
-    lookup <- data.table::rbindlist(lookup[unique_keys])
+    lookup <- purrr::list_rbind(lookup[unique_keys])
     ## Obtain combinations
-    combin <- data.table::setDT(purrr::cross_df(group_labels))
-    sharing_df <- if (!keep_genomic_coord) {
-        combin[, c("shared") := .find_in_common(.SD,
-            lookup_tbl = lookup,
-            keep_genomic_coord = keep_genomic_coord
+    combin <- tidyr::expand_grid(!!!group_labels)
+    is_counts <- lookup |>
+        dplyr::mutate(count = purrr::map_int(.data$is, ~ nrow(.x))) |>
+        dplyr::select(-dplyr::all_of("is"))
+    sharing_df <- .execute_map_job(
+        data_list = combin |>
+            dplyr::group_by(
+                dplyr::across(dplyr::everything())
+            ) |>
+            dplyr::group_split(),
+        fun_to_apply = .single_row_sharing,
+        fun_args = list(
+            lookup = lookup,
+            keep_genomic_coord = keep_genomic_coord,
+            is_counts = is_counts,
+            add_is_count = is_count,
+            rel_sharing = rel_sharing,
+            venn = venn,
+            minimal = minimal
         ),
-        .SDcols = g_names
-        ]
-    } else {
-        combin[, c("shared", "is_coord") := .find_in_common(.SD,
-            lookup_tbl = lookup,
-            keep_genomic_coord = keep_genomic_coord
-        ),
-        .SDcols = g_names
-        ]
-    }
-
-    if (is_count || rel_sharing) {
-        is_counts <- lookup %>%
-            dplyr::mutate(count = purrr::map_int(.data$is, ~ nrow(.x))) %>%
-            dplyr::select(-dplyr::all_of("is"))
-        ## Add counts -groups
-        for (col in g_names) {
-            count_col_name <- paste0("count_", col)
-            sharing_df <- sharing_df[
-                dplyr::rename(
-                    is_counts,
-                    !!col := dplyr::all_of("group_id"),
-                    !!count_col_name := dplyr::all_of("count")
-                ),
-                on = col,
-                nomatch = 0
-            ]
-        }
-        ## Add counts -union
-        sharing_df <- purrr::pmap_df(sharing_df, .count_group_union,
-            col_groups = g_names,
-            lookup_tbl = lookup
-        )
-    }
-    if (!minimal) {
-        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-            rlang::inform("Calculating permutations (requested)...")
-        }
-        sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
-            g_names = g_names,
-            counts = is_count || rel_sharing
-        )
-    }
-    if (rel_sharing) {
-        # for groups
-        for (col in g_names) {
-            rel_col_name <- paste0("on_", col)
-            count_col_name <- paste0("count_", col)
-            sharing_df <- sharing_df %>%
-                dplyr::mutate(!!rel_col_name := (.data$shared /
-                    .data[[count_col_name]]) * 100)
-        }
-        # for union
-        sharing_df <- sharing_df %>%
-            dplyr::mutate(on_union = (.data$shared /
-                .data$count_union) * 100)
-    }
-    if (!is_count) {
-        sharing_df <- sharing_df %>%
-            dplyr::select(!dplyr::contains("count_"))
-    }
-    if (venn) {
-        sharing_df <- sharing_df %>%
-            dplyr::mutate(truth_tbl_venn = purrr::pmap(.,
-                .sh_truth_tbl_venn,
-                lookup = lookup,
-                groups = g_names
-            ))
-    }
+        stop_on_error = TRUE
+    )$res |>
+        purrr::list_rbind()
+    column_order <- c(
+        cols, "shared", paste0("count_", cols),
+        "count_union", paste0("on_", cols),
+        "on_union", "is_coord", "truth_tbl_venn"
+    )
+    column_order <- column_order[column_order %in% colnames(sharing_df)]
+    sharing_df <- sharing_df |>
+        dplyr::select(dplyr::all_of(column_order))
     sharing_df
 }
 
 ## Computes sharing table for mult input dfs and single key
-.sharing_multdf_single_key <- function(dfs, key, minimal,
-    is_count, rel_sharing, keep_genomic_coord, venn) {
-    if (is.null(names(dfs))) {
-        g_names <- paste0("g", seq_len(length(dfs)))
-        names(dfs) <- g_names
-    }
-    lookups <- purrr::map(dfs, ~ .sh_obtain_lookup(key, .x))
-    group_labels <- purrr::map(lookups, ~ .x$group_id)
-    lookup <- data.table::rbindlist(lookups)
-    ## Obtain combinations
-    combin <- data.table::setDT(purrr::cross_df(group_labels))
-    sharing_df <- if (!keep_genomic_coord) {
-        combin[, c("shared") := .find_in_common(.SD,
-            lookup_tbl = lookup,
-            keep_genomic_coord = keep_genomic_coord
-        ),
-        .SDcols = names(dfs)
-        ]
+.sharing_multdf_single_key <- function(
+        dfs, key, minimal,
+        is_count, rel_sharing, keep_genomic_coord, venn) {
+    cols <- if (is.null(names(dfs))) {
+        g_n <- paste0("g", seq_len(length(dfs)))
+        names(dfs) <- g_n
+        g_n
     } else {
-        combin[, c("shared", "is_coord") := .find_in_common(.SD,
-            lookup_tbl = lookup,
-            keep_genomic_coord = keep_genomic_coord
-        ),
-        .SDcols = names(dfs)
-        ]
+        names(dfs)
     }
-
-    if (is_count || rel_sharing) {
-        is_counts <- purrr::map2(lookups, names(lookups), function(x, y) {
-            count_col_name <- paste0("count_", y)
-            x %>%
-                dplyr::mutate(!!count_col_name := purrr::map_int(
-                    .data$is, ~ nrow(.x)
-                )) %>%
-                dplyr::select(-dplyr::all_of("is")) %>%
-                dplyr::rename(!!y := dplyr::all_of("group_id"))
-        })
-        ## Add counts -groups
-        for (col in names(dfs)) {
-            cnt_tbl <- is_counts[[col]]
-            sharing_df <- sharing_df[
-                cnt_tbl,
-                on = col,
-                nomatch = 0
-            ]
-        }
-        ## Add counts -union
-        sharing_df <- purrr::pmap_df(sharing_df, .count_group_union,
-            col_groups = names(dfs),
-            lookup_tbl = lookup
-        )
-    }
-    if (!minimal) {
-        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-            rlang::inform("Calculating permutations (requested)...")
-        }
-        sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
-            g_names = names(dfs),
-            counts = is_count || rel_sharing
-        )
-    }
-    if (rel_sharing) {
-        # for groups
-        for (col in names(dfs)) {
-            rel_col_name <- paste0("on_", col)
-            count_col_name <- paste0("count_", col)
-            sharing_df <- sharing_df %>%
-                dplyr::mutate(!!rel_col_name := (.data$shared /
-                    .data[[count_col_name]]) * 100)
-        }
-        # for union
-        sharing_df <- sharing_df %>%
-            dplyr::mutate(on_union = (.data$shared /
-                .data$count_union) * 100)
-    }
-    if (!is_count) {
-        sharing_df <- sharing_df %>%
-            dplyr::select(!dplyr::contains("count_"))
-    }
-    if (venn) {
-        sharing_df <- sharing_df %>%
-            dplyr::mutate(truth_tbl_venn = purrr::pmap(.,
-                .sh_truth_tbl_venn,
-                lookup = lookups,
-                groups = names(dfs)
+    lookups <- purrr::map2(
+        dfs, seq_along(dfs),
+        ~ .sh_obtain_lookup(key, .x) |>
+            dplyr::mutate(group_id = paste0(
+                .data$group_id, "-", .y
             ))
-    }
+    )
+    group_labels <- purrr::map(lookups, ~ .x$group_id)
+    lookup <- purrr::list_rbind(lookups)
+    ## Obtain combinations
+    combin <- tidyr::expand_grid(!!!group_labels)
+    is_counts <- purrr::map(lookups, ~ {
+        .x |>
+            dplyr::mutate(count = purrr::map_int(.data$is, nrow)) |>
+            dplyr::select(-dplyr::all_of("is"))
+    }) |>
+        purrr::list_rbind()
+    sharing_df <- .execute_map_job(
+        data_list = combin |>
+            dplyr::group_by(
+                dplyr::across(dplyr::everything())
+            ) |>
+            dplyr::group_split(),
+        fun_to_apply = .single_row_sharing,
+        fun_args = list(
+            lookup = lookup,
+            keep_genomic_coord = keep_genomic_coord,
+            is_counts = is_counts,
+            add_is_count = is_count,
+            rel_sharing = rel_sharing,
+            venn = venn,
+            minimal = minimal
+        ),
+        stop_on_error = TRUE
+    )$res |>
+        purrr::list_rbind()
+    column_order <- c(
+        cols, "shared", paste0("count_", cols),
+        "count_union", paste0("on_", cols),
+        "on_union", "is_coord", "truth_tbl_venn"
+    )
+    column_order <- column_order[column_order %in% colnames(sharing_df)]
+    sharing_df <- sharing_df |>
+        dplyr::select(dplyr::all_of(column_order))
     sharing_df
 }
 
 ## Computes sharing table for mult input dfs and mult key
-.sharing_multdf_mult_key <- function(dfs, keys, minimal,
-    is_count, rel_sharing, keep_genomic_coord, venn) {
-    lookups <- purrr::map2(dfs, keys, ~ .sh_obtain_lookup(.y, .x)) %>%
-        purrr::set_names(names(keys))
+.sharing_multdf_mult_key <- function(
+        dfs, keys, minimal,
+        is_count, rel_sharing, keep_genomic_coord, venn) {
+    cols <- names(keys)
+    lookups <- purrr::map2(dfs, keys, ~ .sh_obtain_lookup(.y, .x)) |>
+        purrr::set_names(cols)
+    lookups <- purrr::map2(lookups, seq_along(lookups), ~ .x |>
+        dplyr::mutate(group_id = paste0(
+            .data$group_id, "-", .y
+        )))
     group_labels <- purrr::map(lookups, ~ .x$group_id)
-    lookup <- data.table::rbindlist(lookups)
+    lookup <- purrr::list_rbind(lookups)
     ## Obtain combinations
-    combin <- data.table::setDT(purrr::cross_df(group_labels))
-    sharing_df <- if (!keep_genomic_coord) {
-        combin[, c("shared") := .find_in_common(.SD,
-            lookup_tbl = lookup,
-            keep_genomic_coord = keep_genomic_coord
+    combin <- tidyr::expand_grid(!!!group_labels)
+    is_counts <- purrr::map(lookups, ~ {
+        .x |>
+            dplyr::mutate(count = purrr::map_int(.data$is, nrow)) |>
+            dplyr::select(-dplyr::all_of("is"))
+    }) |>
+        purrr::list_rbind()
+    sharing_df <- .execute_map_job(
+        data_list = combin |>
+            dplyr::group_by(
+                dplyr::across(dplyr::everything())
+            ) |>
+            dplyr::group_split(),
+        fun_to_apply = .single_row_sharing,
+        fun_args = list(
+            lookup = lookup,
+            keep_genomic_coord = keep_genomic_coord,
+            is_counts = is_counts,
+            add_is_count = is_count,
+            rel_sharing = rel_sharing,
+            venn = venn,
+            minimal = minimal
         ),
-        .SDcols = names(keys)
-        ]
-    } else {
-        combin[, c("shared", "is_coord") := .find_in_common(.SD,
-            lookup_tbl = lookup,
-            keep_genomic_coord = keep_genomic_coord
-        ),
-        .SDcols = names(keys)
-        ]
-    }
-    if (is_count || rel_sharing) {
-        is_counts <- purrr::map2(lookups, names(lookups), function(x, y) {
-            count_col_name <- paste0("count_", y)
-            x %>%
-                dplyr::mutate(!!count_col_name := purrr::map_int(
-                    .data$is, ~ nrow(.x)
-                )) %>%
-                dplyr::select(-dplyr::all_of("is")) %>%
-                dplyr::rename(!!y := dplyr::all_of("group_id"))
-        })
-        ## Add counts -groups
-        for (col in names(keys)) {
-            cnt_tbl <- is_counts[[col]]
-            sharing_df <- sharing_df[
-                cnt_tbl,
-                on = col,
-                nomatch = 0
-            ]
-        }
-        ## Add counts -union
-        sharing_df <- purrr::pmap_df(sharing_df, .count_group_union,
-            col_groups = names(keys),
-            lookup_tbl = lookup
-        )
-    }
-    if (!minimal) {
-        if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-            rlang::inform("Calculating permutations (requested)...")
-        }
-        sharing_df <- purrr::pmap_df(sharing_df, .sh_row_permut,
-            g_names = names(keys),
-            counts = is_count || rel_sharing
-        )
-    }
-    if (rel_sharing) {
-        # for groups
-        for (col in names(keys)) {
-            rel_col_name <- paste0("on_", col)
-            count_col_name <- paste0("count_", col)
-            sharing_df <- sharing_df %>%
-                dplyr::mutate(!!rel_col_name := (.data$shared /
-                    .data[[count_col_name]]) * 100)
-        }
-        # for union
-        sharing_df <- sharing_df %>%
-            dplyr::mutate(on_union = (.data$shared /
-                .data$count_union) * 100)
-    }
-    if (!is_count) {
-        sharing_df <- sharing_df %>%
-            dplyr::select(!dplyr::contains("count_"))
-    }
-    if (venn) {
-        sharing_df <- sharing_df %>%
-            dplyr::mutate(truth_tbl_venn = purrr::pmap(.,
-                .sh_truth_tbl_venn,
-                lookup = lookups,
-                groups = names(keys)
-            ))
-    }
+        stop_on_error = TRUE
+    )$res |>
+        purrr::list_rbind()
+    column_order <- c(
+        cols, "shared", paste0("count_", cols),
+        "count_union", paste0("on_", cols),
+        "on_union", "is_coord", "truth_tbl_venn"
+    )
+    column_order <- column_order[column_order %in% colnames(sharing_df)]
+    sharing_df <- sharing_df |>
+        dplyr::select(dplyr::all_of(column_order))
     sharing_df
 }
 
@@ -6675,28 +6208,29 @@
     } else {
         mandatory_IS_vars()
     }
-    return(df %>%
+    return(df |>
         dplyr::mutate(!!timepoint_column := as.numeric(
             .data[[timepoint_column]]
-        )) %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(is_vars))) %>%
+        )) |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(is_vars))) |>
         dplyr::group_modify(~ {
             if (nrow(.x) == 1) {
                 return(.x)
             }
             min_tp <- min(.x[[timepoint_column]])
-            return(.x %>%
+            return(.x |>
                 dplyr::filter(.data[[timepoint_column]] == min_tp))
-        }) %>%
+        }) |>
         dplyr::ungroup())
 }
 
-.sharing_for_source <- function(ref,
-    sel,
-    ref_key,
-    sel_key,
-    tp_col,
-    subj_col) {
+.sharing_for_source <- function(
+        ref,
+        sel,
+        ref_key,
+        sel_key,
+        tp_col,
+        subj_col) {
     if (!is.data.frame(ref)) {
         ### Workflow by subject
         common_names <- if (!all(names(ref) == names(sel))) {
@@ -6742,17 +6276,18 @@
             )
         }
 
-        FUN <- function(subj,
-    ref, sel, ref_key, sel_key,
-    tp_col, progress) {
+        FUN <- function(
+        subj,
+        ref, sel, ref_key, sel_key,
+        tp_col, progress) {
             ref_df <- ref[[subj]]
             sel_df <- sel[[subj]]
             ref_key_min <- ref_key[ref_key != tp_col]
-            ref_split <- ref_df %>%
-                dplyr::group_by(dplyr::across(dplyr::all_of(ref_key_min))) %>%
+            ref_split <- ref_df |>
+                dplyr::group_by(dplyr::across(dplyr::all_of(ref_key_min))) |>
                 dplyr::group_split()
             quiet_sharing <- purrr::quietly(is_sharing)
-            sharing <- purrr::map_df(ref_split, ~ {
+            calculate_sharing <- function(.x) {
                 assigned_ref <- .assign_iss_by_tp(.x,
                     timepoint_column = tp_col
                 )
@@ -6764,20 +6299,23 @@
                     ),
                     keep_genomic_coord = TRUE
                 ))$result
-                sh <- sh %>%
+                sh <- sh |>
                     tidyr::separate(
                         col = "g1",
-                        into = paste0("g1_", ref_key),
+                        into = paste0("g1_", c(ref_key, "source_table")),
                         remove = FALSE,
                         convert = TRUE
-                    ) %>%
+                    ) |>
                     tidyr::separate(
                         col = "g2",
-                        into = paste0("g2_", sel_key),
+                        into = paste0("g2_", c(sel_key, "source_table")),
                         remove = FALSE,
                         convert = TRUE
-                    )
-            })
+                    ) |>
+                    dplyr::select(-dplyr::ends_with("source_table"))
+            }
+            sharing <- purrr::map(ref_split, calculate_sharing) |>
+                purrr::list_rbind()
             if (!is.null(progress)) {
                 progress()
             }
@@ -6795,16 +6333,16 @@
                 tp_col = tp_col
             ),
             stop_on_error = TRUE
-        )$res %>%
+        )$res |>
             purrr::set_names(common_names)
         return(shared)
     }
     ref_key_min <- ref_key[ref_key != tp_col]
-    ref_split <- ref %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(ref_key_min))) %>%
+    ref_split <- ref |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(ref_key_min))) |>
         dplyr::group_split()
     quiet_sharing <- purrr::quietly(is_sharing)
-    sharing <- purrr::map_df(ref_split, ~ {
+    sharing <- purrr::map(ref_split, ~ {
         assigned_ref <- .assign_iss_by_tp(.x,
             timepoint_column = tp_col
         )
@@ -6816,18 +6354,20 @@
             ),
             keep_genomic_coord = TRUE
         ))$result
-    })
-    sharing %>%
+    }) |>
+        purrr::list_rbind()
+    sharing |>
         tidyr::separate(
             col = "g1",
-            into = paste0("g1_", ref_key),
+            into = paste0("g1_", c(ref_key, "source_table")),
             remove = FALSE,
             convert = TRUE
-        ) %>%
+        ) |>
         tidyr::separate(
             col = "g2",
-            into = paste0("g2_", sel_key),
+            into = paste0("g2_", c(sel_key, "source_table")),
             remove = FALSE,
             convert = TRUE
-        )
+        ) |>
+        dplyr::select(-dplyr::ends_with("source_table"))
 }

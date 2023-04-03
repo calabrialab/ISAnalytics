@@ -2,19 +2,12 @@
 # Global vars
 #------------------------------------------------------------------------------#
 path_cols <- .path_cols_names()
-func_name <- c(
-    ".read_af",
-    ".check_file_system_alignment",
-    ".update_af_after_alignment",
-    ".manage_association_file",
-    "import_association_file"
-)
 withr::local_options(list(ISAnalytics.reports = FALSE))
 
 #------------------------------------------------------------------------------#
-# Tests .read_af
+# .read_af
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[1], "works for tsv file"), {
+test_that(".read_af works for tsv file", {
     read_res <- .read_af(
         path = fs_path$af, date_format = "ymd",
         delimiter = "\t"
@@ -24,13 +17,13 @@ test_that(paste(func_name[1], "works for tsv file"), {
     expect_true(purrr::is_empty(read_res$date_fail))
 })
 
-test_that(paste(func_name[1], "works for xslx file"), {
+test_that(".read_af works for xslx file", {
     skip_if_not_installed("readxl")
     skip_if_not_installed("openxlsx")
     cols_selected <- colnames(
         association_file
     )[colnames(association_file) %in% association_file_columns()]
-    association_file_mod <- association_file %>%
+    association_file_mod <- association_file |>
         dplyr::select(dplyr::all_of(cols_selected))
     withr::with_tempfile(
         new = "af", fileext = ".xlsx", pattern = "asso_file",
@@ -56,9 +49,9 @@ test_that(paste(func_name[1], "works for xslx file"), {
 })
 
 #------------------------------------------------------------------------------#
-# Tests .check_file_system_alignment
+# .check_file_system_alignment
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[2], "works for correct fs"), {
+test_that(".check_file_system_alignment works for correct fs", {
     checks <- .check_file_system_alignment(
         df = association_file,
         root_folder = fs_path$root_corr,
@@ -72,7 +65,7 @@ test_that(paste(func_name[2], "works for correct fs"), {
     expect_true(all(!is.na(checks$Path_iss)))
 })
 
-test_that(paste(func_name[2], "works for incorrect fs"), {
+test_that(".check_file_system_alignment works for incorrect fs", {
     checks <- .check_file_system_alignment(
         df = association_file,
         root_folder = fs_path$root_inc,
@@ -86,7 +79,7 @@ test_that(paste(func_name[2], "works for incorrect fs"), {
     expect_true(is.na(checks$Path_iss[1]))
 })
 
-test_that(paste(func_name[2], "no error for NA concat"), {
+test_that(".check_file_system_alignment no error for NA concat", {
     withr::with_dir(tempdir(), {
         fake_pj <- fs::path("Project")
         fs::dir_create(fake_pj)
@@ -117,9 +110,9 @@ test_that(paste(func_name[2], "no error for NA concat"), {
 })
 
 #------------------------------------------------------------------------------#
-# Tests .update_af_after_alignment
+# .update_af_after_alignment
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[3], "updates correct fs - no NAs"), {
+test_that(".update_af_after_alignment updates correct fs - no NAs", {
     checks <- .check_file_system_alignment(
         df = association_file,
         root_folder = fs_path$root_corr,
@@ -139,7 +132,7 @@ test_that(paste(func_name[3], "updates correct fs - no NAs"), {
 })
 
 
-test_that(paste(func_name[3], "updates correct fserr - with NAs"), {
+test_that(".update_af_after_alignment updates correct fserr - with NAs", {
     checks <- .check_file_system_alignment(
         df = association_file,
         root_folder = fs_path$root_inc,
@@ -154,21 +147,21 @@ test_that(paste(func_name[3], "updates correct fserr - with NAs"), {
         project_id_col = "ProjectID"
     )
     expect_true(all(
-        is.na(updated_af %>%
-            dplyr::filter(.data$concatenatePoolIDSeqRun == "POOL01-1") %>%
+        is.na(updated_af |>
+            dplyr::filter(.data$concatenatePoolIDSeqRun == "POOL01-1") |>
             dplyr::pull(.data[[path_cols$quant]]))
     ))
     expect_true(all(
-        is.na(updated_af %>%
-            dplyr::filter(.data$concatenatePoolIDSeqRun == "POOL01-1") %>%
+        is.na(updated_af |>
+            dplyr::filter(.data$concatenatePoolIDSeqRun == "POOL01-1") |>
             dplyr::pull(.data[[path_cols$iss]]))
     ))
 })
 
 #------------------------------------------------------------------------------#
-# Tests .manage_association_file
+# .manage_association_file
 #------------------------------------------------------------------------------#
-test_that(paste(func_name[4], "works as expected"), {
+test_that(".manage_association_file works as expected", {
     managed_af <- .manage_association_file(
         af_path = fs_path$af,
         root = fs_path$root_corr,
@@ -201,11 +194,11 @@ test_that(paste(func_name[4], "works as expected"), {
 })
 
 #------------------------------------------------------------------------------#
-# Tests import_association_file
+# import_association_file
 #------------------------------------------------------------------------------#
 ## Testing input
 
-test_that(paste(func_name[5], "fails if date format is incorrect"), {
+test_that("import_association_file fails if date format is incorrect", {
     # dates_format is not a character
     expect_error(
         import_association_file(fs_path$af, fs_path$root_corr,
@@ -226,7 +219,7 @@ test_that(paste(func_name[5], "fails if date format is incorrect"), {
     )
 })
 
-test_that(paste(func_name[5], "fails if filter is not a named list"), {
+test_that("import_association_file fails if filter is not a named list", {
     expect_error(
         import_association_file(fs_path$af, filter_for = c("a", "b"))
     )
@@ -235,7 +228,7 @@ test_that(paste(func_name[5], "fails if filter is not a named list"), {
     )
 })
 
-test_that(paste(func_name[5], "fails if separator is wrong"), {
+test_that("import_association_file fails if separator is wrong", {
     expect_error(
         import_association_file(fs_path$af, separator = NULL)
     )
@@ -245,7 +238,7 @@ test_that(paste(func_name[5], "fails if separator is wrong"), {
 })
 
 ## Testing results
-test_that(paste(func_name[5], "default - no fs align"), {
+test_that("import_association_file default - no fs align", {
     expect_message(
         {
             af <- import_association_file(fs_path$af,
@@ -283,11 +276,9 @@ test_that(paste(func_name[5], "default - no fs align"), {
     expect_true(all(c("TimepointMonths", "TimepointYears") %in% colnames(af)))
     expect_true(is.character(af$TimepointMonths) &
         is.character(af$TimepointYears))
-    expect_true(max(nchar(af$TimepointMonths)) == 2)
-    expect_true(max(nchar(af$TimepointYears)) == 2)
 })
 
-test_that(paste(func_name[5], "default - with fs align"), {
+test_that("import_association_file default - with fs align", {
     expect_message(
         {
             af <- import_association_file(fs_path$af,
@@ -314,8 +305,8 @@ test_that(paste(func_name[5], "default - with fs align"), {
 })
 
 ### --- With dynamic vars
-test_that(paste(func_name[5], "custom - no fs align - no missing tags"), {
-    temp_specs <- .default_af_cols() %>%
+test_that("import_association_file custom - no fs align - no missing tags", {
+    temp_specs <- .default_af_cols() |>
         dplyr::mutate(names = dplyr::if_else(
             condition = .data$names == "ProjectID",
             true = "Proj",
@@ -323,8 +314,8 @@ test_that(paste(func_name[5], "custom - no fs align - no missing tags"), {
         ))
     new_af_path <- fs::path(fs::path_dir(fs_path$af), "asso_file_mod.tsv")
     readr::write_tsv(
-        association_file %>%
-            dplyr::select(dplyr::all_of(.default_af_cols()$names)) %>%
+        association_file |>
+            dplyr::select(dplyr::all_of(.default_af_cols()$names)) |>
             dplyr::rename(Proj = "ProjectID"),
         file = new_af_path, na = ""
     )
@@ -341,8 +332,8 @@ test_that(paste(func_name[5], "custom - no fs align - no missing tags"), {
     expect_true("Proj" %in% colnames(af))
 })
 
-test_that(paste(func_name[5], "custom - no fs align - missing tags"), {
-    temp_specs <- .default_af_cols() %>% # missing project tag
+test_that("import_association_file custom - no fs align - missing tags", {
+    temp_specs <- .default_af_cols() |> # missing project tag
         dplyr::filter(.data$tag != "project_id" | is.na(.data$tag))
     withr::local_options(.new = list(ISAnalytics.af_specs = temp_specs))
     expect_message(
@@ -355,10 +346,10 @@ test_that(paste(func_name[5], "custom - no fs align - missing tags"), {
     )
 })
 
-test_that(paste(func_name[5], "custom - no fs align - missing cols"), {
+test_that("import_association_file custom - no fs align - missing cols", {
     new_af_path <- fs::path(fs::path_dir(fs_path$af), "asso_file_mod.tsv")
     readr::write_tsv(
-        association_file %>%
+        association_file |>
             dplyr::select(
                 dplyr::all_of(.default_af_cols()$names),
                 -dplyr::all_of("ProjectID")
@@ -375,8 +366,8 @@ test_that(paste(func_name[5], "custom - no fs align - missing cols"), {
     )
 })
 
-test_that(paste(func_name[5], "custom - fs align - no missing tags"), {
-    temp_specs <- .default_af_cols() %>%
+test_that("import_association_file custom - fs align - no missing tags", {
+    temp_specs <- .default_af_cols() |>
         dplyr::mutate(names = dplyr::if_else(
             condition = .data$names == "ProjectID",
             true = "Proj",
@@ -384,8 +375,8 @@ test_that(paste(func_name[5], "custom - fs align - no missing tags"), {
         ))
     new_af_path <- fs::path(fs::path_dir(fs_path$af), "asso_file_mod.tsv")
     readr::write_tsv(
-        association_file %>%
-            dplyr::select(dplyr::all_of(.default_af_cols()$names)) %>%
+        association_file |>
+            dplyr::select(dplyr::all_of(.default_af_cols()$names)) |>
             dplyr::rename(Proj = "ProjectID"),
         file = new_af_path, na = ""
     )
@@ -403,8 +394,8 @@ test_that(paste(func_name[5], "custom - fs align - no missing tags"), {
     expect_true("Proj" %in% colnames(af))
 })
 
-test_that(paste(func_name[5], "custom - fs align - missing tags"), {
-    temp_specs <- .default_af_cols() %>%
+test_that("import_association_file custom - fs align - missing tags", {
+    temp_specs <- .default_af_cols() |>
         dplyr::filter(.data$tag != "project_id") # missing project tag
     withr::local_options(.new = list(ISAnalytics.af_specs = temp_specs))
     expect_error(
@@ -418,10 +409,10 @@ test_that(paste(func_name[5], "custom - fs align - missing tags"), {
     )
 })
 
-test_that(paste(func_name[5], "custom - fs align - missing cols"), {
+test_that("import_association_file custom - fs align - missing cols", {
     new_af_path <- fs::path(fs::path_dir(fs_path$af), "asso_file_mod.tsv")
     readr::write_tsv(
-        association_file %>%
+        association_file |>
             dplyr::select(
                 dplyr::all_of(.default_af_cols()$names),
                 -dplyr::all_of("ProjectID")
@@ -436,7 +427,7 @@ test_that(paste(func_name[5], "custom - fs align - missing cols"), {
     })
 })
 
-test_that(paste(func_name[5], "signals deprecation of tp_padding"), {
+test_that("import_association_file signals deprecation of tp_padding", {
     expect_message(
         {
             expect_deprecated({

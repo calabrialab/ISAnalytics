@@ -31,15 +31,15 @@ test_that(".stats_report produces correct output", {
     )
     expect_true(unique(output$ProjectID) == "PJ01")
     expect_true(nrow(output) == 4)
-    expect_true(is.na(output %>%
-        dplyr::filter(.data$concatenatePoolIDSeqRun == "POOL01-1") %>%
+    expect_true(is.na(output |>
+        dplyr::filter(.data$concatenatePoolIDSeqRun == "POOL01-1") |>
         dplyr::pull(.data[[.path_cols_names()$iss]])))
     expect_true(all(is.na(
-        output %>%
+        output |>
             dplyr::filter(.data$concatenatePoolIDSeqRun %in% c(
                 "POOL01-1",
                 "POOL02-1"
-            )) %>%
+            )) |>
             dplyr::pull(.data$stats_files)
     )))
 })

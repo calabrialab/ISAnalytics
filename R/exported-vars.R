@@ -168,18 +168,18 @@
 # import
 .mandatory_IS_types <- function(mode) {
     specs <- mandatory_IS_vars(include_types = TRUE)
-    specs_mappings <- specs %>%
+    specs_mappings <- specs |>
         dplyr::left_join(.types_mapping(), by = "types")
     if (mode == "fread") {
-        specs_mappings <- specs_mappings %>%
+        specs_mappings <- specs_mappings |>
             dplyr::select(
                 dplyr::all_of(c("names", "fread"))
-            ) %>%
+            ) |>
             dplyr::group_by(dplyr::across(dplyr::all_of("fread")))
-        types <- specs_mappings %>%
-            dplyr::group_keys() %>%
+        types <- specs_mappings |>
+            dplyr::group_keys() |>
             dplyr::pull(.data$fread)
-        specs_mappings <- specs_mappings %>%
+        specs_mappings <- specs_mappings |>
             dplyr::group_split(.keep = FALSE)
         names(specs_mappings) <- types
         types <- purrr::map(specs_mappings, ~ .x$names)
@@ -193,16 +193,16 @@
 # import
 .annotation_IS_types <- function(mode) {
     specs <- annotation_IS_vars(include_types = TRUE)
-    specs_mappings <- specs %>%
+    specs_mappings <- specs |>
         dplyr::left_join(.types_mapping(), by = "types")
     if (mode == "fread") {
-        specs_mappings <- specs_mappings %>%
-            dplyr::select(dplyr::all_of(c("names", "fread"))) %>%
+        specs_mappings <- specs_mappings |>
+            dplyr::select(dplyr::all_of(c("names", "fread"))) |>
             dplyr::group_by(dplyr::across(dplyr::all_of("fread")))
-        types <- specs_mappings %>%
-            dplyr::group_keys() %>%
+        types <- specs_mappings |>
+            dplyr::group_keys() |>
             dplyr::pull(.data$fread)
-        specs_mappings <- specs_mappings %>%
+        specs_mappings <- specs_mappings |>
             dplyr::group_split(.keep = FALSE)
         names(specs_mappings) <- types
         types <- purrr::map(specs_mappings, ~ .x$names)
@@ -216,16 +216,16 @@
 # import
 .af_col_types <- function(mode) {
     specs <- association_file_columns(include_types = TRUE)
-    specs_mappings <- specs %>%
+    specs_mappings <- specs |>
         dplyr::left_join(.types_mapping(), by = "types")
     if (mode == "fread") {
-        specs_mappings <- specs_mappings %>%
-            dplyr::select(dplyr::all_of(c("names", "fread"))) %>%
+        specs_mappings <- specs_mappings |>
+            dplyr::select(dplyr::all_of(c("names", "fread"))) |>
             dplyr::group_by(dplyr::across(dplyr::all_of("fread")))
-        types <- specs_mappings %>%
-            dplyr::group_keys() %>%
+        types <- specs_mappings |>
+            dplyr::group_keys() |>
             dplyr::pull(.data$fread)
-        specs_mappings <- specs_mappings %>%
+        specs_mappings <- specs_mappings |>
             dplyr::group_split(.keep = FALSE)
         names(specs_mappings) <- types
         types <- purrr::map(specs_mappings, ~ .x$names)
@@ -244,10 +244,6 @@
     list(project = "Path", quant = "Path_quant", iss = "Path_iss")
 }
 
-
-.default_matrix_suffixes <- function() {
-
-}
 
 .matrix_annotated_suffixes <- function() {
     c(".no0.annotated")
@@ -300,9 +296,8 @@ reduced_AF_columns <- function() {
         required_tags = required,
         vars_df = association_file_columns(TRUE),
         duplicate_politic = politics
-    ) %>%
+    ) |>
         dplyr::select(dplyr::all_of(c("names", "tag")))
-    data.table::setDT(tag_cols)
     return(tag_cols)
 }
 
@@ -380,7 +375,7 @@ refGene_table_cols <- function() {
 #' @examples
 #' available_tags()
 available_tags <- function() {
-    data.table::data.table(
+    tibble::tibble(
         tag = c(
             "chromosome", "locus", "is_strand", "gene_symbol", "gene_strand",
             "project_id", "pool_id", "fusion_id", "tag_seq", "subject",
@@ -388,7 +383,7 @@ available_tags <- function() {
             "tissue", "tp_days", "pcr_method", "cell_marker", "tag_id",
             "ngs_tech", "dna_num", "pcr_replicate", "vcn", "vispa_concatenate",
             "pcr_repl_id", "proj_folder", "genome",
-            "vispa_concatenate", "tag_seq"
+            "vispa_concatenate", "tag_seq", "barcode_mux"
         ),
         needed_in = list(
             c(
@@ -409,7 +404,8 @@ available_tags <- function() {
                 "top_targeted_genes",
                 "CIS_grubbs",
                 "compute_near_integrations",
-                "CIS_volcano_plot"
+                "CIS_volcano_plot",
+                "gene_frequency_fisher"
             ),
             c(
                 "top_targeted_genes",
@@ -469,7 +465,8 @@ available_tags <- function() {
             c(
                 "generate_default_folder_structure",
                 "import_association_file", "import_Vispa2_stats"
-            )
+            ),
+            c()
         ),
         description = c(
             paste("Number of the chromosome"),
@@ -519,7 +516,8 @@ available_tags <- function() {
             ),
             paste("The reference genome (e.g. 'hg19')"),
             paste("Unique identifier of a pool as specified in VISPA2"),
-            paste("The barcode tag sequence")
+            paste("The barcode tag sequence"),
+            paste("The barcode demultiplexed reads")
         ),
         dyn_vars_tbl = c(
             "mand_vars", "mand_vars", "mand_vars",
@@ -528,7 +526,7 @@ available_tags <- function() {
             "af_vars", "af_vars", "af_vars", "af_vars", "af_vars",
             "af_vars", "af_vars", "af_vars", "af_vars", "af_vars",
             "af_vars", "af_vars", "af_vars", "af_vars",
-            "iss_vars", "iss_vars"
+            "iss_vars", "iss_vars", "iss_vars"
         )
     )
 }

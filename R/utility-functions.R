@@ -21,7 +21,9 @@
 inspect_tags <- function(tags) {
     all_tags <- available_tags()
     desc_msg <- purrr::map(tags, ~ {
-        tag_desc <- all_tags[eval(sym("tag")) == .x][["description"]]
+        tag_desc <- all_tags |>
+            dplyr::filter(.data$tag == .x) |>
+            dplyr::pull("description")
         if (purrr::is_empty(tag_desc)) {
             return(
                 c(paste("* TAG:", .x),
@@ -29,7 +31,9 @@ inspect_tags <- function(tags) {
                 )
             )
         }
-        functions <- all_tags[eval(sym("tag")) == .x][["needed_in"]][[1]]
+        functions <- (all_tags |>
+            dplyr::filter(.data$tag == .x) |>
+            dplyr::pull("needed_in"))[[1]]
         functions <- paste0(functions, collapse = ", ")
         c(paste("* TAG:", .x),
             i = paste("Description:", tag_desc),
@@ -458,19 +462,20 @@ matrix_file_suffixes <- function() {
 #' )
 #' matrix_file_suffixes()
 #' reset_matrix_file_suffixes()
-set_matrix_file_suffixes <- function(quantification_suffix = list(
-        seqCount = "seqCount",
-        fragmentEstimate = "fragmentEstimate",
-        barcodeCount = "barcodeCount",
-        cellCount = "cellCount",
-        ShsCount = "ShsCount"
-    ),
-    annotation_suffix = list(
-        annotated = ".no0.annotated",
-        not_annotated = ""
-    ),
-    file_ext = "tsv.gz",
-    glue_file_spec = "{quantification_suffix}_matrix{annotation_suffix}.{file_ext}") {
+set_matrix_file_suffixes <- function(
+        quantification_suffix = list(
+            seqCount = "seqCount",
+            fragmentEstimate = "fragmentEstimate",
+            barcodeCount = "barcodeCount",
+            cellCount = "cellCount",
+            ShsCount = "ShsCount"
+        ),
+        annotation_suffix = list(
+            annotated = ".no0.annotated",
+            not_annotated = ""
+        ),
+        file_ext = "tsv.gz",
+        glue_file_spec = "{quantification_suffix}_matrix{annotation_suffix}.{file_ext}") {
     stopifnot(is.list(quantification_suffix) &&
         !is.null(names(quantification_suffix)))
     stopifnot(is.list(annotation_suffix) &&
@@ -611,7 +616,7 @@ transform_columns <- function(df, transf_list) {
     }
     transf_list_mod <- purrr::map2(names(transf_list), transf_list, ~ {
         rlang::expr(rlang::as_function(!!.y)(!!rlang::sym(.x)))
-    }) %>%
+    }) |>
         purrr::set_names(names(transf_list))
     withCallingHandlers(
         {
@@ -701,13 +706,14 @@ transform_columns <- function(df, transf_list) {
 #'     fragmentEstimate = fe,
 #'     seqCount = sc
 #' ))
-comparison_matrix <- function(x,
-    fragmentEstimate = "fragmentEstimate",
-    seqCount = "seqCount",
-    barcodeCount = "barcodeCount",
-    cellCount = "cellCount",
-    ShsCount = "ShsCount",
-    value_col_name = "Value") {
+comparison_matrix <- function(
+        x,
+        fragmentEstimate = "fragmentEstimate",
+        seqCount = "seqCount",
+        barcodeCount = "barcodeCount",
+        cellCount = "cellCount",
+        ShsCount = "ShsCount",
+        value_col_name = "Value") {
     stopifnot(is.list(x) & !is.data.frame(x))
     stopifnot(all(names(x) %in% quantification_types()))
     stopifnot(is.character(fragmentEstimate) & length(fragmentEstimate) == 1)
@@ -723,11 +729,11 @@ comparison_matrix <- function(x,
     )
     x <- purrr::map2(x, names(x), function(matrix, quant_type) {
         quant_name <- param_names[names(param_names) %in% quant_type]
-        matrix %>% dplyr::rename(!!quant_name := dplyr::all_of(value_col_name))
+        matrix |> dplyr::rename(!!quant_name := dplyr::all_of(value_col_name))
     })
     result <- purrr::reduce(x, function(matrix1, matrix2) {
         commoncols <- dplyr::intersect(colnames(matrix1), colnames(matrix2))
-        matrix1 %>%
+        matrix1 |>
             dplyr::full_join(matrix2, by = commoncols)
     })
     na_introduced <- purrr::map_lgl(param_names, function(p) {
@@ -774,17 +780,18 @@ comparison_matrix <- function(x,
 #' separated <- separate_quant_matrices(
 #'     integration_matrices
 #' )
-separate_quant_matrices <- function(x,
-    fragmentEstimate = "fragmentEstimate",
-    seqCount = "seqCount",
-    barcodeCount = "barcodeCount",
-    cellCount = "cellCount",
-    ShsCount = "ShsCount",
-    key = c(
-        mandatory_IS_vars(),
-        annotation_IS_vars(),
-        "CompleteAmplificationID"
-    )) {
+separate_quant_matrices <- function(
+        x,
+        fragmentEstimate = "fragmentEstimate",
+        seqCount = "seqCount",
+        barcodeCount = "barcodeCount",
+        cellCount = "cellCount",
+        ShsCount = "ShsCount",
+        key = c(
+            mandatory_IS_vars(),
+            annotation_IS_vars(),
+            "CompleteAmplificationID"
+        )) {
     stopifnot(is.data.frame(x))
     if (!all(key %in% colnames(x))) {
         rlang::abort(.missing_user_cols_error(key[!key %in% colnames(x)]))
@@ -816,10 +823,10 @@ separate_quant_matrices <- function(x,
         rlang::inform(.non_quant_cols_msg(to_copy))
     }
     separated <- purrr::map(num_cols, function(quant) {
-        x %>%
-            dplyr::select(dplyr::all_of(c(key, to_copy, quant))) %>%
+        x |>
+            dplyr::select(dplyr::all_of(c(key, to_copy, quant))) |>
             dplyr::rename(Value = dplyr::all_of(quant))
-    }) %>% purrr::set_names(names(num_cols))
+    }) |> purrr::set_names(names(num_cols))
     separated
 }
 
@@ -901,10 +908,11 @@ generate_blank_association_file <- function(path) {
 #' temp <- tempdir()
 #' data("association_file", package = "ISAnalytics")
 #' generate_Vispa2_launch_AF(association_file, "PJ01", "POOL01", temp)
-generate_Vispa2_launch_AF <- function(association_file,
-    project,
-    pool,
-    path) {
+generate_Vispa2_launch_AF <- function(
+        association_file,
+        project,
+        pool,
+        path) {
     stopifnot(is.data.frame(association_file))
     stopifnot(is.character(project))
     stopifnot(is.character(pool))
@@ -925,28 +933,46 @@ generate_Vispa2_launch_AF <- function(association_file,
         rlang::abort(.missing_af_needed_cols(to_check[!to_check %in%
             association_file_columns(TRUE)]))
     }
-    proj_col <- af_min_cols[eval(sym("tag")) == "project_id", ][["names"]]
-    pool_col <- af_min_cols[eval(sym("tag")) == "pool_id", ][["names"]]
-    tag_id_col <- af_min_cols[eval(sym("tag")) == "tag_id", ][["names"]]
-    tissue_col <- af_min_cols[eval(sym("tag")) == "tissue", ][["names"]]
-    tp_col <- af_min_cols[eval(sym("tag")) == "tp_days", ][["names"]]
-    fusion_col <- af_min_cols[eval(sym("tag")) == "fusion_id", ][["names"]]
-    pcr_id_col <- af_min_cols[eval(sym("tag")) == "pcr_repl_id", ][["names"]]
-    cm_col <- af_min_cols[eval(sym("tag")) == "cell_marker", ][["names"]]
-    vec_id_col <- af_min_cols[eval(sym("tag")) == "vector_id", ][["names"]]
+    proj_col <- af_min_cols |>
+        dplyr::filter(.data$tag == "project_id") |>
+        dplyr::pull("names")
+    pool_col <- af_min_cols |>
+        dplyr::filter(.data$tag == "pool_id") |>
+        dplyr::pull("names")
+    tag_id_col <- af_min_cols |>
+        dplyr::filter(.data$tag == "tag_id") |>
+        dplyr::pull("names")
+    tissue_col <- af_min_cols |>
+        dplyr::filter(.data$tag == "tissue") |>
+        dplyr::pull("names")
+    tp_col <- af_min_cols |>
+        dplyr::filter(.data$tag == "tp_days") |>
+        dplyr::pull("names")
+    fusion_col <- af_min_cols |>
+        dplyr::filter(.data$tag == "fusion_id") |>
+        dplyr::pull("names")
+    pcr_id_col <- af_min_cols |>
+        dplyr::filter(.data$tag == "pcr_repl_id") |>
+        dplyr::pull("names")
+    cm_col <- af_min_cols |>
+        dplyr::filter(.data$tag == "cell_marker") |>
+        dplyr::pull("names")
+    vec_id_col <- af_min_cols |>
+        dplyr::filter(.data$tag == "vector_id") |>
+        dplyr::pull("names")
     process_proj_pool <- function(x, y) {
-        selected_cols <- association_file %>%
-            dplyr::select(dplyr::all_of(to_check)) %>%
+        selected_cols <- association_file |>
+            dplyr::select(dplyr::all_of(to_check)) |>
             dplyr::filter(
                 .data[[proj_col]] == x,
                 .data[[pool_col]] == y
-            ) %>%
-            dplyr::mutate(TagID2 = .data[[tag_id_col]]) %>%
+            ) |>
+            dplyr::mutate(TagID2 = .data[[tag_id_col]]) |>
             dplyr::mutate(PoolName = dplyr::if_else(
                 !is.na(.data[[concat_col]]),
                 .data[[concat_col]],
                 .data[[pool_col]]
-            )) %>%
+            )) |>
             dplyr::select(
                 dplyr::all_of(c(
                     tag_id_col, "TagID2", tissue_col, tp_col, fusion_col,
@@ -955,7 +981,7 @@ generate_Vispa2_launch_AF <- function(association_file,
                 ))
             )
     }
-    files <- purrr::map2(project, pool, process_proj_pool) %>%
+    files <- purrr::map2(project, pool, process_proj_pool) |>
         purrr::set_names(paste0(project, "-", pool, "_AF.tsv"))
     purrr::walk2(files, names(files), function(x, y) {
         complete_path <- fs::path(path, y)
@@ -1007,14 +1033,15 @@ generate_Vispa2_launch_AF <- function(association_file,
 #' @examples
 #' data("integration_matrices", package = "ISAnalytics")
 #' sparse <- as_sparse_matrix(integration_matrices)
-as_sparse_matrix <- function(x,
-    single_value_col = "Value",
-    fragmentEstimate = "fragmentEstimate",
-    seqCount = "seqCount",
-    barcodeCount = "barcodeCount",
-    cellCount = "cellCount",
-    ShsCount = "ShsCount",
-    key = pcr_id_column()) {
+as_sparse_matrix <- function(
+        x,
+        single_value_col = "Value",
+        fragmentEstimate = "fragmentEstimate",
+        seqCount = "seqCount",
+        barcodeCount = "barcodeCount",
+        cellCount = "cellCount",
+        ShsCount = "ShsCount",
+        key = pcr_id_column()) {
     stopifnot(is.list(x))
     stopifnot(is.character(fragmentEstimate))
     stopifnot(is.character(seqCount))
@@ -1045,10 +1072,10 @@ as_sparse_matrix <- function(x,
         }
         pivot_dfs <- purrr::map(num_cols, ~ {
             if (.x %in% param_cols) {
-                pivoted <- df %>%
+                pivoted <- df |>
                     dplyr::select(dplyr::all_of(
                         c(id_cols, .x)
-                    )) %>%
+                    )) |>
                     tidyr::pivot_wider(
                         names_from = dplyr::all_of(key),
                         values_from = dplyr::all_of(.x)
@@ -1056,7 +1083,7 @@ as_sparse_matrix <- function(x,
                 return(pivoted)
             }
             return(NULL)
-        }) %>%
+        }) |>
             purrr::set_names(num_cols)
         pivot_dfs <- pivot_dfs[purrr::map_lgl(pivot_dfs, ~ !is.null(.x))]
         if (length(pivot_dfs) == 1) {
@@ -1114,8 +1141,14 @@ unzip_file_system <- function(zipfile, name) {
 #'
 #' ```{r echo=FALSE, results="asis"}
 #' all_tags <- available_tags()
-#' needed <- unique(all_tags[purrr::map_lgl(eval(sym("needed_in")),
-#'  ~ "generate_default_folder_structure" %in% .x)][["tag"]])
+#' needed <- all_tags |>
+#'    dplyr::mutate(
+#'    in_fun = purrr::map_lgl(.data$needed_in,
+#'    ~ "generate_default_folder_structure" %in% .x)
+#'    ) |>
+#'    dplyr::filter(in_fun == TRUE) |>
+#'    dplyr::distinct(.data$tag) |>
+#'    dplyr::pull("tag")
 #'  cat(paste0("* ", needed, collapse="\n"))
 #' ```
 #'
@@ -1139,10 +1172,11 @@ unzip_file_system <- function(zipfile, name) {
 #' @examples
 #' fs_path <- generate_default_folder_structure(type = "correct")
 #' fs_path
-generate_default_folder_structure <- function(type = "correct",
-    dir = tempdir(),
-    af = "default",
-    matrices = "default") {
+generate_default_folder_structure <- function(
+        type = "correct",
+        dir = tempdir(),
+        af = "default",
+        matrices = "default") {
     stopifnot(is.character(type))
     type <- type[1]
     stopifnot(type %in% c("correct", "incorrect", "both"))
@@ -1160,7 +1194,7 @@ generate_default_folder_structure <- function(type = "correct",
     cols_selected <- colnames(
         association_file
     )[colnames(association_file) %in% association_file_columns()]
-    association_file_reduced <- association_file %>%
+    association_file_reduced <- association_file |>
         dplyr::select(dplyr::all_of(cols_selected))
 
     # Process matrices
@@ -1223,7 +1257,7 @@ export_ISA_settings <- function(folder, setting_profile_name) {
         rlang::abort(.missing_pkg_error("jsonlite"))
     }
     jsonify <- function(df) {
-        tmp <- df %>%
+        tmp <- df |>
             dplyr::mutate(transform = purrr::map(.data$transform, ~ {
                 if (is.null(.x)) {
                     "NULL"
@@ -1242,7 +1276,7 @@ export_ISA_settings <- function(folder, setting_profile_name) {
     )
     fs::dir_create(folder)
     file_name <- paste0(setting_profile_name, "_ISAsettings.json")
-    all_specs_json %>%
+    all_specs_json |>
         jsonlite::write_json(path = fs::path(folder, file_name))
     if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         success_msg <- c("Settings profile correctly saved",
@@ -1278,8 +1312,8 @@ import_ISA_settings <- function(path) {
     }
     lookup_tbls <- jsonlite::fromJSON(path)
     unjsonify <- function(df, tbl_name) {
-        tmp <- df %>%
-            tibble::as_tibble() %>%
+        tmp <- df |>
+            tibble::as_tibble() |>
             mutate(transform = purrr::map(.data$transform, ~ {
                 if (.x == "NULL") {
                     return(NULL)

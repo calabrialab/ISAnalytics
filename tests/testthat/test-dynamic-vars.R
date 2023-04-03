@@ -89,7 +89,7 @@ test_that(".apply_col_transform works with purrr lambdas", {
         ~names, ~types, ~transform, ~flag, ~tag,
         "chr", "char", ~ paste0("chr", .x), "required", NA_character_
     )
-    expected <- sample_df %>%
+    expected <- sample_df |>
         dplyr::mutate(chr = paste0("chr", .data$chr))
     res <- .apply_col_transform(sample_df, specs)
     expect_equal(res, expected)
@@ -115,7 +115,7 @@ test_that(".apply_col_transform works with functions single arg", {
         ~names, ~types, ~transform, ~flag, ~tag,
         "chr", "char", foo, "required", NA_character_
     )
-    expected <- sample_df %>%
+    expected <- sample_df |>
         dplyr::mutate(chr = foo(.data$chr))
     res <- .apply_col_transform(sample_df, specs)
     expect_equal(res, expected)
@@ -664,15 +664,19 @@ test_that("matrix_file_suffixes returns expected", {
             "ShsCount_matrix.tsv.gz"
         )
     )
-    matrix_suffixes <- matrix_file_suffixes()
-    expect_equal(matrix_suffixes, expected)
+    matrix_suffixes <- matrix_file_suffixes() |>
+        dplyr::arrange(.data$quantification)
+    expect_equal(matrix_suffixes, expected |>
+        dplyr::arrange(.data$quantification))
 })
 
 test_that("set_matrix_file_suffixes works as expected", {
     before <- getOption("ISAnalytics.matrix_file_suffix")
     expect_error(
         {
-            set_matrix_file_suffixes(annotation_suffix = list(annotated = "ann"))
+            set_matrix_file_suffixes(
+                annotation_suffix = list(annotated = "ann")
+            )
         },
         class = "miss_annot_suff_specs"
     )
@@ -691,13 +695,17 @@ test_that("set_matrix_file_suffixes works as expected", {
             "fragmentEstimate", "seqCount", "fragmentEstimate",
             "seqCount"
         ),
-        matrix_type = c("annotated", "annotated", "not_annotated", "not_annotated"),
+        matrix_type = c(
+            "annotated", "annotated",
+            "not_annotated", "not_annotated"
+        ),
         file_suffix = c(
             "fe_matrix.no0.annotated.tsv.gz",
             "sc_matrix.no0.annotated.tsv.gz",
             "fe_matrix.tsv.gz", "sc_matrix.tsv.gz"
         )
-    )
+    ) |>
+        dplyr::arrange(.data$quantification)
     expect_equal(getOption("ISAnalytics.matrix_file_suffix"), expected_out)
     options(ISAnalytics.matrix_file_suffix = before)
 })

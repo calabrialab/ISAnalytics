@@ -41,7 +41,7 @@ test_that(".process_af_for_gen works for custom af", {
     expect_equal(tag_out, expected_tags)
     expect_equal(af_out, af_custom)
 
-    af_custom_err <- af_custom %>%
+    af_custom_err <- af_custom |>
         dplyr::select(-dplyr::all_of(c("ProjectID")))
     expect_error(
         {
@@ -188,7 +188,7 @@ test_that("transform_columns applies transform as expected", {
 test_that("pcr_id_column errors if no pcr_repl_id in vars", {
     withr::local_options(list(ISAnalytics.af_specs = "default"))
     af_specs <- association_file_columns(TRUE)
-    af_specs_mod <- af_specs %>%
+    af_specs_mod <- af_specs |>
         dplyr::filter(!.data$tag %in% c("pcr_repl_id"))
     withr::with_options(list(ISAnalytics.af_specs = af_specs_mod), {
         expect_error({
@@ -254,8 +254,8 @@ test_that("comparison_matrix produces correct output", {
         "1", 25756, "+", "ID3", 123, 78.546,
         "7", 12345, "-", "ID3", 897, 93.456
     )
-    expect_equal(comp %>% dplyr::arrange(.data$integration_locus),
-        expected %>% dplyr::arrange(.data$integration_locus),
+    expect_equal(comp |> dplyr::arrange(.data$integration_locus),
+        expected |> dplyr::arrange(.data$integration_locus),
         ignore_attr = TRUE
     )
 })
@@ -461,7 +461,7 @@ test_that("generate_Vispa2_launch_AF stops if lengths of projects and pool is
 })
 
 test_that("generate_Vispa2_launch_AF stops if af is malformed", {
-    af <- association_file %>%
+    af <- association_file |>
         dplyr::select(-dplyr::all_of(c("ProjectID")))
     expect_error({
         generate_Vispa2_launch_AF(af, c("PJ01"), c("POOL01"), "test")
@@ -686,5 +686,109 @@ test_that("inspect_tags prints tag info", {
 test_that("unzip_file_system signals deprecation", {
     expect_defunct({
         unzip_file_system("fs", "fs")
+    })
+})
+
+#------------------------------------------------------------------------------#
+# .split_df_in_chunks
+#------------------------------------------------------------------------------#
+test_that(".split_df_in_chunks correctly splits", {
+    df_1 <- tibble::tribble(
+        ~A, ~B,
+        1, "a",
+        2, "b",
+        3, "c",
+        4, "d",
+        5, "e",
+        6, "f"
+    )
+    split_df <- .split_df_in_chunks(df_1, 3)
+    expect_equal(length(split_df), 3)
+    expect_true(all(purrr::map_lgl(split_df, ~ nrow(.x) == 2)))
+
+    df_2 <- tibble::tribble(
+        ~A, ~B,
+        1, "a",
+        2, "b",
+        3, "c",
+        4, "d",
+        5, "e",
+        6, "f",
+        7, "g",
+        8, "h"
+    )
+    split_df <- .split_df_in_chunks(df_2, 3)
+    expect_equal(length(split_df), 3)
+    expect_true(all(purrr::map_lgl(split_df[c(1, 2)], ~ nrow(.x) == 3)))
+    expect_true(nrow(split_df[[3]]) == 2)
+
+    df_3 <- tibble::tribble(
+        ~A, ~B,
+        1, "a",
+        2, "b",
+        3, "c",
+        4, "d",
+        5, "e",
+        6, "f",
+        7, "g",
+        8, "h",
+        9, "i",
+        10, "j",
+        11, "k"
+    )
+    split_df <- .split_df_in_chunks(df_3, 7)
+    expect_equal(length(split_df), 7)
+    expect_true(all(purrr::map_lgl(split_df[c(1, 2, 3, 4)], ~ nrow(.x) == 2)))
+    expect_true(all(purrr::map_lgl(split_df[c(5, 6, 7)], ~ nrow(.x) == 1)))
+
+    rejoint <- purrr::reduce(split_df, dplyr::bind_rows) |>
+        dplyr::distinct()
+
+    expect_true(nrow(rejoint) == nrow(df_3))
+})
+
+#------------------------------------------------------------------------------#
+# .execute_map_job
+#------------------------------------------------------------------------------#
+test_that(".execute_map_job does not stop on error", {
+    data_list <- list(1, 3, "2", -1)
+    fun_to_app <- function(x, progress) {
+        suppressWarnings({
+            res <- sqrt(x)
+        })
+        if (!is.null(progress)) {
+            progress()
+        }
+        return(res)
+    }
+    computed <- .execute_map_job(data_list,
+        fun_to_apply = fun_to_app,
+        stop_on_error = FALSE, fun_args = list()
+    )
+    expect_true(!is.null(computed$err[[3]]))
+    expect_true(all(is.null(c(
+        computed$err[[1]], computed$err[[2]],
+        computed$err[[4]]
+    ))))
+    expect_true(is.nan(computed$res[[4]]))
+    expect_true(is.null(computed$res[[3]]))
+})
+
+test_that(".execute_map_job stops on error", {
+    data_list <- list(1, 3, "2", -1)
+    fun_to_app <- function(x, progress) {
+        suppressWarnings({
+            res <- sqrt(x)
+        })
+        if (!is.null(progress)) {
+            progress()
+        }
+        return(res)
+    }
+    expect_error({
+        computed <- .execute_map_job(data_list,
+            fun_to_apply = fun_to_app,
+            stop_on_error = TRUE, fun_args = list()
+        )
     })
 })

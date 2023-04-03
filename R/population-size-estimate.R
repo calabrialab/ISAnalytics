@@ -20,6 +20,33 @@
 #' (the user can specify the name of the
 #' column in the argument `timepoint_column`).
 #'
+#' # Specifying more than one group
+#' Groups for the estimates are computed as a pair of cell type and tissue.
+#' If the user wishes to compute estimates for more than one combination
+#' of cell type and tissue, it is possible to specify them as character
+#' vectors to the fields `cell_type` and `tissue_type` respectively,
+#' noting that:
+#'
+#' * Vectors must have the same length or one of the 2 has to be of length 1
+#' * It is a responsibility of the user to check whether the combination
+#' exists in the dataset provided.
+#'
+#' Example:
+#' ```{r eval=FALSE}
+#' estimate <- HSC_population_size_estimate(
+#'     x = aggreg,
+#'     metadata = aggreg_meta,
+#'     cell_type = c("MYELOID", "T", "B"),
+#'     tissue_type = "PB"
+#' )
+#'
+#' # Evaluated groups will be:
+#' # - MYELOID PB
+#' # - T PB
+#' # - B PB
+#' ```
+#' Note that estimates are computed individually for each group.
+#'
 #' # On time points
 #' If `stable_timepoints` is a vector with length > 1, the function will look
 #' for the first available stable time point and slice the data from that
@@ -27,6 +54,8 @@
 #' stable time points available. Note that 0 time points are ALWAYS discarded.
 #' Also, to be included in the analysis, a group must have at least 2
 #' distinct non-zero time points.
+#' NOTE: the vector passed has to contain all individual time points, not
+#' just the minimum and maximum
 #'
 #' # Setting a threshold for fragment estimate
 #' If fragment estimate is present in the input matrix, the filtering logic
@@ -42,7 +71,8 @@
 #' @param x An aggregated integration matrix. See details.
 #' @param metadata An aggregated association file. See details.
 #' @param stable_timepoints A numeric vector or NULL if there are no
-#' stable time points.
+#' stable time points. NOTE: the vector is NOT intended as a sequence min-max,
+#' every stable time point has to be specified individually
 #' @param aggregation_key A character vector indicating the key used for
 #' aggregating x and metadata. Note that x and metadata should always be
 #' aggregated with the same key.
@@ -75,8 +105,14 @@
 #'
 #' ```{r echo=FALSE, results="asis"}
 #' all_tags <- available_tags()
-#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
-#'  ~ "HSC_population_size_estimate" %in% .x)][["tag"]])
+#' needed <- all_tags |>
+#'    dplyr::mutate(
+#'    in_fun = purrr::map_lgl(.data$needed_in,
+#'    ~ "HSC_population_size_estimate" %in% .x)
+#'    ) |>
+#'    dplyr::filter(in_fun == TRUE) |>
+#'    dplyr::distinct(.data$tag) |>
+#'    dplyr::pull("tag")
 #'  cat(paste0("* ", needed, collapse="\n"))
 #' ```
 #'
@@ -105,21 +141,25 @@
 #'     stable_timepoints = c(90, 180, 360),
 #'     cell_type = "Other"
 #' )
-HSC_population_size_estimate <- function(x,
-    metadata,
-    stable_timepoints = NULL,
-    aggregation_key = c("SubjectID", "CellMarker", "Tissue", "TimePoint"),
-    blood_lineages = blood_lineages_default(),
-    timepoint_column = "TimePoint",
-    seqCount_column = "seqCount_sum",
-    fragmentEstimate_column = "fragmentEstimate_sum",
-    seqCount_threshold = 3,
-    fragmentEstimate_threshold = 3,
-    nIS_threshold = 5,
-    cell_type = "MYELOID",
-    tissue_type = "PB",
-    max_workers = 4) {
+HSC_population_size_estimate <- function(
+        x,
+        metadata,
+        stable_timepoints = NULL,
+        aggregation_key = c("SubjectID", "CellMarker", "Tissue", "TimePoint"),
+        blood_lineages = blood_lineages_default(),
+        timepoint_column = "TimePoint",
+        seqCount_column = "seqCount_sum",
+        fragmentEstimate_column = "fragmentEstimate_sum",
+        seqCount_threshold = 3,
+        fragmentEstimate_threshold = 3,
+        nIS_threshold = 5,
+        cell_type = "MYELOID",
+        tissue_type = "PB",
+        max_workers = 4) {
     # Param check
+    if (!rlang::is_installed("Rcapture")) {
+        rlang::abort(.missing_pkg_error("Rcapture"))
+    }
     ## Basic checks on types
     stopifnot(is.data.frame(x))
     stopifnot(is.data.frame(metadata))
@@ -145,9 +185,11 @@ HSC_population_size_estimate <- function(x,
     ## Convert cell_type and tissue_type to uppercase (for case insensitivity)
     cell_type <- stringr::str_to_upper(cell_type)
     tissue_type <- stringr::str_to_upper(tissue_type)
+    groups_to_proc <- .match_celltypes_tissues(cell_type, tissue_type)
     ## Assumptions on aggregation key
     required_tags <- list(
-        subject = "char", cell_marker = "char",
+        subject = "char",
+        cell_marker = "char",
         tissue = "char"
     )
     tag_cols <- .check_required_cols(
@@ -170,7 +212,7 @@ HSC_population_size_estimate <- function(x,
         rlang::abort(.agg_key_not_found_err("metadata", aggregation_key))
     }
     ## Check actual aggregation
-    distinct_agg_groups <- metadata %>%
+    distinct_agg_groups <- metadata |>
         dplyr::distinct(
             dplyr::across(
                 dplyr::all_of(aggregation_key)
@@ -211,26 +253,26 @@ HSC_population_size_estimate <- function(x,
             is_msg <- c("Calculating number of IS for each group...")
             rlang::inform(is_msg)
         }
-        numIs <- x %>%
-            dplyr::left_join(metadata, by = aggregation_key) %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of(aggregation_key))) %>%
+        numIs <- x |>
+            dplyr::left_join(metadata, by = aggregation_key) |>
+            dplyr::group_by(dplyr::across(dplyr::all_of(aggregation_key))) |>
             dplyr::distinct(dplyr::across(
                 dplyr::all_of(mandatory_IS_vars())
-            )) %>%
+            )) |>
             dplyr::count(name = "NumIS")
-        metadata <- metadata %>%
-            dplyr::left_join(numIs, by = aggregation_key) %>%
+        metadata <- metadata |>
+            dplyr::left_join(numIs, by = aggregation_key) |>
             dplyr::distinct()
     }
     ## Check blood lineages
-    cm_col <- tag_cols %>%
-        dplyr::filter(.data$tag == "cell_marker") %>%
+    cm_col <- tag_cols |>
+        dplyr::filter(.data$tag == "cell_marker") |>
         dplyr::pull(.data$names)
-    tissue_col <- tag_cols %>%
-        dplyr::filter(.data$tag == "tissue") %>%
+    tissue_col <- tag_cols |>
+        dplyr::filter(.data$tag == "tissue") |>
         dplyr::pull(.data$names)
-    subj_col <- tag_cols %>%
-        dplyr::filter(.data$tag == "subject") %>%
+    subj_col <- tag_cols |>
+        dplyr::filter(.data$tag == "subject") |>
         dplyr::pull(.data$names)
     if (!all(c(cm_col, "CellType") %in% colnames(blood_lineages))) {
         err <- c(paste0(
@@ -241,8 +283,8 @@ HSC_population_size_estimate <- function(x,
     }
     # --- METADATA
     ### Join meta with blood lineages
-    metadata <- metadata %>%
-        dplyr::filter(.data$NumIS > nIS_threshold) %>%
+    metadata <- metadata |>
+        dplyr::filter(.data$NumIS > nIS_threshold) |>
         dplyr::left_join(blood_lineages, by = cm_col)
     if (nrow(metadata) == 0) {
         empty_meta_warn <- c("Empty metadata after filtering",
@@ -256,8 +298,8 @@ HSC_population_size_estimate <- function(x,
         return(NULL)
     }
     # --- SPLIT THE INPUT AGGREGATED MATRIX BY SubjectID
-    x_subj_split <- x %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(subj_col))) %>%
+    x_subj_split <- x |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(subj_col))) |>
         dplyr::group_split()
     #### Process in parallel
     annotation_cols <- if (.is_annotated(x)) {
@@ -277,8 +319,7 @@ HSC_population_size_estimate <- function(x,
             aggregation_key = aggregation_key,
             seqCount_threshold = seqCount_threshold,
             fragmentEstimate_threshold = fragmentEstimate_threshold,
-            cell_type = cell_type,
-            tissue_type = tissue_type,
+            groups_to_proc = groups_to_proc,
             annotation_cols = annotation_cols,
             subj_col = subj_col,
             stable_timepoints = stable_timepoints
@@ -286,41 +327,26 @@ HSC_population_size_estimate <- function(x,
         stop_on_error = FALSE,
         max_workers = max_workers
     )
-    extract_and_bind <- function(err) {
-        logs <- purrr::map(population_size$res, ~ .x$log)
-        if (err) {
-            rlang::inform(c("An error occurred",
-                i = paste0(population_size$err, collapse = "\n")
-            ))
-            return(list(est = NULL, log = logs))
-        }
-        population_size <- purrr::map(population_size$res, ~ .x$est) %>%
-            purrr::reduce(function(x, y) {
-                if (is.null(x) & is.null(y)) {
-                    return(NULL)
-                } else {
-                    return(dplyr::bind_rows(x, y))
-                }
-            })
-        if (!is.null(population_size)) {
-            population_size <- population_size %>%
-                dplyr::mutate(PopSize = round(.data$abundance - .data$stderr))
-        }
-        return(list(est = population_size, log = logs))
+    errs <- population_size$err |> purrr::list_flatten()
+    populations_dfs <- purrr::map(population_size$res, ~ .x$est)
+    populations_logs <- purrr::map(population_size$res, ~ .x$log)
+    if (!all(purrr::map_lgl(errs, is.null))) {
+        err_msgs <- purrr::map_chr(errs, ~ .x$message)
+        err_notify <- c("Warning - errors were raised during computation",
+            i = glue::glue(" - {err_msgs}")
+        )
+        rlang::inform(err_notify)
     }
-    if (population_size$mode == "par") {
-        if (all(BiocParallel::bpok(population_size$res))) {
-            return(extract_and_bind(FALSE))
-        } else {
-            return(extract_and_bind(TRUE))
-        }
+    populations_dfs <- purrr::keep(populations_dfs, ~ !is.null(.x)) |>
+        purrr::list_rbind()
+    if (!is.null(populations_dfs) & !purrr::is_empty(populations_dfs)) {
+        populations_dfs <- populations_dfs |>
+            dplyr::mutate(PopSize = round(.data$abundance - .data$stderr))
     } else {
-        if (all(is.null(population_size$err))) {
-            return(extract_and_bind(FALSE))
-        } else {
-            return(extract_and_bind(TRUE))
-        }
+        populations_dfs <- NULL
     }
+
+    return(list(est = populations_dfs, log = populations_logs))
 }
 
 

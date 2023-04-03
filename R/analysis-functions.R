@@ -47,11 +47,12 @@
 #'     key = "CompleteAmplificationID"
 #' )
 #' head(abund)
-compute_abundance <- function(x,
-    columns = c("fragmentEstimate_sum"),
-    percentage = TRUE,
-    key = c("SubjectID", "CellMarker", "Tissue", "TimePoint"),
-    keep_totals = FALSE) {
+compute_abundance <- function(
+        x,
+        columns = c("fragmentEstimate_sum"),
+        percentage = TRUE,
+        key = c("SubjectID", "CellMarker", "Tissue", "TimePoint"),
+        keep_totals = FALSE) {
     ## Check parameters
     stopifnot(is.data.frame(x))
     stopifnot(is.character(columns))
@@ -78,8 +79,8 @@ compute_abundance <- function(x,
     stopifnot(is.logical(keep_totals) || keep_totals == "df")
     ## Computation
     ### Computes totals for each group defined by key
-    totals <- x %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(key))) %>%
+    totals <- x |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(key))) |>
         dplyr::summarise(
             dplyr::across(dplyr::all_of(columns),
                 sum,
@@ -89,8 +90,8 @@ compute_abundance <- function(x,
         )
     ### Computes abundance as value (for each col) / total of the corresponding
     ### group (defined by key)
-    abundance_df <- x %>%
-        dplyr::left_join(totals, by = key) %>%
+    abundance_df <- x |>
+        dplyr::left_join(totals, by = key) |>
         dplyr::mutate(dplyr::across(dplyr::all_of(columns),
             list(ab = ~ .x / rlang::eval_tidy(
                 rlang::parse_expr(
@@ -102,19 +103,19 @@ compute_abundance <- function(x,
                 )
             )),
             .names = "{.col}_RelAbundance"
-        )) %>%
+        )) |>
         dplyr::distinct()
     if (keep_totals == FALSE || keep_totals == "df") {
-        abundance_df <- abundance_df %>%
+        abundance_df <- abundance_df |>
             dplyr::select(-c(dplyr::all_of(paste(columns, "tot", sep = "_"))))
     }
     if (percentage == TRUE) {
-        abundance_df <- abundance_df %>%
+        abundance_df <- abundance_df |>
             dplyr::mutate(
                 dplyr::across(dplyr::contains("RelAbundance"), ~ .x * 100,
                     .names = "{.col}_PercAbundance"
                 )
-            ) %>%
+            ) |>
             dplyr::rename_with(
                 ~ stringr::str_replace(.x, "_RelAbundance", ""),
                 dplyr::contains("PercAbundance")
@@ -130,109 +131,12 @@ compute_abundance <- function(x,
 #' Filter data frames with custom predicates
 #'
 #' @description
-#' `r lifecycle::badge("stable")`
+#' `r lifecycle::badge("deprecated")`
+#' This function is deprecated and it's likely going to be dropped in the
+#' next release cycle.
+#'
 #' Filter a single data frame or a list of data frames with custom
 #' predicates assembled from the function parameters.
-#'
-#' @details
-#' ## A single data frame as input
-#'
-#' If the user chooses to operate on a single data frame, the other parameters
-#' should only be vectors: numeric vector for `threshold` and character
-#' vectors for both `cols_to_compare` and `comparators`.
-#' A filtering condition is obtained by combining element by element
-#' `cols_to_compare` + `comparators` + `threshold` (similarly to the
-#' `paste` function). For example:
-#'
-#' \verb{
-#' threshold = c(20, 35, 50)
-#' cols_to_compare = c("a", "b", "c")
-#' comparators = "<"
-#' }
-#'
-#' given these vectors, the input data frame
-#' will be filtered by checking which values in column "a" are less
-#' than 20 **AND** which values in column "b" are less than 35 **AND**
-#' which values in column "c" are less than 50.
-#' Things the user should keep in mind are:
-#' * The vectors of length 1 are going to be recycled if one or
-#' more parameters are longer (in the example, the `comparators` value)
-#' * If vectors are not of length 1 they must have the same length
-#' * Columns to compare, of course, need to be included in the
-#' input data frame and need to be numeric/integer
-#' * The filtering will perform a logical "AND" on all the conditions,
-#' only rows that satisfy ALL the conditions are preserved
-#'
-#' ## A list of data frames as input
-#'
-#' The input for the function may also be a list of data frames,
-#' either named or unnamed.
-#'
-#' ### Unnamed list
-#' If the input is a simple unnamed list, the other parameters should
-#' be simple vectors (as for data frames). All the predicates will
-#' simply be applied to every data frame in the list: this is useful
-#' if it's desirable to filter for the same conditions different data frames
-#' that have the same structure but different data.
-#'
-#' ### Named list
-#' It is also possible to filter different data frames with different
-#' sets of conditions. Besides having the possibility of defining the
-#' other parameters as simple vector, which has the same results as
-#' operating on an unnamed list, the user can define the parameters as
-#' named lists containing vectors. For example:
-#'
-#' ```{r}
-#'
-#' example_df <- tibble::tibble(a = c(20, 30, 40),
-#'                              b = c(40, 50, 60),
-#'                              c = c("a", "b", "c"),
-#'                              d = c(3L, 4L, 5L))
-#' example_list <- list(first = example_df,
-#'                      second = example_df,
-#'                      third = example_df)
-#' print(example_list)
-#'
-#' filtered <- threshold_filter(example_list,
-#' threshold = list(first = c(20, 60),
-#' third = c(25)),
-#' cols_to_compare = list(first = c("a", "b"),
-#' third = c("a")),
-#' comparators = list(first = c(">", "<"),
-#' third = c(">=")))
-#' print(filtered)
-#'
-#' ```
-#' The above signature will roughly be translated as:
-#' * Filter the element "first" in the list by checking that values in
-#' column "a" are bigger than 20 AND values in column "b" are less than
-#' 60
-#' * Don't apply any filter to the element "second" (returns the
-#' data frame as is)
-#' * Filter the element "third" by checking that values in column "a"
-#' are equal or bigger than 25.
-#'
-#' It is also possible to use some parameters as vectors and some as
-#' lists: vectors will be recycled for every element filtered.
-#'
-#' ```r
-#' filtered <- threshold_filter(example_list,
-#' threshold = list(first = c(20, 60),
-#' third = c(25, 65)),
-#' cols_to_compare = c("a", "b"),
-#' comparators = list(first = c(">", "<"),
-#' third = c(">=", "<=")))
-#' ```
-#' In this example, different threshold and comparators will be applied
-#' to the same columns in all data frames.
-#'
-#' Things the user should keep in mind are:
-#' * Names for the list parameters must be the same names in the
-#' input list
-#' * Only elements explicited in list parameters as names will
-#' be filtered
-#' * Lengths of both vectors and lists must be consistent
-#'
 #' @param x A data frame or a list of data frames
 #' @param threshold A numeric/integer vector or a named list of
 #' numeric/integer vectors
@@ -245,9 +149,11 @@ compute_abundance <- function(x,
 #' @family Data cleaning and pre-processing
 #'
 #' @return A data frame or a list of data frames
+#' @keywords internal
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' example_df <- tibble::tibble(
 #'     a = c(20, 30, 40),
 #'     b = c(40, 50, 60),
@@ -275,10 +181,17 @@ compute_abundance <- function(x,
 #'     )
 #' )
 #' filtered
-threshold_filter <- function(x,
-    threshold,
-    cols_to_compare = "Value",
-    comparators = ">") {
+#' }
+threshold_filter <- function(
+        x,
+        threshold,
+        cols_to_compare = "Value",
+        comparators = ">") {
+    lifecycle::deprecate_warn(
+        when = "1.8.3",
+        what = "threshold_filter()",
+        details = "The function will be likely dropped in the next release cycle"
+    )
     stopifnot(is.list(x))
     ### ---- If x is a data frame ---- ###
     if (is.data.frame(x)) {
@@ -349,11 +262,12 @@ threshold_filter <- function(x,
 #'     key = "CompleteAmplificationID"
 #' )
 # top_abundant_is
-top_integrations <- function(x,
-    n = 20,
-    columns = "fragmentEstimate_sum_RelAbundance",
-    keep = "everything",
-    key = NULL) {
+top_integrations <- function(
+        x,
+        n = 20,
+        columns = "fragmentEstimate_sum_RelAbundance",
+        keep = "everything",
+        key = NULL) {
     stopifnot(is.data.frame(x))
     stopifnot(is.numeric(n) & length(n) == 1 & n > 0)
     stopifnot(is.character(keep))
@@ -390,23 +304,23 @@ top_integrations <- function(x,
         keep[!keep %in% essential_cols]
     }
     if (!is.null(key)) {
-        result <- x %>%
-            dplyr::group_by(dplyr::across(dplyr::all_of(key))) %>%
+        result <- x |>
+            dplyr::group_by(dplyr::across(dplyr::all_of(key))) |>
             dplyr::arrange(dplyr::across(
                 dplyr::all_of(columns),
                 dplyr::desc
-            ), .by_group = TRUE) %>%
-            dplyr::slice_head(n = n) %>%
-            dplyr::select(dplyr::all_of(c(key, essential_cols, to_keep))) %>%
+            ), .by_group = TRUE) |>
+            dplyr::slice_head(n = n) |>
+            dplyr::select(dplyr::all_of(c(key, essential_cols, to_keep))) |>
             dplyr::ungroup()
         return(result)
     }
-    result <- x %>%
+    result <- x |>
         dplyr::arrange(dplyr::across(
             dplyr::all_of(columns),
             dplyr::desc
-        )) %>%
-        dplyr::slice_head(n = n) %>%
+        )) |>
+        dplyr::slice_head(n = n) |>
         dplyr::select(dplyr::all_of(c(essential_cols, to_keep)))
     return(result)
 }
@@ -447,8 +361,12 @@ top_integrations <- function(x,
 #'
 #' ```{r echo=FALSE, results="asis"}
 #' all_tags <- available_tags()
-#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
-#'  ~ "top_targeted_genes" %in% .x)][["tag"]])
+#' needed <- all_tags |>
+#'    dplyr::mutate(
+#'    in_fun = purrr::map_lgl(.data$needed_in, ~ "top_targeted_genes" %in% .x)
+#'    ) |>
+#'    dplyr::filter(in_fun == TRUE) |>
+#'    dplyr::pull("tag")
 #'  cat(paste0("* ", needed, collapse="\n"))
 #' ```
 #'
@@ -481,17 +399,17 @@ top_integrations <- function(x,
 #'     key = NULL
 #' )
 #' top_targ
-top_targeted_genes <- function(x,
-    n = 20,
-    key = c(
-        "SubjectID", "CellMarker",
-        "Tissue", "TimePoint"
-    ),
-    consider_chr = TRUE,
-    consider_gene_strand = TRUE,
-    as_df = TRUE) {
+top_targeted_genes <- function(
+        x,
+        n = 20,
+        key = c(
+            "SubjectID", "CellMarker",
+            "Tissue", "TimePoint"
+        ),
+        consider_chr = TRUE,
+        consider_gene_strand = TRUE,
+        as_df = TRUE) {
     stopifnot(is.data.frame(x))
-    data.table::setDT(x)
     stopifnot(is.numeric(n) || is.integer(n))
     stopifnot(is.null(key) || is.character(key))
     stopifnot(is.logical(consider_chr))
@@ -512,10 +430,9 @@ top_targeted_genes <- function(x,
             mandatory_IS_vars(TRUE),
             "error"
         )
-        annot_tag_cols <- annot_tag_cols %>%
+        annot_tag_cols <- annot_tag_cols |>
             dplyr::bind_rows(chr_tag_col)
     }
-    data.table::setDT(annot_tag_cols)
     cols_to_check <- c(annot_tag_cols$names, key)
     if (!all(cols_to_check %in% colnames(x))) {
         rlang::abort(.missing_needed_cols(
@@ -527,42 +444,48 @@ top_targeted_genes <- function(x,
         .count_distinct_is_per_gene(
             x = x, include_chr = consider_chr,
             include_gene_strand = consider_gene_strand,
-            gene_sym_col = annot_tag_cols[
-                eval(sym("tag")) == "gene_symbol"
-            ][["names"]],
-            gene_strand_col = annot_tag_cols[
-                eval(sym("tag")) == "gene_strand"
-            ][["names"]],
-            chr_col = annot_tag_cols[eval(sym("tag")) ==
-                "chromosome"][["names"]],
+            gene_sym_col = annot_tag_cols |>
+                dplyr::filter(.data$tag == "gene_symbol") |>
+                dplyr::pull("names"),
+            gene_strand_col = annot_tag_cols |>
+                dplyr::filter(.data$tag == "gene_strand") |>
+                dplyr::pull("names"),
+            chr_col = annot_tag_cols |>
+                dplyr::filter(.data$tag == "chromosome") |>
+                dplyr::pull("names"),
             mand_vars_to_check = mandatory_IS_vars(TRUE)
-        ) %>%
-            dplyr::arrange(dplyr::desc(.data$n_IS)) %>%
+        ) |>
+            dplyr::arrange(dplyr::desc(.data$n_IS)) |>
             dplyr::slice_head(n = n)
     } else {
-        tmp <- x[, .count_distinct_is_per_gene(
-            x = .SD, include_chr = consider_chr,
-            include_gene_strand = consider_gene_strand,
-            gene_sym_col = annot_tag_cols[
-                eval(sym("tag")) == "gene_symbol"
-            ][["names"]],
-            gene_strand_col = annot_tag_cols[
-                eval(sym("tag")) == "gene_strand"
-            ][["names"]],
-            chr_col = annot_tag_cols[eval(sym("tag")) ==
-                "chromosome"][["names"]],
-            mand_vars_to_check = mandatory_IS_vars(TRUE)
-        ), by = eval(key)]
-        tmp[,
-            .SD %>% dplyr::arrange(dplyr::desc(.data$n_IS)) %>%
-                dplyr::slice_head(n = n),
-            by = eval(key)
-        ]
+        x |>
+            dplyr::group_by(dplyr::across(dplyr::all_of(key))) |>
+            dplyr::group_modify(~ .count_distinct_is_per_gene(
+                x = .x, include_chr = consider_chr,
+                include_gene_strand = consider_gene_strand,
+                gene_sym_col = annot_tag_cols |>
+                    dplyr::filter(.data$tag == "gene_symbol") |>
+                    dplyr::pull("names"),
+                gene_strand_col = annot_tag_cols |>
+                    dplyr::filter(.data$tag == "gene_strand") |>
+                    dplyr::pull("names"),
+                chr_col = annot_tag_cols |>
+                    dplyr::filter(.data$tag == "chromosome") |>
+                    dplyr::pull("names"),
+                mand_vars_to_check = mandatory_IS_vars(TRUE)
+            ) |>
+                dplyr::arrange(dplyr::desc(.data$n_IS)) |>
+                dplyr::slice_head(n = n)) |>
+            dplyr::ungroup()
     }
     if (as_df) {
         return(df_with_is_counts)
     }
-    return(split(df_with_is_counts, by = key))
+    return(
+        df_with_is_counts |>
+            dplyr::group_by(dplyr::across(dplyr::all_of(key))) |>
+            dplyr::group_split()
+    )
 }
 
 
@@ -596,8 +519,14 @@ top_targeted_genes <- function(x,
 #'
 #' ```{r echo=FALSE, results="asis"}
 #' all_tags <- available_tags()
-#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
-#'  ~ "gene_frequency_fisher" %in% .x)][["tag"]])
+#' needed <- all_tags |>
+#'    dplyr::mutate(
+#'    in_fun = purrr::map_lgl(.data$needed_in,
+#'    ~ "gene_frequency_fisher" %in% .x)
+#'    ) |>
+#'    dplyr::filter(in_fun == TRUE) |>
+#'    dplyr::distinct(.data$tag) |>
+#'    dplyr::pull("tag")
 #'  cat(paste0("* ", needed, collapse="\n"))
 #' ```
 #'
@@ -618,18 +547,19 @@ top_targeted_genes <- function(x,
 #'     min_is_per_gene = 2
 #' )
 #' fisher
-gene_frequency_fisher <- function(cis_x,
-    cis_y,
-    min_is_per_gene = 3,
-    gene_set_method = c("intersection", "union"),
-    onco_db_file = "proto_oncogenes",
-    tumor_suppressors_db_file = "tumor_suppressors",
-    species = "human",
-    known_onco = known_clinical_oncogenes(),
-    suspicious_genes =
-        clinical_relevant_suspicious_genes(),
-    significance_threshold = 0.05,
-    remove_unbalanced_0 = TRUE) {
+gene_frequency_fisher <- function(
+        cis_x,
+        cis_y,
+        min_is_per_gene = 3,
+        gene_set_method = c("intersection", "union"),
+        onco_db_file = "proto_oncogenes",
+        tumor_suppressors_db_file = "tumor_suppressors",
+        species = "human",
+        known_onco = known_clinical_oncogenes(),
+        suspicious_genes =
+            clinical_relevant_suspicious_genes(),
+        significance_threshold = 0.05,
+        remove_unbalanced_0 = TRUE) {
     ## --- Input checks
     stopifnot(is.data.frame(cis_x) && is.data.frame(cis_y))
     stopifnot(is.integer(min_is_per_gene) || is.numeric(min_is_per_gene))
@@ -651,12 +581,6 @@ gene_frequency_fisher <- function(cis_x,
         "raw_gene_integration_frequency"
     )
     quiet_expand <- purrr::quietly(.expand_cis_df)
-    cols_for_join <- c(
-        gene_sym_col,
-        "Onco1_TS2", "ClinicalRelevance", "DOIReference",
-        "KnownGeneClass", "KnownClonalExpansion",
-        "CriticalForInsMut"
-    )
     ## --- Calculations to perform on each df
     append_calc <- function(df, group_n) {
         if (!all(req_cis_cols %in% colnames(df))) {
@@ -665,12 +589,7 @@ gene_frequency_fisher <- function(cis_x,
                     colnames(df)])
             )
         }
-        modified <- quiet_expand(
-            df, gene_sym_col,
-            onco_db_file, tumor_suppressors_db_file,
-            species, known_onco, suspicious_genes
-        )$result
-        modified <- modified %>%
+        modified <- df |>
             dplyr::mutate(
                 IS_per_kbGeneLen = .data$raw_gene_integration_frequency * 1000,
                 Sum_IS_per_kbGeneLen = sum(.data$IS_per_kbGeneLen,
@@ -678,16 +597,16 @@ gene_frequency_fisher <- function(cis_x,
                 ),
                 IS_per_kbGeneLen_perMDepth_TPM = (.data$IS_per_kbGeneLen /
                     .data$Sum_IS_per_kbGeneLen) * 1e6
-            ) %>%
-            dplyr::filter(.data$n_IS_perGene >= min_is_per_gene) %>%
+            ) |>
+            dplyr::filter(.data$n_IS_perGene >= min_is_per_gene) |>
             dplyr::select(dplyr::all_of(c(
-                req_cis_cols, cols_for_join,
+                req_cis_cols,
                 "IS_per_kbGeneLen",
                 "Sum_IS_per_kbGeneLen",
                 "IS_per_kbGeneLen_perMDepth_TPM"
             )))
-        colnames(modified)[!colnames(modified) %in% cols_for_join] <- paste(
-            colnames(modified)[!colnames(modified) %in% cols_for_join], group_n,
+        colnames(modified)[!colnames(modified) == gene_sym_col] <- paste(
+            colnames(modified)[!colnames(modified) == gene_sym_col], group_n,
             sep = "_"
         )
         return(modified)
@@ -695,9 +614,9 @@ gene_frequency_fisher <- function(cis_x,
     cis_mod <- purrr::map2(list(cis_x, cis_y), c(1, 2), append_calc)
     ## --- Merge the two in 1 df
     merged <- if (gene_set_method == "union") {
-        purrr::reduce(cis_mod, ~ dplyr::full_join(.x, .y, by = cols_for_join))
+        purrr::reduce(cis_mod, ~ dplyr::full_join(.x, .y, by = gene_sym_col))
     } else {
-        purrr::reduce(cis_mod, ~ dplyr::inner_join(.x, .y, by = cols_for_join))
+        purrr::reduce(cis_mod, ~ dplyr::inner_join(.x, .y, by = gene_sym_col))
     }
     if (nrow(merged) == 0) {
         if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
@@ -712,9 +631,13 @@ gene_frequency_fisher <- function(cis_x,
         }
         return(NULL)
     }
+    merged <- quiet_expand(
+        merged, gene_sym_col, onco_db_file, tumor_suppressors_db_file,
+        species, known_onco, suspicious_genes
+    )$result
     ## --- Actual computation of fisher test: test is applied on each row
     ## (each gene)
-    merged <- merged %>%
+    merged <- merged |>
         dplyr::mutate(
             tot_n_IS_perGene_1 = sum(cis_x$n_IS_perGene, na.rm = TRUE),
             tot_n_IS_perGene_2 = sum(cis_y$n_IS_perGene, na.rm = TRUE)
@@ -741,10 +664,13 @@ gene_frequency_fisher <- function(cis_x,
         ft <- stats::fisher.test(matrix)
         return(ft$p.value)
     }
-    merged <- merged %>%
+    merged <- merged |>
         dplyr::mutate(
-            Fisher_p_value = purrr::pmap_dbl(., compute_fisher)
-        ) %>%
+            Fisher_p_value = purrr::pmap_dbl(
+                dplyr::pick(dplyr::everything()),
+                compute_fisher
+            )
+        ) |>
         dplyr::mutate(
             Fisher_p_value_significant = dplyr::if_else(
                 condition = .data$Fisher_p_value < significance_threshold,
@@ -771,11 +697,14 @@ gene_frequency_fisher <- function(cis_x,
             }
             return(FALSE)
         }
-        merged <- merged %>%
+        merged <- merged |>
             dplyr::mutate(
-                to_exclude_from_test = purrr::pmap(., test_exclude)
-            ) %>%
-            dplyr::filter(.data$to_exclude_from_test == FALSE) %>%
+                to_exclude_from_test = purrr::pmap(
+                    dplyr::pick(dplyr::everything()),
+                    test_exclude
+                )
+            ) |>
+            dplyr::filter(.data$to_exclude_from_test == FALSE) |>
             dplyr::select(-dplyr::all_of("to_exclude_from_test"))
         if (nrow(merged) == 0) {
             if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
@@ -791,7 +720,7 @@ gene_frequency_fisher <- function(cis_x,
         }
     }
     ## --- Apply statistical corrections to p-value
-    merged <- merged %>%
+    merged <- merged |>
         dplyr::mutate(
             Fisher_p_value_fdr = stats::p.adjust(.data$Fisher_p_value,
                 method = "fdr",
@@ -803,9 +732,10 @@ gene_frequency_fisher <- function(cis_x,
             ),
             Fisher_p_value_bonferroni = stats::p.adjust(.data$Fisher_p_value,
                 method = "bonferroni",
-                n = length(.data$Fisher_p_value)),
+                n = length(.data$Fisher_p_value)
+            ),
             minus_log10_pvalue = -log(.data$Fisher_p_value, base = 10)
-        ) %>%
+        ) |>
         dplyr::mutate(
             minus_log10_pvalue_fdr = -log(.data$Fisher_p_value_fdr, base = 10),
         )
@@ -877,12 +807,13 @@ gene_frequency_fisher <- function(cis_x,
 #'     value_columns = c("seqCount", "fragmentEstimate")
 #' )
 #' stats
-sample_statistics <- function(x,
-    metadata,
-    sample_key = "CompleteAmplificationID",
-    value_columns = "Value",
-    functions = default_stats(),
-    add_integrations_count = TRUE) {
+sample_statistics <- function(
+        x,
+        metadata,
+        sample_key = "CompleteAmplificationID",
+        value_columns = "Value",
+        functions = default_stats(),
+        add_integrations_count = TRUE) {
     stopifnot(is.data.frame(x))
     stopifnot(is.data.frame(metadata))
     stopifnot(is.character(sample_key))
@@ -915,8 +846,8 @@ sample_statistics <- function(x,
         }
     })
 
-    result <- x %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(sample_key))) %>%
+    result <- x |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(sample_key))) |>
         dplyr::summarise(
             dplyr::across(
                 .cols = dplyr::all_of(value_columns),
@@ -933,12 +864,12 @@ sample_statistics <- function(x,
         dfss <- purrr::map(df_cols, function(col) {
             exp <- rlang::expr(`$`(result, !!col))
             df <- rlang::eval_tidy(exp)
-            df <- df %>% dplyr::rename_with(.fn = ~ paste0(col, "_", .x))
+            df <- df |> dplyr::rename_with(.fn = ~ paste0(col, "_", .x))
             df
-        }) %>% purrr::set_names(df_cols)
+        }) |> purrr::set_names(df_cols)
         for (dfc in df_cols) {
-            result <- result %>%
-                dplyr::select(-dplyr::all_of(dfc)) %>%
+            result <- result |>
+                dplyr::select(-dplyr::all_of(dfc)) |>
                 dplyr::bind_cols(dfss[[dfc]])
         }
     }
@@ -946,13 +877,13 @@ sample_statistics <- function(x,
     if (add_integrations_count) {
         if (all(mandatory_IS_vars() %in% colnames(x))) {
             mand_sym <- purrr::map(mandatory_IS_vars(), rlang::sym)
-            nIS <- x %>%
-                dplyr::group_by(dplyr::across(dplyr::all_of(sample_key))) %>%
+            nIS <- x |>
+                dplyr::group_by(dplyr::across(dplyr::all_of(sample_key))) |>
                 dplyr::summarise(
                     nIS = dplyr::n_distinct(!!!mand_sym),
                     .groups = "drop"
                 )
-            result <- result %>%
+            result <- result |>
                 dplyr::left_join(nIS, by = sample_key)
         } else {
             if (getOption("ISAnalytics.verbose", TRUE)) {
@@ -961,7 +892,7 @@ sample_statistics <- function(x,
         }
     }
 
-    updated_meta <- metadata %>% dplyr::left_join(result, by = sample_key)
+    updated_meta <- metadata |> dplyr::left_join(result, by = sample_key)
     return(list(x = result, metadata = updated_meta))
 }
 
@@ -1001,8 +932,14 @@ sample_statistics <- function(x,
 #'
 #' ```{r echo=FALSE, results="asis"}
 #' all_tags <- available_tags()
-#' needed <- unique(all_tags[purrr::map_lgl(eval(rlang::sym("needed_in")),
-#'  ~ "CIS_grubbs" %in% .x)][["tag"]])
+#' needed <- all_tags |>
+#'    dplyr::mutate(
+#'    in_fun = purrr::map_lgl(.data$needed_in,
+#'    ~ "CIS_grubbs" %in% .x)
+#'    ) |>
+#'    dplyr::filter(in_fun == TRUE) |>
+#'    dplyr::distinct(.data$tag) |>
+#'    dplyr::pull("tag")
 #'  cat(paste0("* ", needed, collapse="\n"))
 #' ```
 #'
@@ -1034,13 +971,14 @@ sample_statistics <- function(x,
 #' data("integration_matrices", package = "ISAnalytics")
 #' cis <- CIS_grubbs(integration_matrices)
 #' cis
-CIS_grubbs <- function(x,
-    genomic_annotation_file = "hg19",
-    grubbs_flanking_gene_bp = 100000,
-    threshold_alpha = 0.05,
-    by = NULL,
-    return_missing_as_df = TRUE,
-    results_as_list = TRUE) {
+CIS_grubbs <- function(
+        x,
+        genomic_annotation_file = "hg19",
+        grubbs_flanking_gene_bp = 100000,
+        threshold_alpha = 0.05,
+        by = NULL,
+        return_missing_as_df = TRUE,
+        results_as_list = TRUE) {
     res_checks <- .cis_param_check(
         x, genomic_annotation_file,
         grubbs_flanking_gene_bp,
@@ -1067,14 +1005,14 @@ CIS_grubbs <- function(x,
             strand_col = res_checks$strand_col
         )
     } else {
-        grouped <- join_ref_res$joint_ref %>%
+        grouped <- join_ref_res$joint_ref |>
             dplyr::group_by(dplyr::across(dplyr::all_of(by)))
-        group_ks <- grouped %>%
-            dplyr::group_keys() %>%
-            tidyr::unite(col = "id", dplyr::everything()) %>%
+        group_ks <- grouped |>
+            dplyr::group_keys() |>
+            tidyr::unite(col = "id", dplyr::everything()) |>
             dplyr::pull(.data$id)
-        split <- grouped %>%
-            dplyr::group_split() %>%
+        split <- grouped |>
+            dplyr::group_split() |>
             purrr::set_names(group_ks)
         cis <- purrr::map(split, ~ .cis_grubb_calc(
             x = .x,
@@ -1087,9 +1025,9 @@ CIS_grubbs <- function(x,
         ))
         if (!results_as_list) {
             cis <- purrr::map2(cis, names(cis), ~ {
-                .x %>%
+                .x |>
                     dplyr::mutate(group = .y)
-            }) %>% purrr::reduce(dplyr::bind_rows)
+            }) |> purrr::reduce(dplyr::bind_rows)
         }
     }
     result$cis <- cis
@@ -1134,15 +1072,16 @@ CIS_grubbs <- function(x,
 #' )
 #' cis_overtime <- CIS_grubbs_overtime(aggreg)
 #' cis_overtime
-CIS_grubbs_overtime <- function(x,
-    genomic_annotation_file = "hg19",
-    grubbs_flanking_gene_bp = 100000,
-    threshold_alpha = 0.05,
-    group = "SubjectID",
-    timepoint_col = "TimePoint",
-    as_df = TRUE,
-    return_missing_as_df = TRUE,
-    max_workers = NULL) {
+CIS_grubbs_overtime <- function(
+        x,
+        genomic_annotation_file = "hg19",
+        grubbs_flanking_gene_bp = 100000,
+        threshold_alpha = 0.05,
+        group = "SubjectID",
+        timepoint_col = "TimePoint",
+        as_df = TRUE,
+        return_missing_as_df = TRUE,
+        max_workers = NULL) {
     result <- list()
     res_checks <- .cis_param_check(
         x, genomic_annotation_file,
@@ -1182,27 +1121,28 @@ CIS_grubbs_overtime <- function(x,
         names(join_ref_res) %in% c("missing_genes", "missing_is")
     ])
     # --- Split according to group
-    split <- join_ref_res$joint_ref %>%
+    split <- join_ref_res$joint_ref |>
         dplyr::group_by(dplyr::across(dplyr::all_of(group)))
-    keys_g <- split %>%
-        dplyr::group_keys() %>%
-        tidyr::unite(col = "id") %>%
+    keys_g <- split |>
+        dplyr::group_keys() |>
+        tidyr::unite(col = "id") |>
         dplyr::pull(.data$id)
-    split <- split %>%
-        dplyr::group_split() %>%
+    split <- split |>
+        dplyr::group_split() |>
         purrr::set_names(keys_g)
 
     # --- Calculate for each group and each tp
-    tp_slice_cis <- function(df, timepoint_col,
-    res_checks, result_as_df,
-    progress) {
-        tmp <- df %>%
+    tp_slice_cis <- function(
+        df, timepoint_col,
+        res_checks, result_as_df,
+        progress) {
+        tmp <- df |>
             dplyr::group_by(dplyr::across(dplyr::all_of(timepoint_col)))
-        g_keys <- tmp %>%
-            dplyr::group_keys() %>%
+        g_keys <- tmp |>
+            dplyr::group_keys() |>
             dplyr::pull(!!timepoint_col)
-        tmp <- tmp %>%
-            dplyr::group_split() %>%
+        tmp <- tmp |>
+            dplyr::group_split() |>
             purrr::set_names(g_keys)
         res <- if (result_as_df == 0) {
             purrr::map(tmp, ~ .cis_grubb_calc(
@@ -1216,7 +1156,7 @@ CIS_grubbs_overtime <- function(x,
                 strand_col = res_checks$strand_col
             ))
         } else {
-            purrr::map2_df(tmp, names(tmp), ~ .cis_grubb_calc(
+            purrr::map2(tmp, names(tmp), ~ .cis_grubb_calc(
                 x = .x,
                 grubbs_flanking_gene_bp = res_checks$grubbs_flanking_gene_bp,
                 threshold_alpha = res_checks$threshold_alpha,
@@ -1225,7 +1165,8 @@ CIS_grubbs_overtime <- function(x,
                 chr_col = res_checks$chrom_col,
                 locus_col = res_checks$locus_col,
                 strand_col = res_checks$strand_col
-            ) %>% dplyr::mutate(!!timepoint_col := .y))
+            ) |> dplyr::mutate(!!timepoint_col := .y)) |>
+                purrr::list_rbind()
         }
         if (!is.null(progress)) {
             progress()
@@ -1244,11 +1185,12 @@ CIS_grubbs_overtime <- function(x,
         max_workers = max_workers
     )
     if (result_as_df == 1) {
-        cis_overtime <- purrr::map2_df(
+        cis_overtime <- purrr::map2(
             cis_overtime$res, names(cis_overtime$res),
-            ~ .x %>%
+            ~ .x |>
                 dplyr::mutate(group = .y)
-        )
+        ) |>
+            purrr::list_rbind()
     } else {
         cis_overtime <- cis_overtime$res
     }
@@ -1259,7 +1201,7 @@ CIS_grubbs_overtime <- function(x,
 #' Integrations cumulative count in time by sample
 #'
 #' @description
-#' `r lifecycle::badge("deprecated")`
+#' `r lifecycle::badge("defunct")`
 #' This function was deprecated in favour of a single function,
 #' please use `cumulative_is` instead.
 #'
@@ -1279,6 +1221,7 @@ CIS_grubbs_overtime <- function(x,
 #' @keywords internal
 #'
 #' @examples
+#' \dontrun{
 #' data("integration_matrices", package = "ISAnalytics")
 #' data("association_file", package = "ISAnalytics")
 #' aggreg <- aggregate_values_by_key(
@@ -1288,20 +1231,22 @@ CIS_grubbs_overtime <- function(x,
 #' )
 #' cumulative_count <- cumulative_count_union(aggreg)
 #' cumulative_count
-cumulative_count_union <- function(x,
-    association_file = NULL,
-    timepoint_column = "TimePoint",
-    key = c(
-        "SubjectID",
-        "CellMarker",
-        "Tissue",
-        "TimePoint"
-    ),
-    include_tp_zero = FALSE,
-    zero = "0000",
-    aggregate = FALSE,
-    ...) {
-    lifecycle::deprecate_warn(
+#' }
+cumulative_count_union <- function(
+        x,
+        association_file = NULL,
+        timepoint_column = "TimePoint",
+        key = c(
+            "SubjectID",
+            "CellMarker",
+            "Tissue",
+            "TimePoint"
+        ),
+        include_tp_zero = FALSE,
+        zero = "0000",
+        aggregate = FALSE,
+        ...) {
+    lifecycle::deprecate_stop(
         when = "1.5.4",
         what = "cumulative_count_union()",
         with = "cumulative_is()",
@@ -1310,10 +1255,6 @@ cumulative_count_union <- function(x,
             "Function will be likely dropped in the",
             "next release cycle"
         ))
-    )
-    cumulative_is(
-        x = x, timepoint_col = timepoint_column, key = key,
-        include_tp_zero = include_tp_zero, counts = TRUE
     )
 }
 
@@ -1349,7 +1290,6 @@ cumulative_count_union <- function(x,
 #' @export
 #'
 #' @importFrom rlang .data
-#' @importFrom data.table .SD
 #'
 #' @examples
 #' data("integration_matrices", package = "ISAnalytics")
@@ -1361,18 +1301,19 @@ cumulative_count_union <- function(x,
 #' )
 #' cumulated_is <- cumulative_is(aggreg)
 #' cumulated_is
-cumulative_is <- function(x,
-    key = c(
-        "SubjectID",
-        "CellMarker",
-        "Tissue",
-        "TimePoint"
-    ),
-    timepoint_col = "TimePoint",
-    include_tp_zero = FALSE,
-    counts = TRUE,
-    keep_og_is = FALSE,
-    expand = TRUE) {
+cumulative_is <- function(
+        x,
+        key = c(
+            "SubjectID",
+            "CellMarker",
+            "Tissue",
+            "TimePoint"
+        ),
+        timepoint_col = "TimePoint",
+        include_tp_zero = FALSE,
+        counts = TRUE,
+        keep_og_is = FALSE,
+        expand = TRUE) {
     stopifnot(is.data.frame(x))
     stopifnot(is.character(key))
     stopifnot(is.character(timepoint_col))
@@ -1394,41 +1335,45 @@ cumulative_is <- function(x,
     } else {
         mandatory_IS_vars()
     }
-    temp <- x %>%
-        dplyr::select(dplyr::all_of(c(key, is_vars))) %>%
+    temp <- x |>
+        dplyr::select(dplyr::all_of(c(key, is_vars))) |>
         dplyr::mutate(!!timepoint_col := as.numeric(.data[[timepoint_col]]))
     if (!include_tp_zero) {
-        temp <- temp %>%
+        temp <- temp |>
             dplyr::filter(.data[[timepoint_col]] != 0)
         if (nrow(temp) == 0) {
             rlang::inform(.only_zero_tp(), class = "only_zero_tps")
             return(NULL)
         }
     }
-    temp <- temp %>%
-        dplyr::group_by(dplyr::across({{ key }})) %>%
-        dplyr::arrange(.data[[timepoint_col]], .by_group = TRUE) %>%
+    temp <- temp |>
+        dplyr::group_by(dplyr::across({{ key }})) |>
+        dplyr::arrange(.data[[timepoint_col]], .by_group = TRUE) |>
         dplyr::distinct(dplyr::across(dplyr::all_of(is_vars)),
             .keep_all = TRUE
-        )
-    data.table::setDT(temp)
-    temp <- temp[, list(is = list(.SD)), by = key]
-    no_tp_key <- key[key != timepoint_col]
-    split <- split(temp, by = no_tp_key)
-    cumulate <- purrr::map(split, function(x) {
-        x[, cumulative_is := purrr::accumulate(
-            get("is"),
-            ~ data.table::funion(.x, .y)
-        )]
-    })
-    cumulate <- data.table::rbindlist(cumulate)
+        ) |>
+        tidyr::nest(.key = "is") |>
+        dplyr::ungroup(dplyr::all_of(timepoint_col))
+    split_tmp <- temp |>
+        dplyr::group_split()
+    cumulate <- purrr::map(split_tmp, function(x) {
+        un_dfs <- purrr::accumulate(x$is, ~ dplyr::union(.x, .y))
+        x |>
+            dplyr::mutate(
+                cumulative_is = un_dfs
+            )
+    }) |>
+        purrr::list_rbind()
     if (!keep_og_is) {
-        cumulate[, is := NULL]
+        cumulate <- cumulate |>
+            dplyr::select(-"is")
     }
     counts_df <- if (counts) {
-        cumulate[, list(is_n_cumulative = unlist(purrr::map(
-            get("cumulative_is"), nrow
-        ))), by = key]
+        cumulate |>
+            dplyr::mutate(
+                is_n_cumulative = purrr::map_int(.data$cumulative_is, nrow)
+            ) |>
+            dplyr::select(dplyr::all_of(c(key, "is_n_cumulative")))
     } else {
         NULL
     }
@@ -1436,7 +1381,6 @@ cumulative_is <- function(x,
         cumulate <- tidyr::unnest(cumulate,
             cols = "cumulative_is"
         )
-        data.table::setDT(cumulate)
     }
     to_return <- if (counts) {
         list(coordinates = cumulate, counts = counts_df)
@@ -1511,21 +1455,22 @@ cumulative_is <- function(x,
 #' )
 #' sharing <- is_sharing(aggreg)
 #' sharing
-is_sharing <- function(...,
-    group_key = c(
-        "SubjectID",
-        "CellMarker",
-        "Tissue",
-        "TimePoint"
-    ),
-    group_keys = NULL,
-    n_comp = 2,
-    is_count = TRUE,
-    relative_is_sharing = TRUE,
-    minimal = TRUE,
-    include_self_comp = FALSE,
-    keep_genomic_coord = FALSE,
-    table_for_venn = FALSE) {
+is_sharing <- function(
+        ...,
+        group_key = c(
+            "SubjectID",
+            "CellMarker",
+            "Tissue",
+            "TimePoint"
+        ),
+        group_keys = NULL,
+        n_comp = 2,
+        is_count = TRUE,
+        relative_is_sharing = TRUE,
+        minimal = TRUE,
+        include_self_comp = FALSE,
+        keep_genomic_coord = FALSE,
+        table_for_venn = FALSE) {
     ## Checks
     if (!requireNamespace("gtools", quietly = TRUE)) {
         rlang::abort(.missing_pkg_error("gtools"))
@@ -1721,9 +1666,6 @@ is_sharing <- function(...,
             venn = table_for_venn
         )
     }
-    if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
-        rlang::inform("Done!")
-    }
     return(sharing)
 }
 
@@ -1766,9 +1708,9 @@ is_sharing <- function(...,
 #'     association_file = association_file,
 #'     value_cols = c("seqCount", "fragmentEstimate")
 #' )
-#' df1 <- aggreg %>%
+#' df1 <- aggreg |>
 #'     dplyr::filter(.data$Tissue == "BM")
-#' df2 <- aggreg %>%
+#' df2 <- aggreg |>
 #'     dplyr::filter(.data$Tissue == "PB")
 #' source <- iss_source(df1, df2)
 #' source
@@ -1781,19 +1723,20 @@ is_sharing <- function(...,
 #'         x = "Time point", y = "Shared IS % with MNC BM",
 #'         title = "Source of is MNC BM vs MNC PB"
 #'     )
-iss_source <- function(reference,
-    selection,
-    ref_group_key = c(
-        "SubjectID", "CellMarker",
-        "Tissue", "TimePoint"
-    ),
-    selection_group_key = c(
-        "SubjectID", "CellMarker",
-        "Tissue", "TimePoint"
-    ),
-    timepoint_column = "TimePoint",
-    by_subject = TRUE,
-    subject_column = "SubjectID") {
+iss_source <- function(
+        reference,
+        selection,
+        ref_group_key = c(
+            "SubjectID", "CellMarker",
+            "Tissue", "TimePoint"
+        ),
+        selection_group_key = c(
+            "SubjectID", "CellMarker",
+            "Tissue", "TimePoint"
+        ),
+        timepoint_column = "TimePoint",
+        by_subject = TRUE,
+        subject_column = "SubjectID") {
     ## Checks
     stopifnot(is.data.frame(reference) & is.data.frame(selection))
     stopifnot(is.character(ref_group_key) & is.character(selection_group_key))
@@ -1819,21 +1762,21 @@ iss_source <- function(reference,
     if (by_subject) {
         stopifnot(is.character(subject_column))
         subject_column <- subject_column[1]
-        ref_split <- reference %>%
+        ref_split <- reference |>
             dplyr::group_by(dplyr::across({{ subject_column }}))
-        ref_subjs <- ref_split %>%
-            dplyr::group_keys() %>%
+        ref_subjs <- ref_split |>
+            dplyr::group_keys() |>
             dplyr::pull(.data[[subject_column]])
-        ref_split <- ref_split %>%
-            dplyr::group_split() %>%
+        ref_split <- ref_split |>
+            dplyr::group_split() |>
             purrr::set_names(ref_subjs)
-        sel_split <- selection %>%
+        sel_split <- selection |>
             dplyr::group_by(dplyr::across({{ subject_column }}))
-        sel_subjs <- sel_split %>%
-            dplyr::group_keys() %>%
+        sel_subjs <- sel_split |>
+            dplyr::group_keys() |>
             dplyr::pull(.data[[subject_column]])
-        sel_split <- sel_split %>%
-            dplyr::group_split() %>%
+        sel_split <- sel_split |>
+            dplyr::group_split() |>
             purrr::set_names(sel_subjs)
         shared <- .sharing_for_source(ref_split,
             sel_split,
@@ -1844,14 +1787,14 @@ iss_source <- function(reference,
         )
         shared <- purrr::map(
             shared,
-            ~ .x %>%
+            ~ .x |>
                 dplyr::select(
                     -dplyr::all_of(c("count_g1", "count_g2", "count_union"))
-                ) %>%
-                tidyr::unnest(dplyr::all_of("is_coord"), keep_empty = TRUE) %>%
+                ) |>
+                tidyr::unnest(dplyr::all_of("is_coord"), keep_empty = TRUE) |>
                 dplyr::mutate(sharing_perc = dplyr::if_else(
                     shared == 0, 0, .data$on_g2 / .data$shared
-                )) %>%
+                )) |>
                 dplyr::select(
                     -dplyr::all_of(c("shared", "on_g1", "on_g2", "on_union"))
                 )
@@ -1864,16 +1807,16 @@ iss_source <- function(reference,
             tp_col = timepoint_column,
             subj_col = subject_column
         )
-        shared <- shared %>%
+        shared <- shared |>
             dplyr::select(
                 -dplyr::all_of(c("count_g1", "count_g2", "count_union"))
-            ) %>%
-            tidyr::unnest(dplyr::all_of("is_coord"), keep_empty = TRUE) %>%
+            ) |>
+            tidyr::unnest(dplyr::all_of("is_coord"), keep_empty = TRUE) |>
             dplyr::mutate(sharing_perc = dplyr::if_else(shared == 0,
                 0,
                 .data$on_g2 /
                     .data$shared
-            )) %>%
+            )) |>
             dplyr::select(
                 -dplyr::all_of(c("shared", "on_g1", "on_g2", "on_union"))
             )
@@ -1893,12 +1836,21 @@ iss_source <- function(reference,
 #' @examples
 #' default_stats()
 default_stats <- function() {
-    list(
-        shannon = ~ vegan::diversity(.x, index = "shannon"),
-        simpson = ~ vegan::diversity(.x, index = "simpson"),
-        invsimpson = ~ vegan::diversity(.x, index = "invsimpson"),
+    defaults_list <- list(
         sum = ~ sum(.x, na.rm = TRUE),
-        count = length,
-        describe = ~ tibble::as_tibble(psych::describe(.x))
+        count = length
     )
+    if (rlang::is_installed("vegan")) {
+        defaults_list <- append(defaults_list, list(
+            shannon = ~ vegan::diversity(.x, index = "shannon"),
+            simpson = ~ vegan::diversity(.x, index = "simpson"),
+            invsimpson = ~ vegan::diversity(.x, index = "invsimpson")
+        ))
+    }
+    if (rlang::is_installed("psych")) {
+        defaults_list <- append(defaults_list, list(
+            describe = ~ tibble::as_tibble(psych::describe(.x))
+        ))
+    }
+    return(defaults_list)
 }

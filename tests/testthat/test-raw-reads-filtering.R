@@ -12,7 +12,7 @@ normal_vect <- extraDistr::rtnorm(
     a = 1, b = 5000
 )
 
-min_example <- data.table::data.table(
+min_example <- tibble::tibble(
     CompleteAmplificationID = paste0(
         "ID",
         seq_len(1000)
@@ -451,8 +451,8 @@ test_that(".process_pool_frag - single key norm test", {
 #------------------------------------------------------------------------------#
 test_that(".pool_frag_calc - single key", {
     samples_per_pool <- 5
-    samples_in_pools <- min_example %>%
-        dplyr::group_by(.data$PoolID) %>%
+    samples_in_pools <- min_example |>
+        dplyr::group_by(.data$PoolID) |>
         dplyr::summarise(count = dplyr::n())
     ## ON X
     res <- .pool_frag_calc(min_example,
@@ -471,7 +471,7 @@ test_that(".pool_frag_calc - single key", {
         } else {
             TRUE
         }
-        all(res$metadata %>% dplyr::filter(.data$PoolID == pool$PoolID) %>%
+        all(res$metadata |> dplyr::filter(.data$PoolID == pool$PoolID) |>
             dplyr::pull(.data$processed) == should_be)
     })
     non_na_if_proc <- purrr::pmap_lgl(res$metadata, function(...) {
@@ -504,7 +504,7 @@ test_that(".pool_frag_calc - single key", {
     expect_true(all(non_na_if_proc))
     expect_true(all(is.na(res$normality_X)))
     ## ON Y
-    identified_zeros <- min_example %>%
+    identified_zeros <- min_example |>
         dplyr::filter(.data$Y <= 0)
     res <- .pool_frag_calc(min_example,
         key = "Y", by_pool = TRUE,
@@ -514,10 +514,10 @@ test_that(".pool_frag_calc - single key", {
         normality_threshold = 0.05,
         log2 = TRUE, pcr_id_col = "CompleteAmplificationID"
     )
-    samples_in_pools <- min_example %>%
+    samples_in_pools <- min_example |>
         dplyr::filter(!.data$CompleteAmplificationID %in%
-            identified_zeros$CompleteAmplificationID) %>%
-        dplyr::group_by(.data$PoolID) %>%
+            identified_zeros$CompleteAmplificationID) |>
+        dplyr::group_by(.data$PoolID) |>
         dplyr::summarise(count = dplyr::n())
     processed_pools <- purrr::pmap_lgl(samples_in_pools, function(...) {
         pool <- tibble::tibble(...)
@@ -526,12 +526,12 @@ test_that(".pool_frag_calc - single key", {
         } else {
             TRUE
         }
-        all(res$metadata %>%
+        all(res$metadata |>
             dplyr::filter(
                 !.data$CompleteAmplificationID %in%
                     identified_zeros$CompleteAmplificationID,
                 .data$PoolID == pool$PoolID
-            ) %>%
+            ) |>
             dplyr::pull(.data$processed) == should_be)
     })
     non_na_if_proc <- purrr::pmap_lgl(res$metadata, function(...) {
@@ -545,9 +545,9 @@ test_that(".pool_frag_calc - single key", {
     expect_true(all(processed_pools))
     expect_true(all(non_na_if_proc))
     expect_true(all(is.na(res$normality_Y)))
-    expect_true(all((res$metadata %>%
+    expect_true(all((res$metadata |>
         dplyr::filter(.data$CompleteAmplificationID %in%
-            identified_zeros$CompleteAmplificationID) %>%
+            identified_zeros$CompleteAmplificationID) |>
         dplyr::pull(.data$processed)
     ) == FALSE))
 })
@@ -556,31 +556,31 @@ test_that(".pool_frag_calc - single key", {
 # outliers_by_pool_fragments
 #------------------------------------------------------------------------------#
 test_that("outliers_by_pool_fragments - processes with nas", {
-    nas <- min_example %>%
+    nas <- min_example |>
         dplyr::filter(is.na(.data$Z))
     res <- outliers_by_pool_fragments(min_example,
         key = "Z",
         keep_calc_cols = TRUE
     )
-    expect_true(all(res %>%
+    expect_true(all(res |>
         dplyr::filter(.data$CompleteAmplificationID %in%
-            nas$CompleteAmplificationID) %>%
+            nas$CompleteAmplificationID) |>
         dplyr::pull(.data$processed) == FALSE))
-    expect_true(all(res %>%
+    expect_true(all(res |>
         dplyr::filter(.data$CompleteAmplificationID %in%
-            nas$CompleteAmplificationID) %>%
+            nas$CompleteAmplificationID) |>
         dplyr::pull(.data$to_remove) == FALSE))
     res <- outliers_by_pool_fragments(min_example,
         key = c("X", "Z"),
         keep_calc_cols = TRUE
     )
-    expect_true(all(res %>%
+    expect_true(all(res |>
         dplyr::filter(.data$CompleteAmplificationID %in%
-            nas$CompleteAmplificationID) %>%
+            nas$CompleteAmplificationID) |>
         dplyr::pull(.data$processed) == FALSE))
-    expect_true(all(res %>%
+    expect_true(all(res |>
         dplyr::filter(.data$CompleteAmplificationID %in%
-            nas$CompleteAmplificationID) %>%
+            nas$CompleteAmplificationID) |>
         dplyr::pull(.data$to_remove) == FALSE))
 })
 
@@ -635,10 +635,14 @@ test_that("outlier_filter - works with calls to functions", {
 
     ## With custom function
     foo <- function(metadata) {
-        processed <- data.table::copy(metadata)
-        processed[eval(sym("X")) < 10000, c("to_remove") := TRUE]
-        processed[eval(sym("X")) >= 10000, c("to_remove") := FALSE]
-        return(processed[, mget(c("CompleteAmplificationID", "to_remove"))])
+        processed <- metadata
+        processed <- processed |>
+            dplyr::mutate(
+                to_remove = dplyr::if_else(
+                    .data$X < 10000, TRUE, FALSE
+                )
+            )
+        return(processed[, c("CompleteAmplificationID", "to_remove")])
     }
     res <- outlier_filter(
         metadata = example,

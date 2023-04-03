@@ -82,13 +82,18 @@ know more about this topic take a look at the vignette
 therefore different groups. Each group has an associated set of integration
 sites.
 
+NOTE: aggregating data is not mandatory, since sharing functions in ISAnalytics
+only count distinct integration sites and do not require any quantification.
+The only important thing is that columns that are included in the specified key
+are also included in the input matrices.
+
 ```{r}
 ## Aggregation by standard key
 agg <- aggregate_values_by_key(integration_matrices,
     association_file,
     value_cols = c("seqCount", "fragmentEstimate")
 )
-agg <- agg %>% dplyr::filter(TimePoint %in% c("0030", "0060"))
+agg <- agg |> dplyr::filter(TimePoint %in% c("0030", "0060"))
 ```
 
 ```{r echo=FALSE}
@@ -257,12 +262,12 @@ We're going to filter the original data frame in order to obtain only
 relevant data in 2 separated tables and then proceed by calling the function.
 
 ```{r}
-first_sample <- agg %>%
+first_sample <- agg |>
     dplyr::filter(
         SubjectID == "PT001", CellMarker == "MNC", Tissue == "BM",
         TimePoint == "0030"
     )
-second_sample <- agg %>%
+second_sample <- agg |>
     dplyr::filter(
         SubjectID == "PT001", CellMarker == "MNC", Tissue == "BM",
         TimePoint == "0060"
@@ -282,6 +287,30 @@ sharing_3
 Once again the arguments `n_comp` and `include_self_comp` are ignored:
 the number of comparisons is equal to the number of data frames in input.
 
+To handle special limit cases, the output group ids are appended with a dash
+and a number (`-1`, `-2`, ...) that indicates the data frame of origin: this
+is useful in the case group ids are duplicated in the inputs. To understand
+better let's make an example:
+
+```{r}
+sharing_3_a <- is_sharing(
+    first_sample, second_sample,
+    group_key = c(
+        "CellMarker", "Tissue"
+    ),
+    is_count = TRUE,
+    relative_is_sharing = TRUE,
+    minimal = FALSE
+)
+sharing_3_a
+```
+
+As you can see, the IDs of group 1 and group 2 are duplicated and without
+a suffix it would be impossible to know which one came from which data frame.
+In this way we know that the group "MNC_BM-1" comes from table 1 and has 54 ISs,
+while "MNC_BM-2" comes from the second input table and has 114 ISs.
+
+
 ## SCENARIO 4: multiple input data frame and multiple grouping keys
 
 Finally, the most general scenario is when we have multiple data frames
@@ -291,11 +320,11 @@ data frame 1 is grouped with key 1, data frame 2 is grouped with key 2, and
 so on).
 
 ```{r}
-df1 <- agg %>%
+df1 <- agg |>
     dplyr::filter(TimePoint == "0030")
-df2 <- agg %>%
+df2 <- agg |>
     dplyr::filter(TimePoint == "0060")
-df3 <- agg %>%
+df3 <- agg |>
     dplyr::filter(Tissue == "BM")
 
 keys <- list(

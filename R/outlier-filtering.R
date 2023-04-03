@@ -66,16 +66,16 @@
 #'     report_path = NULL
 #' )
 #' head(filtered_af)
-outlier_filter <- function(metadata,
-    pcr_id_col = pcr_id_column(),
-    outlier_test = c(outliers_by_pool_fragments),
-    outlier_test_outputs = NULL,
-    combination_logic = c("AND"),
-    negate = FALSE,
-    report_path = default_report_path(),
-    ...) {
+outlier_filter <- function(
+        metadata,
+        pcr_id_col = pcr_id_column(),
+        outlier_test = c(outliers_by_pool_fragments),
+        outlier_test_outputs = NULL,
+        combination_logic = c("AND"),
+        negate = FALSE,
+        report_path = default_report_path(),
+        ...) {
     stopifnot(is.data.frame(metadata))
-    data.table::setDT(metadata)
     stopifnot(is.character(pcr_id_col))
     pcr_id_col <- pcr_id_col[1]
     if (!pcr_id_col %in% colnames(metadata)) {
@@ -153,7 +153,6 @@ outlier_filter <- function(metadata,
                 unique(metadata[[pcr_id_col]]),
                 pcr_id_col
             )
-            data.table::setDT(result)
             return(list(
                 result = result,
                 call_args = test_args
@@ -179,14 +178,13 @@ outlier_filter <- function(metadata,
         outlier_test_outputs <- purrr::map(outlier_test_outputs, ~ .x$result)
     } else {
         purrr::walk(outlier_test_outputs, ~ {
-            data.table::setDT(.x)
             .validate_outlier_output_format(
                 .x, unique(metadata[[pcr_id_col]]),
                 pcr_id_col
             )
         })
         if (is.null(names(outlier_test_outputs))) {
-            outlier_test_outputs <- outlier_test_outputs %>%
+            outlier_test_outputs <- outlier_test_outputs |>
                 purrr::set_names(paste("test", seq(
                     1,
                     length(outlier_test_outputs)
@@ -198,38 +196,47 @@ outlier_filter <- function(metadata,
     params_for_report$test_results <- outlier_test_outputs
     to_rem_cols <- purrr::map(
         outlier_test_outputs,
-        ~ .x[, mget(c(pcr_id_col, "to_remove"))]
+        ~ .x[, c(pcr_id_col, "to_remove")]
     )
     to_rem_total <- if (test_num == 1) {
         to_rem_cols[[1]]
         params_for_report$joint <- to_rem_cols[[1]]
     } else {
-        purrr::walk2(to_rem_cols, names(to_rem_cols), ~ {
-            setnames(.x, "to_remove", paste0("to_remove_", .y))
-        })
+        to_rem_cols <- purrr::map2(
+            to_rem_cols, names(to_rem_cols), ~ .x |>
+                dplyr::rename(!!paste0("to_remove_", .y) := dplyr::all_of(
+                    "to_remove"
+                ))
+        )
         joint <- purrr::reduce(to_rem_cols, ~ {
-            .y[.x, on = pcr_id_col]
+            .x |>
+                dplyr::left_join(.y, by = pcr_id_col)
         })
         column_names_to_rem <- paste0("to_remove_", names(to_rem_cols))
-        joint[, c("to_remove") := list(
-            .apply_flag_logic(!!!mget(column_names_to_rem),
-                logic = combination_logic
+        wrapper <- function(picked) {
+            cols <- as.list(picked)
+            .apply_flag_logic(!!!cols, logic = combination_logic)
+        }
+        joint <- joint |>
+            dplyr::mutate(
+                to_remove = wrapper(dplyr::pick(dplyr::all_of(
+                    column_names_to_rem
+                )))
             )
-        )]
-        params_for_report$joint <- data.table::copy(joint)
-        joint[, c(column_names_to_rem) := NULL]
+        params_for_report$joint <- joint
+        joint[, c(column_names_to_rem)] <- NULL
+        joint
     }
-    metadata <- to_rem_total[metadata, on = pcr_id_col]
+    metadata <- metadata |>
+        dplyr::left_join(to_rem_total, by = pcr_id_col)
     if (negate) {
-        metadata_filtered <- metadata[
-            eval(sym("to_remove")) == TRUE,
-            !c("to_remove")
-        ]
+        metadata_filtered <- metadata |>
+            dplyr::filter(.data$to_remove == TRUE) |>
+            dplyr::select(!c("to_remove"))
     } else {
-        metadata_filtered <- metadata[
-            eval(sym("to_remove")) == FALSE,
-            !c("to_remove")
-        ]
+        metadata_filtered <- metadata |>
+            dplyr::filter(.data$to_remove == FALSE) |>
+            dplyr::select(!c("to_remove"))
     }
     if (getOption("ISAnalytics.reports", TRUE) == TRUE &&
         !is.null(report_path)) {
@@ -333,18 +340,19 @@ outlier_filter <- function(metadata,
 #'     report_path = NULL
 #' )
 #' head(flagged)
-outliers_by_pool_fragments <- function(metadata,
-    key = "BARCODE_MUX",
-    outlier_p_value_threshold = 0.01,
-    normality_test = FALSE,
-    normality_p_value_threshold = 0.05,
-    transform_log2 = TRUE,
-    per_pool_test = TRUE,
-    pool_col = "PoolID",
-    min_samples_per_pool = 5,
-    flag_logic = "AND",
-    keep_calc_cols = TRUE,
-    report_path = default_report_path()) {
+outliers_by_pool_fragments <- function(
+        metadata,
+        key = "BARCODE_MUX",
+        outlier_p_value_threshold = 0.01,
+        normality_test = FALSE,
+        normality_p_value_threshold = 0.05,
+        transform_log2 = TRUE,
+        per_pool_test = TRUE,
+        pool_col = "PoolID",
+        min_samples_per_pool = 5,
+        flag_logic = "AND",
+        keep_calc_cols = TRUE,
+        report_path = default_report_path()) {
     ## Check
     pcr_id_col <- pcr_id_column()
     .outlier_pool_frag_base_checks(
@@ -359,11 +367,11 @@ outliers_by_pool_fragments <- function(metadata,
     if (getOption("ISAnalytics.verbose", TRUE) == TRUE) {
         rlang::inform("Removing NAs from data...")
     }
-    metadata <- data.table::setDT(metadata)
-    predicate_na <- purrr::map(key, ~ {
-        rlang::expr(!is.na(!!sym(.x)))
-    }) %>% purrr::reduce(~ rlang::expr(!!.x & !!.y))
-    metadata_filtered <- metadata[eval(predicate_na), ]
+    metadata_filtered <- metadata |>
+        dplyr::filter(dplyr::if_all(
+            .cols = dplyr::all_of(key),
+            .fns = ~ !is.na(.x)
+        ))
     if (nrow(metadata_filtered) == 0) {
         empty_meta_msg <- c("Metadata empty",
             paste(
@@ -375,7 +383,8 @@ outliers_by_pool_fragments <- function(metadata,
         rlang::inform(empty_meta_msg)
         return(metadata)
     }
-    removed_nas <- metadata[!metadata_filtered, on = pcr_id_col]
+    removed_nas <- metadata |>
+        dplyr::anti_join(metadata_filtered, by = pcr_id_col)
     ## Calculation
     calc_res <- .pool_frag_calc(
         meta = metadata_filtered,
@@ -389,7 +398,8 @@ outliers_by_pool_fragments <- function(metadata,
     )
     ## Extract dfs for report
     non_proc_samples <- if ("non_proc_samples" %in% names(calc_res)) {
-        unique(calc_res$non_proc_samples[, mget(c(pool_col, pcr_id_col))])
+        calc_res$non_proc_sample |>
+            dplyr::distinct(dplyr::across(dplyr::all_of(c(pool_col, pcr_id_col))))
     } else {
         NULL
     }
@@ -397,21 +407,22 @@ outliers_by_pool_fragments <- function(metadata,
     calc_res <- calc_res$metadata
 
     ## Obtain final df
-    calc_res <- data.table::rbindlist(list(
-        calc_res, removed_nas[, c("processed") := FALSE]
-    ), fill = TRUE)
-
+    calc_res <- purrr::list_rbind(list(calc_res, removed_nas |>
+        dplyr::mutate(processed = FALSE)))
     ## Flag outliers
     for (k in key) {
-        col <- paste("flag", k, sep = "_")
-        calc_res[, c(col) := list(
-            .flag_cond_outliers_pool_frag(
-                proc = .SD$processed,
-                tdist = .SD[[paste0("tdist_", k)]],
-                zscore = .SD[[paste0("zscore_", k)]],
-                outlier_threshold = outlier_p_value_threshold
+        tdist_col <- paste0("tdist_", k)
+        zscore_col <- paste0("zscore_", k)
+        flag_col <- paste0("flag_", k)
+        calc_res <- calc_res |>
+            dplyr::mutate(
+                !!flag_col := .flag_cond_outliers_pool_frag(
+                    proc = .data$processed,
+                    tdist = .data[[tdist_col]],
+                    zscore = .data[[zscore_col]],
+                    outlier_threshold = outlier_p_value_threshold
+                )
             )
-        )]
     }
     to_rem <- if (length(key) == 1) {
         calc_res[[paste0("flag_", key)]]
@@ -419,18 +430,18 @@ outliers_by_pool_fragments <- function(metadata,
         purrr::pmap_lgl(calc_res[, seq(
             from = length(calc_res) - length(key) + 1,
             to = length(calc_res)
-        ), with = FALSE], .apply_flag_logic, logic = flag_logic)
+        )], .apply_flag_logic, logic = flag_logic)
     }
-    calc_res[, c("to_remove") := to_rem]
+    calc_res <- calc_res |>
+        dplyr::mutate(to_remove = to_rem)
     ## Produce report
     if (getOption("ISAnalytics.reports", TRUE) == TRUE &&
         !is.null(report_path)) {
         withCallingHandlers(
             {
-                af_cols_specs <- data.table::setDT(
-                    association_file_columns(TRUE)
-                )
-                proj <- af_cols_specs[eval(sym("tag")) == "project_id"]
+                af_cols_specs <- association_file_columns(TRUE)
+                proj <- af_cols_specs |>
+                    dplyr::filter(.data$tag == "project_id")
                 if (nrow(proj) == 0) {
                     proj <- NULL
                 } else {
@@ -447,7 +458,7 @@ outliers_by_pool_fragments <- function(metadata,
                         dplyr::contains(match = key, vars = colnames(calc_res))
                     ])
                 )
-                flagged <- calc_res[, mget(columns_to_get)]
+                flagged <- calc_res[, columns_to_get]
                 .produce_report(
                     report_type = "outlier_flag",
                     params = list(
@@ -473,7 +484,7 @@ outliers_by_pool_fragments <- function(metadata,
         )
     }
     if (!keep_calc_cols) {
-        calc_res <- calc_res[, mget(c(colnames(metadata), "to_remove"))]
+        calc_res <- calc_res[, c(colnames(metadata), "to_remove")]
     }
     calc_res
 }

@@ -33,7 +33,7 @@ datatable(iss_stats,
                        "Path to stats folder",
                        "File found",
                        "Imported",
-                       "Reason (if not imported)"))  %>%
+                       "Reason (if not imported)"))  |>
   formatStyle(columns = "Imported", 
               color = styleEqual(
                 levels = c(TRUE, FALSE),
@@ -59,7 +59,7 @@ cat("*Nothing to report*")
 ```
 
 ```{r eval=!is.null(iss_stats_miss) && nrow(iss_stats_miss) > 0, echo=FALSE}
-iss_stats_miss <- iss_stats_miss %>%
+iss_stats_miss <- iss_stats_miss |>
   dplyr::mutate(dplyr::across(
     tidyselect::vars_select_helpers$where(is.character), as.factor))
 
