@@ -14,7 +14,7 @@ vignette("workflow_start", package="ISAnalytics").'><meta property="og:image" co
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,6 @@ vignette("workflow_start", package="ISAnalytics").'><meta property="og:image" co
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -93,118 +92,20 @@ vars system. To know more see
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">available_tags</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   tag</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        chromosome</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:             locus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:         is_strand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:       gene_symbol</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:       gene_strand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        project_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:           pool_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:         fusion_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:           tag_seq</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:           subject</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:         vector_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:            tissue</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:           tp_days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:        pcr_method</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:       cell_marker</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:            tag_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:          ngs_tech</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:           dna_num</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:     pcr_replicate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:               vcn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: vispa_concatenate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:       pcr_repl_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:       proj_folder</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:            genome</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: vispa_concatenate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:           tag_seq</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   tag</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                    needed_in</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                                                                                                  top_targeted_genes,CIS_grubbs,compute_near_integrations</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:                                                                                                  top_targeted_genes,CIS_grubbs,compute_near_integrations</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:                                                                                                                     CIS_grubbs,compute_near_integrations</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:                                                                                 top_targeted_genes,CIS_grubbs,compute_near_integrations,CIS_volcano_plot</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:                                                                                                                            top_targeted_genes,CIS_grubbs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: generate_default_folder_structure,import_Vispa2_stats,remove_collisions,generate_Vispa2_launch_AF,import_association_file,import_parallel_Vispa2Matrices</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:                                                                                      generate_Vispa2_launch_AF,remove_collisions,import_association_file</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:                                                                                                                                generate_Vispa2_launch_AF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:                                                                            generate_default_folder_structure,import_association_file,import_Vispa2_stats</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:                                                                                                     import_association_file,HSC_population_size_estimate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                                                                                                                                generate_Vispa2_launch_AF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:                                                                           generate_Vispa2_launch_AF,import_association_file,HSC_population_size_estimate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:                                                                                                        generate_Vispa2_launch_AF,import_association_file</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:                                                                                                                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:                                                                           generate_Vispa2_launch_AF,import_association_file,HSC_population_size_estimate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:                                                                                                                                generate_Vispa2_launch_AF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:                                                                                                                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:                                                                                                                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:                                                                                                                import_association_file,remove_collisions</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:                                                                                                                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:                   import_association_file,generate_Vispa2_launch_AF,generate_default_folder_structure,import_Vispa2_stats,import_parallel_Vispa2Matrices</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:                                                                      pcr_id_column,generate_Vispa2_launch_AF,import_association_file,import_Vispa2_stats</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:                                                                                                                                  import_association_file</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:                                                                                                                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25:                   import_association_file,generate_Vispa2_launch_AF,generate_default_folder_structure,import_Vispa2_stats,import_parallel_Vispa2Matrices</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:                                                                            generate_default_folder_structure,import_association_file,import_Vispa2_stats</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                    needed_in</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                          description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                                                                         Number of the chromosome</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:                                                        The locus at which the integration occurs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:                                                   The DNA strand in which the integration occurs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:                                                                           The symbol of the gene</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:                                                                           The strand of the gene</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:                                                                   Unique identifier of a project</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:                                                           Unique identifier of a sequencing pool</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:                                                                         The barcode tag sequence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:                                         Unique identifier of a study subject (usually a patient)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                                                             Unique identifier of the vector used</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:                                                      The biological tissue the sample belongs to</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:                                                                 The time point expressed in days</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:                                                                              The PCR method used</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:                                       Cell marker associated with isolated cells carrying the IS</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:                        Unique identifier of the barcode tag, as specified in VISPA2 requirements</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:                                                   Technology used for next generation sequencing</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:               Identification code/number of the DNA extraction from a specific biological sample</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:                                                                      Number of the PCR replicate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:                                                                               Vector copy number</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:                                               Unique identifier of a pool as specified in VISPA2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:                    Unique identifier of the pcr replicate, used as key to join data and metadata</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:                      Path on disk containing the standard VISPA2 folder structure of the project</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:                                                               The reference genome (e.g. 'hg19')</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25:                                               Unique identifier of a pool as specified in VISPA2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:                                                                         The barcode tag sequence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                          description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     dyn_vars_tbl</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:    mand_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:    mand_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:    mand_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:   annot_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:   annot_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:      af_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25:     iss_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:     iss_vars</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     dyn_vars_tbl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 27 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    tag         needed_in description                                dyn_vars_tbl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;list&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> chromosome  <span style="color: #949494;">&lt;chr [3]&gt;</span> Number of the chromosome                   mand_vars   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> locus       <span style="color: #949494;">&lt;chr [3]&gt;</span> The locus at which the integration occurs  mand_vars   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> is_strand   <span style="color: #949494;">&lt;chr [2]&gt;</span> The DNA strand in which the integration o… mand_vars   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> gene_symbol <span style="color: #949494;">&lt;chr [5]&gt;</span> The symbol of the gene                     annot_vars  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> gene_strand <span style="color: #949494;">&lt;chr [2]&gt;</span> The strand of the gene                     annot_vars  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> project_id  <span style="color: #949494;">&lt;chr [6]&gt;</span> Unique identifier of a project             af_vars     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> pool_id     <span style="color: #949494;">&lt;chr [3]&gt;</span> Unique identifier of a sequencing pool     af_vars     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> fusion_id   <span style="color: #949494;">&lt;chr [1]&gt;</span> Identification code/number of the barcode… af_vars     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> tag_seq     <span style="color: #949494;">&lt;chr [3]&gt;</span> The barcode tag sequence                   af_vars     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> subject     <span style="color: #949494;">&lt;chr [2]&gt;</span> Unique identifier of a study subject (usu… af_vars     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 17 more rows</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -212,7 +113,7 @@ vars system. To know more see
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

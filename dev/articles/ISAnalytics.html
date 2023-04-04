@@ -34,7 +34,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,6 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -106,7 +105,7 @@ Italia</p>
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 data-toc-skip class="date">26 January 2023</h4>
+            <h4 data-toc-skip class="date">4 April 2023</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/vignettes/ISAnalytics.Rmd" class="external-link"><code>vignettes/ISAnalytics.Rmd</code></a></small>
       <div class="d-none name"><code>ISAnalytics.Rmd</code></div>
@@ -307,7 +306,6 @@ matrix is publicly available <a href="https://www.ncbi.nlm.nih.gov/geo/download/
 the authors and it is available in the package additional files.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://calabrialab.github.io/ISAnalytics">ISAnalytics</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: magrittr</span></span>
 <span></span>
 <span><span class="co"># Set appropriate data and metadata specs ----</span></span>
 <span><span class="va">metadata_specs</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
@@ -340,7 +338,11 @@ the authors and it is available in the package additional files.</p>
 <span><span class="co">#&gt; Mandatory IS vars successfully changed</span></span>
 <span></span>
 <span><span class="co"># Files ----</span></span>
-<span><span class="va">data_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
+<span><span class="va">data_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/unzip.html" class="external-link">unzip</a></span><span class="op">(</span>zipfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata"</span>, </span>
+<span>                                   <span class="st">"testdata.zip"</span>,</span>
+<span>                                   package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span>, </span>
+<span>             exdir <span class="op">=</span> <span class="va">data_folder</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">meta_file</span> <span class="op">&lt;-</span> <span class="st">"barcodes_example_af.tsv.xz"</span></span>
 <span><span class="va">matrix_file</span> <span class="op">&lt;-</span> <span class="st">"GSE144340_Matrix_542.tsv.xz"</span></span>
 <span></span>
@@ -349,70 +351,25 @@ the authors and it is available in the package additional files.</p>
 <span>    report_path <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">af</span></span>
-<span><span class="co">#&gt;        ProjectID SubjectID Tissue TimePoint CellMarker      ID</span></span>
-<span><span class="co">#&gt;  1: PMID32601433        A0     BM        21      Whole   BM_A0</span></span>
-<span><span class="co">#&gt;  2: PMID32601433        A0     PB        21      Whole PB21_A0</span></span>
-<span><span class="co">#&gt;  3: PMID32601433        A1     BM        21      Whole   BM_A1</span></span>
-<span><span class="co">#&gt;  4: PMID32601433        A1     PB        21      Whole PB21_A1</span></span>
-<span><span class="co">#&gt;  5: PMID32601433        A2     PB        21      Whole PB21_A2</span></span>
-<span><span class="co">#&gt;  6: PMID32601433        A3     PB        21      Whole PB21_A3</span></span>
-<span><span class="co">#&gt;  7: PMID32601433        A4     BM        21      Whole   BM_A4</span></span>
-<span><span class="co">#&gt;  8: PMID32601433        A4     PB        21      Whole PB21_A4</span></span>
-<span><span class="co">#&gt;  9: PMID32601433        C0     PB        21      Whole PB21_C0</span></span>
-<span><span class="co">#&gt; 10: PMID32601433        C1     BM        21      Whole   BM_C1</span></span>
-<span><span class="co">#&gt; 11: PMID32601433        C1     PB        21      Whole PB21_C1</span></span>
-<span><span class="co">#&gt; 12: PMID32601433        C2     BM        21      Whole   BM_C2</span></span>
-<span><span class="co">#&gt; 13: PMID32601433        C2     PB        21      Whole PB21_C2</span></span>
-<span><span class="co">#&gt; 14: PMID32601433        C3     BM        21      Whole   BM_C3</span></span>
-<span><span class="co">#&gt; 15: PMID32601433        C3     PB        21      Whole PB21_C3</span></span>
-<span><span class="co">#&gt;                  SourceFileName</span></span>
-<span><span class="co">#&gt;  1: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  2: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  3: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  4: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  5: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  6: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  7: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  8: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  9: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 10: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 11: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 12: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 13: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 14: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 15: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;                                                                                                      Link</span></span>
-<span><span class="co">#&gt;  1: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  2: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  3: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  4: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  5: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  6: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  7: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  8: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  9: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 10: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 11: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 12: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 13: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 14: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 15: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;     TimepointMonths TimepointYears</span></span>
-<span><span class="co">#&gt;  1:              01             01</span></span>
-<span><span class="co">#&gt;  2:              01             01</span></span>
-<span><span class="co">#&gt;  3:              01             01</span></span>
-<span><span class="co">#&gt;  4:              01             01</span></span>
-<span><span class="co">#&gt;  5:              01             01</span></span>
-<span><span class="co">#&gt;  6:              01             01</span></span>
-<span><span class="co">#&gt;  7:              01             01</span></span>
-<span><span class="co">#&gt;  8:              01             01</span></span>
-<span><span class="co">#&gt;  9:              01             01</span></span>
-<span><span class="co">#&gt; 10:              01             01</span></span>
-<span><span class="co">#&gt; 11:              01             01</span></span>
-<span><span class="co">#&gt; 12:              01             01</span></span>
-<span><span class="co">#&gt; 13:              01             01</span></span>
-<span><span class="co">#&gt; 14:              01             01</span></span>
-<span><span class="co">#&gt; 15:              01             01</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 15 × 10</span></span></span>
+<span><span class="co">#&gt;    ProjectID    SubjectID Tissue TimePoint CellMarker ID    SourceFileName Link </span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PMID32601433 A0        BM            21 Whole      BM_A0 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PMID32601433 A0        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PMID32601433 A1        BM            21 Whole      BM_A1 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PMID32601433 A1        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PMID32601433 A2        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PMID32601433 A3        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PMID32601433 A4        BM            21 Whole      BM_A4 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PMID32601433 A4        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PMID32601433 C0        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PMID32601433 C1        BM            21 Whole      BM_C1 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> PMID32601433 C1        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> PMID32601433 C2        BM            21 Whole      BM_C2 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> PMID32601433 C2        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> PMID32601433 C3        BM            21 Whole      BM_C3 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> PMID32601433 C3        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: TimepointMonths &lt;chr&gt;, TimepointYears &lt;chr&gt;</span></span></span>
 <span></span>
 <span><span class="va">matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_single_Vispa2Matrix.html">import_single_Vispa2Matrix</a></span><span class="op">(</span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span><span class="va">data_folder</span>, <span class="va">matrix_file</span><span class="op">)</span>,</span>
 <span>    sample_names_to <span class="op">=</span> <span class="st">"ID"</span></span>
@@ -428,170 +385,53 @@ the authors and it is available in the package additional files.</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> --- Read mode: classic</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> --- Sample count: 15</span></span>
 <span><span class="va">matrix</span></span>
-<span><span class="co">#&gt;                    BarcodeSeq      ID Value</span></span>
-<span><span class="co">#&gt;     1: AAAAAAAATTTTTAAACGTACC   BM_A0     1</span></span>
-<span><span class="co">#&gt;     2: AAAAAACATATCTATAGTTACC   BM_A0     1</span></span>
-<span><span class="co">#&gt;     3: AAAAAATATATAAATAGATACC   BM_A0     1</span></span>
-<span><span class="co">#&gt;     4: AAAAACAACAAGGAAATTCAAT   BM_A0     1</span></span>
-<span><span class="co">#&gt;     5: AAAAACAACGAGGATAGTGAAT   BM_A0     1</span></span>
-<span><span class="co">#&gt;    ---                                     </span></span>
-<span><span class="co">#&gt; 33772: TTTTGAGACCTTCACACCTACT PB21_C3     1</span></span>
-<span><span class="co">#&gt; 33773: TTTTGCCACCTTCATACCCAAC PB21_C3     1</span></span>
-<span><span class="co">#&gt; 33774: TTTTTAAACCGTTAGACCCGCA PB21_C3     1</span></span>
-<span><span class="co">#&gt; 33775: TTTTTTCACGACAATAGCCAAT PB21_C3     1</span></span>
-<span><span class="co">#&gt; 33776: TTTTTTCACTTGCACATCCGGC PB21_C3     1</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 33,776 × 3</span></span></span>
+<span><span class="co">#&gt;    BarcodeSeq             ID      Value</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> AAAAAAAACACGGAGAACGACG PB21_C3     2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> AAAAAAAACGCGAACAACTACG PB21_C3     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> AAAAAAAACTCAAAAAAGAAAT BM_C3       1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> AAAAAAAATTTACACAAAGAAA BM_A4       1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> AAAAAAAATTTTTAAACGTACC BM_A0       1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> AAAAAACATATCTATAGTTACC BM_A0       1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> AAAAAAGACGACGATAGGCACG PB21_C1     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> AAAAAAGACGTTTATAGGTGTA PB21_A2     1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> AAAAAAGACTGCGACAAAAGGG BM_A4       1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> AAAAAAGACTTTGATAACCACG PB21_C3     1</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 33,766 more rows</span></span></span>
 <span></span>
 <span><span class="co"># Descriptive stats ----</span></span>
 <span><span class="va">desc_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_statistics.html">sample_statistics</a></span><span class="op">(</span><span class="va">matrix</span>, <span class="va">af</span>,</span>
 <span>    sample_key <span class="op">=</span> <span class="fu"><a href="../reference/pcr_id_column.html">pcr_id_column</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    value_columns <span class="op">=</span> <span class="st">"Value"</span></span>
-<span><span class="op">)</span><span class="op">$</span><span class="va">metadata</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">metadata</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>distinct_barcodes <span class="op">=</span> <span class="st">"nIS"</span><span class="op">)</span></span>
 <span><span class="va">desc_stats</span></span>
-<span><span class="co">#&gt;        ProjectID SubjectID Tissue TimePoint CellMarker      ID</span></span>
-<span><span class="co">#&gt;  1: PMID32601433        A0     BM        21      Whole   BM_A0</span></span>
-<span><span class="co">#&gt;  2: PMID32601433        A0     PB        21      Whole PB21_A0</span></span>
-<span><span class="co">#&gt;  3: PMID32601433        A1     BM        21      Whole   BM_A1</span></span>
-<span><span class="co">#&gt;  4: PMID32601433        A1     PB        21      Whole PB21_A1</span></span>
-<span><span class="co">#&gt;  5: PMID32601433        A2     PB        21      Whole PB21_A2</span></span>
-<span><span class="co">#&gt;  6: PMID32601433        A3     PB        21      Whole PB21_A3</span></span>
-<span><span class="co">#&gt;  7: PMID32601433        A4     BM        21      Whole   BM_A4</span></span>
-<span><span class="co">#&gt;  8: PMID32601433        A4     PB        21      Whole PB21_A4</span></span>
-<span><span class="co">#&gt;  9: PMID32601433        C0     PB        21      Whole PB21_C0</span></span>
-<span><span class="co">#&gt; 10: PMID32601433        C1     BM        21      Whole   BM_C1</span></span>
-<span><span class="co">#&gt; 11: PMID32601433        C1     PB        21      Whole PB21_C1</span></span>
-<span><span class="co">#&gt; 12: PMID32601433        C2     BM        21      Whole   BM_C2</span></span>
-<span><span class="co">#&gt; 13: PMID32601433        C2     PB        21      Whole PB21_C2</span></span>
-<span><span class="co">#&gt; 14: PMID32601433        C3     BM        21      Whole   BM_C3</span></span>
-<span><span class="co">#&gt; 15: PMID32601433        C3     PB        21      Whole PB21_C3</span></span>
-<span><span class="co">#&gt;                  SourceFileName</span></span>
-<span><span class="co">#&gt;  1: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  2: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  3: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  4: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  5: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  6: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  7: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  8: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;  9: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 10: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 11: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 12: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 13: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 14: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt; 15: GSE144340_Matrix_542.tsv.gz</span></span>
-<span><span class="co">#&gt;                                                                                                      Link</span></span>
-<span><span class="co">#&gt;  1: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  2: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  3: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  4: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  5: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  6: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  7: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  8: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;  9: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 10: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 11: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 12: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 13: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 14: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt; 15: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE144nnn/GSE144340/suppl/GSE144340%5FMatrix%5F542%2Etsv%2Egz</span></span>
-<span><span class="co">#&gt;     TimepointMonths TimepointYears Value_shannon Value_simpson Value_invsimpson</span></span>
-<span><span class="co">#&gt;  1:              01             01      2.952237     0.9113968        11.286277</span></span>
-<span><span class="co">#&gt;  2:              01             01      3.459660     0.9488818        19.562506</span></span>
-<span><span class="co">#&gt;  3:              01             01      3.006200     0.8870954         8.857038</span></span>
-<span><span class="co">#&gt;  4:              01             01      3.774526     0.9453922        18.312391</span></span>
-<span><span class="co">#&gt;  5:              01             01      3.181671     0.9222549        12.862544</span></span>
-<span><span class="co">#&gt;  6:              01             01      3.389893     0.9401115        16.697684</span></span>
-<span><span class="co">#&gt;  7:              01             01      2.820483     0.8857002         8.748925</span></span>
-<span><span class="co">#&gt;  8:              01             01      3.345492     0.9344783        15.262125</span></span>
-<span><span class="co">#&gt;  9:              01             01      3.843335     0.9588449        24.298324</span></span>
-<span><span class="co">#&gt; 10:              01             01      3.201240     0.8979416         9.798313</span></span>
-<span><span class="co">#&gt; 11:              01             01      3.194270     0.8805337         8.370564</span></span>
-<span><span class="co">#&gt; 12:              01             01      2.615324     0.8670521         7.521742</span></span>
-<span><span class="co">#&gt; 13:              01             01      3.515454     0.9382745        16.200749</span></span>
-<span><span class="co">#&gt; 14:              01             01      2.557280     0.8453968         6.468172</span></span>
-<span><span class="co">#&gt; 15:              01             01      3.929186     0.9397792        16.605561</span></span>
-<span><span class="co">#&gt;     Value_sum Value_count Value_describe_vars Value_describe_n</span></span>
-<span><span class="co">#&gt;  1:    244879        2284                   1             2284</span></span>
-<span><span class="co">#&gt;  2:     81588        1080                   1             1080</span></span>
-<span><span class="co">#&gt;  3:    274792        2477                   1             2477</span></span>
-<span><span class="co">#&gt;  4:    104195        2269                   1             2269</span></span>
-<span><span class="co">#&gt;  5:    124676        1465                   1             1465</span></span>
-<span><span class="co">#&gt;  6:    180497        1786                   1             1786</span></span>
-<span><span class="co">#&gt;  7:    296246        2255                   1             2255</span></span>
-<span><span class="co">#&gt;  8:    177010        1538                   1             1538</span></span>
-<span><span class="co">#&gt;  9:     59966        2644                   1             2644</span></span>
-<span><span class="co">#&gt; 10:    303345        2993                   1             2993</span></span>
-<span><span class="co">#&gt; 11:     95971        2636                   1             2636</span></span>
-<span><span class="co">#&gt; 12:    343490        2223                   1             2223</span></span>
-<span><span class="co">#&gt; 13:    149100        2386                   1             2386</span></span>
-<span><span class="co">#&gt; 14:    277048        1817                   1             1817</span></span>
-<span><span class="co">#&gt; 15:     64118        3923                   1             3923</span></span>
-<span><span class="co">#&gt;     Value_describe_mean Value_describe_sd Value_describe_median</span></span>
-<span><span class="co">#&gt;  1:           107.21497         1521.7649                     1</span></span>
-<span><span class="co">#&gt;  2:            75.54444          556.4600                     1</span></span>
-<span><span class="co">#&gt;  3:           110.93742         1852.2801                     1</span></span>
-<span><span class="co">#&gt;  4:            45.92111          509.2056                     1</span></span>
-<span><span class="co">#&gt;  5:            85.10307          904.5528                     1</span></span>
-<span><span class="co">#&gt;  6:           101.06215         1040.5982                     1</span></span>
-<span><span class="co">#&gt;  7:           131.37295         2105.4943                     1</span></span>
-<span><span class="co">#&gt;  8:           115.09103         1149.9733                     1</span></span>
-<span><span class="co">#&gt;  9:            22.68003          235.5394                     1</span></span>
-<span><span class="co">#&gt; 10:           101.35149         1768.7577                     1</span></span>
-<span><span class="co">#&gt; 11:            36.40781          645.1812                     1</span></span>
-<span><span class="co">#&gt; 12:           154.51642         2652.4479                     1</span></span>
-<span><span class="co">#&gt; 13:            62.48952          755.9385                     1</span></span>
-<span><span class="co">#&gt; 14:           152.47551         2551.7136                     1</span></span>
-<span><span class="co">#&gt; 15:            16.34412          250.7138                     1</span></span>
-<span><span class="co">#&gt;     Value_describe_trimmed Value_describe_mad Value_describe_min</span></span>
-<span><span class="co">#&gt;  1:               1.160284                  0                  1</span></span>
-<span><span class="co">#&gt;  2:               1.082176                  0                  1</span></span>
-<span><span class="co">#&gt;  3:               1.234493                  0                  1</span></span>
-<span><span class="co">#&gt;  4:               1.068795                  0                  1</span></span>
-<span><span class="co">#&gt;  5:               1.083546                  0                  1</span></span>
-<span><span class="co">#&gt;  6:               1.080420                  0                  1</span></span>
-<span><span class="co">#&gt;  7:               1.248199                  0                  1</span></span>
-<span><span class="co">#&gt;  8:               1.065747                  0                  1</span></span>
-<span><span class="co">#&gt;  9:               1.086484                  0                  1</span></span>
-<span><span class="co">#&gt; 10:               1.208768                  0                  1</span></span>
-<span><span class="co">#&gt; 11:               1.136019                  0                  1</span></span>
-<span><span class="co">#&gt; 12:               1.295110                  0                  1</span></span>
-<span><span class="co">#&gt; 13:               1.115707                  0                  1</span></span>
-<span><span class="co">#&gt; 14:               1.252234                  0                  1</span></span>
-<span><span class="co">#&gt; 15:               1.083147                  0                  1</span></span>
-<span><span class="co">#&gt;     Value_describe_max Value_describe_range Value_describe_skew</span></span>
-<span><span class="co">#&gt;  1:              48411                48410            21.84543</span></span>
-<span><span class="co">#&gt;  2:              10411                10410            11.49921</span></span>
-<span><span class="co">#&gt;  3:              68661                68660            29.32449</span></span>
-<span><span class="co">#&gt;  4:              18252                18251            24.92426</span></span>
-<span><span class="co">#&gt;  5:              19865                19864            17.48608</span></span>
-<span><span class="co">#&gt;  6:              26055                26054            16.62791</span></span>
-<span><span class="co">#&gt;  7:              70946                70945            25.02978</span></span>
-<span><span class="co">#&gt;  8:              32536                32535            19.00613</span></span>
-<span><span class="co">#&gt;  9:               5379                 5378            15.44781</span></span>
-<span><span class="co">#&gt; 10:              80197                80196            35.45585</span></span>
-<span><span class="co">#&gt; 11:              28170                28169            35.63449</span></span>
-<span><span class="co">#&gt; 12:              81381                81380            23.99526</span></span>
-<span><span class="co">#&gt; 13:              27428                27427            24.99102</span></span>
-<span><span class="co">#&gt; 14:              83741                83740            26.01411</span></span>
-<span><span class="co">#&gt; 15:              10463                10462            29.78536</span></span>
-<span><span class="co">#&gt;     Value_describe_kurtosis Value_describe_se distinct_barcodes</span></span>
-<span><span class="co">#&gt;  1:                564.8589         31.841939              2284</span></span>
-<span><span class="co">#&gt;  2:                159.6777         16.932540              1080</span></span>
-<span><span class="co">#&gt;  3:                969.0394         37.217196              2477</span></span>
-<span><span class="co">#&gt;  4:                788.0556         10.689956              2269</span></span>
-<span><span class="co">#&gt;  5:                342.6372         23.632797              1465</span></span>
-<span><span class="co">#&gt;  6:                330.3889         24.623077              1786</span></span>
-<span><span class="co">#&gt;  7:                716.3839         44.338480              2255</span></span>
-<span><span class="co">#&gt;  8:                457.8748         29.323081              1538</span></span>
-<span><span class="co">#&gt;  9:                276.7000          4.580710              2644</span></span>
-<span><span class="co">#&gt; 10:               1478.2344         32.330691              2993</span></span>
-<span><span class="co">#&gt; 11:               1447.9758         12.566345              2636</span></span>
-<span><span class="co">#&gt; 12:                625.3701         56.257072              2223</span></span>
-<span><span class="co">#&gt; 13:                793.6929         15.475733              2386</span></span>
-<span><span class="co">#&gt; 14:                757.2388         59.862447              1817</span></span>
-<span><span class="co">#&gt; 15:               1045.4960          4.002848              3923</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 15 × 29</span></span></span>
+<span><span class="co">#&gt;    ProjectID    SubjectID Tissue TimePoint CellMarker ID    SourceFileName Link </span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PMID32601433 A0        BM            21 Whole      BM_A0 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PMID32601433 A0        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PMID32601433 A1        BM            21 Whole      BM_A1 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PMID32601433 A1        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PMID32601433 A2        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PMID32601433 A3        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PMID32601433 A4        BM            21 Whole      BM_A4 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PMID32601433 A4        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PMID32601433 C0        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PMID32601433 C1        BM            21 Whole      BM_C1 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> PMID32601433 C1        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> PMID32601433 C2        BM            21 Whole      BM_C2 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> PMID32601433 C2        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> PMID32601433 C3        BM            21 Whole      BM_C3 GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> PMID32601433 C3        PB            21 Whole      PB21… GSE144340_Mat… http…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 21 more variables: TimepointMonths &lt;chr&gt;, TimepointYears &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum &lt;dbl&gt;, Value_count &lt;int&gt;, Value_shannon &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Value_simpson &lt;dbl&gt;, Value_invsimpson &lt;dbl&gt;, Value_describe_vars &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Value_describe_n &lt;dbl&gt;, Value_describe_mean &lt;dbl&gt;, Value_describe_sd &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Value_describe_median &lt;dbl&gt;, Value_describe_trimmed &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Value_describe_mad &lt;dbl&gt;, Value_describe_min &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Value_describe_max &lt;dbl&gt;, Value_describe_range &lt;dbl&gt;, …</span></span></span>
 <span></span>
 <span><span class="co"># Aggregation and new stats ----</span></span>
 <span><span class="va">agg_key</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span><span class="op">)</span></span>
@@ -614,7 +454,7 @@ the authors and it is available in the package additional files.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> AAAAAAGACGTTTATAGGTGTA A2                1</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> AAAAAAGACTGCGACAAAAGGG A4                1</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> AAAAAAGACTTTGATAACCACG C3                1</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 33,257 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 33,257 more rows</span></span></span>
 <span></span>
 <span><span class="va">agg_meta_functions</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>    <span class="op">~</span><span class="va">Column</span>, <span class="op">~</span><span class="va">Function</span>, <span class="op">~</span><span class="va">Args</span>, <span class="op">~</span><span class="va">Output_colname</span>,</span>
@@ -644,47 +484,47 @@ the authors and it is available in the package additional files.</p>
 <span><span class="va">agg_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sample_statistics.html">sample_statistics</a></span><span class="op">(</span><span class="va">agg</span>, <span class="va">agg_meta</span>,</span>
 <span>    sample_key <span class="op">=</span> <span class="va">agg_key</span>,</span>
 <span>    value_columns <span class="op">=</span> <span class="st">"Value_sum"</span></span>
-<span><span class="op">)</span><span class="op">$</span><span class="va">metadata</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">metadata</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>distinct_barcodes <span class="op">=</span> <span class="st">"nIS"</span><span class="op">)</span></span>
 <span><span class="va">agg_stats</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 23</span></span></span>
-<span><span class="co">#&gt;   SubjectID TimePoint_…¹ disti…² disti…³ Value…⁴ Value…⁵ Value…⁶ Value…⁷ Value…⁸</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A0                  21       1       2    3.24   0.929   14.1   <span style="text-decoration: underline;">326</span>467    <span style="text-decoration: underline;">3</span>304</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> A1                  21       1       2    3.47   0.927   13.7   <span style="text-decoration: underline;">378</span>987    <span style="text-decoration: underline;">4</span>631</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> A2                  21       1       1    3.18   0.922   12.9   <span style="text-decoration: underline;">124</span>676    <span style="text-decoration: underline;">1</span>465</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> A3                  21       1       1    3.39   0.940   16.7   <span style="text-decoration: underline;">180</span>497    <span style="text-decoration: underline;">1</span>786</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> A4                  21       1       2    3.29   0.930   14.3   <span style="text-decoration: underline;">473</span>256    <span style="text-decoration: underline;">3</span>718</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> C0                  21       1       1    3.84   0.959   24.3    <span style="text-decoration: underline;">59</span>966    <span style="text-decoration: underline;">2</span>644</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> C1                  21       1       2    3.39   0.920   12.6   <span style="text-decoration: underline;">399</span>316    <span style="text-decoration: underline;">5</span>538</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> C2                  21       1       2    3.05   0.903   10.3   <span style="text-decoration: underline;">492</span>590    <span style="text-decoration: underline;">4</span>526</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> C3                  21       1       2    3.00   0.886    8.77  <span style="text-decoration: underline;">341</span>166    <span style="text-decoration: underline;">5</span>655</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 14 more variables: Value_sum_describe_vars &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum_describe_n &lt;dbl&gt;, Value_sum_describe_mean &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum_describe_sd &lt;dbl&gt;, Value_sum_describe_median &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum_describe_trimmed &lt;dbl&gt;, Value_sum_describe_mad &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum_describe_min &lt;dbl&gt;, Value_sum_describe_max &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum_describe_range &lt;dbl&gt;, Value_sum_describe_skew &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum_describe_kurtosis &lt;dbl&gt;, Value_sum_describe_se &lt;dbl&gt;, …</span></span></span>
+<span><span class="co">#&gt;   SubjectID TimePoint_avg distinct_cell_marker…¹ distinct_id_count Value_sum_sum</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A0                   21                      1                 2        <span style="text-decoration: underline;">326</span>467</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> A1                   21                      1                 2        <span style="text-decoration: underline;">378</span>987</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> A2                   21                      1                 1        <span style="text-decoration: underline;">124</span>676</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> A3                   21                      1                 1        <span style="text-decoration: underline;">180</span>497</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> A4                   21                      1                 2        <span style="text-decoration: underline;">473</span>256</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> C0                   21                      1                 1         <span style="text-decoration: underline;">59</span>966</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> C1                   21                      1                 2        <span style="text-decoration: underline;">399</span>316</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> C2                   21                      1                 2        <span style="text-decoration: underline;">492</span>590</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> C3                   21                      1                 2        <span style="text-decoration: underline;">341</span>166</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ abbreviated name: ¹​distinct_cell_marker_count</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 18 more variables: Value_sum_count &lt;int&gt;, Value_sum_shannon &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum_simpson &lt;dbl&gt;, Value_sum_invsimpson &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum_describe_vars &lt;dbl&gt;, Value_sum_describe_n &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum_describe_mean &lt;dbl&gt;, Value_sum_describe_sd &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum_describe_median &lt;dbl&gt;, Value_sum_describe_trimmed &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Value_sum_describe_mad &lt;dbl&gt;, Value_sum_describe_min &lt;dbl&gt;, …</span></span></span>
 <span></span>
 <span><span class="co"># Abundance ----</span></span>
 <span><span class="va">abundance</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_abundance.html">compute_abundance</a></span><span class="op">(</span><span class="va">agg</span>, columns <span class="op">=</span> <span class="st">"Value_sum"</span>, key <span class="op">=</span> <span class="va">agg_key</span><span class="op">)</span></span>
 <span><span class="va">abundance</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 33,267 × 5</span></span></span>
-<span><span class="co">#&gt;    BarcodeSeq             SubjectID Value_sum Value_sum_RelAbundance Value_sum…¹</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> AAAAAAAACACGGAGAACGACG C3                2             0.000<span style="text-decoration: underline;">005</span>86    0.000<span style="text-decoration: underline;">586</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> AAAAAAAACGCGAACAACTACG C3                1             0.000<span style="text-decoration: underline;">002</span>93    0.000<span style="text-decoration: underline;">293</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> AAAAAAAACTCAAAAAAGAAAT C3                1             0.000<span style="text-decoration: underline;">002</span>93    0.000<span style="text-decoration: underline;">293</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> AAAAAAAATTTACACAAAGAAA A4                1             0.000<span style="text-decoration: underline;">002</span>11    0.000<span style="text-decoration: underline;">211</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> AAAAAAAATTTTTAAACGTACC A0                1             0.000<span style="text-decoration: underline;">003</span>06    0.000<span style="text-decoration: underline;">306</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> AAAAAACATATCTATAGTTACC A0                1             0.000<span style="text-decoration: underline;">003</span>06    0.000<span style="text-decoration: underline;">306</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> AAAAAAGACGACGATAGGCACG C1                1             0.000<span style="text-decoration: underline;">002</span>50    0.000<span style="text-decoration: underline;">250</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> AAAAAAGACGTTTATAGGTGTA A2                1             0.000<span style="text-decoration: underline;">008</span>02    0.000<span style="text-decoration: underline;">802</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> AAAAAAGACTGCGACAAAAGGG A4                1             0.000<span style="text-decoration: underline;">002</span>11    0.000<span style="text-decoration: underline;">211</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> AAAAAAGACTTTGATAACCACG C3                1             0.000<span style="text-decoration: underline;">002</span>93    0.000<span style="text-decoration: underline;">293</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 33,257 more rows, and abbreviated variable name</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   ¹​Value_sum_PercAbundance</span></span></span>
+<span><span class="co">#&gt;    BarcodeSeq  SubjectID Value_sum Value_sum_RelAbundance Value_sum_PercAbunda…¹</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> AAAAAAAACA… C3                2             0.000<span style="text-decoration: underline;">005</span>86               0.000<span style="text-decoration: underline;">586</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> AAAAAAAACG… C3                1             0.000<span style="text-decoration: underline;">002</span>93               0.000<span style="text-decoration: underline;">293</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> AAAAAAAACT… C3                1             0.000<span style="text-decoration: underline;">002</span>93               0.000<span style="text-decoration: underline;">293</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> AAAAAAAATT… A4                1             0.000<span style="text-decoration: underline;">002</span>11               0.000<span style="text-decoration: underline;">211</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> AAAAAAAATT… A0                1             0.000<span style="text-decoration: underline;">003</span>06               0.000<span style="text-decoration: underline;">306</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> AAAAAACATA… A0                1             0.000<span style="text-decoration: underline;">003</span>06               0.000<span style="text-decoration: underline;">306</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> AAAAAAGACG… C1                1             0.000<span style="text-decoration: underline;">002</span>50               0.000<span style="text-decoration: underline;">250</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> AAAAAAGACG… A2                1             0.000<span style="text-decoration: underline;">008</span>02               0.000<span style="text-decoration: underline;">802</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> AAAAAAGACT… A4                1             0.000<span style="text-decoration: underline;">002</span>11               0.000<span style="text-decoration: underline;">211</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> AAAAAAGACT… C3                1             0.000<span style="text-decoration: underline;">002</span>93               0.000<span style="text-decoration: underline;">293</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 33,257 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ abbreviated name: ¹​Value_sum_PercAbundance</span></span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/reset_mandatory_IS_vars.html">reset_dyn_vars_config</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Mandatory IS vars reset to default</span></span>
@@ -755,7 +595,7 @@ long-term hematopoietic stem cells validated by clonal tracking”. In:
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+<p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

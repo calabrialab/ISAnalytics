@@ -18,7 +18,7 @@ time point "t+1".'><meta property="og:image" content="https://calabrialab.github
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,7 +42,6 @@ time point "t+1".'><meta property="og:image" content="https://calabrialab.github
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -170,53 +169,46 @@ column is unnested.</p></dd>
 <span class="r-in"><span><span class="va">cumulated_is</span> <span class="op">&lt;-</span> <span class="fu">cumulative_is</span><span class="op">(</span><span class="va">aggreg</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cumulated_is</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $coordinates</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       SubjectID CellMarker Tissue TimePoint chr integration_locus strand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:     PT001        MNC     BM        30   1           8464757      -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:     PT001        MNC     BM        30   1          16186297      -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:     PT001        MNC     BM        30   1          40689188      +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:     PT001        MNC     BM        30   1         157759338      -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:     PT001        MNC     BM        30   1         234596545      -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2371:     PT002        MNC     PB       360   5         176653985      +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2372:     PT002        MNC     PB       360   6         147673451      -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2373:     PT002        MNC     PB       360   7           5039809      -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2374:     PT002        MNC     PB       360   7          17227687      +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2375:     PT002        MNC     PB       360   9         127351995      -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       GeneName GeneStrand</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:     RERE          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:     SPEN          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:      RLF          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:    FCRL1          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:   TARBP1          -</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2371:     NSD1          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2372:   STXBP5          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2373: RNF216P1          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2374:      AHR          +</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2375:    NR6A1          -</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2,375 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    SubjectID CellMarker Tissue TimePoint chr   integration_locus strand GeneName</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> PT001     MNC        BM            30 1               8<span style="text-decoration: underline;">464</span>757 -      RERE    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> PT001     MNC        BM            30 1              16<span style="text-decoration: underline;">186</span>297 -      SPEN    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> PT001     MNC        BM            30 1              40<span style="text-decoration: underline;">689</span>188 +      RLF     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> PT001     MNC        BM            30 1             157<span style="text-decoration: underline;">759</span>338 -      FCRL1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> PT001     MNC        BM            30 1             234<span style="text-decoration: underline;">596</span>545 -      TARBP1  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> PT001     MNC        BM            30 10            122<span style="text-decoration: underline;">533</span>902 -      WDR11-A…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> PT001     MNC        BM            30 11              5<span style="text-decoration: underline;">306</span>480 +      HBE1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> PT001     MNC        BM            30 11             64<span style="text-decoration: underline;">633</span>964 +      EHD1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> PT001     MNC        BM            30 11             65<span style="text-decoration: underline;">949</span>729 -      PACS1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> PT001     MNC        BM            30 11             72<span style="text-decoration: underline;">097</span>513 +      CLPB    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2,365 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: GeneStrand &lt;chr&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $counts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     SubjectID CellMarker Tissue TimePoint is_n_cumulative</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:     PT001        MNC     BM        30              54</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     PT001        MNC     BM        60             147</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:     PT001        MNC     BM        90             179</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     PT001        MNC     BM       180             240</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     PT001        MNC     BM       360             240</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:     PT001        MNC     PB        30              28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     PT001        MNC     PB        60              77</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:     PT001        MNC     PB        90             104</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:     PT001        MNC     PB       180             121</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:     PT001        MNC     PB       360             121</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:     PT002        MNC     BM        30              98</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:     PT002        MNC     BM        60             126</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:     PT002        MNC     BM        90             141</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:     PT002        MNC     BM       180             184</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:     PT002        MNC     BM       360             265</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:     PT002        MNC     PB        30              15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:     PT002        MNC     PB        60              26</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:     PT002        MNC     PB        90              38</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:     PT002        MNC     PB       180              62</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:     PT002        MNC     PB       360             109</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 20 × 5</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    SubjectID CellMarker Tissue TimePoint is_n_cumulative</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> PT001     MNC        BM            30              54</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> PT001     MNC        BM            60             147</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> PT001     MNC        BM            90             179</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> PT001     MNC        BM           180             240</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> PT001     MNC        BM           360             240</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> PT001     MNC        PB            30              28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> PT001     MNC        PB            60              77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> PT001     MNC        PB            90             104</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> PT001     MNC        PB           180             121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> PT001     MNC        PB           360             121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> PT002     MNC        BM            30              98</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> PT002     MNC        BM            60             126</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> PT002     MNC        BM            90             141</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> PT002     MNC        BM           180             184</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> PT002     MNC        BM           360             265</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> PT002     MNC        PB            30              15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">17</span> PT002     MNC        PB            60              26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">18</span> PT002     MNC        PB            90              38</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">19</span> PT002     MNC        PB           180              62</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">20</span> PT002     MNC        PB           360             109</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
@@ -225,7 +217,7 @@ column is unnested.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

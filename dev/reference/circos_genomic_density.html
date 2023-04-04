@@ -26,7 +26,7 @@ Circular Visualization in R"><meta property="og:image" content="https://calabria
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,6 @@ Circular Visualization in R"><meta property="og:image" content="https://calabria
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -202,8 +201,8 @@ otherwise an error message is thrown.</p>
 <span class="r-in"><span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span></span>
 <span class="r-in"><span>    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">by_subj</span> <span class="op">&lt;-</span> <span class="va">aggreg</span> <span class="op">%&gt;%</span></span></span>
-<span class="r-in"><span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">SubjectID</span><span class="op">)</span> <span class="op">%&gt;%</span></span></span>
+<span class="r-in"><span><span class="va">by_subj</span> <span class="op">&lt;-</span> <span class="va">aggreg</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">SubjectID</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_split.html" class="external-link">group_split</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">circos_genomic_density</span><span class="op">(</span><span class="va">by_subj</span>,</span></span>
 <span class="r-in"><span>    track_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"navyblue"</span>, <span class="st">"gold"</span><span class="op">)</span>,</span></span>
@@ -218,7 +217,7 @@ otherwise an error message is thrown.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

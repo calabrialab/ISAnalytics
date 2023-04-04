@@ -12,7 +12,7 @@ Identify and flag outliers based on expected number of raw reads per pool."><met
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,6 @@ Identify and flag outliers based on expected number of raw reads per pool."><met
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -219,146 +218,22 @@ in sequence.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Removing NAs from data...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Log2 transformation, removing values &lt;= 0</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">flagged</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ProjectID  FUSIONID PoolID TagSequence SubjectID VectorType VectorID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      PJ01 ET#382.46 POOL01   LTR75LC38     PT001      lenti    GLOBE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      PJ01 ET#381.40 POOL01   LTR53LC32     PT001      lenti    GLOBE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      PJ01  ET#381.9 POOL01   LTR83LC66     PT001      lenti    GLOBE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      PJ01 ET#381.71 POOL01   LTR27LC94     PT001      lenti    GLOBE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:      PJ01  ET#381.2 POOL01   LTR69LC52     PT001      lenti    GLOBE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:      PJ01 ET#382.28 POOL01    LTR37LC2     PT001      lenti    GLOBE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ExperimentID Tissue TimePoint DNAFragmentation PCRMethod TagIDextended</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         &lt;NA&gt;     PB      0060            SONIC      SLiM     LTR75LC38</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         &lt;NA&gt;     BM      0180            SONIC      SLiM     LTR53LC32</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:         &lt;NA&gt;     BM      0180            SONIC      SLiM     LTR83LC66</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:         &lt;NA&gt;     BM      0180            SONIC      SLiM     LTR27LC94</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         &lt;NA&gt;     PB      0180            SONIC      SLiM     LTR69LC52</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         &lt;NA&gt;     BM      0060            SONIC      SLiM      LTR37LC2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Keywords CellMarker      TagID NGSProvider NGSTechnology ConverrtedFilesDir</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     &lt;NA&gt;        MNC LTR75.LC38        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:     &lt;NA&gt;        MNC LTR53.LC32        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:     &lt;NA&gt;        MNC LTR83.LC66        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:     &lt;NA&gt;        MNC LTR27.LC94        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:     &lt;NA&gt;        MNC LTR69.LC52        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     &lt;NA&gt;        MNC  LTR37.LC2        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ConverrtedFilesName SourceFileFolder SourceFileNameR1 SourceFileNameR2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    DNAnumber ReplicateNumber DNAextractionDate DNAngUsed LinearPCRID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: PT001-103               3        2016-03-16    23.184        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  PT001-81               2        2016-07-15   181.440        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  PT001-81               1        2016-07-15   181.440        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  PT001-81               3        2016-07-15   181.440        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:  PT001-74               1        2016-07-15    23.058        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: PT001-107               2        2016-03-16   171.360        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    LinearPCRDate SonicationDate LigationDate 1stExpoPCRID 1stExpoPCRDate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:          &lt;NA&gt;     2016-11-02   2016-11-02    ET#380.46     2016-11-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:          &lt;NA&gt;     2016-11-02   2016-11-02    ET#379.40     2016-11-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:          &lt;NA&gt;     2016-11-02   2016-11-02     ET#379.9     2016-11-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:          &lt;NA&gt;     2016-11-02   2016-11-02    ET#379.71     2016-11-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:          &lt;NA&gt;     2016-11-02   2016-11-02     ET#379.2     2016-11-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:          &lt;NA&gt;     2016-11-02   2016-11-02    ET#380.28     2016-11-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2ndExpoID 2ndExpoDate FusionPrimerPCRID FusionPrimerPCRDate   PoolDate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      &lt;NA&gt;        &lt;NA&gt;         ET#382.46          2016-11-03 2016-11-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      &lt;NA&gt;        &lt;NA&gt;         ET#381.40          2016-11-03 2016-11-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      &lt;NA&gt;        &lt;NA&gt;          ET#381.9          2016-11-03 2016-11-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      &lt;NA&gt;        &lt;NA&gt;         ET#381.71          2016-11-03 2016-11-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:      &lt;NA&gt;        &lt;NA&gt;          ET#381.2          2016-11-03 2016-11-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:      &lt;NA&gt;        &lt;NA&gt;         ET#382.28          2016-11-03 2016-11-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    SequencingDate  VCN Genome SequencingRound Genotype TestGroup  MOI</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     2016-11-15 0.30   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:     2016-11-15 0.27   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:     2016-11-15 0.27   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:     2016-11-15 0.27   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:     2016-11-15 0.24   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     2016-11-15 0.42   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Engraftment Transduction Notes AddedField1 AddedField2 AddedField3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    AddedField4 concatenatePoolIDSeqRun AddedField6_RelativeBloodPercentage</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    AddedField7_PurityTestFeasibility AddedField8_FacsSeparationPurity Kapa</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                                NA                               NA   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:                                NA                               NA   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                                NA                               NA   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                                NA                               NA   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                                NA                               NA   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:                                NA                               NA   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ulForPool</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:        NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:        NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:        NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:        NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:        NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 CompleteAmplificationID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  PJ01_POOL01_LTR27LC94_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:  PJ01_POOL01_LTR69LC52_PT001_PT001-74_lenti_GLOBE_PB_1_SLiM_0180_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:  PJ01_POOL01_LTR37LC2_PT001_PT001-107_lenti_GLOBE_BM_1_SLiM_0060_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  UniqueID StudyTestID StudyTestGroup MouseID Tigroup Tisource</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: ID00000000000000007433        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: ID00000000000000007340        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: ID00000000000000007310        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: ID00000000000000007370        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: ID00000000000000007303        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: ID00000000000000007417        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    PathToFolderProjectID SamplesNameCheck TimepointDays TimepointMonths</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                 /PJ01             &lt;NA&gt;          0060              02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:                 /PJ01             &lt;NA&gt;          0180              06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                 /PJ01             &lt;NA&gt;          0180              06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                 /PJ01             &lt;NA&gt;          0180              06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                 /PJ01             &lt;NA&gt;          0180              06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:                 /PJ01             &lt;NA&gt;          0060              02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    TimepointYears ng DNA corrected      RUN_NAME PHIX_MAPPING</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:             01            23.18 PJ01|POOL01-1     43586699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:             01           181.44 PJ01|POOL01-1     43586699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:             01           181.44 PJ01|POOL01-1     43586699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:             01           181.44 PJ01|POOL01-1     43586699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:             01            23.06 PJ01|POOL01-1     43586699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:             01           171.36 PJ01|POOL01-1     43586699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    PLASMID_MAPPED_BYPOOL BARCODE_MUX LTR_IDENTIFIED TRIMMING_FINAL_LTRLC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:               2256176      645026         645026               630965</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:               2256176      652208         652177               649044</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:               2256176      451519         451512               449669</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:               2256176      426500         426499               425666</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:               2256176       18300          18300                18290</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:               2256176      729327         729327               727219</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    LV_MAPPED BWA_MAPPED_OVERALL ISS_MAPPED_OVERALL RAW_READS QUALITY_PASSED</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    211757             402477             219452        NA             NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:    303300             322086             222646        NA             NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    204810             227275             149385        NA             NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:    185752             223915             143283        NA             NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:      6962              10487               5907        NA             NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:    318653             369117             235640        NA             NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ISS_MAPPED_PP log2_BARCODE_MUX normality_BARCODE_MUX zscore_BARCODE_MUX</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:            NA         19.29900                    NA          0.7338238</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:            NA         19.31497                    NA          0.7411949</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:            NA         18.78443                    NA          0.4963905</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:            NA         18.70219                    NA          0.4584429</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:            NA         14.15956                    NA         -1.6376186</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:            NA         19.47621                    NA          0.8155914</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    tstudent_BARCODE_MUX tdist_BARCODE_MUX processed flag_BARCODE_MUX to_remove</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:            0.7422529        0.29678647      TRUE            FALSE     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:            0.7498983        0.29506532      TRUE            FALSE     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:            0.4987165        0.34660114      TRUE            FALSE     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:            0.4602087        0.35328569      TRUE            FALSE     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:            1.7457131        0.08872463      TRUE            FALSE     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:            0.8274007        0.27728811      TRUE            FALSE     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 91</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ProjectID FUSIONID  PoolID TagSequence SubjectID VectorType VectorID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> PJ01      ET#382.46 POOL01 LTR75LC38   PT001     lenti      GLOBE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> PJ01      ET#381.40 POOL01 LTR53LC32   PT001     lenti      GLOBE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> PJ01      ET#381.9  POOL01 LTR83LC66   PT001     lenti      GLOBE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> PJ01      ET#381.71 POOL01 LTR27LC94   PT001     lenti      GLOBE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> PJ01      ET#381.2  POOL01 LTR69LC52   PT001     lenti      GLOBE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> PJ01      ET#382.28 POOL01 LTR37LC2    PT001     lenti      GLOBE   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 84 more variables: ExperimentID &lt;chr&gt;, Tissue &lt;chr&gt;, TimePoint &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   DNAFragmentation &lt;chr&gt;, PCRMethod &lt;chr&gt;, TagIDextended &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Keywords &lt;chr&gt;, CellMarker &lt;chr&gt;, TagID &lt;chr&gt;, NGSProvider &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   NGSTechnology &lt;chr&gt;, ConverrtedFilesDir &lt;chr&gt;, ConverrtedFilesName &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   SourceFileFolder &lt;chr&gt;, SourceFileNameR1 &lt;chr&gt;, SourceFileNameR2 &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   DNAnumber &lt;chr&gt;, ReplicateNumber &lt;int&gt;, DNAextractionDate &lt;date&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   DNAngUsed &lt;dbl&gt;, LinearPCRID &lt;chr&gt;, LinearPCRDate &lt;date&gt;, …</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -366,7 +241,7 @@ in sequence.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

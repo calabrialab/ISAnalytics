@@ -14,7 +14,7 @@ in the input data."><meta property="og:image" content="https://calabrialab.githu
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,6 @@ in the input data."><meta property="og:image" content="https://calabrialab.githu
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -157,7 +156,7 @@ shared integration sites in a dedicated column (as a nested table)</p></dd>
 in the input(s).</p>
 <p>The function accepts multiple inputs for different scenarios, please refer
 to the vignette
-<code><a href="../articles/sharing_analyses.html">vignette("sharing_analyses", package = "ISAnalytics")</a></code>
+<code><a href="../articles/workflow_start.html">vignette("workflow_start", package = "ISAnalytics")</a></code>
 for a more in-depth explanation.</p><div class="section">
 <h3 id="output">Output<a class="anchor" aria-label="anchor" href="#output"></a></h3>
 
@@ -207,33 +206,21 @@ function <code><a href="sharing_heatmap.html">sharing_heatmap</a></code> or via 
 <span class="r-in"><span>    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sharing</span> <span class="op">&lt;-</span> <span class="fu">is_sharing</span><span class="op">(</span><span class="va">aggreg</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating combinations...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Done!</span>
 <span class="r-in"><span><span class="va">sharing</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                     g1                g2 shared count_g1 count_g2 count_union</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1: PT001_MNC_BM_0030 PT001_MNC_BM_0060     21       54      114         147</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2: PT001_MNC_BM_0030 PT001_MNC_BM_0180     15       54       89         128</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3: PT001_MNC_BM_0060 PT001_MNC_BM_0180     13      114       89         190</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4: PT001_MNC_BM_0090 PT001_MNC_BM_0180     18       59       89         130</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5: PT001_MNC_BM_0030 PT001_MNC_BM_0360     21       54       78         111</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 186: PT001_MNC_BM_0090 PT002_MNC_PB_0090      0       59       24          83</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 187: PT002_MNC_BM_0060 PT002_MNC_PB_0090      4       33       24          53</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 188: PT002_MNC_BM_0090 PT002_MNC_PB_0090      2       40       24          62</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 189: PT001_MNC_PB_0090 PT002_MNC_PB_0090      0       48       24          72</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 190: PT001_MNC_PB_0360 PT002_MNC_PB_0090      0       43       24          67</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         on_g1     on_g2  on_union</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1: 38.88889 18.421053 14.285714</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2: 27.77778 16.853933 11.718750</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3: 11.40351 14.606742  6.842105</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4: 30.50847 20.224719 13.846154</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5: 38.88889 26.923077 18.918919</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 186:  0.00000  0.000000  0.000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 187: 12.12121 16.666667  7.547170</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 188:  5.00000  8.333333  3.225806</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 189:  0.00000  0.000000  0.000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 190:  0.00000  0.000000  0.000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 190 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    g1            g2    shared count_g1 count_g2 count_union on_g1 on_g2 on_union</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> PT001_MNC_BM… PT00…     21       54      114         147 38.9   18.4    14.3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> PT001_MNC_BM… PT00…     24       54       59          89 44.4   40.7    27.0 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> PT001_MNC_BM… PT00…     15       54       89         128 27.8   16.9    11.7 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> PT001_MNC_BM… PT00…     21       54       78         111 38.9   26.9    18.9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> PT001_MNC_BM… PT00…      7       54       28          75 13.0   25       9.33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> PT001_MNC_BM… PT00…      8       54       59         105 14.8   13.6     7.62</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> PT001_MNC_BM… PT00…     20       54       48          82 37.0   41.7    24.4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> PT001_MNC_BM… PT00…      4       54       29          79  7.41  13.8     5.06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> PT001_MNC_BM… PT00…     15       54       43          82 27.8   34.9    18.3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> PT001_MNC_BM… PT00…      0       54       98         152  0      0       0   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 180 more rows</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -241,7 +228,7 @@ function <code><a href="sharing_heatmap.html">sharing_heatmap</a></code> or via 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

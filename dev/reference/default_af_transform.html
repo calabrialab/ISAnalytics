@@ -12,7 +12,7 @@ after importing it via import_association_file()"><meta property="og:image" cont
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,6 @@ after importing it via import_association_file()"><meta property="og:image" cont
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -108,13 +107,13 @@ to <code><a href="import_association_file.html">import_association_file()</a></c
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">default_af_transform</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $TimepointMonths</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~stringr::str_pad(as.character(.x), pad = "0", side = "left", </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     width = 2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55f31c015700&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     width = max(nchar(as.character(.x))) + 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x556d01a66be8&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $TimepointYears</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~stringr::str_pad(as.character(.x), pad = "0", side = "left", </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     width = 2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55f31c015700&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     width = max(nchar(as.character(.x))) + 1)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x556d01a66be8&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
@@ -123,7 +122,7 @@ to <code><a href="import_association_file.html">import_association_file()</a></c
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

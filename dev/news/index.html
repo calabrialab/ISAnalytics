@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,6 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="active nav-item">
@@ -67,6 +66,36 @@
       <small>Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.9.3" id="isanalytics-193-2023-04-04">ISAnalytics 1.9.3 (2023-04-04)<a class="anchor" aria-label="anchor" href="#isanalytics-193-2023-04-04"></a></h2>
+<div class="section level3">
+<h3 id="enhances-and-refactoring-1-9-3">ENHANCES AND REFACTORING<a class="anchor" aria-label="anchor" href="#enhances-and-refactoring-1-9-3"></a></h3>
+<ul><li>The package no longer depends on <code>magrittr</code>
+</li>
+<li>All functionality associated with <code>data.table</code> now it’s completely optional and will be used internally only if the package is available</li>
+<li>Several packages were moved from <code>Imports</code> to <code>Suggests</code> - functions will notify when additional packages are requested for the specific functionality</li>
+<li>All known deprecated or superseded functions from other packages have been removed or substituted</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-and-general-updates-1-9-3">FIXES AND GENERAL UPDATES<a class="anchor" aria-label="anchor" href="#fixes-and-general-updates-1-9-3"></a></h3>
+<ul><li>Added a new tag “barcode_mux” in <code><a href="../reference/available_tags.html">available_tags()</a></code>
+</li>
+<li>The function <code><a href="../reference/HSC_population_size_estimate.html">HSC_population_size_estimate()</a></code> now better supports the computation of estimates from different groups of cell types and tissues at the same time. The tabular output now contains an additional column “Timepoints_included” that specifies how many time points the estimate contains</li>
+<li>Function <code><a href="../reference/is_sharing.html">is_sharing()</a></code> can now handle better limit cases and has the option of being parallelised provided appropriate packages are available (better performance)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="deprecations--breaking-changes-1-9-3">DEPRECATIONS &amp; BREAKING CHANGES<a class="anchor" aria-label="anchor" href="#deprecations--breaking-changes-1-9-3"></a></h3>
+<ul><li>Functions <code><a href="../reference/import_parallel_Vispa2Matrices_auto.html">import_parallel_Vispa2Matrices_auto()</a></code> and <code><a href="../reference/import_parallel_Vispa2Matrices_interactive.html">import_parallel_Vispa2Matrices_interactive()</a></code> are officially defunct and will not be exported anymore starting from the next release cycle</li>
+<li>The argument <code>mode</code> of <code><a href="../reference/import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices()</a></code> no longer accepts <code>INTERACTIVE</code> as a valid option and the interactive mode is considered now defunct, since the usage is very limiting and limited</li>
+<li>The argument <code>association_file</code> of <code><a href="../reference/import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices()</a></code> no longer accepts a string representing a path. Association file import is delegated solely to its dedicated function from now on.</li>
+<li>The function <code><a href="../reference/threshold_filter.html">threshold_filter()</a></code> is deprecated, since its use is rather complicated instead of using standard filtering with dplyr or similar tools</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-changes-1-9-3">MINOR CHANGES<a class="anchor" aria-label="anchor" href="#minor-changes-1-9-3"></a></h3>
+<ul><li>
+<code><a href="../reference/default_af_transform.html">default_af_transform()</a></code> now pads time points based on the maximum number of characters + 1 in the column</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.2" id="isanalytics-192-2023-01-26">ISAnalytics 1.9.2 (2023-01-26)<a class="anchor" aria-label="anchor" href="#isanalytics-192-2023-01-26"></a></h2>
 <div class="section level3">
@@ -270,7 +299,7 @@
 <h2 class="pkg-version" data-toc-text="1.3.5" id="isanalytics-135-2021-09-21">ISAnalytics 1.3.5 (2021-09-21)<a class="anchor" aria-label="anchor" href="#isanalytics-135-2021-09-21"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-1-3-5">MAJOR CHANGES<a class="anchor" aria-label="anchor" href="#major-changes-1-3-5"></a></h3>
-<ul><li>Reworked <code><a href="../reference/is_sharing.html">is_sharing()</a></code> function, detailed usage in vignette <code><a href="../articles/sharing_analyses.html">vignette("sharing_analyses", package = "ISAnalytics")</a></code>
+<ul><li>Reworked <code><a href="../reference/is_sharing.html">is_sharing()</a></code> function, detailed usage in vignette <code>vignette("sharing_analyses", package = "ISAnalytics")</code>
 </li>
 </ul></div>
 <div class="section level3">
@@ -602,7 +631,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

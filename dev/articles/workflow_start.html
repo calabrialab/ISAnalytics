@@ -34,7 +34,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,6 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -93,7 +92,7 @@
 
 
 
-<script src="workflow_start_files/htmlwidgets-1.6.1/htmlwidgets.js"></script><link href="workflow_start_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="workflow_start_files/htmlwidgets-1.6.2/htmlwidgets.js"></script><link href="workflow_start_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
 <script src="workflow_start_files/datatables-binding-0.27/datatables.js"></script><link href="workflow_start_files/dt-core-1.12.1/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="workflow_start_files/dt-core-1.12.1/css/jquery.dataTables.extra.css" rel="stylesheet">
 <script src="workflow_start_files/dt-core-1.12.1/js/jquery.dataTables.min.js"></script><link href="workflow_start_files/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet">
@@ -109,7 +108,7 @@ Italia</p>
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 data-toc-skip class="date">26 January 2023</h4>
+            <h4 data-toc-skip class="date">4 April 2023</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/HEAD/vignettes/workflow_start.Rmd" class="external-link"><code>vignettes/workflow_start.Rmd</code></a></small>
       <div class="d-none name"><code>workflow_start.Rmd</code></div>
@@ -125,88 +124,6 @@ insertion sites data identified from genomics next generation sequencing
 reads for clonal tracking studies.</p>
 <p>In this vignette we will explain how to properly setup the workflow
 and the first steps of data import and data cleaning.</p>
-</div>
-<div class="section level2">
-<h2 id="installation-and-options">Installation and options<a class="anchor" aria-label="anchor" href="#installation-and-options"></a>
-</h2>
-<p><code>ISAnalytics</code> can be installed quickly in different
-ways:</p>
-<ul>
-<li>You can install it via <a href="http://bioconductor.org" class="external-link">Bioconductor</a>
-</li>
-<li>You can install it via GitHub using the package
-<code>devtools</code>
-</li>
-</ul>
-<p>There are always 2 versions of the package active:</p>
-<ul>
-<li>
-<code>RELEASE</code> is the latest stable version</li>
-<li>
-<code>DEVEL</code> is the development version, it is the most
-up-to-date version where all new features are introduced</li>
-</ul>
-<div class="section level3">
-<h3 id="installation-from-bioconductor">Installation from bioconductor<a class="anchor" aria-label="anchor" href="#installation-from-bioconductor"></a>
-</h3>
-<p>RELEASE version:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></span></code></pre></div>
-<p>DEVEL version:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># The following initializes usage of Bioc devel</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span>version<span class="op">=</span><span class="st">'devel'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"ISAnalytics"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="installation-from-github">Installation from GitHub<a class="anchor" aria-label="anchor" href="#installation-from-github"></a>
-</h3>
-<p>RELEASE:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,</span>
-<span>                         ref <span class="op">=</span> <span class="st">"RELEASE_3_16"</span>,</span>
-<span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>DEVEL:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"calabrialab/ISAnalytics"</span>,</span>
-<span>                         ref <span class="op">=</span> <span class="st">"master"</span>,</span>
-<span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="setting-options">Setting options<a class="anchor" aria-label="anchor" href="#setting-options"></a>
-</h3>
-<p><code>ISAnalytics</code> has a verbose option that allows some
-functions to print additional information to the console while they’re
-executing. To disable this feature do:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># DISABLE</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># ENABLE</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.verbose"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Some functions also produce report in a user-friendly HTML format, to
-set this feature:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># DISABLE HTML REPORTS</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># ENABLE HTML REPORTS</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span><span class="st">"ISAnalytics.reports"</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
 </div>
 <div class="section level2">
 <h2 id="setting-up-your-workflow-with-dynamic-vars">Setting up your workflow with dynamic vars<a class="anchor" aria-label="anchor" href="#setting-up-your-workflow-with-dynamic-vars"></a>
@@ -323,7 +240,7 @@ require the presence of specific tags (and associated column names) in
 the input to work properly. You can always check what a tag means and
 where it is used by using the function <code><a href="../reference/inspect_tags.html">inspect_tags()</a></code> and
 providing in input the tags you want to check as a character vector.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/inspect_tags.html">inspect_tags</a></span><span class="op">(</span><span class="st">"chromosome"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; * TAG: chromosome</span></span>
 <span><span class="co">#&gt; <span style="color: #0000BB;">ℹ</span> Description: Number of the chromosome</span></span>
@@ -335,8 +252,8 @@ the critical tags for each category.</p>
 <div class="section level4">
 <h4 id="mandatory-is-vars">Mandatory IS vars<a class="anchor" aria-label="anchor" href="#mandatory-is-vars"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-088fd0ffbbe2d2067ffd" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-088fd0ffbbe2d2067ffd">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-50235b5faa2abfed4242" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-50235b5faa2abfed4242">{"x":{"filter":"none","vertical":false,"data":[["chromosome","locus","is_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations","top_targeted_genes, CIS_grubbs, compute_near_integrations","CIS_grubbs, compute_near_integrations"],["Number of the chromosome","The locus at which the integration occurs","The DNA strand in which the integration occurs"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>The presence of all mandatory IS vars is also checked and used in
 other functions - for example, when importing matrices it is ensured
 that all mandatory variables are present in the input, as declared in
 the look up table. Some functions may require information that needs to
@@ -346,8 +263,8 @@ doubts.</p>
 <div class="section level4">
 <h4 id="annotation-is-vars">Annotation IS vars<a class="anchor" aria-label="anchor" href="#annotation-is-vars"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-99fac395fbfb66b93bdc" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-99fac395fbfb66b93bdc">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-ac1ea11deda3705b24fe" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ac1ea11deda3705b24fe">{"x":{"filter":"none","vertical":false,"data":[["gene_symbol","gene_strand"],["top_targeted_genes, CIS_grubbs, compute_near_integrations, CIS_volcano_plot, gene_frequency_fisher","top_targeted_genes, CIS_grubbs"],["The symbol of the gene","The strand of the gene"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Although genomic annotations are not necessarily required to work
 with ISAnalytics, some operations do require annotation - if you’re
 working with matrices that are not annotated you can either annotate
 them with a tool of your choice or skip the steps that require
@@ -356,16 +273,16 @@ annotation.</p>
 <div class="section level4">
 <h4 id="association-file-columns">Association file columns<a class="anchor" aria-label="anchor" href="#association-file-columns"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-7e62016be4e6732ce4d2" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-7e62016be4e6732ce4d2">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-7ef204e977093287289e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-7ef204e977093287289e">{"x":{"filter":"none","vertical":false,"data":[["project_id","pool_id","fusion_id","tag_seq","subject","vector_id","tissue","tp_days","pcr_method","cell_marker","tag_id","ngs_tech","dna_num","pcr_replicate","vcn","vispa_concatenate","pcr_repl_id","proj_folder","genome"],["generate_default_folder_structure, import_Vispa2_stats, remove_collisions, generate_Vispa2_launch_AF, import_association_file, import_parallel_Vispa2Matrices","generate_Vispa2_launch_AF, remove_collisions, import_association_file","generate_Vispa2_launch_AF","generate_default_folder_structure, import_association_file, import_Vispa2_stats","import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF, import_association_file","","generate_Vispa2_launch_AF, import_association_file, HSC_population_size_estimate","generate_Vispa2_launch_AF","","","import_association_file, remove_collisions","","import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","pcr_id_column, generate_Vispa2_launch_AF, import_association_file, import_Vispa2_stats","import_association_file",""],["Unique identifier of a project","Unique identifier of a sequencing pool","Identification code/number of the barcoded (SLiM-)PCR product included in the sequencing library","The barcode tag sequence","Unique identifier of a study subject (usually a patient)","Unique identifier of the vector used","The biological tissue the sample belongs to","The time point expressed in days","The PCR method used","Cell marker associated with isolated cells carrying the IS","Unique identifier of the barcode tag, as specified in VISPA2 requirements","Technology used for next generation sequencing","Identification code/number of the DNA extraction from a specific biological sample","Number of the PCR replicate","Vector copy number","Unique identifier of a pool as specified in VISPA2","Unique identifier of the pcr replicate, used as key to join data and metadata","Path on disk containing the standard VISPA2 folder structure of the project","The reference genome (e.g. 'hg19')"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>Some tags in this table are not associated with any function yet, but
 they exist for potential new features that will be added in the
 future.</p>
 </div>
 <div class="section level4">
 <h4 id="vispa2-stats-specs">VISPA2 stats specs<a class="anchor" aria-label="anchor" href="#vispa2-stats-specs"></a>
 </h4>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-4d3043118ef8b203616b" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-4d3043118ef8b203616b">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats"],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions.
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-ed1d99b2e89ca0e6a5e8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ed1d99b2e89ca0e6a5e8">{"x":{"filter":"none","vertical":false,"data":[["vispa_concatenate","tag_seq","barcode_mux"],["import_association_file, generate_Vispa2_launch_AF, generate_default_folder_structure, import_Vispa2_stats, import_parallel_Vispa2Matrices","generate_default_folder_structure, import_association_file, import_Vispa2_stats",""],["Unique identifier of a pool as specified in VISPA2","The barcode tag sequence","The barcode demultiplexed reads"]],"container":"<table class=\"stripe\">\n  <thead>\n    <tr>\n      <th>tag<\/th>\n      <th>needed_in<\/th>\n      <th>description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false},"selection":{"mode":"multiple","selected":null,"target":"row","selectable":null}},"evals":[],"jsHooks":[]}</script><p>NOTE: VISPA2 stats files usually follow standard naming conventions.
 If the pipeline launch was configured with default parameters, do not
 change this lookup table.</p>
 </div>
@@ -387,7 +304,7 @@ a list of the missing ones.</p>
 <p>Let’s take a look at some examples.</p>
 <p>On package loading, all lookup tables are set to default values. For
 example, for mandatory IS vars we have:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/mandatory_IS_vars.html">mandatory_IS_vars</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 5</span></span></span>
 <span><span class="co">#&gt;   names             types transform flag     tag       </span></span>
@@ -425,7 +342,7 @@ contains random data):</p>
 </table>
 <p>To make this work with ISAnalytics functions, we need to compile the
 lookup table like this:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_mand_vars</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>    <span class="op">~</span><span class="va">names</span>, <span class="op">~</span><span class="va">types</span>, <span class="op">~</span><span class="va">transform</span>, <span class="op">~</span><span class="va">flag</span>, <span class="op">~</span><span class="va">tag</span>,</span>
 <span>    <span class="st">"chrom"</span>, <span class="st">"char"</span>, <span class="op">~</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_replace.html" class="external-link">str_replace_all</a></span><span class="op">(</span><span class="va">.x</span>, <span class="st">"chr"</span>, <span class="st">""</span><span class="op">)</span>, <span class="st">"required"</span>,</span>
@@ -440,7 +357,7 @@ tag: in this case we would like to have only the number of the
 chromosome without the prefix “chr” - this lambda will get executed
 immediately after import.</p>
 <p>To set the new variables simply do:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/set_mandatory_IS_vars.html">set_mandatory_IS_vars</a></span><span class="op">(</span><span class="va">new_mand_vars</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Mandatory IS vars successfully changed</span></span>
 <span><span class="fu"><a href="../reference/mandatory_IS_vars.html">mandatory_IS_vars</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
@@ -454,7 +371,7 @@ immediately after import.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> junction int   <span style="color: #949494;">&lt;NULL&gt;</span>    required <span style="color: #BB0000;">NA</span></span></span></code></pre></div>
 <p>If you don’t specify a critical tag, a warning message is
 displayed:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_mand_vars</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span><span class="op">$</span><span class="va">tag</span> <span class="op">&lt;-</span> <span class="cn">NA_character_</span></span>
 <span><span class="fu"><a href="../reference/set_mandatory_IS_vars.html">set_mandatory_IS_vars</a></span><span class="op">(</span><span class="va">new_mand_vars</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Warning: important tags missing</span></span>
@@ -472,7 +389,7 @@ displayed:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> gap      int   <span style="color: #949494;">&lt;NULL&gt;</span>    required <span style="color: #BB0000;">NA</span>       </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> junction int   <span style="color: #949494;">&lt;NULL&gt;</span>    required <span style="color: #BB0000;">NA</span></span></span></code></pre></div>
 <p>If you change your mind and want to go back to defaults:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/reset_mandatory_IS_vars.html">reset_mandatory_IS_vars</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Mandatory IS vars reset to default</span></span>
 <span><span class="fu"><a href="../reference/mandatory_IS_vars.html">mandatory_IS_vars</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
@@ -504,20 +421,20 @@ each:</p>
 </li>
 </ul>
 <p>Matrix files suffixes work slightly different:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/mandatory_IS_vars.html">matrix_file_suffixes</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 3</span></span></span>
 <span><span class="co">#&gt;    quantification   matrix_type   file_suffix                                 </span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>                                      </span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                       </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> seqCount         annotated     seqCount_matrix.no0.annotated.tsv.gz        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> fragmentEstimate annotated     fragmentEstimate_matrix.no0.annotated.tsv.gz</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> barcodeCount     annotated     barcodeCount_matrix.no0.annotated.tsv.gz    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> cellCount        annotated     cellCount_matrix.no0.annotated.tsv.gz       </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> ShsCount         annotated     ShsCount_matrix.no0.annotated.tsv.gz        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> seqCount         not_annotated seqCount_matrix.tsv.gz                      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> fragmentEstimate not_annotated fragmentEstimate_matrix.tsv.gz              </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> barcodeCount     not_annotated barcodeCount_matrix.tsv.gz                  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> cellCount        not_annotated cellCount_matrix.tsv.gz                     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> seqCount         not_annotated seqCount_matrix.tsv.gz                      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> fragmentEstimate annotated     fragmentEstimate_matrix.no0.annotated.tsv.gz</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> fragmentEstimate not_annotated fragmentEstimate_matrix.tsv.gz              </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> barcodeCount     annotated     barcodeCount_matrix.no0.annotated.tsv.gz    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> barcodeCount     not_annotated barcodeCount_matrix.tsv.gz                  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> cellCount        annotated     cellCount_matrix.no0.annotated.tsv.gz       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> cellCount        not_annotated cellCount_matrix.tsv.gz                     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> ShsCount         annotated     ShsCount_matrix.no0.annotated.tsv.gz        </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> ShsCount         not_annotated ShsCount_matrix.tsv.gz</span></span></code></pre></div>
 <p>To change this lookup table use the function
 <code><a href="../reference/set_matrix_file_suffixes.html">set_matrix_file_suffixes()</a></code>: the function will ask to
@@ -551,7 +468,7 @@ to a json file, which can then be imported for the next workflow.</p>
 parallel workers or process long tasks report progress via the functions
 offered by <a href="https://progressr.futureverse.org/" class="external-link">progressr</a>.
 To enable progress bars for all functions in ISAnalytics do</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/enable_progress_bars.html">enable_progress_bars</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>before calling other functions. For customizing the appearance of the
 progress bar please refer to <code>progressr</code> documentation.</p>
@@ -665,7 +582,7 @@ if the corresponding folders (contained in the appropriate column) can
 be found. Remember that to work properly, this operation expects a
 standard folder structure, such as the one provided by VISPA2. This
 function also produces an interactive HTML report.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fs_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_default_folder_structure.html">generate_default_folder_structure</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ISAnalytics.reports <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, code <span class="op">=</span> <span class="op">{</span></span>
 <span>    <span class="va">af</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_association_file.html">import_association_file</a></span><span class="op">(</span><span class="va">fs_path</span><span class="op">$</span><span class="va">af</span>, root <span class="op">=</span> <span class="va">fs_path</span><span class="op">$</span><span class="va">root</span><span class="op">)</span></span>
@@ -677,132 +594,22 @@ function also produces an interactive HTML report.</p>
 <span><span class="co">#&gt; Column problems detected: FALSE</span></span>
 <span><span class="co">#&gt; NAs found in important columns: FALSE</span></span>
 <span><span class="co">#&gt; File system alignment: no problems detected</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt;    ProjectID  FUSIONID PoolID TagSequence SubjectID VectorType VectorID</span></span>
-<span><span class="co">#&gt; 1:      PJ01 ET#382.46 POOL01   LTR75LC38     PT001      lenti    GLOBE</span></span>
-<span><span class="co">#&gt; 2:      PJ01 ET#381.40 POOL01   LTR53LC32     PT001      lenti    GLOBE</span></span>
-<span><span class="co">#&gt; 3:      PJ01  ET#381.9 POOL01   LTR83LC66     PT001      lenti    GLOBE</span></span>
-<span><span class="co">#&gt; 4:      PJ01 ET#381.71 POOL01   LTR27LC94     PT001      lenti    GLOBE</span></span>
-<span><span class="co">#&gt; 5:      PJ01  ET#381.2 POOL01   LTR69LC52     PT001      lenti    GLOBE</span></span>
-<span><span class="co">#&gt; 6:      PJ01 ET#382.28 POOL01    LTR37LC2     PT001      lenti    GLOBE</span></span>
-<span><span class="co">#&gt;    ExperimentID Tissue TimePoint DNAFragmentation PCRMethod TagIDextended</span></span>
-<span><span class="co">#&gt; 1:         &lt;NA&gt;     PB      0060            SONIC      SLiM     LTR75LC38</span></span>
-<span><span class="co">#&gt; 2:         &lt;NA&gt;     BM      0180            SONIC      SLiM     LTR53LC32</span></span>
-<span><span class="co">#&gt; 3:         &lt;NA&gt;     BM      0180            SONIC      SLiM     LTR83LC66</span></span>
-<span><span class="co">#&gt; 4:         &lt;NA&gt;     BM      0180            SONIC      SLiM     LTR27LC94</span></span>
-<span><span class="co">#&gt; 5:         &lt;NA&gt;     PB      0180            SONIC      SLiM     LTR69LC52</span></span>
-<span><span class="co">#&gt; 6:         &lt;NA&gt;     BM      0060            SONIC      SLiM      LTR37LC2</span></span>
-<span><span class="co">#&gt;    Keywords CellMarker      TagID NGSProvider NGSTechnology ConverrtedFilesDir</span></span>
-<span><span class="co">#&gt; 1:     &lt;NA&gt;        MNC LTR75.LC38        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2:     &lt;NA&gt;        MNC LTR53.LC32        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 3:     &lt;NA&gt;        MNC LTR83.LC66        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 4:     &lt;NA&gt;        MNC LTR27.LC94        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5:     &lt;NA&gt;        MNC LTR69.LC52        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6:     &lt;NA&gt;        MNC  LTR37.LC2        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;    ConverrtedFilesName SourceFileFolder SourceFileNameR1 SourceFileNameR2</span></span>
-<span><span class="co">#&gt; 1:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 3:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 4:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;    DNAnumber ReplicateNumber DNAextractionDate DNAngUsed LinearPCRID</span></span>
-<span><span class="co">#&gt; 1: PT001-103               3        2016-03-16    23.184        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2:  PT001-81               2        2016-07-15   181.440        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 3:  PT001-81               1        2016-07-15   181.440        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 4:  PT001-81               3        2016-07-15   181.440        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5:  PT001-74               1        2016-07-15    23.058        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6: PT001-107               2        2016-03-16   171.360        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;    LinearPCRDate SonicationDate LigationDate 1stExpoPCRID 1stExpoPCRDate</span></span>
-<span><span class="co">#&gt; 1:          &lt;NA&gt;     2016-11-02   2016-11-02    ET#380.46     2016-11-02</span></span>
-<span><span class="co">#&gt; 2:          &lt;NA&gt;     2016-11-02   2016-11-02    ET#379.40     2016-11-02</span></span>
-<span><span class="co">#&gt; 3:          &lt;NA&gt;     2016-11-02   2016-11-02     ET#379.9     2016-11-02</span></span>
-<span><span class="co">#&gt; 4:          &lt;NA&gt;     2016-11-02   2016-11-02    ET#379.71     2016-11-02</span></span>
-<span><span class="co">#&gt; 5:          &lt;NA&gt;     2016-11-02   2016-11-02     ET#379.2     2016-11-02</span></span>
-<span><span class="co">#&gt; 6:          &lt;NA&gt;     2016-11-02   2016-11-02    ET#380.28     2016-11-02</span></span>
-<span><span class="co">#&gt;    2ndExpoID 2ndExpoDate FusionPrimerPCRID FusionPrimerPCRDate   PoolDate</span></span>
-<span><span class="co">#&gt; 1:      &lt;NA&gt;        &lt;NA&gt;         ET#382.46          2016-11-03 2016-11-07</span></span>
-<span><span class="co">#&gt; 2:      &lt;NA&gt;        &lt;NA&gt;         ET#381.40          2016-11-03 2016-11-07</span></span>
-<span><span class="co">#&gt; 3:      &lt;NA&gt;        &lt;NA&gt;          ET#381.9          2016-11-03 2016-11-07</span></span>
-<span><span class="co">#&gt; 4:      &lt;NA&gt;        &lt;NA&gt;         ET#381.71          2016-11-03 2016-11-07</span></span>
-<span><span class="co">#&gt; 5:      &lt;NA&gt;        &lt;NA&gt;          ET#381.2          2016-11-03 2016-11-07</span></span>
-<span><span class="co">#&gt; 6:      &lt;NA&gt;        &lt;NA&gt;         ET#382.28          2016-11-03 2016-11-07</span></span>
-<span><span class="co">#&gt;    SequencingDate  VCN Genome SequencingRound Genotype TestGroup  MOI</span></span>
-<span><span class="co">#&gt; 1:     2016-11-15 0.30   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2:     2016-11-15 0.27   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 3:     2016-11-15 0.27   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 4:     2016-11-15 0.27   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5:     2016-11-15 0.24   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6:     2016-11-15 0.42   hg19               1     &lt;NA&gt;      &lt;NA&gt; &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;    Engraftment Transduction Notes AddedField1 AddedField2 AddedField3</span></span>
-<span><span class="co">#&gt; 1:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 3:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 4:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6:          NA           NA  &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;    AddedField4 concatenatePoolIDSeqRun AddedField6_RelativeBloodPercentage</span></span>
-<span><span class="co">#&gt; 1:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 3:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 4:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;    AddedField7_PurityTestFeasibility AddedField8_FacsSeparationPurity Kapa</span></span>
-<span><span class="co">#&gt; 1:                              &lt;NA&gt;                             &lt;NA&gt;   NA</span></span>
-<span><span class="co">#&gt; 2:                              &lt;NA&gt;                             &lt;NA&gt;   NA</span></span>
-<span><span class="co">#&gt; 3:                              &lt;NA&gt;                             &lt;NA&gt;   NA</span></span>
-<span><span class="co">#&gt; 4:                              &lt;NA&gt;                             &lt;NA&gt;   NA</span></span>
-<span><span class="co">#&gt; 5:                              &lt;NA&gt;                             &lt;NA&gt;   NA</span></span>
-<span><span class="co">#&gt; 6:                              &lt;NA&gt;                             &lt;NA&gt;   NA</span></span>
-<span><span class="co">#&gt;    ulForPool</span></span>
-<span><span class="co">#&gt; 1:        NA</span></span>
-<span><span class="co">#&gt; 2:        NA</span></span>
-<span><span class="co">#&gt; 3:        NA</span></span>
-<span><span class="co">#&gt; 4:        NA</span></span>
-<span><span class="co">#&gt; 5:        NA</span></span>
-<span><span class="co">#&gt; 6:        NA</span></span>
-<span><span class="co">#&gt;                                                 CompleteAmplificationID</span></span>
-<span><span class="co">#&gt; 1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span></span>
-<span><span class="co">#&gt; 2:  PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span></span>
-<span><span class="co">#&gt; 3:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span></span>
-<span><span class="co">#&gt; 4:  PJ01_POOL01_LTR27LC94_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span></span>
-<span><span class="co">#&gt; 5:  PJ01_POOL01_LTR69LC52_PT001_PT001-74_lenti_GLOBE_PB_1_SLiM_0180_MNC</span></span>
-<span><span class="co">#&gt; 6:  PJ01_POOL01_LTR37LC2_PT001_PT001-107_lenti_GLOBE_BM_1_SLiM_0060_MNC</span></span>
-<span><span class="co">#&gt;                  UniqueID StudyTestID StudyTestGroup MouseID Tigroup Tisource</span></span>
-<span><span class="co">#&gt; 1: ID00000000000000007433        &lt;NA&gt;           &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2: ID00000000000000007340        &lt;NA&gt;           &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 3: ID00000000000000007310        &lt;NA&gt;           &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 4: ID00000000000000007370        &lt;NA&gt;           &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5: ID00000000000000007303        &lt;NA&gt;           &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6: ID00000000000000007417        &lt;NA&gt;           &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;     &lt;NA&gt;</span></span>
-<span><span class="co">#&gt;    PathToFolderProjectID SamplesNameCheck TimepointDays TimepointMonths</span></span>
-<span><span class="co">#&gt; 1:                 /PJ01             &lt;NA&gt;          0060              02</span></span>
-<span><span class="co">#&gt; 2:                 /PJ01             &lt;NA&gt;          0180              06</span></span>
-<span><span class="co">#&gt; 3:                 /PJ01             &lt;NA&gt;          0180              06</span></span>
-<span><span class="co">#&gt; 4:                 /PJ01             &lt;NA&gt;          0180              06</span></span>
-<span><span class="co">#&gt; 5:                 /PJ01             &lt;NA&gt;          0180              06</span></span>
-<span><span class="co">#&gt; 6:                 /PJ01             &lt;NA&gt;          0060              02</span></span>
-<span><span class="co">#&gt;    TimepointYears ng DNA corrected                    Path</span></span>
-<span><span class="co">#&gt; 1:             01            23.18 /tmp/RtmpwPGdVW/fs/PJ01</span></span>
-<span><span class="co">#&gt; 2:             01           181.44 /tmp/RtmpwPGdVW/fs/PJ01</span></span>
-<span><span class="co">#&gt; 3:             01           181.44 /tmp/RtmpwPGdVW/fs/PJ01</span></span>
-<span><span class="co">#&gt; 4:             01           181.44 /tmp/RtmpwPGdVW/fs/PJ01</span></span>
-<span><span class="co">#&gt; 5:             01            23.06 /tmp/RtmpwPGdVW/fs/PJ01</span></span>
-<span><span class="co">#&gt; 6:             01           171.36 /tmp/RtmpwPGdVW/fs/PJ01</span></span>
-<span><span class="co">#&gt;                                         Path_quant</span></span>
-<span><span class="co">#&gt; 1: /tmp/RtmpwPGdVW/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 2: /tmp/RtmpwPGdVW/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 3: /tmp/RtmpwPGdVW/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 4: /tmp/RtmpwPGdVW/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 5: /tmp/RtmpwPGdVW/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt; 6: /tmp/RtmpwPGdVW/fs/PJ01/quantification/POOL01-1</span></span>
-<span><span class="co">#&gt;                                Path_iss</span></span>
-<span><span class="co">#&gt; 1: /tmp/RtmpwPGdVW/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 2: /tmp/RtmpwPGdVW/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 3: /tmp/RtmpwPGdVW/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 4: /tmp/RtmpwPGdVW/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 5: /tmp/RtmpwPGdVW/fs/PJ01/iss/POOL01-1</span></span>
-<span><span class="co">#&gt; 6: /tmp/RtmpwPGdVW/fs/PJ01/iss/POOL01-1</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 74</span></span></span>
+<span><span class="co">#&gt;   ProjectID FUSIONID  PoolID TagSequence SubjectID VectorType VectorID</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> PJ01      ET#382.46 POOL01 LTR75LC38   PT001     lenti      GLOBE   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> PJ01      ET#381.40 POOL01 LTR53LC32   PT001     lenti      GLOBE   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> PJ01      ET#381.9  POOL01 LTR83LC66   PT001     lenti      GLOBE   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> PJ01      ET#381.71 POOL01 LTR27LC94   PT001     lenti      GLOBE   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> PJ01      ET#381.2  POOL01 LTR69LC52   PT001     lenti      GLOBE   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> PJ01      ET#382.28 POOL01 LTR37LC2    PT001     lenti      GLOBE   </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 67 more variables: ExperimentID &lt;chr&gt;, Tissue &lt;chr&gt;, TimePoint &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   DNAFragmentation &lt;chr&gt;, PCRMethod &lt;chr&gt;, TagIDextended &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Keywords &lt;chr&gt;, CellMarker &lt;chr&gt;, TagID &lt;chr&gt;, NGSProvider &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   NGSTechnology &lt;chr&gt;, ConverrtedFilesDir &lt;chr&gt;, ConverrtedFilesName &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   SourceFileFolder &lt;chr&gt;, SourceFileNameR1 &lt;chr&gt;, SourceFileNameR2 &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   DNAnumber &lt;chr&gt;, ReplicateNumber &lt;int&gt;, DNAextractionDate &lt;date&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   DNAngUsed &lt;dbl&gt;, LinearPCRID &lt;chr&gt;, LinearPCRDate &lt;date&gt;, …</span></span></span></code></pre>
 <div class="section level4">
 <h4 id="function-arguments">Function arguments<a class="anchor" aria-label="anchor" href="#function-arguments"></a>
 </h4>
@@ -888,25 +695,24 @@ imported or folders are missing</li>
 information that can be useful for other analyses downstream, so it is
 recommended to import them in the first steps of the workflow. To do
 that, you can use <code>import_VISPA2_stats</code>:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">vispa_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_Vispa2_stats.html">import_Vispa2_stats</a></span><span class="op">(</span></span>
 <span>    association_file <span class="op">=</span> <span class="va">af</span>,</span>
 <span>    join_with_af <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    report_path <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 14</span></span></span>
-<span><span class="co">#&gt;   POOL     TAG   RUN_N…¹ PHIX_…² PLASM…³ BARCO…⁴ LTR_I…⁵ TRIMM…⁶ LV_MA…⁷ BWA_M…⁸</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> POOL01-1 LTR7… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176  <span style="text-decoration: underline;">645</span>026  <span style="text-decoration: underline;">645</span>026  <span style="text-decoration: underline;">630</span>965  <span style="text-decoration: underline;">211</span>757  <span style="text-decoration: underline;">402</span>477</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> POOL01-1 LTR5… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176  <span style="text-decoration: underline;">652</span>208  <span style="text-decoration: underline;">652</span>177  <span style="text-decoration: underline;">649</span>044  <span style="text-decoration: underline;">303</span>300  <span style="text-decoration: underline;">322</span>086</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> POOL01-1 LTR8… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176  <span style="text-decoration: underline;">451</span>519  <span style="text-decoration: underline;">451</span>512  <span style="text-decoration: underline;">449</span>669  <span style="text-decoration: underline;">204</span>810  <span style="text-decoration: underline;">227</span>275</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> POOL01-1 LTR2… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176  <span style="text-decoration: underline;">426</span>500  <span style="text-decoration: underline;">426</span>499  <span style="text-decoration: underline;">425</span>666  <span style="text-decoration: underline;">185</span>752  <span style="text-decoration: underline;">223</span>915</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> POOL01-1 LTR6… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176   <span style="text-decoration: underline;">18</span>300   <span style="text-decoration: underline;">18</span>300   <span style="text-decoration: underline;">18</span>290    <span style="text-decoration: underline;">6</span>962   <span style="text-decoration: underline;">10</span>487</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> POOL01-1 LTR3… PJ01|P…  4.36<span style="color: #949494;">e</span>7 2<span style="text-decoration: underline;">256</span>176  <span style="text-decoration: underline;">729</span>327  <span style="text-decoration: underline;">729</span>327  <span style="text-decoration: underline;">727</span>219  <span style="text-decoration: underline;">318</span>653  <span style="text-decoration: underline;">369</span>117</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 4 more variables: ISS_MAPPED_OVERALL &lt;int&gt;, RAW_READS &lt;lgl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   QUALITY_PASSED &lt;lgl&gt;, ISS_MAPPED_PP &lt;lgl&gt;, and abbreviated variable names</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   ¹​RUN_NAME, ²​PHIX_MAPPING, ³​PLASMID_MAPPED_BYPOOL, ⁴​BARCODE_MUX,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   ⁵​LTR_IDENTIFIED, ⁶​TRIMMING_FINAL_LTRLC, ⁷​LV_MAPPED, ⁸​BWA_MAPPED_OVERALL</span></span></span></code></pre>
+<span><span class="co">#&gt;   POOL     TAG       RUN_NAME     PHIX_MAPPING PLASMID_MAPPED_BYPOOL BARCODE_MUX</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> POOL01-1 LTR75LC38 PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176      <span style="text-decoration: underline;">645</span>026</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> POOL01-1 LTR53LC32 PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176      <span style="text-decoration: underline;">652</span>208</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> POOL01-1 LTR83LC66 PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176      <span style="text-decoration: underline;">451</span>519</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> POOL01-1 LTR27LC94 PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176      <span style="text-decoration: underline;">426</span>500</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> POOL01-1 LTR69LC52 PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176       <span style="text-decoration: underline;">18</span>300</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> POOL01-1 LTR37LC2  PJ01|POOL01…     43<span style="text-decoration: underline;">586</span>699               2<span style="text-decoration: underline;">256</span>176      <span style="text-decoration: underline;">729</span>327</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: LTR_IDENTIFIED &lt;dbl&gt;, TRIMMING_FINAL_LTRLC &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   LV_MAPPED &lt;dbl&gt;, BWA_MAPPED_OVERALL &lt;dbl&gt;, ISS_MAPPED_OVERALL &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   RAW_READS &lt;lgl&gt;, QUALITY_PASSED &lt;lgl&gt;, ISS_MAPPED_PP &lt;lgl&gt;</span></span></span></code></pre>
 <p>The function requires as input the imported and file system aligned
 association file and it will scan the <code>iss</code> folder for files
 that match some known prefixes (defaults are already provided but you
@@ -927,7 +733,7 @@ using the <code><a href="../reference/import_single_Vispa2Matrix.html">import_si
 function reads the file and converts it into a tidy structure: several
 different formats can be read, since you can specify the column
 separator.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">matrix_path</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html" class="external-link">path</a></span><span class="op">(</span></span>
 <span>    <span class="va">fs_path</span><span class="op">$</span><span class="va">root</span>,</span>
 <span>    <span class="st">"PJ01"</span>,</span>
@@ -936,30 +742,22 @@ separator.</p>
 <span>    <span class="st">"PJ01_POOL01-1_seqCount_matrix.no0.annotated.tsv.gz"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_single_Vispa2Matrix.html">import_single_Vispa2Matrix</a></span><span class="op">(</span><span class="va">matrix_path</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt;      chr integration_locus strand     GeneName GeneStrand</span></span>
-<span><span class="co">#&gt;   1:  16          68164148      +       NFATC3          +</span></span>
-<span><span class="co">#&gt;   2:   4         129390130      + LOC100507487          +</span></span>
-<span><span class="co">#&gt;   3:   5          84009671      -        EDIL3          -</span></span>
-<span><span class="co">#&gt;   4:  12          54635693      -         CBX5          -</span></span>
-<span><span class="co">#&gt;   5:   2         181930711      +       UBE2E3          +</span></span>
-<span><span class="co">#&gt;  ---                                                     </span></span>
-<span><span class="co">#&gt; 798:  11          72729902      -       FCHSD2          -</span></span>
-<span><span class="co">#&gt; 799:  12         133238196      +         POLE          -</span></span>
-<span><span class="co">#&gt; 800:  20          10028583      -       ANKEF1          +</span></span>
-<span><span class="co">#&gt; 801:  12          50594351      +        LIMA1          -</span></span>
-<span><span class="co">#&gt; 802:   5          84009671      -        EDIL3          -</span></span>
-<span><span class="co">#&gt;                                                   CompleteAmplificationID Value</span></span>
-<span><span class="co">#&gt;   1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC   182</span></span>
-<span><span class="co">#&gt;   2: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC     4</span></span>
-<span><span class="co">#&gt;   3: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC     5</span></span>
-<span><span class="co">#&gt;   4: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC     9</span></span>
-<span><span class="co">#&gt;   5: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC    83</span></span>
-<span><span class="co">#&gt;  ---                                                                           </span></span>
-<span><span class="co">#&gt; 798: PJ01_POOL01_LTR29LC90_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC     1</span></span>
-<span><span class="co">#&gt; 799: PJ01_POOL01_LTR29LC90_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC     2</span></span>
-<span><span class="co">#&gt; 800: PJ01_POOL01_LTR29LC90_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC     8</span></span>
-<span><span class="co">#&gt; 801:  PJ01_POOL01_LTR53LC22_PT001_PT001-93_lenti_GLOBE_PB_1_SLiM_0030_MNC     1</span></span>
-<span><span class="co">#&gt; 802:   PJ01_POOL01_LTR9LC80_PT001_PT001-74_lenti_GLOBE_PB_1_SLiM_0180_MNC     1</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 802 × 7</span></span></span>
+<span><span class="co">#&gt;    chr   integration_locus strand GeneName     GeneStrand CompleteAmplificatio…¹</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 16             68<span style="text-decoration: underline;">164</span>148 +      NFATC3       +          PJ01_POOL01_LTR75LC38…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 4             129<span style="text-decoration: underline;">390</span>130 +      LOC100507487 +          PJ01_POOL01_LTR75LC38…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 5              84<span style="text-decoration: underline;">009</span>671 -      EDIL3        -          PJ01_POOL01_LTR75LC38…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 12             54<span style="text-decoration: underline;">635</span>693 -      CBX5         -          PJ01_POOL01_LTR75LC38…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 2             181<span style="text-decoration: underline;">930</span>711 +      UBE2E3       +          PJ01_POOL01_LTR75LC38…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 20             35<span style="text-decoration: underline;">920</span>986 +      MANBAL       +          PJ01_POOL01_LTR75LC38…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 22             26<span style="text-decoration: underline;">900</span>625 +      TFIP11       -          PJ01_POOL01_LTR75LC38…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 3             106<span style="text-decoration: underline;">580</span>075 +      LINC00882    -          PJ01_POOL01_LTR75LC38…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 1              16<span style="text-decoration: underline;">186</span>297 -      SPEN         +          PJ01_POOL01_LTR75LC38…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 17             61<span style="text-decoration: underline;">712</span>419 +      MAP3K3       +          PJ01_POOL01_LTR75LC38…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 792 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ abbreviated name: ¹​CompleteAmplificationID</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: Value &lt;int&gt;</span></span></span></code></pre>
 <p>For details on usage and arguments view the dedicated function
 documentation.</p>
 </div>
@@ -971,7 +769,7 @@ association file is imported with the file system alignment option.
 <code>ISAnalytics</code> provides a function,
 <code><a href="../reference/import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices()</a></code>, that allows to do just
 that in a fast and efficient way.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">with_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ISAnalytics.reports <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="op">{</span></span>
 <span>    <span class="va">matrices</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_parallel_Vispa2Matrices.html">import_parallel_Vispa2Matrices</a></span><span class="op">(</span><span class="va">af</span>,</span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span>,</span>
@@ -1039,27 +837,16 @@ handy to have all data in a single data frame rather than two. If set to
 <code><a href="../reference/comparison_matrix.html">comparison_matrix()</a></code> and produce a single data frames that
 has a dedicated column for each quantification. For example, for the
 matrices we’ve imported before:</p>
-<pre><code><span><span class="co">#&gt;    chr integration_locus strand     GeneName GeneStrand</span></span>
-<span><span class="co">#&gt; 1:  16          68164148      +       NFATC3          +</span></span>
-<span><span class="co">#&gt; 2:   4         129390130      + LOC100507487          +</span></span>
-<span><span class="co">#&gt; 3:   5          84009671      -        EDIL3          -</span></span>
-<span><span class="co">#&gt; 4:  12          54635693      -         CBX5          -</span></span>
-<span><span class="co">#&gt; 5:   2         181930711      +       UBE2E3          +</span></span>
-<span><span class="co">#&gt; 6:  20          35920986      +       MANBAL          +</span></span>
-<span><span class="co">#&gt;                                                 CompleteAmplificationID</span></span>
-<span><span class="co">#&gt; 1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span></span>
-<span><span class="co">#&gt; 2: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span></span>
-<span><span class="co">#&gt; 3: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span></span>
-<span><span class="co">#&gt; 4: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span></span>
-<span><span class="co">#&gt; 5: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span></span>
-<span><span class="co">#&gt; 6: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span></span>
-<span><span class="co">#&gt;    fragmentEstimate seqCount</span></span>
-<span><span class="co">#&gt; 1:       102.945718      182</span></span>
-<span><span class="co">#&gt; 2:         3.013590        4</span></span>
-<span><span class="co">#&gt; 3:         5.033742        5</span></span>
-<span><span class="co">#&gt; 4:         9.129338        9</span></span>
-<span><span class="co">#&gt; 5:        50.502734       83</span></span>
-<span><span class="co">#&gt; 6:        16.394422       39</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 8</span></span></span>
+<span><span class="co">#&gt;   chr   integration_locus strand GeneName     GeneStrand CompleteAmplificationID</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 16             68<span style="text-decoration: underline;">164</span>148 +      NFATC3       +          PJ01_POOL01_LTR75LC38_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 4             129<span style="text-decoration: underline;">390</span>130 +      LOC100507487 +          PJ01_POOL01_LTR75LC38_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 5              84<span style="text-decoration: underline;">009</span>671 -      EDIL3        -          PJ01_POOL01_LTR75LC38_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 12             54<span style="text-decoration: underline;">635</span>693 -      CBX5         -          PJ01_POOL01_LTR75LC38_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2             181<span style="text-decoration: underline;">930</span>711 +      UBE2E3       +          PJ01_POOL01_LTR75LC38_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 20             35<span style="text-decoration: underline;">920</span>986 +      MANBAL       +          PJ01_POOL01_LTR75LC38_…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: fragmentEstimate &lt;dbl&gt;, seqCount &lt;int&gt;</span></span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="report_path-argument">
@@ -1074,52 +861,44 @@ should be saved.</p>
 <h4 id="mode-argument">
 <code>mode</code> argument<a class="anchor" aria-label="anchor" href="#mode-argument"></a>
 </h4>
-<p>This argument can take one of two values, <code>AUTO</code> or
-<code>INTERACTIVE</code>. The <code>INTERACTIVE</code> workflow, as the
-name suggests, needs user console input but allows a fine tuning of the
-import process. On the other hand, <code>AUTO</code> allows a fully
-automated workflow but has of course some limitations.</p>
+<p>Since <code>ISAnalytics 1.8.3</code> this argument can only be set to
+<code>AUTO</code>.</p>
 <p><strong>What do you want to import?</strong><br>
 In a fully automated mode, the function will try to import everything
 that is contained in the input association file. This means that if you
 need to import only a specific set of projects/pools, you will need to
 filter the association file accordingly prior calling the function (you
 can easily do that via the <code>filter_for</code> argument as explained
-in Section @ref(metadata)). In interactive mode the function will ask
-you to type what you want to import.</p>
+in Section @ref(metadata)).</p>
 <p><strong>How to deal with duplicates?</strong><br>
 When scanning folders for files that match a given pattern (in our case
 the function looks for matrices that match the quantification type and
 the matrix type), it is very possible that the same folder contains
 multiple files for the same quantification. Of course this is not
 recommended, we suggest to move the duplicated files in a sub directory
-or remove them if they’re not necessary, but in case this happens, in
-interactive mode, the function asks directly which files should be
-considered. Of course this is not possible in automated mode, therefore
-you need to set two other arguments (described in the next sub sections)
-to “help” the function discriminate between duplicates. Please note that
-if such discrimination is not possible no files are imported.</p>
+or remove them if they’re not necessary, but in case this happens, you
+need to set two other arguments (described in the next sub sections) to
+“help” the function discriminate between duplicates. Please note that if
+such discrimination is not possible no files are imported.</p>
 </div>
 <div class="section level4">
 <h4 id="patterns-argument">
 <code>patterns</code> argument<a class="anchor" aria-label="anchor" href="#patterns-argument"></a>
 </h4>
-<p>This argument is relevant only if <code>mode</code> is set to
-<code>AUTO</code>. Providing a set of patterns (interpreted as regular
-expressions) helps the function to choose between duplicated files if
-any are found. If you’re confident your folders don’t contain any
-duplicates feel free to ignore this argument.</p>
+<p>Providing a set of patterns (interpreted as regular expressions)
+helps the function to choose between duplicated files if any are found.
+If you’re confident your folders don’t contain any duplicates feel free
+to ignore this argument.</p>
 </div>
 <div class="section level4">
 <h4 id="matching_opt-argument">
 <code>matching_opt</code> argument<a class="anchor" aria-label="anchor" href="#matching_opt-argument"></a>
 </h4>
-<p>This argument is relevant only if <code>mode</code> is set to
-<code>AUTO</code> and <code>patterns</code> isn’t <code>NULL</code>.
-Tells the function how to match the given patterns if multiple are
-supplied: <code>ALL</code> means keep only those files whose name
-matches all the given patterns, <code>ANY</code> means keep only those
-files whose name matches any of the given patterns and
+<p>This argument is relevant only if <code>patterns</code> isn’t
+<code>NULL</code>. Tells the function how to match the given patterns if
+multiple are supplied: <code>ALL</code> means keep only those files
+whose name matches all the given patterns, <code>ANY</code> means keep
+only those files whose name matches any of the given patterns and
 <code>OPTIONAL</code> expresses a preference, try to find files that
 contain the patterns and if you don’t find any return whatever you
 find.</p>
@@ -1128,9 +907,9 @@ find.</p>
 <h4 id="argument">
 <code>...</code> argument<a class="anchor" aria-label="anchor" href="#argument"></a>
 </h4>
-<p>Additional named arguments to supply to both
-<code><a href="../reference/import_association_file.html">import_association_file()</a></code> and
-<code><a href="../reference/comparison_matrix.html">comparison_matrix()</a></code>.</p>
+<p>Additional named arguments to supply to
+<code><a href="../reference/comparison_matrix.html">comparison_matrix()</a></code> and
+<code>import_single_Vispa2_matrix</code></p>
 </div>
 </div>
 <div class="section level3">
@@ -1288,7 +1067,7 @@ integration is simply removed from the matrix.</p>
 <div class="section level4">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h4>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="co">## Multi quantification matrix</span></span>
@@ -1351,7 +1130,7 @@ call the function <code><a href="../reference/realign_after_collisions.html">rea
 input the processed sequence count matrix and the named list of other
 matrices to realign. <strong>NOTE: the names in the list must be
 quantification types.</strong></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">other_realigned</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/realign_after_collisions.html">realign_after_collisions</a></span><span class="op">(</span></span>
 <span>    sc_matrix <span class="op">=</span> <span class="va">no_coll_single</span>,</span>
 <span>    other_matrices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>fragmentEstimate <span class="op">=</span> <span class="va">separated</span><span class="op">$</span><span class="va">fragmentEstimate</span><span class="op">)</span></span>
@@ -1414,39 +1193,38 @@ import function please view the vignette “How to use import functions”:
 <code>vignette("how_to_import_functions", package="ISAnalytics")</code>.</li>
 <li>Perform aggregation</li>
 </ol>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="va">aggregated_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_metadata.html">aggregate_metadata</a></span><span class="op">(</span>association_file <span class="op">=</span> <span class="va">association_file</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 20 × 19</span></span></span>
-<span><span class="co">#&gt;    Subjec…¹ CellM…² Tissue TimeP…³ FusionPr…⁴ LinearPC…⁵ VCN_avg ng DN…⁶ Kapa_…⁷</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001    MNC     BM     0030    2016-11-03 Inf           0.26   300.    <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001    MNC     BM     0060    2016-11-03 Inf           0.42   171.    <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001    MNC     BM     0090    2016-11-03 Inf           0.35    89.2   <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT001    MNC     BM     0180    2016-11-03 Inf           0.27   181.    <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT001    MNC     BM     0360    2017-04-21 Inf           0.18    42     <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT001    MNC     PB     0030    2016-11-03 Inf           0.23    23.8   <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001    MNC     PB     0060    2016-11-03 Inf           0.3     23.2   <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT001    MNC     PB     0090    2016-11-03 Inf           0.26    26.6   <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001    MNC     PB     0180    2016-11-03 Inf           0.24    23.1   <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001    MNC     PB     0360    2017-04-21 Inf           0.19    45.2   <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> PT002    MNC     BM     0030    2017-04-21 Inf           1.01   182.    <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> PT002    MNC     BM     0060    2017-05-05 Inf           1.24   172.    <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> PT002    MNC     BM     0090    2017-05-05 Inf           2.05   135.    <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> PT002    MNC     BM     0180    2017-05-16 Inf           2.3    196.    <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> PT002    MNC     BM     0360    2018-03-12 Inf           2.52   299.     38.4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span> PT002    MNC     PB     0030    2017-04-21 Inf           0.77   106.    <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">17</span> PT002    MNC     PB     0060    2017-05-05 Inf           1.07    77.4   <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">18</span> PT002    MNC     PB     0090    2017-05-05 Inf           1.09   123     <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">19</span> PT002    MNC     PB     0180    2017-05-05 Inf           1.43   123.    <span style="color: #BB0000;">NaN</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">20</span> PT002    MNC     PB     0360    2018-03-12 Inf           2.07   300.     22.0</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 10 more variables: `ng DNA corrected_sum` &lt;dbl&gt;, ulForPool_sum &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   BARCODE_MUX_sum &lt;int&gt;, TRIMMING_FINAL_LTRLC_sum &lt;int&gt;, LV_MAPPED_sum &lt;int&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   BWA_MAPPED_OVERALL_sum &lt;int&gt;, ISS_MAPPED_OVERALL_sum &lt;int&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   PCRMethod &lt;chr&gt;, NGSTechnology &lt;chr&gt;, DNAnumber &lt;chr&gt;, and abbreviated</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   variable names ¹​SubjectID, ²​CellMarker, ³​TimePoint,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   ⁴​FusionPrimerPCRDate_min, ⁵​LinearPCRDate_min, ⁶​`ng DNA corrected_avg`,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   ⁷​Kapa_avg</span></span></span></code></pre>
+<span><span class="co">#&gt;    SubjectID CellMarker Tissue TimePoint FusionPrimerPCRDate_min</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001     MNC        BM     0030      2016-11-03             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001     MNC        BM     0060      2016-11-03             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001     MNC        BM     0090      2016-11-03             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT001     MNC        BM     0180      2016-11-03             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT001     MNC        BM     0360      2017-04-21             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT001     MNC        PB     0030      2016-11-03             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001     MNC        PB     0060      2016-11-03             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT001     MNC        PB     0090      2016-11-03             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001     MNC        PB     0180      2016-11-03             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001     MNC        PB     0360      2017-04-21             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> PT002     MNC        BM     0030      2017-04-21             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> PT002     MNC        BM     0060      2017-05-05             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> PT002     MNC        BM     0090      2017-05-05             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> PT002     MNC        BM     0180      2017-05-16             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> PT002     MNC        BM     0360      2018-03-12             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span> PT002     MNC        PB     0030      2017-04-21             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">17</span> PT002     MNC        PB     0060      2017-05-05             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">18</span> PT002     MNC        PB     0090      2017-05-05             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">19</span> PT002     MNC        PB     0180      2017-05-05             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">20</span> PT002     MNC        PB     0360      2018-03-12             </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 14 more variables: LinearPCRDate_min &lt;date&gt;, VCN_avg &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   `ng DNA corrected_avg` &lt;dbl&gt;, Kapa_avg &lt;dbl&gt;, `ng DNA corrected_sum` &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   ulForPool_sum &lt;dbl&gt;, BARCODE_MUX_sum &lt;int&gt;, TRIMMING_FINAL_LTRLC_sum &lt;int&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   LV_MAPPED_sum &lt;int&gt;, BWA_MAPPED_OVERALL_sum &lt;int&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   ISS_MAPPED_OVERALL_sum &lt;int&gt;, PCRMethod &lt;chr&gt;, NGSTechnology &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   DNAnumber &lt;chr&gt;</span></span></span></code></pre>
 </div>
 </div>
 <div class="section level4">
@@ -1466,7 +1244,7 @@ that are related to the samples.</p>
 </li>
 <li>Perform aggregation</li>
 </ol>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"integration_matrices"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"association_file"</span>, package <span class="op">=</span> <span class="st">"ISAnalytics"</span><span class="op">)</span></span>
 <span><span class="va">aggreg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
@@ -1499,7 +1277,7 @@ that are related to the samples.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> BM     0060              <span style="text-decoration: underline;">1</span>605                 8.03</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PB     0060                 1                 1.00</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PB     0180                 1                 1.00</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 1,064 more rows</span></span></span></code></pre>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1,064 more rows</span></span></span></code></pre>
 <p>The function <code>aggregate_values_by_key</code> can perform the
 aggregation both on the list of matrices and a single matrix.</p>
 <div class="section level6">
@@ -1517,7 +1295,7 @@ aggregation. The default value is set to
 <code>c("SubjectID", "CellMarker", "Tissue", "TimePoint")</code> (same
 default key as the <code>aggregate_metadata</code> function).</li>
 </ol>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
 <span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
@@ -1549,7 +1327,7 @@ default key as the <code>aggregate_metadata</code> function).</li>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         <span style="text-decoration: underline;">3</span>494                16.1 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         <span style="text-decoration: underline;">2</span>947                 9.04</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>           30                 2.00</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 567 more rows</span></span></span></code></pre>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 567 more rows</span></span></span></code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>
 <strong>Changing the <code>lambda</code> value</strong><br>
@@ -1564,7 +1342,7 @@ as input and produce a SINGLE value as output. Valid options for this
 purpose might be: <code>sum</code>, <code>mean</code>,
 <code>median</code>, <code>min</code>, <code>max</code> and so on.</li>
 </ol>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
 <span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
@@ -1597,14 +1375,14 @@ purpose might be: <code>sum</code>, <code>mean</code>,
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                  3.22</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                  3.01</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                  2.00</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 567 more rows</span></span></span></code></pre>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 567 more rows</span></span></span></code></pre>
 <p>Note that, when specifying purrr-style lambdas (formulas), the first
 parameter needs to be set to <code>.x</code>, other parameters can be
 set as usual.</p>
 <p>You can also use in <code>lambda</code> functions that produce data
 frames or lists. In this case all variables from the produced data frame
 will be included in the final data frame. For example:</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
 <span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
@@ -1637,7 +1415,7 @@ will be included in the final data frame. For example:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> <span style="color: #949494;">&lt;psych [1 × 13]&gt;</span>  <span style="color: #949494;">&lt;psych [1 × 13]&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> <span style="color: #949494;">&lt;psych [1 × 13]&gt;</span>  <span style="color: #949494;">&lt;psych [1 × 13]&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> <span style="color: #949494;">&lt;psych [1 × 13]&gt;</span>  <span style="color: #949494;">&lt;psych [1 × 13]&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 567 more rows</span></span></span></code></pre>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 567 more rows</span></span></span></code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>
 <strong>Changing the <code>value_cols</code> value</strong><br>
@@ -1647,7 +1425,7 @@ function contained in <code>lambda</code> will be applied to every
 column in <code>value_cols</code>: resulting columns will be named as
 “original name_function applied”.</li>
 </ol>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
 <span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
@@ -1680,7 +1458,7 @@ column in <code>value_cols</code>: resulting columns will be named as
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>          699.                16.1                   3.22</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>          982.                 9.04                  3.01</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>           30                  2.00                  2.00</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 567 more rows</span></span></span></code></pre>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 567 more rows</span></span></span></code></pre>
 <ol start="4" style="list-style-type: decimal">
 <li>
 <strong>Changing the <code>group</code> value</strong><br>
@@ -1691,7 +1469,7 @@ contains
 You can change this grouping as you see fit, if you don’t want to add
 any other variable to the key, just set it to <code>NULL</code>.</li>
 </ol>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">integration_matrices</span>,</span>
 <span>    association_file <span class="op">=</span> <span class="va">association_file</span>,</span>
@@ -1725,10 +1503,454 @@ any other variable to the key, just set it to <code>NULL</code>.</li>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                16.1                   3.22</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                 9.04                  3.01</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                 2.00                  2.00</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># … with 567 more rows</span></span></span></code></pre>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 567 more rows</span></span></span></code></pre>
 </div>
 </div>
 </div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="analysis-use-case-example-shared-integration-sites">Analysis use-case example: shared integration sites<a class="anchor" aria-label="anchor" href="#analysis-use-case-example-shared-integration-sites"></a>
+</h2>
+<p>An integration site is always characterized by a triple of values:
+<code>(chr, integration_locus, strand)</code>, hence these attributes
+are always present in integration matrices.</p>
+<p>We can aggregate our data in different ways according to our needs,
+obtaining therefore different groups. Each group has an associated set
+of integration sites.</p>
+<p>NOTE: aggregating data is not mandatory, since sharing functions in
+ISAnalytics only count distinct integration sites and do not require any
+quantification. The only important thing is that columns that are
+included in the specified key are also included in the input
+matrices.</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Aggregation by standard key</span></span>
+<span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_values_by_key.html">aggregate_values_by_key</a></span><span class="op">(</span><span class="va">integration_matrices</span>,</span>
+<span>    <span class="va">association_file</span>,</span>
+<span>    value_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"seqCount"</span>, <span class="st">"fragmentEstimate"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0030"</span>, <span class="st">"0060"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 419 × 11</span></span></span>
+<span><span class="co">#&gt;    chr   integration_locus strand GeneName GeneStrand SubjectID CellMarker</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 1               8<span style="text-decoration: underline;">464</span>757 -      RERE     -          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 1               8<span style="text-decoration: underline;">464</span>757 -      RERE     -          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 1               8<span style="text-decoration: underline;">607</span>357 +      RERE     -          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 1              11<span style="text-decoration: underline;">339</span>120 +      UBIAD1   +          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 1              11<span style="text-decoration: underline;">339</span>120 +      UBIAD1   +          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 1              16<span style="text-decoration: underline;">186</span>297 -      SPEN     +          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 1              16<span style="text-decoration: underline;">186</span>297 -      SPEN     +          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 1              16<span style="text-decoration: underline;">602</span>483 +      FBXO42   -          PT001     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 1              25<span style="text-decoration: underline;">337</span>264 -      MIR4425  +          PT002     MNC       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 1              25<span style="text-decoration: underline;">337</span>264 -      MIR4425  +          PT002     MNC       </span></span>
+<span><span class="co">#&gt;    Tissue TimePoint seqCount_sum fragmentEstimate_sum</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> BM     0030               542                 3.01</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> BM     0060                 1                 1.00</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> BM     0060                 1                 1.00</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> BM     0060              <span style="text-decoration: underline;">1</span>605                 8.03</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PB     0060                 1                 1.00</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> BM     0030                 1                 1.00</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PB     0060                 1                 1.00</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> BM     0060              <span style="text-decoration: underline;">2</span>947                 9.04</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> BM     0030                23                 9.14</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PB     0060                36                 7.07</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 409 more rows</span></span></span></code></pre>
+<p>An integration site is <em>shared</em> between two or more groups if
+the same triple is observed in all the groups considered.</p>
+<div class="section level3">
+<h3 id="automated-sharing-counts">Automated sharing counts<a class="anchor" aria-label="anchor" href="#automated-sharing-counts"></a>
+</h3>
+<p>ISAnalytics provides the function <code><a href="../reference/is_sharing.html">is_sharing()</a></code> for
+computing automated sharing counts. The function has several arguments
+that can be tuned according to user needs.</p>
+</div>
+<div class="section level3">
+<h3 id="scenario-1-single-input-data-frame-and-single-grouping-key">SCENARIO 1: single input data frame and single grouping key<a class="anchor" aria-label="anchor" href="#scenario-1-single-input-data-frame-and-single-grouping-key"></a>
+</h3>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,</span>
+<span>    group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>        <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    n_comp <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>    is_count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    minimal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    include_self_comp <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    keep_genomic_coord <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_1</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 28 × 10</span></span></span>
+<span><span class="co">#&gt;    g1           g2    shared count_g1 count_g2 count_union  on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_MNC_B… PT00…     21       54      114         147 38.9   18.4    14.3  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_MNC_B… PT00…      7       54       28          75 13.0   25       9.33 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_MNC_B… PT00…      8       54       59         105 14.8   13.6     7.62 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT001_MNC_B… PT00…      0       54       98         152  0      0       0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT001_MNC_B… PT00…      1       54       33          86  1.85   3.03    1.16 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT001_MNC_B… PT00…      0       54       15          69  0      0       0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_MNC_B… PT00…      0       54       18          72  0      0       0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT001_MNC_B… PT00…      7      114       28         135  6.14  25       5.19 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_MNC_B… PT00…     29      114       59         144 25.4   49.2    20.1  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_MNC_B… PT00…      1      114       98         211  0.877  1.02    0.474</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 18 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: is_coord &lt;list&gt;</span></span></span></code></pre></div>
+<p>In this configuration we set:</p>
+<ul>
+<li>A single input data frame: <code>agg</code>
+</li>
+<li>A single grouping key by setting the argument
+<code>grouping_key</code>. In this specific case, our groups will be
+identified by a unique combination of <code>SubjectID</code>,
+<code>CellMarker</code>, <code>Tissue</code> and
+<code>TimePoint</code>
+</li>
+<li>
+<code>n_comp</code> represents the number of comparisons to compute:
+2 means we’re interested in knowing the sharing for PAIRS of distinct
+groups</li>
+<li>We want to keep the counts of distinct integration sites for each
+group by setting <code>is_count</code> to <code>TRUE</code>
+</li>
+<li>
+<code>relative_is_sharing</code> if set to <code>TRUE</code> adds
+sharing expressed as a percentage, more precisely it adds a column
+<code>on_g1</code> that is calculated as the absolute number of shared
+integrations divided by the cardinality of the first group,
+<code>on_g2</code> is analogous but is computed on the cardinality of
+the second group and finally <code>on_union</code> is computed on the
+cardinality of the union of the two groups.</li>
+<li>By setting the argument <code>minimal</code> to <code>TRUE</code> we
+tell the function to avoid redundant comparisons: in this way only
+<strong>combinations</strong> and not permutations are included in the
+output table</li>
+<li>
+<code>include_self_comp</code> adds rows in the table that are
+labelled with the same group: these rows always have a 100% sharing with
+all other groups. There are few scenarios where this is useful, but for
+now we set it to <code>FALSE</code> since we don’t need it</li>
+<li>
+<code>keep_genomic_coord</code> allows us to keep the genomic
+coordinates of the shared integration sites as a separate table</li>
+</ul>
+<div class="section level5">
+<h5 id="changing-the-number-of-comparisons">Changing the number of comparisons<a class="anchor" aria-label="anchor" href="#changing-the-number-of-comparisons"></a>
+</h5>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_1_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,</span>
+<span>    group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>        <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    n_comp <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>    is_count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    minimal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    include_self_comp <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    keep_genomic_coord <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_1_a</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 56 × 13</span></span></span>
+<span><span class="co">#&gt;    g1      g2    g3    shared count_g1 count_g2 count_g3 count_union on_g1 on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_… PT00… PT00…      5       54      114       28         166  9.26  4.39</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_… PT00… PT00…      6       54      114       59         175 11.1   5.26</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_… PT00… PT00…      0       54      114       98         244  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT001_… PT00… PT00…      0       54      114       33         179  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT001_… PT00… PT00…      0       54      114       15         161  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT001_… PT00… PT00…      0       54      114       18         165  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_… PT00… PT00…      1       54       28       59         117  1.85  3.57</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT001_… PT00… PT00…      0       54       28       98         173  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_… PT00… PT00…      0       54       28       33         107  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_… PT00… PT00…      0       54       28       15          90  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 46 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;, is_coord &lt;list&gt;</span></span></span></code></pre></div>
+<p>Changing the <code>n_comp</code> to 3 means that we want to calculate
+the sharing between 3 different groups. Note that the
+<code>shared</code> column contains the counts of integrations that are
+shared by <strong>ALL</strong> groups, which is equivalent to a set
+intersection.</p>
+<p>Beware of the fact that the more comparisons are requested the more
+time the computation requires.</p>
+</div>
+<div class="section level5">
+<h5 id="a-case-when-it-is-useful-to-set-minimal-false">A case when it is useful to set <code>minimal = FALSE</code><a class="anchor" aria-label="anchor" href="#a-case-when-it-is-useful-to-set-minimal-false"></a>
+</h5>
+<p>Setting <code>minimal = FALSE</code> produces all possible
+permutations of the groups and the corresponding values. In combination
+with <code>include_self_comp = TRUE</code>, this is useful when we want
+to know the sharing between pairs of groups and plot results as a
+heatmap.</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_1_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,</span>
+<span>    group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>        <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    n_comp <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>    is_count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    minimal <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    include_self_comp <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_1_b</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 64 × 9</span></span></span>
+<span><span class="co">#&gt;    g1            g2    shared count_g1 count_g2 count_union on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_MNC_BM… PT00…     54       54       54          54 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_MNC_BM… PT00…    114      114      114         114 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_MNC_PB… PT00…     59       59       59          59 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT002_MNC_BM… PT00…     98       98       98          98 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT002_MNC_PB… PT00…     18       18       18          18 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT002_MNC_PB… PT00…     15       15       15          15 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_MNC_PB… PT00…     28       28       28          28 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT002_MNC_BM… PT00…     33       33       33          33 100   100      100  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_MNC_BM… PT00…     21       54      114         147  38.9  18.4     14.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_MNC_BM… PT00…     21      114       54         147  18.4  38.9     14.3</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 54 more rows</span></span></span>
+<span><span class="va">heatmaps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_heatmap.html">sharing_heatmap</a></span><span class="op">(</span><span class="va">sharing_1_b</span><span class="op">)</span></span></code></pre></div>
+<p>The function <code><a href="../reference/sharing_heatmap.html">sharing_heatmap()</a></code> automatically plots
+sharing between 2 groups. There are several arguments to this function
+that allow us to obtain heatmaps for the absolute sharing values or the
+relative (percentage) values.</p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">heatmaps</span><span class="op">$</span><span class="va">absolute</span></span></code></pre></div>
+<p><img src="workflow_start_files/figure-html/unnamed-chunk-45-1.png" width="700"></p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">heatmaps</span><span class="op">$</span><span class="va">on_g1</span></span></code></pre></div>
+<p><img src="workflow_start_files/figure-html/unnamed-chunk-45-2.png" width="700"></p>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">heatmaps</span><span class="op">$</span><span class="va">on_union</span></span></code></pre></div>
+<p><img src="workflow_start_files/figure-html/unnamed-chunk-45-3.png" width="700"></p>
+<p>Beware of the fact that calculating all permutations takes longer
+than calculating only distinct combinations, therefore if you don’t need
+your results plotted or you have more than 2 groups to compare you
+should stick with <code>minimal = TRUE</code> and
+<code>include_self_comp = FALSE</code>.</p>
+</div>
+<div class="section level4">
+<h4 id="scenario-2-single-input-data-frame-and-multiple-grouping-keys">SCENARIO 2: single input data frame and multiple grouping keys<a class="anchor" aria-label="anchor" href="#scenario-2-single-input-data-frame-and-multiple-grouping-keys"></a>
+</h4>
+<p>In the first scenario, groups were homogeneous, that is, they were
+grouped all with the same key. In this other scenario we want to start
+with data contained in just one data frame but we want to compare sets
+of integrations that are grouped differently. To do this we give as
+input a <strong>list of keys</strong> through the argument
+<code>group_keys</code>.</p>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,</span>
+<span>    group_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>            <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>            <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>        <span class="op">)</span>,</span>
+<span>        g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span><span class="op">)</span>,</span>
+<span>        g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_2</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 32 × 12</span></span></span>
+<span><span class="co">#&gt;    g1    g2    g3    shared count_g1 count_g2 count_g3 count_union  on_g1  on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT00… PT00… MNC_…     54       54      186      271         310 100    29.0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT00… PT00… MNC_…     14       54      186      103         211  25.9   7.53 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT00… PT00… MNC_…      1       54      137      271         281   1.85  0.730</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT00… PT00… MNC_…      0       54      137      103         252   0     0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT00… PT00… MNC_…    114      114      186      271         310 100    61.3  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT00… PT00… MNC_…     35      114      186      103         211  30.7  18.8  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT00… PT00… MNC_…      2      114      137      271         281   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT00… PT00… MNC_…      2      114      137      103         292   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT00… PT00… MNC_…      9       28      186      271         310  32.1   4.84 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT00… PT00… MNC_…     28       28      186      103         211 100    15.1  </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 22 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;</span></span></span></code></pre></div>
+<p>There are a few things to keep in mind in this case:</p>
+<ul>
+<li>The arguments <code>group_key</code> (notice the absence of plural),
+<code>n_comp</code> and <code>include_self_comp</code> are ignored: the
+number of comparisons is automatically detected by counting the provided
+keys and a self comparison doesn’t make sense since group labels are
+different</li>
+<li>If you provide a list of identical keys or just one key you fall
+back to scenario 1</li>
+</ul>
+</div>
+<div class="section level4">
+<h4 id="scenario-3-multiple-input-data-frame-and-single-grouping-key">SCENARIO 3: multiple input data frame and single grouping key<a class="anchor" aria-label="anchor" href="#scenario-3-multiple-input-data-frame-and-single-grouping-key"></a>
+</h4>
+<p>Providing multiple input data frames and the same grouping key is an
+effective way to reduce the number of comparisons performed. Let’s make
+an example: suppose we’re interested in comparing groups labelled by a
+unique combination of <code>SubjectID</code>, <code>CellMarker</code>,
+<code>Tissue</code> and <code>TimePoint</code>, but this time we want
+the first group to contain only integrations relative to
+<code>PT001_MNC_BM_0030</code> and the second group to contain only
+integrations relative to <code>PT001_MNC_BM_0060</code>.</p>
+<p>We’re going to filter the original data frame in order to obtain only
+relevant data in 2 separated tables and then proceed by calling the
+function.</p>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">first_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">SubjectID</span> <span class="op">==</span> <span class="st">"PT001"</span>, <span class="va">CellMarker</span> <span class="op">==</span> <span class="st">"MNC"</span>, <span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span>,</span>
+<span>        <span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0030"</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="va">second_sample</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="va">SubjectID</span> <span class="op">==</span> <span class="st">"PT001"</span>, <span class="va">CellMarker</span> <span class="op">==</span> <span class="st">"MNC"</span>, <span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span>,</span>
+<span>        <span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0060"</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="va">sharing_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">first_sample</span>, <span class="va">second_sample</span>,</span>
+<span>    group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>        <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    is_count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    minimal <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_3</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 9</span></span></span>
+<span><span class="co">#&gt;   g1             g2    shared count_g1 count_g2 count_union on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> PT001_MNC_BM_… PT00…     21       54      114         147  38.9  18.4     14.3</span></span></code></pre></div>
+<p>Once again the arguments <code>n_comp</code> and
+<code>include_self_comp</code> are ignored: the number of comparisons is
+equal to the number of data frames in input.</p>
+<p>To handle special limit cases, the output group ids are appended with
+a dash and a number (<code>-1</code>, <code>-2</code>, …) that indicates
+the data frame of origin: this is useful in the case group ids are
+duplicated in the inputs. To understand better let’s make an
+example:</p>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_3_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span></span>
+<span>    <span class="va">first_sample</span>, <span class="va">second_sample</span>,</span>
+<span>    group_key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    is_count <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    relative_is_sharing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    minimal <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_3_a</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 9</span></span></span>
+<span><span class="co">#&gt;   g1       g2       shared count_g1 count_g2 count_union on_g1 on_g2 on_union</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> MNC_BM-1 MNC_BM-2     21       54      114         147  38.9  18.4     14.3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> MNC_BM-2 MNC_BM-1     21      114       54         147  18.4  38.9     14.3</span></span></code></pre></div>
+<p>As you can see, the IDs of group 1 and group 2 are duplicated and
+without a suffix it would be impossible to know which one came from
+which data frame. In this way we know that the group “MNC_BM-1” comes
+from table 1 and has 54 ISs, while “MNC_BM-2” comes from the second
+input table and has 114 ISs.</p>
+</div>
+<div class="section level4">
+<h4 id="scenario-4-multiple-input-data-frame-and-multiple-grouping-keys">SCENARIO 4: multiple input data frame and multiple grouping
+keys<a class="anchor" aria-label="anchor" href="#scenario-4-multiple-input-data-frame-and-multiple-grouping-keys"></a>
+</h4>
+<p>Finally, the most general scenario is when we have multiple data
+frames with multiple keys. In this case the number of data frames must
+be equal to the number of provided keys and grouping keys are applied in
+order ( data frame 1 is grouped with key 1, data frame 2 is grouped with
+key 2, and so on).</p>
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df1</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0030"</span><span class="op">)</span></span>
+<span><span class="va">df2</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">TimePoint</span> <span class="op">==</span> <span class="st">"0060"</span><span class="op">)</span></span>
+<span><span class="va">df3</span> <span class="op">&lt;-</span> <span class="va">agg</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Tissue</span> <span class="op">==</span> <span class="st">"BM"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">keys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span>,</span>
+<span>    g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"Tissue"</span><span class="op">)</span>,</span>
+<span>    g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sharing_4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">df1</span>, <span class="va">df2</span>, <span class="va">df3</span>, group_keys <span class="op">=</span> <span class="va">keys</span><span class="op">)</span></span>
+<span><span class="va">sharing_4</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 32 × 12</span></span></span>
+<span><span class="co">#&gt;    g1      g2    g3    shared count_g1 count_g2 count_g3 count_union on_g1 on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT001_… PT00… PT00…     21       54      114      147         147 38.9  18.4 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT001_… PT00… PT00…      0       54      114      126         271  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT001_… PT00… PT00…      8       54       59      147         175 14.8  13.6 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT001_… PT00… PT00…      0       54       59      126         229  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT001_… PT00… PT00…      1       54       33      147         179  1.85  3.03</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT001_… PT00… PT00…      1       54       33      126         179  1.85  3.03</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT001_… PT00… PT00…      0       54       18      147         165  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT001_… PT00… PT00…      0       54       18      126         185  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT001_… PT00… PT00…      7       28      114      147         166 25     6.14</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT001_… PT00… PT00…      0       28      114      126         260  0     0   </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 22 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;</span></span></span></code></pre></div>
+<p>Notice that in this example the keys for g1 and g3 are the same,
+meaning the labels of the groups are actually the same, however you
+should remember that the groups contain a <strong>different set of
+integration sites</strong> since they come from different data
+frames.</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="plotting-sharing-results">Plotting sharing results<a class="anchor" aria-label="anchor" href="#plotting-sharing-results"></a>
+</h3>
+<p>When we have more than 2 comparisons it is convenient to plot them as
+venn or euler diagrams. ISAnalytics has a fast way to do that through
+the functions <code><a href="../reference/is_sharing.html">is_sharing()</a></code> and
+<code><a href="../reference/sharing_venn.html">sharing_venn()</a></code>.</p>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/is_sharing.html">is_sharing</a></span><span class="op">(</span><span class="va">agg</span>,</span>
+<span>    group_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        g1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>            <span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span>,</span>
+<span>            <span class="st">"Tissue"</span>, <span class="st">"TimePoint"</span></span>
+<span>        <span class="op">)</span>,</span>
+<span>        g2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SubjectID"</span>, <span class="st">"CellMarker"</span><span class="op">)</span>,</span>
+<span>        g3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CellMarker"</span>, <span class="st">"Tissue"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>, table_for_venn <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">sharing_5</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 32 × 13</span></span></span>
+<span><span class="co">#&gt;    g1    g2    g3    shared count_g1 count_g2 count_g3 count_union  on_g1  on_g2</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PT00… PT00… MNC_…     54       54      186      271         310 100    29.0  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PT00… PT00… MNC_…     14       54      186      103         211  25.9   7.53 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> PT00… PT00… MNC_…      1       54      137      271         281   1.85  0.730</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> PT00… PT00… MNC_…      0       54      137      103         252   0     0    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> PT00… PT00… MNC_…    114      114      186      271         310 100    61.3  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> PT00… PT00… MNC_…     35      114      186      103         211  30.7  18.8  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> PT00… PT00… MNC_…      2      114      137      271         281   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> PT00… PT00… MNC_…      2      114      137      103         292   1.75  1.46 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PT00… PT00… MNC_…      9       28      186      271         310  32.1   4.84 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> PT00… PT00… MNC_…     28       28      186      103         211 100    15.1  </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 22 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: on_g3 &lt;dbl&gt;, on_union &lt;dbl&gt;, truth_tbl_venn &lt;list&gt;</span></span></span></code></pre></div>
+<p>The argument <code>table_for_venn = TRUE</code> will add a new column
+<code>truth_tbl_venn</code> that contains corresponding truth tables for
+each row.</p>
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sharing_plots1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_venn.html">sharing_venn</a></span><span class="op">(</span><span class="va">sharing_5</span>, row_range <span class="op">=</span> <span class="fl">1</span>, euler <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">sharing_plots2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sharing_venn.html">sharing_venn</a></span><span class="op">(</span><span class="va">sharing_5</span>, row_range <span class="op">=</span> <span class="fl">1</span>, euler <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>Say that we’re interested in plotting just the first row of our
+sharing data frame. Then we can call the function
+<code>sharing_venn</code> and specify in the <code>row_range</code>
+argument the index 1. Note that this function requires the package
+<em><a href="https://CRAN.R-project.org/package=eulerr" class="external-link">eulerr</a></em>
+to work. The argument <code>euler</code> indicates if the function
+should produce euler or venn diagrams instead.</p>
+<p>Once obtained the lists of euler/venn objects we can plot them by
+simply calling the function <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>:</p>
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sharing_plots1</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p><img src="workflow_start_files/figure-html/unnamed-chunk-52-1.png" width="700"></p>
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">sharing_plots2</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p><img src="workflow_start_files/figure-html/unnamed-chunk-52-2.png" width="700"></p>
+<p>There are several options that can be set, for this please refer to
+<a href="https://jolars.github.io/eulerr/reference/plot.euler.html" class="external-link">eulerr
+docs</a>.</p>
 </div>
 </div>
 <div class="section level2">
@@ -1737,104 +1959,110 @@ any other variable to the key, just set it to <code>NULL</code>.</li>
 <p><code>R</code> session information.</p>
 <pre><code><span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
-<span><span class="co">#&gt;  version  R version 4.2.2 (2022-10-31)</span></span>
-<span><span class="co">#&gt;  os       Ubuntu 22.04.1 LTS</span></span>
+<span><span class="co">#&gt;  version  R version 4.2.3 (2023-03-15)</span></span>
+<span><span class="co">#&gt;  os       Ubuntu 22.04.2 LTS</span></span>
 <span><span class="co">#&gt;  system   x86_64, linux-gnu</span></span>
 <span><span class="co">#&gt;  ui       X11</span></span>
 <span><span class="co">#&gt;  language en</span></span>
 <span><span class="co">#&gt;  collate  C.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    C.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       UTC</span></span>
-<span><span class="co">#&gt;  date     2023-01-26</span></span>
+<span><span class="co">#&gt;  date     2023-04-04</span></span>
 <span><span class="co">#&gt;  pandoc   2.19.2 @ /usr/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">package      </span> <span style="color: #555555; font-style: italic;">*</span> <span style="color: #555555; font-style: italic;">version</span> <span style="color: #555555; font-style: italic;">date (UTC)</span> <span style="color: #555555; font-style: italic;">lib</span> <span style="color: #555555; font-style: italic;">source</span></span></span>
 <span><span class="co">#&gt;  backports       1.4.1   <span style="color: #555555;">2021-12-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  bibtex          0.5.1   <span style="color: #555555;">2023-01-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  BiocManager     1.30.19 <span style="color: #555555;">2022-10-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  BiocParallel    1.32.5  <span style="color: #555555;">2022-12-23</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
+<span><span class="co">#&gt;  bibtex          0.5.1   <span style="color: #555555;">2023-01-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  BiocManager     1.30.20 <span style="color: #555555;">2023-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  BiocParallel    1.32.6  <span style="color: #555555;">2023-03-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  BiocStyle     * 2.26.0  <span style="color: #555555;">2022-11-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
 <span><span class="co">#&gt;  bit             4.0.5   <span style="color: #555555;">2022-11-15</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  bit64           4.0.5   <span style="color: #555555;">2020-08-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  bookdown        0.32    <span style="color: #555555;">2023-01-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  bookdown        0.33    <span style="color: #555555;">2023-03-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  bslib           0.4.2   <span style="color: #555555;">2022-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  cachem          1.0.6   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  cachem          1.0.7   <span style="color: #555555;">2023-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  cellranger      1.1.0   <span style="color: #555555;">2016-07-27</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  cli             3.6.0   <span style="color: #555555;">2023-01-09</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  codetools       0.2-18  <span style="color: #555555;">2020-11-04</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  cli             3.6.1   <span style="color: #555555;">2023-03-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  codetools       0.2-19  <span style="color: #555555;">2023-02-01</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.3)</span></span></span>
 <span><span class="co">#&gt;  colorspace      2.1-0   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  crayon          1.5.2   <span style="color: #555555;">2022-09-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  crosstalk       1.2.0   <span style="color: #555555;">2021-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  curl            5.0.0   <span style="color: #555555;">2023-01-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  data.table      1.14.6  <span style="color: #555555;">2022-11-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  data.table      1.14.8  <span style="color: #555555;">2023-02-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  datamods        1.4.0   <span style="color: #555555;">2022-11-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  desc            1.4.2   <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  digest          0.6.31  <span style="color: #555555;">2022-12-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  doFuture        0.12.2  <span style="color: #555555;">2022-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  dplyr           1.0.10  <span style="color: #555555;">2022-09-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  doFuture        1.0.0   <span style="color: #555555;">2023-03-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  dplyr           1.1.1   <span style="color: #555555;">2023-03-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  DT            * 0.27    <span style="color: #555555;">2023-01-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  ellipsis        0.3.2   <span style="color: #555555;">2021-04-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  eulerr          7.0.0   <span style="color: #555555;">2022-12-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  evaluate        0.20    <span style="color: #555555;">2023-01-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  fansi           1.0.4   <span style="color: #555555;">2023-01-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  fastmap         1.1.0   <span style="color: #555555;">2021-01-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  forcats         0.5.2   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  farver          2.1.1   <span style="color: #555555;">2022-07-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  fastmap         1.1.1   <span style="color: #555555;">2023-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  forcats         1.0.0   <span style="color: #555555;">2023-01-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  foreach         1.5.2   <span style="color: #555555;">2022-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  foreign         0.8-83  <span style="color: #555555;">2022-09-28</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  fs              1.6.0   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  future          1.30.0  <span style="color: #555555;">2022-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  foreign         0.8-84  <span style="color: #555555;">2022-12-06</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.3)</span></span></span>
+<span><span class="co">#&gt;  fs              1.6.1   <span style="color: #555555;">2023-02-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  future          1.32.0  <span style="color: #555555;">2023-03-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  future.apply    1.10.0  <span style="color: #555555;">2022-11-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  generics        0.1.3   <span style="color: #555555;">2022-07-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  ggplot2         3.4.0   <span style="color: #555555;">2022-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  ggplot2         3.4.1   <span style="color: #555555;">2023-02-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  globals         0.16.2  <span style="color: #555555;">2022-11-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  glue            1.6.2   <span style="color: #555555;">2022-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  gtable          0.3.1   <span style="color: #555555;">2022-09-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  haven           2.5.1   <span style="color: #555555;">2022-08-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  hms             1.1.2   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  htmltools       0.5.4   <span style="color: #555555;">2022-12-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  htmlwidgets     1.6.1   <span style="color: #555555;">2023-01-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  httpuv          1.6.8   <span style="color: #555555;">2023-01-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  httr            1.4.4   <span style="color: #555555;">2022-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  ISAnalytics   * 1.9.2   <span style="color: #555555;">2023-01-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
+<span><span class="co">#&gt;  gtable          0.3.3   <span style="color: #555555;">2023-03-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  gtools          3.9.4   <span style="color: #555555;">2022-11-27</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  haven           2.5.2   <span style="color: #555555;">2023-02-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  highr           0.10    <span style="color: #555555;">2022-12-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  hms             1.1.3   <span style="color: #555555;">2023-03-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  htmltools       0.5.5   <span style="color: #555555;">2023-03-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  htmlwidgets     1.6.2   <span style="color: #555555;">2023-03-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  httpuv          1.6.9   <span style="color: #555555;">2023-02-14</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  httr            1.4.5   <span style="color: #555555;">2023-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  ISAnalytics   * 1.9.3   <span style="color: #555555;">2023-04-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
 <span><span class="co">#&gt;  iterators       1.0.14  <span style="color: #555555;">2022-02-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  jquerylib       0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  jsonlite        1.8.4   <span style="color: #555555;">2022-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  knitr           1.42    <span style="color: #555555;">2023-01-25</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  later           1.3.0   <span style="color: #555555;">2021-08-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  lattice         0.20-45 <span style="color: #555555;">2021-09-22</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
+<span><span class="co">#&gt;  lattice         0.20-45 <span style="color: #555555;">2021-09-22</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.3)</span></span></span>
 <span><span class="co">#&gt;  lifecycle       1.0.3   <span style="color: #555555;">2022-10-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  listenv         0.9.0   <span style="color: #555555;">2022-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  lubridate       1.9.1   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  magrittr      * 2.0.3   <span style="color: #555555;">2022-03-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  lubridate       1.9.2   <span style="color: #555555;">2023-02-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  magrittr        2.0.3   <span style="color: #555555;">2022-03-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  memoise         2.0.1   <span style="color: #555555;">2021-11-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  mime            0.12    <span style="color: #555555;">2021-09-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  mnormt          2.1.1   <span style="color: #555555;">2022-09-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  munsell         0.5.0   <span style="color: #555555;">2018-06-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  nlme            3.1-160 <span style="color: #555555;">2022-10-10</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.2)</span></span></span>
-<span><span class="co">#&gt;  openxlsx        4.2.5.1 <span style="color: #555555;">2022-10-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  parallelly      1.34.0  <span style="color: #555555;">2023-01-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  nlme            3.1-162 <span style="color: #555555;">2023-01-31</span> <span style="color: #555555;">[3]</span> <span style="color: #555555;">CRAN (R 4.2.3)</span></span></span>
+<span><span class="co">#&gt;  openxlsx        4.2.5.2 <span style="color: #555555;">2023-02-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  parallelly      1.35.0  <span style="color: #555555;">2023-03-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  phosphoricons   0.1.2   <span style="color: #555555;">2022-04-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  pillar          1.8.1   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  pillar          1.9.0   <span style="color: #555555;">2023-03-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  pkgconfig       2.0.3   <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  pkgdown         2.0.7   <span style="color: #555555;">2022-12-14</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">any (@2.0.7)</span></span></span>
 <span><span class="co">#&gt;  plyr            1.8.8   <span style="color: #555555;">2022-11-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  polyclip        1.10-4  <span style="color: #555555;">2022-10-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  polylabelr      0.2.0   <span style="color: #555555;">2020-04-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  progressr       0.13.0  <span style="color: #555555;">2023-01-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  promises        1.2.0.1 <span style="color: #555555;">2021-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  psych           2.2.9   <span style="color: #555555;">2022-09-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  psych           2.3.3   <span style="color: #555555;">2023-03-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  purrr           1.0.1   <span style="color: #555555;">2023-01-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  R.methodsS3     1.8.2   <span style="color: #555555;">2022-06-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  R.oo            1.25.0  <span style="color: #555555;">2022-06-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  R.utils         2.12.2  <span style="color: #555555;">2022-11-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  R6              2.5.1   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  ragg            1.2.5   <span style="color: #555555;">2023-01-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  Rcapture        1.4-4   <span style="color: #555555;">2022-05-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  Rcpp            1.0.10  <span style="color: #555555;">2023-01-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  reactable       0.4.3   <span style="color: #555555;">2023-01-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  readr           2.1.3   <span style="color: #555555;">2022-10-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  readxl          1.4.1   <span style="color: #555555;">2022-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  reactable       0.4.4   <span style="color: #555555;">2023-03-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  readr           2.1.4   <span style="color: #555555;">2023-02-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  readxl          1.4.2   <span style="color: #555555;">2023-02-09</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  RefManageR    * 1.4.0   <span style="color: #555555;">2022-09-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  rio             0.5.29  <span style="color: #555555;">2021-11-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  rlang           1.0.6   <span style="color: #555555;">2022-09-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  rmarkdown       2.20    <span style="color: #555555;">2023-01-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  rlang           1.1.0   <span style="color: #555555;">2023-03-14</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  rmarkdown       2.21    <span style="color: #555555;">2023-03-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  rprojroot       2.0.3   <span style="color: #555555;">2022-04-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  sass            0.4.5   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  scales          1.2.1   <span style="color: #555555;">2022-08-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
@@ -1846,25 +2074,25 @@ any other variable to the key, just set it to <code>NULL</code>.</li>
 <span><span class="co">#&gt;  stringr         1.5.0   <span style="color: #555555;">2022-12-02</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  systemfonts     1.0.4   <span style="color: #555555;">2022-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  textshaping     0.3.6   <span style="color: #555555;">2021-10-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  tibble          3.1.8   <span style="color: #555555;">2022-07-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  tibble          3.2.1   <span style="color: #555555;">2023-03-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  tidyr           1.3.0   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  tidyselect      1.2.0   <span style="color: #555555;">2022-10-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  timechange      0.2.0   <span style="color: #555555;">2023-01-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  tzdb            0.3.0   <span style="color: #555555;">2022-03-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  utf8            1.2.2   <span style="color: #555555;">2021-07-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  vctrs           0.5.2   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  utf8            1.2.3   <span style="color: #555555;">2023-01-31</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  vctrs           0.6.1   <span style="color: #555555;">2023-03-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  vroom           1.6.1   <span style="color: #555555;">2023-01-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  withr           2.5.0   <span style="color: #555555;">2022-03-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  writexl         1.4.2   <span style="color: #555555;">2023-01-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  xfun            0.36    <span style="color: #555555;">2022-12-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
+<span><span class="co">#&gt;  xfun            0.38    <span style="color: #555555;">2023-03-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  xml2            1.3.3   <span style="color: #555555;">2021-11-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  xtable          1.8-4   <span style="color: #555555;">2019-04-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  yaml            2.3.7   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  zip             2.2.2   <span style="color: #555555;">2022-10-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #555555;"> [1] /home/runner/work/_temp/Library</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> [2] /opt/R/4.2.2/lib/R/site-library</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> [3] /opt/R/4.2.2/lib/R/library</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> [2] /opt/R/4.2.3/lib/R/site-library</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;"> [3] /opt/R/4.2.3/lib/R/library</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span></span></code></pre>
 </div>
@@ -1874,14 +2102,14 @@ any other variable to the key, just set it to <code>NULL</code>.</li>
 <p>This vignette was generated using <em><a href="https://bioconductor.org/packages/3.16/BiocStyle" class="external-link">BiocStyle</a></em>
 (Oleś, 2022) with <em><a href="https://CRAN.R-project.org/package=knitr" class="external-link">knitr</a></em> (Xie,
 2023) and <em><a href="https://CRAN.R-project.org/package=rmarkdown" class="external-link">rmarkdown</a></em>
-(Allaire, Xie, McPherson, Luraschi, Ushey, Atkins, Wickham, Cheng,
-Chang, and Iannone, 2023) running behind the scenes.</p>
+(Allaire, Xie, Dervieux, McPherson, Luraschi, Ushey, Atkins, Wickham,
+Cheng, Chang, and Iannone, 2023) running behind the scenes.</p>
 <p>Citations made with <em><a href="https://CRAN.R-project.org/package=RefManageR" class="external-link">RefManageR</a></em>
 (McLean, 2017).</p>
 <p>
 <a id="bib-allaire2023rmarkdown"></a><a href="#cite-allaire2023rmarkdown">[1]</a><cite>
-J. Allaire, Y. Xie, J. McPherson, et al. <em>rmarkdown: Dynamic
-Documents for R</em>. R package version 2.20. 2023. URL:
+J. Allaire, Y. Xie, C. Dervieux, et al. <em>rmarkdown: Dynamic Documents
+for R</em>. R package version 2.21. 2023. URL:
 <a href="https://github.com/rstudio/rmarkdown" class="external-link">https://github.com/rstudio/rmarkdown</a>.</cite>
 </p>
 <p>
@@ -1919,7 +2147,7 @@ Generation in R</em>. R package version 1.42. 2023. URL:
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+<p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

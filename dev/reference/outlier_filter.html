@@ -12,7 +12,7 @@ Filter out outliers in metadata by using appropriate outlier tests."><meta prope
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,6 @@ Filter out outliers in metadata by using appropriate outlier tests."><meta prope
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -199,13 +198,6 @@ metadata df</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Removing NAs from data...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Log2 transformation, removing values &lt;= 0</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">filtered_af</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 CompleteAmplificationID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  PJ01_POOL01_LTR27LC94_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:  PJ01_POOL01_LTR69LC52_PT001_PT001-74_lenti_GLOBE_PB_1_SLiM_0180_MNC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:  PJ01_POOL01_LTR37LC2_PT001_PT001-107_lenti_GLOBE_BM_1_SLiM_0060_MNC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ProjectID  FUSIONID PoolID TagSequence SubjectID VectorType VectorID</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:      PJ01 ET#382.46 POOL01   LTR75LC38     PT001      lenti    GLOBE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:      PJ01 ET#381.40 POOL01   LTR53LC32     PT001      lenti    GLOBE</span>
@@ -283,27 +275,41 @@ metadata df</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:                                NA                               NA   NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:                                NA                               NA   NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:                                NA                               NA   NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ulForPool               UniqueID StudyTestID StudyTestGroup MouseID Tigroup</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        NA ID00000000000000007433        &lt;NA&gt;             NA      NA    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:        NA ID00000000000000007340        &lt;NA&gt;             NA      NA    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:        NA ID00000000000000007310        &lt;NA&gt;             NA      NA    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:        NA ID00000000000000007370        &lt;NA&gt;             NA      NA    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:        NA ID00000000000000007303        &lt;NA&gt;             NA      NA    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:        NA ID00000000000000007417        &lt;NA&gt;             NA      NA    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Tisource PathToFolderProjectID SamplesNameCheck TimepointDays</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     &lt;NA&gt;                 /PJ01             &lt;NA&gt;          0060</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:     &lt;NA&gt;                 /PJ01             &lt;NA&gt;          0180</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:     &lt;NA&gt;                 /PJ01             &lt;NA&gt;          0180</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:     &lt;NA&gt;                 /PJ01             &lt;NA&gt;          0180</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:     &lt;NA&gt;                 /PJ01             &lt;NA&gt;          0180</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     &lt;NA&gt;                 /PJ01             &lt;NA&gt;          0060</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    TimepointMonths TimepointYears ng DNA corrected      RUN_NAME PHIX_MAPPING</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:              02             01            23.18 PJ01|POOL01-1     43586699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:              06             01           181.44 PJ01|POOL01-1     43586699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:              06             01           181.44 PJ01|POOL01-1     43586699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:              06             01           181.44 PJ01|POOL01-1     43586699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:              06             01            23.06 PJ01|POOL01-1     43586699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:              02             01           171.36 PJ01|POOL01-1     43586699</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    ulForPool</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                 CompleteAmplificationID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  PJ01_POOL01_LTR53LC32_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  PJ01_POOL01_LTR27LC94_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:  PJ01_POOL01_LTR69LC52_PT001_PT001-74_lenti_GLOBE_PB_1_SLiM_0180_MNC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:  PJ01_POOL01_LTR37LC2_PT001_PT001-107_lenti_GLOBE_BM_1_SLiM_0060_MNC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  UniqueID StudyTestID StudyTestGroup MouseID Tigroup Tisource</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: ID00000000000000007433        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: ID00000000000000007340        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: ID00000000000000007310        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: ID00000000000000007370        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: ID00000000000000007303        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: ID00000000000000007417        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    PathToFolderProjectID SamplesNameCheck TimepointDays TimepointMonths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                 /PJ01             &lt;NA&gt;          0060              02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:                 /PJ01             &lt;NA&gt;          0180              06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                 /PJ01             &lt;NA&gt;          0180              06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                 /PJ01             &lt;NA&gt;          0180              06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                 /PJ01             &lt;NA&gt;          0180              06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:                 /PJ01             &lt;NA&gt;          0060              02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    TimepointYears ng DNA corrected      RUN_NAME PHIX_MAPPING</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:             01            23.18 PJ01|POOL01-1     43586699</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:             01           181.44 PJ01|POOL01-1     43586699</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:             01           181.44 PJ01|POOL01-1     43586699</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:             01           181.44 PJ01|POOL01-1     43586699</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:             01            23.06 PJ01|POOL01-1     43586699</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:             01           171.36 PJ01|POOL01-1     43586699</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    PLASMID_MAPPED_BYPOOL BARCODE_MUX LTR_IDENTIFIED TRIMMING_FINAL_LTRLC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:               2256176      645026         645026               630965</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:               2256176      652208         652177               649044</span>
@@ -332,7 +338,7 @@ metadata df</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

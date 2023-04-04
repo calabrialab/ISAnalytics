@@ -68,7 +68,7 @@ used by automated import functions
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.2</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.9.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,7 +92,6 @@ used by automated import functions
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/workflow_start.html">Setting up the workflow and first steps</a>
-    <a class="dropdown-item" href="../articles/sharing_analyses.html">Sharing analyses with ISAnalytics</a>
   </div>
 </li>
 <li class="nav-item">
@@ -261,7 +260,7 @@ associated, otherwise returns only a character vector of names</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ExperimentID char  <span style="color: #949494;">&lt;NULL&gt;</span>    optional <span style="color: #BB0000;">NA</span>        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Tissue       char  <span style="color: #949494;">&lt;NULL&gt;</span>    required tissue    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> TimePoint    char  <span style="color: #949494;">&lt;formula&gt;</span> required tp_days   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 61 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 61 more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Names only</span></span></span>
 <span class="r-in"><span><span class="fu">iss_stats_specs</span><span class="op">(</span><span class="op">)</span></span></span>
@@ -295,16 +294,16 @@ associated, otherwise returns only a character vector of names</p></dd>
 <span class="r-in"><span><span class="fu">matrix_file_suffixes</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    quantification   matrix_type   file_suffix                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;glue&gt;</span>                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> seqCount         annotated     seqCount_matrix.no0.annotated.tsv.gz        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> fragmentEstimate annotated     fragmentEstimate_matrix.no0.annotated.tsv.gz</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> barcodeCount     annotated     barcodeCount_matrix.no0.annotated.tsv.gz    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cellCount        annotated     cellCount_matrix.no0.annotated.tsv.gz       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ShsCount         annotated     ShsCount_matrix.no0.annotated.tsv.gz        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> seqCount         not_annotated seqCount_matrix.tsv.gz                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> fragmentEstimate not_annotated fragmentEstimate_matrix.tsv.gz              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> barcodeCount     not_annotated barcodeCount_matrix.tsv.gz                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cellCount        not_annotated cellCount_matrix.tsv.gz                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> seqCount         not_annotated seqCount_matrix.tsv.gz                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> fragmentEstimate annotated     fragmentEstimate_matrix.no0.annotated.tsv.gz</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> fragmentEstimate not_annotated fragmentEstimate_matrix.tsv.gz              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> barcodeCount     annotated     barcodeCount_matrix.no0.annotated.tsv.gz    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> barcodeCount     not_annotated barcodeCount_matrix.tsv.gz                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cellCount        annotated     cellCount_matrix.no0.annotated.tsv.gz       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cellCount        not_annotated cellCount_matrix.tsv.gz                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ShsCount         annotated     ShsCount_matrix.no0.annotated.tsv.gz        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ShsCount         not_annotated ShsCount_matrix.tsv.gz                      </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -314,7 +313,7 @@ associated, otherwise returns only a character vector of names</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Andrea Calabria, Giulio Spinozzi, Giulia Pais.</p>
+  <p></p><p>Developed by Giulia Pais, Andrea Calabria, Giulio Spinozzi.</p>
 </div>
 
 <div class="pkgdown-footer-right">
