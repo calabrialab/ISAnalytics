@@ -9,7 +9,7 @@
 [![R-CMD-check-bioc
 RELEASE](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-release.yml/badge.svg)](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-release.yml)
 [![BioC
-status](http://www.bioconductor.org/shields/build/RELEASE_3_17/bioc/ISAnalytics.svg)](http://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics/)
+status](http://www.bioconductor.org/shields/build/release/bioc/ISAnalytics.svg)](http://bioconductor.org/checkResults/release/bioc-LATEST/ISAnalytics/)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
