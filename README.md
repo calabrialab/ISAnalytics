@@ -1,11 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ISAnalytics <a href='https://bioconductor.org/packages/3.16/bioc/html/ISAnalytics.html'><img src='man/figures/logo.png' align="right" height="250" /></a>
+# ISAnalytics <a href='https://bioconductor.org/packages/3.17/bioc/html/ISAnalytics.html'><img src='man/figures/logo.png' align="right" height="250" /></a>
 
 <!-- badges: start -->
 
-[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://app.codecov.io/gh/calabrialab/ISAnalytics)
+[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/devel/graph/badge.svg)](https://app.codecov.io/gh/calabrialab/ISAnalytics)
 [![R-CMD-check-bioc
 DEVEL](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-devel.yml/badge.svg)](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-devel.yml)
 [![BioC
@@ -89,7 +89,7 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_16",
+                         ref = "RELEASE_3_17",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
 ```
@@ -101,7 +101,7 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master",
+                         ref = "devel",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
 ```
@@ -137,6 +137,12 @@ options("ISAnalytics.reports" = TRUE)
 <summary>
 Show more
 </summary>
+
+# ISAnalytics 1.11.1 (2023-05-09)
+
+## FIXES
+
+- Fixed broken tests with new updates in underlying packages
 
 # ISAnalytics 1.9.3 (2023-04-04)
 

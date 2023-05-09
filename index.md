@@ -1,7 +1,7 @@
 # ISAnalytics <img src='man/figures/logo.png' align="right"/>
 
 <!-- badges: start -->
-[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/master/graph/badge.svg)](https://app.codecov.io/gh/calabrialab/ISAnalytics)
+[![codecov](https://codecov.io/gh/calabrialab/ISAnalytics/branch/devel/graph/badge.svg)](https://app.codecov.io/gh/calabrialab/ISAnalytics)
 [![R-CMD-check-bioc DEVEL](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-devel.yml/badge.svg)](https://github.com/calabrialab/ISAnalytics/actions/workflows/check-bioc-devel.yml)
 [![BioC status](http://www.bioconductor.org/shields/build/devel/bioc/ISAnalytics.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/ISAnalytics/)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
@@ -67,7 +67,7 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_16",
+                         ref = "RELEASE_3_17",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
 ```
@@ -79,7 +79,7 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master",
+                         ref = "devel",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
 ```
