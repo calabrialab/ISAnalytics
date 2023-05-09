@@ -106,7 +106,7 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_16",
+                         ref = "RELEASE_3_17",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
 ```
@@ -117,7 +117,7 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "master",
+                         ref = "devel",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
 ```
