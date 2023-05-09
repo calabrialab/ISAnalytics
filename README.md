@@ -140,7 +140,7 @@ Show more
 
 # ISAnalytics 1.10.1 (2023-05-09)
 
-# FIXES
+## FIXES
 
 - Fixed broken tests with new updates in underlying packages
 
