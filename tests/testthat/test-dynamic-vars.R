@@ -552,14 +552,11 @@ test_that("set_annotation_IS_vars signals missing tags", {
         "var3", "numeric", NULL, "required", NA_character_
     )
     before <- getOption("ISAnalytics.genomic_annotation_vars")
-    expect_message(
-        expect_message(
-            {
-                set_annotation_IS_vars(temp_specs)
-            },
-            class = "missing_crit_tags"
-        )
-    )
+    expect_message({
+      expect_warning({
+        set_annotation_IS_vars(temp_specs)
+      }, class = "missing_crit_tags")
+    })
     after <- getOption("ISAnalytics.genomic_annotation_vars")
     expect_equal(after, temp_specs)
     options(ISAnalytics.genomic_annotation_vars = before)
@@ -589,14 +586,11 @@ test_that("set_af_columns_def works as expected", {
         "var3", "numeric", NULL, "required", NA_character_
     )
     before <- getOption("ISAnalytics.af_specs")
-    expect_message(
-        expect_message(
-            {
-                set_af_columns_def(temp_specs)
-            },
-            class = "missing_crit_tags"
-        )
-    )
+    expect_message({
+      expect_warning({
+        set_af_columns_def(temp_specs)
+      }, class = "missing_crit_tags")
+    })
     after <- getOption("ISAnalytics.af_specs")
     expect_equal(after, temp_specs)
     options(ISAnalytics.af_specs = before)
