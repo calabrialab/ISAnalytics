@@ -1,6 +1,12 @@
 NEWS
 ================
 
+# ISAnalytics 1.10.1 (2023-05-09)
+
+# FIXES
+
+- Fixed broken tests with new updates in underlying packages
+
 # ISAnalytics 1.9.3 (2023-04-04)
 
 ## ENHANCES AND REFACTORING
