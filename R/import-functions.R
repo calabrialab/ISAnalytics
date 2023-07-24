@@ -1242,15 +1242,23 @@ default_iss_file_prefixes <- function() {
 default_af_transform <- function(convert_tp) {
     if (convert_tp) {
         return(list(
-            TimepointMonths = ~ stringr::str_pad(
+            TimepointMonths = ~ dplyr::if_else(
+              is.na(.x),
+              NA_character_,
+              stringr::str_pad(
                 as.character(.x),
                 pad = "0", side = "left",
-                width = max(nchar(as.character(.x))) + 1
-            ),
-            TimepointYears = ~ stringr::str_pad(as.character(.x),
+                width = max(nchar(as.character(.x[!is.na(.x)])),
+                            na.rm = TRUE) + 1
+            )),
+            TimepointYears = ~ dplyr::if_else(
+              is.na(.x),
+              NA_character_,
+              stringr::str_pad(as.character(.x),
                 pad = "0", side = "left",
-                width = max(nchar(as.character(.x))) + 1
-            )
+                width = max(nchar(as.character(.x[!is.na(.x)])),
+                            na.rm = TRUE) + 1
+            ))
         ))
     }
     return(NULL)

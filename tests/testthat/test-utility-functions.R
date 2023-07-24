@@ -182,6 +182,20 @@ test_that("transform_columns applies transform as expected", {
     expect_equal(result$B, c(4, 7, 10))
 })
 
+test_that("transform_columns defaults work if there are NA values", {
+  test_df <- tibble::tibble(
+    TimePoint = c('0000', '3960', '0360', '0540', NA_character_),
+    TimepointMonths = c(0, 132, 12, 18, NA),
+    TimepointYears = c(0, 11, 1, 2, NA)
+    )
+  expected_transform <- tibble::tibble(
+    TimePoint = c('0000', '3960', '0360', '0540', NA_character_),
+    TimepointMonths = c('0000', '0132', '0012', '0018', NA_character_),
+    TimepointYears = c('000', '011', '001', '002', NA_character_))
+  transformed <- transform_columns(test_df, default_af_transform(TRUE))
+  expect_equal(transformed, expected_transform)
+})
+
 #------------------------------------------------------------------------------#
 # Tests pcr_id_column
 #------------------------------------------------------------------------------#
