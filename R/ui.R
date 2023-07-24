@@ -42,14 +42,14 @@ ui <- shinyUI(fluidPage(
         ### --- Second nav element
         tabPanel(
             "Explore",
-            navs_pill(
+            navset_pill(
                 id = "explore_pills",
-                nav(
+                nav_panel(
                     title = "Explore loaded data",
                     DT::DTOutput("loaded_data"),
                     class = "p-3 border rounded"
                 ),
-                nav(
+                nav_panel(
                     title = "Plotting",
                     class = "p-3 border rounded",
                     uiOutput("plot_tab")

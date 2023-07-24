@@ -34,6 +34,12 @@ mode <- params$mode
 call_args <- params$call_args
 ```
 
+```{css}
+.section {
+  margin-top: 0rem !important;
+}
+```
+
 Input info {data-orientation=rows}
 ===============================================================================
 
@@ -74,7 +80,7 @@ out <- purrr::map2_chr(test_results, names(test_results), ~ {
 
 ### Removed in total
 ```{r}
-tot_removed <- nrow(joint[eval(sym("to_remove")) == TRUE, ])
+tot_removed <- nrow(joint |> dplyr::filter(.data$to_remove == TRUE))
 valueBox(value = tot_removed, icon = "fa-trash")
 ```
 

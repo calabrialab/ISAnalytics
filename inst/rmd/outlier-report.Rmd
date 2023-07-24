@@ -33,32 +33,52 @@ ok_color <- "#77d983"
 ko_color <- "#e36868"
 ```
 
+```{css}
+.section {
+  margin-top: 0rem !important;
+}
+```
+
+
 Pre-processing info {data-orientation=columns}
 ===============================================================================
 
 Col1
 -------------------------------------------------------------------------------
 
-```{r}
-abs_unprocessed_reads <- nrow(params$flag_df |>
-            dplyr::filter(.data$processed == FALSE))
-perc_unprocessed_reads <- (nrow(params$flag_df |>
-            dplyr::filter(.data$processed == FALSE)) /
-            nrow(params$flag_df))
+```{r echo=FALSE}
+# Total samples
+total_samples <- params$flag_df |>
+  dplyr::distinct(dplyr::across(dplyr::all_of(params$dyn_vars$pcr_id))) |>
+  nrow()
+
+# Absolute number of unprocessed reads
+abs_unprocessed_reads <- nrow(
+  params$flag_df |>
+    dplyr::filter(.data$processed == FALSE)
+  )
+# Percentage of unprocessed samples on total
+perc_unprocessed_reads <- round(
+  (abs_unprocessed_reads / nrow(params$flag_df)) * 100, 2
+)
+# Summary table
 unprocessed_perc_diff <- tibble::tibble(
         abs = c(nrow(params$removed_nas)),
-        perc_on_unprocessed = c(nrow(params$removed_nas) /
-            abs_unprocessed_reads),
-        perc_on_total = c(nrow(params$removed_nas) / nrow(params$flag_df)),
+        perc_on_unprocessed = round(c(nrow(params$removed_nas) /
+            abs_unprocessed_reads) * 100, 2),
+        perc_on_total = round(c(nrow(params$removed_nas) / 
+                                  nrow(params$flag_df)) * 100, 2),
         reason = c("NAs in key")
     )
 if (params$log2_req) {
         unprocessed_perc_diff <- unprocessed_perc_diff |>
             tibble::add_row(
                 abs = c(nrow(params$removed_zeros)),
-                perc_on_unprocessed = c(nrow(params$removed_zeros) /
-                    abs_unprocessed_reads),
-                perc_on_total = c(nrow(params$removed_zeros) / nrow(params$flag_df)),
+                perc_on_unprocessed = round(c(nrow(params$removed_zeros) /
+                    abs_unprocessed_reads) * 100, 2),
+                perc_on_total = round(
+                  c(nrow(params$removed_zeros) / 
+                      nrow(params$flag_df)) * 100, 2),
                 reason = c("Values <= 0")
             )
 }
@@ -66,13 +86,19 @@ unprocessed_perc_diff <- unprocessed_perc_diff |>
         tibble::add_row(
             abs = c(abs_unprocessed_reads -
                 sum(unprocessed_perc_diff$abs)),
-            perc_on_unprocessed = c((abs_unprocessed_reads -
+            perc_on_unprocessed = round(c((abs_unprocessed_reads -
                 sum(unprocessed_perc_diff$abs)) /
-                abs_unprocessed_reads),
-            perc_on_total = c((abs_unprocessed_reads -
-                sum(unprocessed_perc_diff$abs)) / nrow(params$flag_df)),
+                abs_unprocessed_reads), 2) * 100,
+            perc_on_total = round(c((abs_unprocessed_reads -
+                sum(unprocessed_perc_diff$abs)) / nrow(params$flag_df)) * 100,
+                2),
             reason = c("Pool samples < min samples")
 )
+```
+
+### Total samples
+```{r}
+valueBox(total_samples, icon = "fa-vials", color = "info")
 ```
 
 ### Number of unprocessed samples
@@ -202,9 +228,7 @@ Row1
 ```{r}
 flagged_abs <- nrow(params$flag_df |>
             dplyr::filter(.data$to_remove == TRUE))
-flagged_perc <- nrow(params$flag_df |>
-            dplyr::filter(.data$to_remove == TRUE)) /
-            nrow(params$flag_df)
+flagged_perc <- round((flagged_abs / total_samples) * 100, 2)
 ```
 
 ### Total flagged samples
