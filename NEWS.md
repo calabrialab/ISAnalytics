@@ -1,6 +1,16 @@
 NEWS
 ================
 
+# ISAnalytics 1.10.2 (2023-07-24)
+
+## FIXES
+
+- Fixed issues in html report for outlier filtering - reported incorrect
+  numbers due to missing conversion in percentage
+- Fixed warnings for bslib::nav deprecation
+- Fixed minor issue in `default_af_transform()`, transformation failed
+  if NAs were present in the columns
+
 # ISAnalytics 1.10.1 (2023-05-09)
 
 ## FIXES

@@ -82,11 +82,6 @@ The returned plots are ggplot2 objects and can therefore further modified
 as any other ggplot2 object. For example, if the user decides to change the
 fill scale it is sufficient to do
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{plot +
-  ggplot2::scale_fill_viridis_d(...) + # or any other discrete fill scale
-  ggplot2::theme(...) # change theme options
-}\if{html}{\out{</div>}}
-
 NOTE: if you requested the computation of the top ten abundant tables and
 you want the colors to match you should re-compute them
 }
