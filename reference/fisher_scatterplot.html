@@ -14,7 +14,7 @@ gene_frequency_fisher() as a scatterplot."><meta property="og:image" content="ht
     
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.10.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.10.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -146,8 +146,6 @@ even if their p-value is below the threshold. To do so, use the
 argument <code>do_not_highlight</code>: character vectors are appropriate for specific
 genes that are to be excluded, expressions or lambdas allow a finer control.
 For example we can supply:</p>
-<p></p><div class="sourceCode r"><pre><code><span><span class="va">expr</span> <span class="op">&lt;-</span> <span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/expr.html" class="external-link">expr</a></span><span class="op">(</span><span class="op">!</span><span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_starts.html" class="external-link">str_starts</a></span><span class="op">(</span><span class="va">GeneName</span>, <span class="st">"MIR"</span><span class="op">)</span> <span class="op">&amp;</span></span>
-<span>                      <span class="va">average_TxLen_1</span> <span class="op">&gt;=</span> <span class="fl">300</span><span class="op">)</span></span></code></pre><p></p></div>
 <p>with this expression, genes that have a p-value &lt; threshold and start with
 "MIR" or have an average_TxLen_1 lower than 300 are excluded from the
 highlighted points.
@@ -155,7 +153,6 @@ NOTE: keep in mind that expressions are evaluated inside a <code><a href="https:
 context.</p>
 <p>Similarly, lambdas are passed to the filtering function but only operate
 on the column containing the gene symbol.</p>
-<p></p><div class="sourceCode r"><pre><code><span><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="fu">stringr</span><span class="fu">::</span><span class="fu"><a href="https://stringr.tidyverse.org/reference/str_starts.html" class="external-link">str_starts</a></span><span class="op">(</span><span class="va">.x</span>, <span class="st">"MIR"</span><span class="op">)</span></span></code></pre><p></p></div>
 </div>
 
     </div>
