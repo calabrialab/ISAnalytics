@@ -138,6 +138,16 @@ options("ISAnalytics.reports" = TRUE)
 Show more
 </summary>
 
+# ISAnalytics 1.11.2 (2023-07-26)
+
+## FIXES
+
+- Fixed issues in html report for outlier filtering - reported incorrect
+  numbers due to missing conversion in percentage
+- Fixed warnings for bslib::nav deprecation
+- Fixed minor issue in `default_af_transform()`, transformation failed
+  if NAs were present in the columns
+
 # ISAnalytics 1.11.1 (2023-05-09)
 
 ## FIXES

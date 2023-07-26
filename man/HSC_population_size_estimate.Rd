@@ -99,20 +99,6 @@ exists in the dataset provided.
 }
 
 Example:
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{estimate <- HSC_population_size_estimate(
-    x = aggreg,
-    metadata = aggreg_meta,
-    cell_type = c("MYELOID", "T", "B"),
-    tissue_type = "PB"
-)
-
-# Evaluated groups will be:
-# - MYELOID PB
-# - T PB
-# - B PB
-}\if{html}{\out{</div>}}
-
 Note that estimates are computed individually for each group.
 }
 
