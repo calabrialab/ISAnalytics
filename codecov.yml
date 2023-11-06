@@ -8,14 +8,14 @@ coverage:
         threshold: 1%
         informational: true
         branches:
-          - devel
+          - RELEASE_3_18
     patch:
       default:
         target: auto
         threshold: 1%
         informational: true
         branches:
-          - devel
+          - RELEASE_3_18
 ignore:
   - "R/plotting-functions.R"
   - "R/internal-msgs.R"
