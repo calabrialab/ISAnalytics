@@ -398,7 +398,7 @@ outliers_by_pool_fragments <- function(
     )
     ## Extract dfs for report
     non_proc_samples <- if ("non_proc_samples" %in% names(calc_res)) {
-        calc_res$non_proc_sample |>
+        calc_res$non_proc_samples |>
             dplyr::distinct(dplyr::across(dplyr::all_of(c(pool_col, pcr_id_col))))
     } else {
         NULL
