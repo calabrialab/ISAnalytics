@@ -143,7 +143,7 @@
     # Extract and associate names and transf
     non_null <- purrr::pmap(specs, function(
         names, types,
-        transform, flags, tag) {
+        transform, flag, tag) {
         if (is.null(transform)) {
             return(NULL)
         }
