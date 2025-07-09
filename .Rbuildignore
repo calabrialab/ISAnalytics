@@ -13,3 +13,6 @@
 ^sample_reports$
 ^man-roxygen$
 ^Meta$
+^ISAUpdate\.Rproj$
+^NEWS\.Rmd$
+^index\.md$
