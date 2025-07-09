@@ -223,7 +223,7 @@ The matrix is publicly available [here](https://www.ncbi.nlm.nih.gov/geo/downloa
 was provided to us by the authors and it is available in the package 
 additional files.
 
-```{r}
+```{r load-package-and-pecs-and-file-setup}
 library(ISAnalytics)
 
 # Set appropriate data and metadata specs ----
@@ -356,6 +356,15 @@ relevant updates. Visit the website at https://calabrialab.github.io/ISAnalytics
 
 If you have any issues the documentation can't solve, get in touch by 
 opening an issue on GitHub or contacting the maintainers
+
+# Reproducibility
+
+The following session information was included to ensure reproducibility of results 
+and environment tracking, as recommended by Bioconductor guidelines.
+
+```{r sessionInfo, echo = FALSE}
+sessionInfo()
+```
 
 # Bibliography
 
