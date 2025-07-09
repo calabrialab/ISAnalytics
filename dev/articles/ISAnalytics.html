@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.13.0</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.19.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,7 @@ Italia</p>
 <br><a class="author_email" href="mailto:#"></a><a href="mailto:giuliapais1@gmail.com" class="email">giuliapais1@gmail.com</a>, <a href="mailto:calabria.andrea@hsr.it" class="email">calabria.andrea@hsr.it</a>
       </address>
                   
-            <h4 data-toc-skip class="date">26 November 2024</h4>
+            <h4 data-toc-skip class="date">9 July 2025</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/calabrialab/ISAnalytics/blob/devel/vignettes/ISAnalytics.Rmd" class="external-link"><code>vignettes/ISAnalytics.Rmd</code></a></small>
       <div class="d-none name"><code>ISAnalytics.Rmd</code></div>
@@ -538,6 +538,73 @@ date with all relevant updates. Visit the website at <a href="https://calabriala
 opening an issue on GitHub or contacting the maintainers</p>
 </div>
 <div class="section level2">
+<h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
+</h2>
+<p>The following session information was included to ensure
+reproducibility of results and environment tracking, as recommended by
+Bioconductor guidelines.</p>
+<pre><code><span><span class="co">#&gt; R version 4.5.1 (2025-06-13)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.2 LTS</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt;  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       </span></span>
+<span><span class="co">#&gt;  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   </span></span>
+<span><span class="co">#&gt;  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          </span></span>
+<span><span class="co">#&gt; [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; time zone: UTC</span></span>
+<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] ISAnalytics_1.19.0 RefManageR_1.4.0   BiocStyle_2.36.0  </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;   [1] mnormt_2.1.1        writexl_1.5.4       permute_0.9-8      </span></span>
+<span><span class="co">#&gt;   [4] readxl_1.4.5        datamods_1.5.3      rlang_1.1.6        </span></span>
+<span><span class="co">#&gt;   [7] magrittr_2.0.3      rio_1.2.3           e1071_1.7-16       </span></span>
+<span><span class="co">#&gt;  [10] compiler_4.5.1      mgcv_1.9-3          systemfonts_1.2.3  </span></span>
+<span><span class="co">#&gt;  [13] vctrs_0.6.5         stringr_1.5.1       pkgconfig_2.0.3    </span></span>
+<span><span class="co">#&gt;  [16] crayon_1.5.3        fastmap_1.2.0       backports_1.5.0    </span></span>
+<span><span class="co">#&gt;  [19] utf8_1.2.6          promises_1.3.3      phosphoricons_0.2.1</span></span>
+<span><span class="co">#&gt;  [22] rmarkdown_2.29      tzdb_0.5.0          ragg_1.4.0         </span></span>
+<span><span class="co">#&gt;  [25] purrr_1.0.4         bit_4.6.0           xfun_0.52          </span></span>
+<span><span class="co">#&gt;  [28] cachem_1.1.0        jsonlite_2.0.0      later_1.4.2        </span></span>
+<span><span class="co">#&gt;  [31] BiocParallel_1.42.1 psych_2.5.6         cluster_2.1.8.1    </span></span>
+<span><span class="co">#&gt;  [34] parallel_4.5.1      R6_2.6.1            bslib_0.9.0        </span></span>
+<span><span class="co">#&gt;  [37] stringi_1.8.7       RColorBrewer_1.1-3  shinybusy_0.3.3    </span></span>
+<span><span class="co">#&gt;  [40] parallelly_1.45.0   lubridate_1.9.4     jquerylib_0.1.4    </span></span>
+<span><span class="co">#&gt;  [43] cellranger_1.1.0    Rcpp_1.1.0          bookdown_0.43      </span></span>
+<span><span class="co">#&gt;  [46] iterators_1.0.14    knitr_1.50          future.apply_1.20.0</span></span>
+<span><span class="co">#&gt;  [49] readr_2.1.5         Matrix_1.7-3        splines_4.5.1      </span></span>
+<span><span class="co">#&gt;  [52] httpuv_1.6.16       timechange_0.3.0    tidyselect_1.2.1   </span></span>
+<span><span class="co">#&gt;  [55] yaml_2.3.10         vegan_2.7-1         codetools_0.2-20   </span></span>
+<span><span class="co">#&gt;  [58] listenv_0.9.1       lattice_0.22-7      tibble_3.3.0       </span></span>
+<span><span class="co">#&gt;  [61] plyr_1.8.9          shiny_1.11.1        withr_3.0.2        </span></span>
+<span><span class="co">#&gt;  [64] evaluate_1.0.4      future_1.58.0       desc_1.4.3         </span></span>
+<span><span class="co">#&gt;  [67] proxy_0.4-27        xml2_1.3.8          pillar_1.11.0      </span></span>
+<span><span class="co">#&gt;  [70] BiocManager_1.30.26 KernSmooth_2.23-26  foreach_1.5.2      </span></span>
+<span><span class="co">#&gt;  [73] generics_0.1.4      vroom_1.6.5         hms_1.1.3          </span></span>
+<span><span class="co">#&gt;  [76] ggplot2_3.5.2       scales_1.4.0        globals_0.18.0     </span></span>
+<span><span class="co">#&gt;  [79] xtable_1.8-4        class_7.3-23        glue_1.8.0         </span></span>
+<span><span class="co">#&gt;  [82] toastui_0.4.0       tools_4.5.1         data.table_1.17.6  </span></span>
+<span><span class="co">#&gt;  [85] reactable_0.4.4     fs_1.6.6            grid_4.5.1         </span></span>
+<span><span class="co">#&gt;  [88] tidyr_1.3.1         bibtex_0.5.1        nlme_3.1-168       </span></span>
+<span><span class="co">#&gt;  [91] cli_3.6.5           textshaping_1.0.1   doFuture_1.1.1     </span></span>
+<span><span class="co">#&gt;  [94] dplyr_1.1.4         gtable_0.3.6        sass_0.4.10        </span></span>
+<span><span class="co">#&gt;  [97] digest_0.6.37       classInt_0.4-11     htmlwidgets_1.6.4  </span></span>
+<span><span class="co">#&gt; [100] farver_2.1.2        htmltools_0.5.8.1   pkgdown_2.1.3      </span></span>
+<span><span class="co">#&gt; [103] lifecycle_1.0.4     httr_1.4.7          shinyWidgets_0.9.0 </span></span>
+<span><span class="co">#&gt; [106] mime_0.13           bit64_4.6.0-1       MASS_7.3-65</span></span></code></pre>
+</div>
+<div class="section level2">
 <h2 id="bibliography">Bibliography<a class="anchor" aria-label="anchor" href="#bibliography"></a>
 </h2>
 <p>
@@ -559,7 +626,7 @@ long-term hematopoietic stem cells validated by clonal tracking”. In:
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

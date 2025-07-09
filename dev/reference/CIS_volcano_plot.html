@@ -9,7 +9,7 @@ Traces a volcano plot for IS frequency and CIS results."><meta property="og:imag
 
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.13.0</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.19.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -154,9 +154,13 @@ For more details on how this files were generated use the help
 
 <p>The default values are included in this package and
 it can be accessed by doing:</p>
+<p></p><div class="sourceCode r"><pre><code><span><span class="fu"><a href="../reference/known_clinical_oncogenes.html">known_clinical_oncogenes</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span></code></pre><p></p></div>
 <p>If the user wants to change this parameter the input data frame must
 preserve the column structure. The same goes for the <code>suspicious_genes</code>
 parameter (DOIReference column is optional):</p>
+<p></p><div class="sourceCode r"><pre><code><span><span class="fu"><a href="../reference/clinical_relevant_suspicious_genes.html">clinical_relevant_suspicious_genes</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span></code></pre><p></p></div>
 </div>
 
     </div>
@@ -186,9 +190,22 @@ parameter (DOIReference column is optional):</p>
 <span class="r-in"><span>    title_prefix <span class="op">=</span> <span class="st">"PJ01"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Calculating CIS_grubbs for x...</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in print.data.table(missing_genes, n = Inf):</span> argument 2 matches multiple formal arguments</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Warning: missing genes in refgenes table</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> A total of 5 genes were found in the input data but not in the refgene table. This may be caused by a mismatch in the annotation phase of the matrix. Here is a summary: </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>     GeneName GeneStrand    chr</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>       &lt;char&gt;     &lt;char&gt; &lt;char&gt;</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 1:    CRELD2          -     15</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 2:      HTR4          +      6</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 3:    UBE2D2          +     16</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 4: LINC01133          +     19</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 5:  PLEKHG4B          -     14</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> NOTE: missing genes will be removed from the final output! Review results carefully</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> A total of 25 IS will be removed because of missing genes ( 1.48 % of total IS in input)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading annotated genes -  species selected: </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Homo sapiens (Human)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading annotated genes -  done</span>
 <span class="r-in"><span><span class="va">cis_plot</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'cis_plot' not found</span>
+<span class="r-plt img"><img src="CIS_volcano_plot-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -200,7 +217,7 @@ parameter (DOIReference column is optional):</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
