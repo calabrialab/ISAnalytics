@@ -2,6 +2,13 @@
 title: "NEWS"
 output: github_document
 ---
+# ISAnalytics 1.19.2 (2025-07-17)
+
+## UPDATE
+
+-   vegan package switched from Suggests to Imports
+-   added refGene_hg38 for CIS_grubbs test
+
 # ISAnalytics 1.19.1 (2025-07-09)
 
 ## UPDATE

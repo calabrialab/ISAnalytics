@@ -1374,7 +1374,7 @@ integration_alluvial_plot <- function(
             aes.bind = "alluvia"
         )
     alluv <- alluv +
-      ggplot2::scale_fill_viridis_d(na.value = NA_character_, option = "H") +
+        ggplot2::scale_fill_brewer(palette = "Paired", na.value = NA_character_) +
         ggplot2::theme_bw() +
         ggplot2::theme(legend.position = "none") +
         ggplot2::geom_text(
