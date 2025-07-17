@@ -916,11 +916,11 @@ sample_statistics <- function(
 #' data frames or package provided defaults.
 #' The user is responsible for importing the appropriate tabular files if
 #' customization is needed.
-#' The annotations for the human genome (hg19) and
-#' murine genome (mm9) are already
+#' The annotations for the human genome (hg19 or hg38) and
+#' murine genome (mm9 or mm10) are already
 #' included in this package: to use one of them just
-#' set the argument `genomic_annotation_file` to either `"hg19"` or
-#' `"mm9"`.
+#' set the argument `genomic_annotation_file` to either `"hg19"`, `"hg38"`,
+#' `"mm9"` or `"mm10"`.
 #' If for any reason the user is performing an analysis on another genome,
 #' this file needs to be changed respecting the USCS Genome Browser
 #' format, meaning the input file headers should include:

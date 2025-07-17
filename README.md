@@ -89,7 +89,7 @@ if (!require(devtools)) {
   install.packages("devtools")
 }
 devtools::install_github("calabrialab/ISAnalytics",
-                         ref = "RELEASE_3_17",
+                         ref = "RELEASE_3_21",
                          dependencies = TRUE,
                          build_vignettes = TRUE)
 ```
@@ -134,9 +134,37 @@ options("ISAnalytics.reports" = TRUE)
 # NEWS
 
 <details>
+
 <summary>
+
 Show more
 </summary>
+
+# ISAnalytics 1.19.2 (2025-07-17)
+
+## UPDATE
+
+- vegan package switched from Suggests to Imports
+- added refGene_hg38 for CIS_grubbs test
+
+# ISAnalytics 1.19.1 (2025-07-09)
+
+## UPDATE
+
+- Changed again color scale for alluvial_plot
+
+# ISAnalytics 1.19.0 (2025-07-09)
+
+## GENERAL UPDATE
+
+- Changed color scale for alluvial_plot and made some general updates
+
+# ISAnalytics 1.13.1 (2024-12-05)
+
+## BUG FIXES
+
+- Fixed bug in call to `print.data.table` that broke examples for
+  `CIS_Grubbs`.
 
 # ISAnalytics 1.11.2 (2023-07-26)
 

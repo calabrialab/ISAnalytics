@@ -33,8 +33,9 @@
 #' @seealso \code{\link{generate_blank_association_file}}
 "association_file"
 
-#' Gene annotation files for hg19, mm9 and mm10.
+#' Gene annotation files for hg19, mm9.
 #'
+#' @name refGenes_hg19
 #' @description
 #' This file was obtained following this steps:
 #'
@@ -65,8 +66,45 @@
 #' @usage data("refGenes_mm9")
 "refGenes_mm9"
 
+#' Reference gene annotation for hg38 or mm10.
+#'
+#' @name refGenes_hg38
+#' @description
+#' A gene-level annotation dataset derived from the UCSC knownGene and kgXref tables
+#' for the hg38 or mm10 genome assembly. This data aggregates transcript-level information into
+#' gene-level summary statistics, including transcript span, CDS length, and average values
+#' across isoforms. It is the hg38 equivalent of `refGenes_hg19`,
+#' or mm10 equivalent of `refGenes_mm9`, updated using Ensembl-based
+#' transcript IDs from GENCODE.
+#'
+#' These objects are tibbles (`tbl_df`) and inherit from `data.frame`.
+#'
+#' @format A tibble with one row per gene and the following columns:
+#' \describe{
+#'   \item{name2}{Gene symbol (e.g., A1CF)}
+#'   \item{chrom}{Chromosome (e.g., chr10)}
+#'   \item{strand}{Strand direction, "+" or "-"}
+#'   \item{min_txStart}{Minimum transcript start position across all isoforms}
+#'   \item{max_txEnd}{Maximum transcript end position across all isoforms}
+#'   \item{minmax_TxLen}{Gene length computed as max_txEnd - min_txStart}
+#'   \item{average_TxLen}{Average transcript length across isoforms}
+#'   \item{name}{Transcript ID (typically Ensembl ID in hg38, e.g., ENST00000...)}
+#'   \item{min_cdsStart}{Minimum CDS start position}
+#'   \item{max_cdsEnd}{Maximum CDS end position}
+#'   \item{minmax_CdsLen}{CDS length computed as max_cdsEnd - min_cdsStart}
+#'   \item{average_CdsLen}{Average CDS length across isoforms}
+#' }
+#' @source UCSC Genome Browser: \url{https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/}
+#' @source UCSC Genome Browser: \url{https://hgdownload.soe.ucsc.edu/goldenPath/mm10/database/}
+#' 
+#' @usage data("refGenes_hg38")
+"refGenes_hg38"
+#' @describeIn refGenes_hg38 Data frame for murine mm10 genome
+#' @usage data("refGenes_mm10")
+"refGenes_mm10"
+
 #' Data frames for proto-oncogenes (human and mouse)
-#' amd tumor-suppressor genes from UniProt.
+#' and tumor-suppressor genes from UniProt.
 #'
 #' @description
 #' The file is simply a result of a research with the keywords

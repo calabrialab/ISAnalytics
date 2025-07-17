@@ -4,7 +4,7 @@
 \name{refGenes_hg19}
 \alias{refGenes_hg19}
 \alias{refGenes_mm9}
-\title{Gene annotation files for hg19, mm9 and mm10.}
+\title{Gene annotation files for hg19, mm9.}
 \format{
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 27275 rows and 12 columns.
 

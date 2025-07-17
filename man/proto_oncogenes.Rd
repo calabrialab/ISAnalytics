@@ -5,7 +5,7 @@
 \alias{proto_oncogenes}
 \alias{tumor_suppressors}
 \title{Data frames for proto-oncogenes (human and mouse)
-amd tumor-suppressor genes from UniProt.}
+and tumor-suppressor genes from UniProt.}
 \format{
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 569 rows and 13 columns.
 

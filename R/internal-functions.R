@@ -4140,12 +4140,13 @@
     stopifnot(is.data.frame(genomic_annotation_file) ||
         is.character(genomic_annotation_file))
     if (is.character(genomic_annotation_file) &&
-        !genomic_annotation_file %in% c("hg19", "mm9")) {
+        !genomic_annotation_file %in% c("hg19" ,"hg38", "mm9", "mm10")) {
         err_msg <- c("Genomic annotation file unknown",
             x = paste(
                 "Since ISAnalytics 1.5.4, if provided as",
                 "character vector, `genomic_annotation_file`",
-                "parameter must be one of 'hg19' or 'mm9'"
+                "parameter must be one of 'hg38', 'hg19',
+                'mm9' or 'mm10'"
             ),
             i = paste(
                 "For using other genome reference files",

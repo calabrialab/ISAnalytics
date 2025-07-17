@@ -59,11 +59,11 @@ From version \verb{1.5.4} the argument \code{genomic_annotation_file} accepts on
 data frames or package provided defaults.
 The user is responsible for importing the appropriate tabular files if
 customization is needed.
-The annotations for the human genome (hg19) and
-murine genome (mm9) are already
+The annotations for the human genome (hg19 or hg38) and
+murine genome (mm9 or mm10) are already
 included in this package: to use one of them just
-set the argument \code{genomic_annotation_file} to either \code{"hg19"} or
-\code{"mm9"}.
+set the argument \code{genomic_annotation_file} to either \code{"hg19"}, \code{"hg38"},
+\code{"mm9"} or \code{"mm10"}.
 If for any reason the user is performing an analysis on another genome,
 this file needs to be changed respecting the USCS Genome Browser
 format, meaning the input file headers should include:

@@ -50,7 +50,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Francesco Gazzo \email{gazzo.francesco@hsr.it}
+\strong{Maintainer}: Francesco Gazzo \email{gazzo.francesco@hsr.it} (\href{https://orcid.org/0009-0000-4626-1386}{ORCID})
 
 Authors:
 \itemize{
