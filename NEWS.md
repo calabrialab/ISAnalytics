@@ -1,6 +1,12 @@
 NEWS
 ================
 
+# ISAnalytics 1.19.3 (2025-07-21)
+
+## UPDATE
+
+- colour update for .alluvial_plot
+
 # ISAnalytics 1.19.2 (2025-07-17)
 
 ## UPDATE

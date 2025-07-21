@@ -1374,16 +1374,16 @@ integration_alluvial_plot <- function(
             aes.bind = "alluvia"
         )
     alluv <- alluv +
-        ggplot2::scale_fill_brewer(palette = "Paired", na.value = NA_character_) +
-        ggplot2::theme_bw() +
-        ggplot2::theme(legend.position = "none") +
-        ggplot2::geom_text(
-            data = labels,
-            ggplot2::aes(
-                x = .data[[plot_x]],
-                y = max_y + 5,
-                label = .data[["count"]]
-            ), inherit.aes = FALSE
+      ggplot2::scale_fill_viridis_d(na.value = NA_character_, option = "H") +
+      ggplot2::theme_bw() +
+      ggplot2::theme(legend.position = "none") +
+      ggplot2::geom_text(
+        data = labels,
+        ggplot2::aes(
+          x = .data[[plot_x]],
+          y = max_y + 5,
+          label = .data[["count"]]
+          ), inherit.aes = FALSE
         )
     return(alluv)
 }
