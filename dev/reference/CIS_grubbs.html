@@ -19,7 +19,7 @@ https://ashpublications.org/blood/article/117/20/5332/21206/Lentiviral-vector-co
 
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.19.1</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.19.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -130,11 +130,11 @@ From version <code>1.5.4</code> the argument <code>genomic_annotation_file</code
 data frames or package provided defaults.
 The user is responsible for importing the appropriate tabular files if
 customization is needed.
-The annotations for the human genome (hg19) and
-murine genome (mm9) are already
+The annotations for the human genome (hg19 or hg38) and
+murine genome (mm9 or mm10) are already
 included in this package: to use one of them just
-set the argument <code>genomic_annotation_file</code> to either <code>"hg19"</code> or
-<code>"mm9"</code>.
+set the argument <code>genomic_annotation_file</code> to either <code>"hg19"</code>, <code>"hg38"</code>,
+<code>"mm9"</code> or <code>"mm10"</code>.
 If for any reason the user is performing an analysis on another genome,
 this file needs to be changed respecting the USCS Genome Browser
 format, meaning the input file headers should include:</p>
