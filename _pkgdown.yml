@@ -146,4 +146,6 @@ reference:
     - proto_oncogenes
     - refGenes_hg19
     - refGenes_mm9
+    - refGenes_hg38
+    - refGenes_mm10
     - tumor_suppressors
