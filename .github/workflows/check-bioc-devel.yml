@@ -56,9 +56,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: ubuntu-latest, r: '4.5', bioc: '3.21', cont: "bioconductor/bioconductor_docker:devel", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
-          - { os: macOS-latest, r: '4.5', bioc: '3.21', cont: "", rspm: ""}
-          - { os: windows-latest, r: '4.5', bioc: '3.21', cont: "", rspm: ""}
+          - { os: ubuntu-latest, r: '4.6', bioc: '3.23', cont: "bioconductor/bioconductor_docker:devel", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
+          - { os: macOS-latest, r: '4.6', bioc: '3.23', cont: "", rspm: ""}
+          - { os: windows-latest, r: '4.6', bioc: '3.23', cont: "", rspm: ""}
           ## Check https://github.com/r-lib/actions/tree/master/examples
           ## for examples using the http-user-agent
     env:
@@ -109,17 +109,17 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.5-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.5-
-
+          key: ${{ env.cache-version }}-${{ runner.os }}-bioc-${{ matrix.config.bioc }}-r-${{ matrix.config.r }}-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-bioc-${{ matrix.config.bioc }}-r-${{ matrix.config.r }}-
+          
       - name: Cache R packages on Linux
         if: "!contains(github.event.head_commit.message, '/nocache') && runner.os == 'Linux' "
         uses: actions/cache@v3
         with:
           path: /home/runner/work/_temp/Library
-          key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.5-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-biocversion-devel-r-4.5-
-
+          key: ${{ env.cache-version }}-${{ runner.os }}-bioc-${{ matrix.config.bioc }}-r-${{ matrix.config.r }}-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ env.cache-version }}-${{ runner.os }}-bioc-${{ matrix.config.bioc }}-r-${{ matrix.config.r }}-
+          
       - name: Install Linux system dependencies
         if: runner.os == 'Linux'
         run: |
