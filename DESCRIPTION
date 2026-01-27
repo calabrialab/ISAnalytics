@@ -1,6 +1,6 @@
 Package: ISAnalytics
 Title: Analyze gene therapy vector insertion sites data identified from genomics next generation sequencing reads for clonal tracking studies
-Version: 1.21.1
+Version: 1.20.1
 Date: 2025-07-21
 Authors@R: c(
   person(given = "Francesco",
