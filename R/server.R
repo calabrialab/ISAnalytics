@@ -1,4 +1,8 @@
-#' @import shinyWidgets
+#' @import shiny
+#' @importFrom datamods import_globalenv_server import_file_server
+#' @importFrom shinyWidgets confirmSweetAlert sendSweetAlert closeSweetAlert
+#' @importFrom shinyWidgets pickerInput updatePickerInput dropdown numericInputIcon
+#' @import ggplot2
 .modal_warning_data <- function() {
     confirmSweetAlert(
         inputId = "data_override_warn",
@@ -12,10 +16,6 @@
     )
 }
 
-#' @import shiny
-#' @import datamods
-#' @import shinyWidgets
-#' @import ggplot2
 server <- shinyServer(function(input, output, session) {
     values <- reactiveValues(
         loaded_data = NULL,
