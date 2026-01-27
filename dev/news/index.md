@@ -1,0 +1,708 @@
+# Changelog
+
+## ISAnalytics 1.19.3 (2025-07-21)
+
+### UPDATE
+
+- colour update for .alluvial_plot
+
+## ISAnalytics 1.19.2 (2025-07-17)
+
+### UPDATE
+
+- vegan package switched from Suggests to Imports
+- added refGene_hg38 for CIS_grubbs test
+
+## ISAnalytics 1.19.1 (2025-07-09)
+
+### UPDATE
+
+- Changed again color scale for alluvial_plot
+
+## ISAnalytics 1.19.0 (2025-07-09)
+
+### GENERAL UPDATE
+
+- Changed color scale for alluvial_plot and made some general updates
+
+## ISAnalytics 1.13.1 (2024-12-05)
+
+### BUG FIXES
+
+- Fixed bug in call to `print.data.table` that broke examples for
+  `CIS_Grubbs`.
+
+## ISAnalytics 1.11.2 (2023-07-26)
+
+### FIXES
+
+- Fixed issues in html report for outlier filtering - reported incorrect
+  numbers due to missing conversion in percentage
+- Fixed warnings for bslib::nav deprecation
+- Fixed minor issue in
+  [`default_af_transform()`](https://calabrialab.github.io/ISAnalytics/dev/reference/default_af_transform.md),
+  transformation failed if NAs were present in the columns
+
+## ISAnalytics 1.11.1 (2023-05-09)
+
+### FIXES
+
+- Fixed broken tests with new updates in underlying packages
+
+## ISAnalytics 1.9.3 (2023-04-04)
+
+### ENHANCES AND REFACTORING
+
+- The package no longer depends on `magrittr`
+- All functionality associated with `data.table` now it’s completely
+  optional and will be used internally only if the package is available
+- Several packages were moved from `Imports` to `Suggests` - functions
+  will notify when additional packages are requested for the specific
+  functionality
+- All known deprecated or superseded functions from other packages have
+  been removed or substituted
+
+### FIXES AND GENERAL UPDATES
+
+- Added a new tag “barcode_mux” in
+  [`available_tags()`](https://calabrialab.github.io/ISAnalytics/dev/reference/available_tags.md)
+- The function
+  [`HSC_population_size_estimate()`](https://calabrialab.github.io/ISAnalytics/dev/reference/HSC_population_size_estimate.md)
+  now better supports the computation of estimates from different groups
+  of cell types and tissues at the same time. The tabular output now
+  contains an additional column “Timepoints_included” that specifies how
+  many time points the estimate contains
+- Function
+  [`is_sharing()`](https://calabrialab.github.io/ISAnalytics/dev/reference/is_sharing.md)
+  can now handle better limit cases and has the option of being
+  parallelised provided appropriate packages are available (better
+  performance)
+
+### DEPRECATIONS & BREAKING CHANGES
+
+- Functions
+  [`import_parallel_Vispa2Matrices_auto()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_parallel_Vispa2Matrices_auto.md)
+  and
+  [`import_parallel_Vispa2Matrices_interactive()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_parallel_Vispa2Matrices_interactive.md)
+  are officially defunct and will not be exported anymore starting from
+  the next release cycle
+- The argument `mode` of
+  [`import_parallel_Vispa2Matrices()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_parallel_Vispa2Matrices.md)
+  no longer accepts `INTERACTIVE` as a valid option and the interactive
+  mode is considered now defunct, since the usage is very limiting and
+  limited
+- The argument `association_file` of
+  [`import_parallel_Vispa2Matrices()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_parallel_Vispa2Matrices.md)
+  no longer accepts a string representing a path. Association file
+  import is delegated solely to its dedicated function from now on.
+- The function
+  [`threshold_filter()`](https://calabrialab.github.io/ISAnalytics/dev/reference/threshold_filter.md)
+  is deprecated, since its use is rather complicated instead of using
+  standard filtering with dplyr or similar tools
+
+### MINOR CHANGES
+
+- [`default_af_transform()`](https://calabrialab.github.io/ISAnalytics/dev/reference/default_af_transform.md)
+  now pads time points based on the maximum number of characters + 1 in
+  the column
+
+## ISAnalytics 1.9.2 (2023-01-26)
+
+### FIXES AND GENERAL UPDATES
+
+- Fixed an issue with ifelse function in
+  [`top_abund_tableGrob()`](https://calabrialab.github.io/ISAnalytics/dev/reference/top_abund_tableGrob.md) -
+  now the function has a new argument `transform_by` which is useful for
+  controlling ordering of columns
+- Updated CITATION file
+- Package `DT` has been moved (likely temporarily) in Imports - linked
+  to issue <https://github.com/calabrialab/ISAnalytics/issues/2>
+- Fixed other typos and minor issues
+
+## ISAnalytics 1.9.1 (2022-12-01)
+
+- Fixed all `tidyselect` warnings (internal use of .data\$ in selection
+  context)
+- Added bonferroni correction in `gene_frequency_fisher`
+
+## ISAnalytics 1.7.7 (2022-10-26)
+
+- Added new section in workflow vignette + sample files
+
+## ISAnalytics 1.7.6 (2022-10-25)
+
+- Fixed minor bugs and typos
+
+## ISAnalytics 1.7.5 (2022-10-05)
+
+- Fixed build issues
+
+## ISAnalytics 1.7.4 (2022-10-04)
+
+### VISIBLE USER CHANGES
+
+- Progress bars for long processing functions are now implemented via
+  the package `progressr`, added a wrapper function for fast enabling
+  progress bars,
+  [`enable_progress_bars()`](https://calabrialab.github.io/ISAnalytics/dev/reference/enable_progress_bars.md)
+- Introduced logging for issues in
+  [`HSC_population_size_estimate()`](https://calabrialab.github.io/ISAnalytics/dev/reference/HSC_population_size_estimate.md) -
+  signals eventual problems in computing estimates and why
+
+### BUG FIXES AND MINOR CHANGES
+
+- Fixed minor bugs and typos
+
+## ISAnalytics 1.7.3 (2022-06-17)
+
+### BUG FIXES AND MINOR CHANGES
+
+- All functions that check for options now have a default value if
+  option is not set
+- `CIS_grubbs` function is now faster (removed dependency from
+  [`psych::describe`](https://rdrr.io/pkg/psych/man/describe.html))
+
+### NEW
+
+- New functions
+  [`CIS_grubbs_overtime()`](https://calabrialab.github.io/ISAnalytics/dev/reference/CIS_grubbs_overtime.md)
+  and associated plotting function
+  [`top_cis_overtime_heatmap()`](https://calabrialab.github.io/ISAnalytics/dev/reference/top_cis_overtime_heatmap.md)
+  to compute CIS_grubbs test over time
+
+## ISAnalytics 1.7.2 (2022-05-23)
+
+### BUG FIXES AND MINOR CHANGES
+
+- Fixed minor issues in
+  [`import_association_file()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_association_file.md) -
+  function had minor issues when importing \*.xlsx files and missing
+  optional columns threw errors
+- Fixed bug in
+  [`as_sparse_matrix()`](https://calabrialab.github.io/ISAnalytics/dev/reference/as_sparse_matrix.md) -
+  function failed when trying to process an aggregated matrix
+
+### NEW
+
+- Added 2 new utility functions
+  [`export_ISA_settings()`](https://calabrialab.github.io/ISAnalytics/dev/reference/export_ISA_settings.md)
+  and
+  [`import_ISA_settings()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_ISA_settings.md)
+  that allow a faster workflow setup
+
+## ISAnalytics 1.7.1 (2022-05-04)
+
+### BUG FIXES AND MINOR CHANGES
+
+- Fixed minor issue in
+  [`compute_near_integrations()`](https://calabrialab.github.io/ISAnalytics/dev/reference/compute_near_integrations.md) -
+  function errored when `report_path` argument was set to `NULL`
+- Fixed dplyr warning in
+  [`integration_alluvial_plot()`](https://calabrialab.github.io/ISAnalytics/dev/reference/integration_alluvial_plot.md)
+  internals
+- Fixed issue with report of VISPA2 stats - report failed due to minor
+  error in rmd fragment
+- Internals of
+  [`remove_collisions()`](https://calabrialab.github.io/ISAnalytics/dev/reference/remove_collisions.md)
+  use again dplyr internally for joining and grouping operations -
+  needed because of performance issues with data.table
+- [`fisher_scatterplot()`](https://calabrialab.github.io/ISAnalytics/dev/reference/fisher_scatterplot.md)
+  has 2 new arguments that allow the disabling of highlighting for some
+  genes even if their p-value is under the threshold
+
+## ISAnalytics 1.5.4 (2022-04-20)
+
+### MAJOR CHANGES
+
+- ISAnalytics has now a new “dynamic vars system” to allow more
+  flexibility on user inputs, view the dedicated vignette with
+  [`vignette("workflow_start", package="ISAnalytics")`](https://calabrialab.github.io/ISAnalytics/dev/articles/workflow_start.md)
+- All package functions were reviewed to work properly with this system
+
+### NEW FEATURES
+
+- [`gene_frequency_fisher()`](https://calabrialab.github.io/ISAnalytics/dev/reference/gene_frequency_fisher.md)
+  is a new function of the analysis family that allows the computation
+  of Fisher’s exact test p-values on gene frequency -
+  [`fisher_scatterplot()`](https://calabrialab.github.io/ISAnalytics/dev/reference/fisher_scatterplot.md)
+  is the associated plotting function
+- [`top_targeted_genes()`](https://calabrialab.github.io/ISAnalytics/dev/reference/top_targeted_genes.md)
+  is a new function of the analysis family that produces the top n
+  targeted genes based on the number of IS
+- [`NGSdataExplorer()`](https://calabrialab.github.io/ISAnalytics/dev/reference/NGSdataExplorer.md)
+  is a newly implemented Shiny interface that allows the exploration and
+  plotting of data
+- zipped examples were removed from the package to contain size. To
+  compensate, the new function
+  [`generate_default_folder_structure()`](https://calabrialab.github.io/ISAnalytics/dev/reference/generate_default_folder_structure.md)
+  generates the standard folder structure with package-included data
+  on-demand
+- [`transform_columns()`](https://calabrialab.github.io/ISAnalytics/dev/reference/transform_columns.md)
+  is a new utility function, also used internally by other exported
+  functions, that allows arbitrary transformations on data frame columns
+
+### MINOR CHANGES
+
+- [`remove_collisions()`](https://calabrialab.github.io/ISAnalytics/dev/reference/remove_collisions.md)
+  now has a dedicated parameter to specify how independent samples are
+  identified
+- `compute_near_integration_sites()` now has a parameter called
+  `additional_agg_lambda()` to allow aggregation of additional columns
+- [`CIS_grubbs()`](https://calabrialab.github.io/ISAnalytics/dev/reference/CIS_grubbs.md)
+  now signals if there are missing genes in the refgenes table and
+  eventually returns them as a df
+- [`outlier_filter()`](https://calabrialab.github.io/ISAnalytics/dev/reference/outlier_filter.md)
+  is now able to take multiple tests in input and combine them with a
+  given logic. It now also produces an HTML report.
+- Several functions now use data.table under the hood
+- Color of the strata containing IS below threshold can now be set in
+  [`integration_alluvial_plot()`](https://calabrialab.github.io/ISAnalytics/dev/reference/integration_alluvial_plot.md)
+
+### BUG FIXES
+
+- Fixed a minor bug in
+  [`import_Vispa2_stats()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_Vispa2_stats.md) -
+  function failed when passing `report_path = NULL`
+- Fixed minor issue in
+  [`circos_genomic_density()`](https://calabrialab.github.io/ISAnalytics/dev/reference/circos_genomic_density.md)
+  when trying to use a pdf device
+
+### DEPRECATED FUNCTIONS
+
+- [`unzip_file_system()`](https://calabrialab.github.io/ISAnalytics/dev/reference/unzip_file_system.md)
+  was made defunct in favor of
+  [`generate_default_folder_structure()`](https://calabrialab.github.io/ISAnalytics/dev/reference/generate_default_folder_structure.md)
+- [`cumulative_count_union()`](https://calabrialab.github.io/ISAnalytics/dev/reference/cumulative_count_union.md)
+  was deprecated and its functionality was moved to
+  [`cumulative_is()`](https://calabrialab.github.io/ISAnalytics/dev/reference/cumulative_is.md)
+
+## ISAnalytics 1.5.3 (2022-01-13)
+
+### MINOR CHANGES
+
+- Added arguments `fragmentEstimate_column` and
+  `fragmentEstimate_threshold` in
+  [`HSC_population_size_estimate()`](https://calabrialab.github.io/ISAnalytics/dev/reference/HSC_population_size_estimate.md).
+  Slightly revised filtering logic.
+- Updated package logo and website
+
+## ISAnalytics 1.5.2 (2021-12-14)
+
+### NEW (MINOR)
+
+- Added function to check for annotation problems in IS matrices
+
+### MINOR CHANGES
+
+- Added argument `max_workers` in function
+  [`remove_collisions()`](https://calabrialab.github.io/ISAnalytics/dev/reference/remove_collisions.md)
+- Updated default functions for
+  [`aggregate_metadata()`](https://calabrialab.github.io/ISAnalytics/dev/reference/aggregate_metadata.md)
+- Added annotation issues section in import matrices report
+
+### FIXES
+
+- Fixed minor issue in internals for file system alignment checks
+- Fixed minor issue in internal call to
+  [`import_Vispa2_stats()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_Vispa2_stats.md)
+  from
+  [`import_association_file()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_association_file.md)
+- Added safe computation of sharing in
+  [`remove_collisions()`](https://calabrialab.github.io/ISAnalytics/dev/reference/remove_collisions.md):
+  if process fails function doesn’t stop
+
+## ISAnalytics 1.5.1 (2021-10-28)
+
+### FIXES
+
+- Attempt to fix issues with parallel computation on Windows for some
+  plotting functions
+
+## ISAnalytics 1.3.9 (2021-10-25)
+
+### FIXES
+
+- Fixed issues with function that make use of BiocParallel that
+  sometimes failed on Windows platform
+
+## ISAnalytics 1.3.7 (2021-10-20)
+
+### NEW
+
+- Added new feature
+  [`iss_source()`](https://calabrialab.github.io/ISAnalytics/dev/reference/iss_source.md)
+
+### FIXES
+
+- Fixed minor issues in data files `refGenes_mm9` and function
+  [`compute_near_integrations()`](https://calabrialab.github.io/ISAnalytics/dev/reference/compute_near_integrations.md)
+
+## ISAnalytics 1.3.6 (2021-10-05)
+
+### NEW
+
+- Added new feature
+  [`purity_filter()`](https://calabrialab.github.io/ISAnalytics/dev/reference/purity_filter.md)
+
+### FIXES
+
+- Fixed small issue in printing information in reports
+
+## ISAnalytics 1.3.5 (2021-09-21)
+
+### MAJOR CHANGES
+
+- Reworked
+  [`is_sharing()`](https://calabrialab.github.io/ISAnalytics/dev/reference/is_sharing.md)
+  function, detailed usage in vignette
+  `vignette("sharing_analyses", package = "ISAnalytics")`
+
+### NEW
+
+- New function
+  [`cumulative_is()`](https://calabrialab.github.io/ISAnalytics/dev/reference/cumulative_is.md)
+- New function for plotting sharing as venn/euler diagrams
+  [`sharing_venn()`](https://calabrialab.github.io/ISAnalytics/dev/reference/sharing_venn.md)
+
+## ISAnalytics 1.3.4 (2021-08 -03)
+
+### FIXES/MINOR UPDATES
+
+- Fixed issue in tests that lead to broken build
+- Slightly modified included data set for better examples
+
+## ISAnalytics 1.3.3 (2021-07-30)
+
+### MAJOR CHANGES
+
+- Completely reworked interactive HTML report system, for details take a
+  look at the new vignette
+  `vignette("report_system", package = "ISAnalytics")`
+- Old `ISAnalytics.widgets` option has been replaced by
+  `ISAnalytics.reports`
+- In
+  [`remove_collisions()`](https://calabrialab.github.io/ISAnalytics/dev/reference/remove_collisions.md),
+  removed arguments `seq_count_col`, `max_rows_reports` and
+  `save_widget_path`, added arguments `quant_cols` and `report_path`
+  (see documentation for details)
+
+### MINOR CHANGES
+
+- [`import_single_Vispa2Matrix()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_single_Vispa2Matrix.md)
+  now allows keeping additional non-standard columns
+- [`compute_near_integrations()`](https://calabrialab.github.io/ISAnalytics/dev/reference/compute_near_integrations.md)
+  is now faster on bigger data sets
+- Changed default values for arguments `columns` and `key` in
+  [`compute_abundance()`](https://calabrialab.github.io/ISAnalytics/dev/reference/compute_abundance.md)
+- [`compute_near_integrations()`](https://calabrialab.github.io/ISAnalytics/dev/reference/compute_near_integrations.md)
+  now produces only re-calibration map in \*.tsv format
+- [`CIS_grubbs()`](https://calabrialab.github.io/ISAnalytics/dev/reference/CIS_grubbs.md)
+  now supports calculations for each group specified in argument `by`
+- In
+  [`sample_statistics()`](https://calabrialab.github.io/ISAnalytics/dev/reference/sample_statistics.md)
+  now there is the option to include the calculation of distinct
+  integration sites for each group (if mandatory vars are present)
+
+### NEW FUNCTIONALITY
+
+- Added new plotting function
+  [`circos_genomic_density()`](https://calabrialab.github.io/ISAnalytics/dev/reference/circos_genomic_density.md)
+
+### FIXES
+
+- Fixed minor issue with NA values in alluvial plots
+
+### DEPRECATIONS
+
+- [`import_parallel_Vispa2Matrices_interactive()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_parallel_Vispa2Matrices_interactive.md)
+  and
+  [`import_parallel_Vispa2Matrices_auto()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_parallel_Vispa2Matrices_auto.md)
+  are officially deprecated in favor of
+  [`import_parallel_Vispa2Matrices()`](https://calabrialab.github.io/ISAnalytics/dev/reference/import_parallel_Vispa2Matrices.md)
+
+### OTHER
+
+- The package has now a more complete and functional example data set
+  for executable examples
+- Reworked documentation
+
+## ISAnalytics 1.3.2 (2021-06-28)
+
+### FIXES
+
+- Corrected issues in man pages
+
+## ISAnalytics 1.3.1 (2021-06-24)
+
+### NEW FUNCTIONALITY
+
+- `is_sharing` computes the sharing of IS between groups
+- `sharing_heatmap` allows visualization of sharing data through
+  heatmaps
+- `integration_alluvial_plot` allows visualization of integration sites
+  distribution in groups over time.
+- `top_abund_tableGrob` can be used in combination with the previous
+  function or by itself to obtain a summary of top abundant integrations
+  as an R graphic (tableGrob) object that can be combined with plots.
+
+### MINOR UPDATES
+
+- Added more default stats functions to `default_stats`
+- Added optional automatic conversion of time points in months and years
+  when importing association file
+- Minor fixes in `generate_Vispa2_launch_AF`
+
+## ISAnalytics 1.1.11 (2021-05-11)
+
+### NEW FUNCTIONALITY
+
+- `HSC_population_size_estimate` and `HSC_population_plot` allow
+  estimates on hematopoietic stem cell population size
+- Importing of Vispa2 stats per pool now has a dedicated function,
+  `import_Vispa2_stats`
+- `outlier_filter` and `outliers_by_pool_fragments` offer a mean to
+  filter poorly represented samples based on custom outliers tests
+
+### VISIBLE USER CHANGES
+
+- The argument `import_stats` of `aggregate_metadata` is officially
+  deprecated in favor of `import_Vispa2_stats`
+- `aggregate_metadata` is now a lot more flexible on what operations can
+  be performed on columns via the new argument `aggregating_functions`
+- `import_association_file` allows directly for the import of Vispa2
+  stats and converts time points to months and years where not already
+  present
+- File system alignment of `import_association_file` now produces 3
+  separate columns for paths
+- `separate_quant_matrices` and `comparison_matrix` now do not require
+  mandatory columns other than the quantifications - this allows for
+  separation or joining also for aggregated matrices
+
+### FIXES
+
+- Fixed a minor issue in `CIS_volcano_plot` that caused duplication of
+  some labels if highlighted genes were provided in input
+
+## ISAnalytics 1.1.10 (2021-04-08)
+
+### FIXES
+
+- Fixed issue in `compute_near_integrations`: when provided
+  recalibration map export path as a folder now the function works
+  correctly and produces an automatically generated file name
+- Fixed issue in `aggregate_metadata`: now paths to folder that contains
+  Vispa2 stats is looked up correctly. Also, VISPA2 stats columns are
+  aggregated if found in the input data frame independently from the
+  parameter `import_stats`.
+
+### IMPROVEMENTS
+
+- `compute_abundance` can now take as input aggregated matrices and has
+  additional parameters to offer more flexibility to the user. Major
+  updates and improvements also on documentation and reproducible
+  examples.
+- Major improvements in function `import_single_Vispa2Matrix`: import is
+  now preferentially carried out using
+  [`data.table::fread`](https://rdrr.io/pkg/data.table/man/fread.html)
+  greatly speeding up the process - where not possible
+  [`readr::read_delim`](https://readr.tidyverse.org/reference/read_delim.html)
+  is used instead
+- Major improvements in function `import_association_file`: greatly
+  improved parsing precision (each column has a dedicated type), import
+  report now signals parsing problems and their location and signals
+  also problems in parsing dates. Report also includes potential
+  problems in column names and signals missing data in important
+  columns. Added also the possibility to give various file formats in
+  input including `*.xls(x)` formats.
+- Function `top_integrations` can now take additional parameters to
+  compute top n genes for each specified group
+- Removed faceting parameters in `CIS_volcano_plot` due to poor
+  precision (easier to add faceting manually) and added parameters to
+  return the data frame that generated the plot as an additional result.
+  Also, it is now possible to specify a vector of gene names to
+  highlight even if they’re not above the annotation threshold.
+
+### MINOR
+
+- ISAnalytics website has improved graphic theme and has an additional
+  button on the right that leads to the devel (or release) version of
+  the website
+- Updated vignettes
+
+### FOR DEVS ONLY
+
+- Complete rework of test suite to be compliant to testthat v.3
+
+## ISAnalytics 1.1.9 (2021-02-17)
+
+### FIXES
+
+- Fixed minor issues in internal functions with absolute file paths &
+  corrected typos
+
+## ISAnalytics 1.1.8 (2020-02-15)
+
+### FIXES
+
+- Fixed minor issues in internal functions to optimize file system
+  alignment
+
+## ISAnalytics 1.1.7 (2020-02-10)
+
+### FIXES
+
+- Fixed minor issues in import_association_file when checking parameters
+
+## ISAnalytics 1.1.6 (2020-02-06)
+
+### UPGRADES
+
+- It is now possible to save html reports to file from
+  import_parallel_Vispa2Matrices_auto and
+  import_parallel_Vispa2Matrices_interactive, remove_collisions and
+  compute_near_integrations
+
+### FIXES
+
+- Fixed sample_statistics: now functions that have data frame output do
+  not produce nested tables. Flat tables are ready to be saved to file
+  or can be nested.
+- Simplified association file check logic in remove_collisions: now
+  function blocks only if the af doesn’t contain the needed columns
+
+## ISAnalytics 1.1.5 (2020-02-03)
+
+### UPGRADES
+
+- Upgraded import_association_file function: now file alignment is not
+  mandatory anymore and it is possible to save the html report to file
+- Updated vignettes and documentation
+
+## ISAnalytics 1.1.4 (2020-11-16)
+
+### UPGRADES
+
+- Greatly improved reports for collision removal function
+- General improvements for all widget reports
+
+## ISAnalytics 1.1.3 (2020-11-10)
+
+### FIXES
+
+- Further fixes for printing reports when widgets not available
+- Added progress bar to collision processing in `remove_collisions`
+- Updated vignettes
+
+### NEW
+
+- Added vignette “Using ISAnalytics without RStudio support”
+
+## ISAnalytics 1.1.2 (2020-11-05)
+
+### FIXES
+
+- Fixed missing restarts for non-blocking widgets
+
+## ISAnalytics 1.1.1 (2020-11-04)
+
+### FIXES
+
+- Functions that make use of widgets do not interrupt execution anymore
+  if errors are thrown while producing or printing the widgets
+- Optimized widget printing for importing functions
+- If widgets can’t be printed and verbose option is active, reports are
+  now displayed on console instead (needed for usage in environments
+  that do not have access to a browser)
+- Other minor fixes (typos)
+- Bug fixes: fixed a few bugs in importing and recalibration functions
+- Minor fix in import_association_file file function: added multiple
+  strings to be translated as NA
+
+### IMPORTANT NOTES
+
+- Vignette building might fail due to the fact that package
+  “knitcitations” is temporarily unavailable through CRAN
+- ISAnalytics is finally in release on bioconductor!
+
+## ISAnalytics 0.99.14 (2020-10-21)
+
+- Minor fixes in tests
+
+## ISAnalytics 0.99.13 (2020-10-19)
+
+### NEW FEATURES
+
+- Added analysis functions `CIS_grubbs` and `cumulative_count_union`
+- Added plotting functions `CIS_volcano_plot`
+
+## ISAnalytics 0.99.12 (2020-10-04)
+
+### NEW FEATURES
+
+- Added analysis function `sample_statistics`
+
+### SIGNIFICANT USER-VISIBLE CHANGES
+
+- `aggregate_values_by_key` has a simplified interface and supports
+  multi-quantification matrices
+
+### MINOR CHANGES
+
+- Updated vignettes
+- `import_parallel_Vispa2Matrices_interactive` and
+  `import_parallel_Vispa2Matrices_auto` now have an option to return a
+  multi-quantification matrix directly after import instead of a list
+
+## ISAnalytics 0.99.11 (2020-09-21)
+
+### NEW FEATURES
+
+- Added analysis functions `threshold_filter`, `top_integrations`
+- Added support for multi-quantification matrices in `compute_abundance`
+
+### MINOR FIXES
+
+- Fixed bug in `comparison_matrix` that ignored custom column names
+- Fixed issues in some documentation pages
+
+## ISAnalytics 0.99.10 (2020-09-14)
+
+ISanalytics is officially on bioconductor!
+
+### NEW FEATURES
+
+- Added analysis functions `comparison_matrix` and
+  `separate_quant_matrices`
+- Added utility function `as_sparse_matrix`
+- Added package logo
+
+### SIGNIFICANT USER-VISIBLE CHANGES
+
+- Changed algorithm for `compute_near_integrations`
+- Added support for multi-quantification matrices to `remove_collisions`
+- Added usage of lifecycle badges in documentation: users can now see if
+  a feature is experimental/maturing/stable etc
+
+### MINOR FIXES
+
+- Added fix for `import_single_Vispa2Matrix` to remove non significant 0
+  values
+
+## ISAnalytics 0.99.9 (2020-09-01)
+
+### NEW FEATURES
+
+- Added functionality: aggregate functions
+- Added vignette on aggregate functions
+- Added recalibration functions
+- Added first analysis function (compute_abundance)
+
+### SIGNIFICANT USER-VISIBLE CHANGES
+
+- Dropped structure `ISADataFrame`: now the package only uses standard
+  tibbles
+- Modified package documentation
+
+## ISAnalytics 0.99.8 (2020-08-12)
+
+- Submitted to Bioconductor

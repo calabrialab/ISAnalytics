@@ -55,7 +55,7 @@ sample_key = c(&quot;SubjectID&quot;, &quot;CellMarker&quot;,&quot;Tissue&quot;,
 
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.19.3</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.21.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -170,15 +170,15 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other Analysis functions:
-<code><a href="CIS_grubbs.html">CIS_grubbs</a>()</code>,
-<code><a href="HSC_population_size_estimate.html">HSC_population_size_estimate</a>()</code>,
-<code><a href="compute_abundance.html">compute_abundance</a>()</code>,
-<code><a href="cumulative_is.html">cumulative_is</a>()</code>,
-<code><a href="gene_frequency_fisher.html">gene_frequency_fisher</a>()</code>,
-<code><a href="is_sharing.html">is_sharing</a>()</code>,
-<code><a href="iss_source.html">iss_source</a>()</code>,
-<code><a href="top_integrations.html">top_integrations</a>()</code>,
-<code><a href="top_targeted_genes.html">top_targeted_genes</a>()</code></p></div>
+<code><a href="CIS_grubbs.html">CIS_grubbs()</a></code>,
+<code><a href="HSC_population_size_estimate.html">HSC_population_size_estimate()</a></code>,
+<code><a href="compute_abundance.html">compute_abundance()</a></code>,
+<code><a href="cumulative_is.html">cumulative_is()</a></code>,
+<code><a href="gene_frequency_fisher.html">gene_frequency_fisher()</a></code>,
+<code><a href="is_sharing.html">is_sharing()</a></code>,
+<code><a href="iss_source.html">iss_source()</a></code>,
+<code><a href="top_integrations.html">top_integrations()</a></code>,
+<code><a href="top_targeted_genes.html">top_targeted_genes()</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -270,6 +270,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:      PJ01 ET#412.34 POOL04   LTR87LC68     PT002      lenti    GLOBE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:      PJ01 ET#408.51 POOL04    LTR25LC6     PT002      lenti    GLOBE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     ProjectID  FUSIONID PoolID TagSequence SubjectID VectorType VectorID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;char&gt;    &lt;char&gt; &lt;char&gt;      &lt;char&gt;    &lt;char&gt;     &lt;char&gt;   &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     ExperimentID Tissue TimePoint DNAFragmentation PCRMethod TagIDextended</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;char&gt; &lt;char&gt;    &lt;char&gt;           &lt;char&gt;    &lt;char&gt;        &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:         &lt;NA&gt;     PB      0060            SONIC      SLiM     LTR75LC38</span>
@@ -326,6 +327,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:         &lt;NA&gt;     PB      0090            SONIC      SLiM     LTR87LC68</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:         &lt;NA&gt;     PB      0030            SONIC      SLiM      LTR25LC6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     ExperimentID Tissue TimePoint DNAFragmentation PCRMethod TagIDextended</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;char&gt; &lt;char&gt;    &lt;char&gt;           &lt;char&gt;    &lt;char&gt;        &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     Keywords CellMarker      TagID NGSProvider NGSTechnology ConverrtedFilesDir</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       &lt;char&gt;     &lt;char&gt;     &lt;char&gt;      &lt;char&gt;        &lt;char&gt;             &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:     &lt;NA&gt;        MNC LTR75.LC38        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span>
@@ -382,6 +384,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:     &lt;NA&gt;        MNC LTR87.LC68        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:     &lt;NA&gt;        MNC  LTR25.LC6        &lt;NA&gt;         HiSeq               &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     Keywords CellMarker      TagID NGSProvider NGSTechnology ConverrtedFilesDir</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       &lt;char&gt;     &lt;char&gt;     &lt;char&gt;      &lt;char&gt;        &lt;char&gt;             &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     ConverrtedFilesName SourceFileFolder SourceFileNameR1 SourceFileNameR2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;char&gt;           &lt;char&gt;           &lt;char&gt;           &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span>
@@ -438,6 +441,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;             &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     ConverrtedFilesName SourceFileFolder SourceFileNameR1 SourceFileNameR2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;char&gt;           &lt;char&gt;           &lt;char&gt;           &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     DNAnumber ReplicateNumber DNAextractionDate DNAngUsed LinearPCRID</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;char&gt;           &lt;int&gt;            &lt;Date&gt;     &lt;num&gt;      &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1: PT001-103               3        2016-03-16   23.1840        &lt;NA&gt;</span>
@@ -494,6 +498,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52: PT002-211               2        2016-09-09  123.0000        &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53: PT002-170               2        2016-07-12  106.3500        &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     DNAnumber ReplicateNumber DNAextractionDate DNAngUsed LinearPCRID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;char&gt;           &lt;int&gt;            &lt;Date&gt;     &lt;num&gt;      &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     LinearPCRDate SonicationDate LigationDate 1stExpoPCRID 1stExpoPCRDate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            &lt;Date&gt;         &lt;Date&gt;       &lt;Date&gt;       &lt;char&gt;         &lt;Date&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:          &lt;NA&gt;     2016-11-02   2016-11-02    ET#380.46     2016-11-02</span>
@@ -550,6 +555,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:          &lt;NA&gt;     2017-05-03   2017-05-03    ET#410.34     2017-05-04</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:          &lt;NA&gt;     2017-04-19   2017-04-19    ET#406.51     2017-04-20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     LinearPCRDate SonicationDate LigationDate 1stExpoPCRID 1stExpoPCRDate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            &lt;Date&gt;         &lt;Date&gt;       &lt;Date&gt;       &lt;char&gt;         &lt;Date&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2ndExpoID 2ndExpoDate FusionPrimerPCRID FusionPrimerPCRDate   PoolDate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;char&gt;      &lt;Date&gt;            &lt;char&gt;              &lt;Date&gt;     &lt;Date&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:      &lt;NA&gt;        &lt;NA&gt;         ET#382.46          2016-11-03 2016-11-07</span>
@@ -606,6 +612,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:      &lt;NA&gt;        &lt;NA&gt;         ET#412.34          2017-05-05 2017-05-17</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:      &lt;NA&gt;        &lt;NA&gt;         ET#408.51          2017-04-21 2017-05-17</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2ndExpoID 2ndExpoDate FusionPrimerPCRID FusionPrimerPCRDate   PoolDate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;char&gt;      &lt;Date&gt;            &lt;char&gt;              &lt;Date&gt;     &lt;Date&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     SequencingDate   VCN Genome SequencingRound Genotype TestGroup    MOI</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             &lt;Date&gt; &lt;num&gt; &lt;char&gt;           &lt;int&gt;   &lt;char&gt;    &lt;char&gt; &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:     2016-11-15  0.30   hg19               1     &lt;NA&gt;      &lt;NA&gt;   &lt;NA&gt;</span>
@@ -662,6 +669,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:     2017-06-23  1.09   hg19               1     &lt;NA&gt;      &lt;NA&gt;   &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:     2017-06-23  0.77   hg19               1     &lt;NA&gt;      &lt;NA&gt;   &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     SequencingDate   VCN Genome SequencingRound Genotype TestGroup    MOI</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             &lt;Date&gt; &lt;num&gt; &lt;char&gt;           &lt;int&gt;   &lt;char&gt;    &lt;char&gt; &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     Engraftment Transduction  Notes AddedField1 AddedField2 AddedField3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;num&gt;        &lt;num&gt; &lt;char&gt;      &lt;char&gt;      &lt;char&gt;      &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:          NA           NA   &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span>
@@ -718,6 +726,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:          NA           NA   &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:          NA           NA   &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     Engraftment Transduction  Notes AddedField1 AddedField2 AddedField3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;num&gt;        &lt;num&gt; &lt;char&gt;      &lt;char&gt;      &lt;char&gt;      &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     AddedField4 concatenatePoolIDSeqRun AddedField6_RelativeBloodPercentage</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;char&gt;                  &lt;char&gt;                              &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:        &lt;NA&gt;                POOL01-1                                &lt;NA&gt;</span>
@@ -774,6 +783,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:        &lt;NA&gt;                POOL04-1                                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:        &lt;NA&gt;                POOL04-1                                &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     AddedField4 concatenatePoolIDSeqRun AddedField6_RelativeBloodPercentage</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;char&gt;                  &lt;char&gt;                              &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     AddedField7_PurityTestFeasibility AddedField8_FacsSeparationPurity</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                 &lt;num&gt;                            &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                                NA                               NA</span>
@@ -830,6 +840,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                                NA                               NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                                NA                               NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     AddedField7_PurityTestFeasibility AddedField8_FacsSeparationPurity</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                 &lt;num&gt;                            &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          Kapa ulForPool</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;num&gt;     &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:        NA        NA</span>
@@ -886,6 +897,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:        NA        NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:        NA        NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          Kapa ulForPool</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;num&gt;     &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                  CompleteAmplificationID</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                                   &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC</span>
@@ -942,6 +954,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52: PJ01_POOL04_LTR87LC68_PT002_PT002-211_lenti_GLOBE_PB_1_SLiM_0090_MNC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:  PJ01_POOL04_LTR25LC6_PT002_PT002-170_lenti_GLOBE_PB_1_SLiM_0030_MNC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                  CompleteAmplificationID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                   &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   UniqueID StudyTestID StudyTestGroup MouseID Tigroup Tisource</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     &lt;char&gt;      &lt;char&gt;          &lt;int&gt;   &lt;int&gt;  &lt;char&gt;   &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1: ID00000000000000007433        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
@@ -998,6 +1011,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52: ID00000000000000009884        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53: ID00000000000000009780        &lt;NA&gt;             NA      NA    &lt;NA&gt;     &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   UniqueID StudyTestID StudyTestGroup MouseID Tigroup Tisource</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     &lt;char&gt;      &lt;char&gt;          &lt;int&gt;   &lt;int&gt;  &lt;char&gt;   &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     PathToFolderProjectID SamplesNameCheck TimepointDays TimepointMonths</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;char&gt;           &lt;char&gt;        &lt;char&gt;          &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                 /PJ01             &lt;NA&gt;          0060              02</span>
@@ -1054,6 +1068,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                 /PJ01             &lt;NA&gt;          0090              03</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                 /PJ01             &lt;NA&gt;          0030              01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     PathToFolderProjectID SamplesNameCheck TimepointDays TimepointMonths</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;char&gt;           &lt;char&gt;        &lt;char&gt;          &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     TimepointYears ng DNA corrected      RUN_NAME PHIX_MAPPING</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             &lt;char&gt;            &lt;num&gt;        &lt;char&gt;        &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:             01            23.18 PJ01|POOL01-1     43586699</span>
@@ -1110,6 +1125,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:             01           123.00 PJ01|POOL04-1     18979629</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:             01           106.35 PJ01|POOL04-1     18979629</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     TimepointYears ng DNA corrected      RUN_NAME PHIX_MAPPING</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             &lt;char&gt;            &lt;num&gt;        &lt;char&gt;        &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     PLASMID_MAPPED_BYPOOL BARCODE_MUX LTR_IDENTIFIED TRIMMING_FINAL_LTRLC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     &lt;int&gt;       &lt;int&gt;          &lt;int&gt;                &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:               2256176      645026         645026               630965</span>
@@ -1166,6 +1182,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:               1074651      331492         331477               328046</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:               1074651      392967         392765               390451</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     PLASMID_MAPPED_BYPOOL BARCODE_MUX LTR_IDENTIFIED TRIMMING_FINAL_LTRLC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     &lt;int&gt;       &lt;int&gt;          &lt;int&gt;                &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     LV_MAPPED BWA_MAPPED_OVERALL ISS_MAPPED_OVERALL RAW_READS QUALITY_PASSED</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;              &lt;int&gt;              &lt;int&gt;     &lt;int&gt;          &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:    211757             402477             219452        NA             NA</span>
@@ -1222,6 +1239,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:    146490             147277              75439        NA             NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:    184167             172582              96911        NA             NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     LV_MAPPED BWA_MAPPED_OVERALL ISS_MAPPED_OVERALL RAW_READS QUALITY_PASSED</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;              &lt;int&gt;              &lt;int&gt;     &lt;int&gt;          &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     ISS_MAPPED_PP seqCount_sum seqCount_count seqCount_shannon seqCount_simpson</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             &lt;int&gt;        &lt;num&gt;          &lt;int&gt;            &lt;num&gt;            &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:            NA          357             15        1.4928134        0.6693815</span>
@@ -1278,6 +1296,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:            NA           40              2        0.1169068        0.0487500</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:            NA            3              3        1.0986123        0.6666667</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     ISS_MAPPED_PP seqCount_sum seqCount_count seqCount_shannon seqCount_simpson</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             &lt;int&gt;        &lt;num&gt;          &lt;int&gt;            &lt;num&gt;            &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     seqCount_invsimpson fragmentEstimate_sum fragmentEstimate_count</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;num&gt;                &lt;num&gt;                  &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:            3.024634           201.064659                     15</span>
@@ -1334,6 +1353,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:            1.051248             2.002185                      2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:            3.000000             3.004764                      3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     seqCount_invsimpson fragmentEstimate_sum fragmentEstimate_count</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;num&gt;                &lt;num&gt;                  &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_shannon fragmentEstimate_simpson</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                        &lt;num&gt;                    &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                1.5158967                0.6644034</span>
@@ -1390,6 +1410,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                0.6931471                0.5000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                1.0986117                0.6666663</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_shannon fragmentEstimate_simpson</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                        &lt;num&gt;                    &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_invsimpson seqCount_describe_vars seqCount_describe_n</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                           &lt;num&gt;                  &lt;num&gt;               &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                    2.979768                      1                  15</span>
@@ -1446,6 +1467,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                    2.000000                      1                   2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                    2.999996                      1                   3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_invsimpson seqCount_describe_vars seqCount_describe_n</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           &lt;num&gt;                  &lt;num&gt;               &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     seqCount_describe_mean seqCount_describe_sd seqCount_describe_median</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                      &lt;num&gt;                &lt;num&gt;                    &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:              23.800000            49.019238                      4.0</span>
@@ -1502,6 +1524,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:              20.000000            26.870058                     20.0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:               1.000000             0.000000                      1.0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     seqCount_describe_mean seqCount_describe_sd seqCount_describe_median</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      &lt;num&gt;                &lt;num&gt;                    &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     seqCount_describe_trimmed seqCount_describe_mad seqCount_describe_min</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                         &lt;num&gt;                 &lt;num&gt;                 &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                 13.384615                4.4478                     1</span>
@@ -1558,6 +1581,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                 20.000000               28.1694                     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                  1.000000                0.0000                     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     seqCount_describe_trimmed seqCount_describe_mad seqCount_describe_min</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                         &lt;num&gt;                 &lt;num&gt;                 &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     seqCount_describe_max seqCount_describe_range seqCount_describe_skew</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     &lt;num&gt;                   &lt;num&gt;                  &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                   182                     181            2.301241908</span>
@@ -1614,6 +1638,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                    39                      38            0.000000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                     1                       0                    NaN</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     seqCount_describe_max seqCount_describe_range seqCount_describe_skew</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                     &lt;num&gt;                   &lt;num&gt;                  &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     seqCount_describe_kurtosis seqCount_describe_se</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                          &lt;num&gt;                &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                  4.4006968           12.6567129</span>
@@ -1670,6 +1695,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                 -2.7500000           19.0000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                        NaN            0.0000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     seqCount_describe_kurtosis seqCount_describe_se</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                          &lt;num&gt;                &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_vars fragmentEstimate_describe_n</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                              &lt;num&gt;                       &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                              1                          15</span>
@@ -1726,6 +1752,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                              1                           2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                              1                           3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_vars fragmentEstimate_describe_n</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              &lt;num&gt;                       &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_mean fragmentEstimate_describe_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                              &lt;num&gt;                        &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                      13.404311                 2.786707e+01</span>
@@ -1782,6 +1809,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                       1.001093                 3.673758e-04</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                       1.001588                 1.338704e-03</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_mean fragmentEstimate_describe_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              &lt;num&gt;                        &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_median fragmentEstimate_describe_trimmed</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                &lt;num&gt;                             &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                         3.012512                          7.470644</span>
@@ -1838,6 +1866,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                         1.001093                          1.001093</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                         1.001111                          1.001588</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_median fragmentEstimate_describe_trimmed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                &lt;num&gt;                             &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_mad fragmentEstimate_describe_min</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                             &lt;num&gt;                         &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                  2.981298e+00                      1.000572</span>
@@ -1894,6 +1923,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                  3.851408e-04                      1.000833</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                  8.263112e-04                      1.000553</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_mad fragmentEstimate_describe_min</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                             &lt;num&gt;                         &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_max fragmentEstimate_describe_range</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                             &lt;num&gt;                           &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                    102.945718                    1.019451e+02</span>
@@ -1950,6 +1980,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                      1.001352                    5.195478e-04</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                      1.003100                    2.546580e-03</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_max fragmentEstimate_describe_range</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                             &lt;num&gt;                           &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_skew fragmentEstimate_describe_kurtosis</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                              &lt;num&gt;                              &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                   2.316325e+00                          4.3379571</span>
@@ -2006,6 +2037,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                  -4.533028e-13                         -2.7500000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                   3.112158e-01                         -2.3333333</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_skew fragmentEstimate_describe_kurtosis</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              &lt;num&gt;                              &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_se   nIS</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                            &lt;num&gt; &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                 7.1952466279    15</span>
@@ -2062,6 +2094,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 <span class="r-out co"><span class="r-pr">#&gt;</span> 52:                 0.0002597739     2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 53:                 0.0007729012     3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fragmentEstimate_describe_se   nIS</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                            &lt;num&gt; &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
@@ -2074,7 +2107,7 @@ for each group? Can be computed only if <code>x</code> contains the mandatory co
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
