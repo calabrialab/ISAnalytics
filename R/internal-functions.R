@@ -5605,26 +5605,38 @@
             c("CellType", tissue_col)
         ))) |>
         dplyr::group_split()
-
+    
     # --- Filter out groups with less than 2 time points and log it
     logger <- NULL
-    for (i in seq_along(groups_dfs)) {
+    
+    n_tp <- purrr::map_int(
+      groups_dfs,
+      ~ dplyr::n_distinct(.x[[timepoint_column]])
+    )
+    
+    to_drop <- which(n_tp < 2)
+    
+    if (length(to_drop) > 0) {
+      logger <- purrr::map(to_drop, function(i) {
         group_i <- groups_dfs[[i]]
-        if (length(unique(group_i[[timepoint_column]])) < 2) {
-            logger <- append(logger, list(
-                glue::glue_collapse(
-                    c(
-                        glue::glue("{df[[subj_col]][1]}, {group_i$CellType[1]}, "),
-                        glue::glue("{group_i[[tissue_col]][1]}"),
-                        " - Has less than 2 time points, won't be processed"
-                    )
-                )
-            ))
-            groups_dfs[[i]] <- NULL
-        }
+        glue::glue_collapse(
+          c(
+            glue::glue("{df[[subj_col]][1]}, {group_i$CellType[1]}, "),
+            glue::glue("{group_i[[tissue_col]][1]}"),
+            " - Has less than 2 time points, won't be processed"
+          )
+        )
+      })
+      
+      # IMPORTANT: subset once, after the loop
+      groups_dfs <- groups_dfs[-to_drop]
     }
-    groups_dfs <- purrr::discard(groups_dfs, is.null)
-
+    
+    if (length(groups_dfs) == 0) {
+      if (!is.null(progress)) progress()
+      return(list(est = tibble::tibble(), log = logger))
+    }
+    
     # --- Calculate estimates
     estimates_per_group <- purrr::map(
         groups_dfs, ~ .estimate_pop(
