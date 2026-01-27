@@ -46,5 +46,5 @@ Other Utilities:
 tmp_folder <- tempdir()
 export_ISA_settings(tmp_folder, "DEFAULT")
 #> Settings profile correctly saved
-#> ℹ Saved at: /tmp/RtmpOH9fib/DEFAULT_ISAsettings.json
+#> ℹ Saved at: /tmp/RtmpLK8Qbb/DEFAULT_ISAsettings.json
 ```

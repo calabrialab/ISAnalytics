@@ -193,8 +193,6 @@ the authors and it is available in the package additional files.
 
 ``` r
 library(ISAnalytics)
-#> Warning: replacing previous import 'bslib::show_toast' by
-#> 'shinyWidgets::show_toast' when loading 'ISAnalytics'
 
 # Set appropriate data and metadata specs ----
 metadata_specs <- tibble::tribble(
