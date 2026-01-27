@@ -18,7 +18,7 @@ data("refGenes_mm9")
 \description{
 This file was obtained following this steps:
 \enumerate{
-\item Download from {http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/}
+\item Download from \url{http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/}
 the refGene.sql, knownGene.sql, knownToRefSeq.sql, kgXref.sql tables
 \item Import everything it in mysql
 \item Generate views for annotation:
