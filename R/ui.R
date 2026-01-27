@@ -1,7 +1,7 @@
 #' @import shiny
-#' @import shinyWidgets
-#' @import datamods
-#' @import bslib
+#' @importFrom shinyWidgets useSweetAlert
+#' @importFrom datamods import_globalenv_ui import_file_ui
+#' @importFrom bslib bs_theme navset_pill nav_panel
 ui <- shinyUI(fluidPage(
     useSweetAlert(),
     ### --- Top level navbar
