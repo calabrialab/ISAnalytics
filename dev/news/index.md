@@ -1,5 +1,12 @@
 # Changelog
 
+## ISanalytics 1.20.1 (2026-01-27)
+
+### Bug fixes
+
+- Fixed an out-of-bounds indexing error in population size estimation
+  when groups contained fewer than two time points.
+
 ## ISAnalytics 1.19.3 (2025-07-21)
 
 ### UPDATE
