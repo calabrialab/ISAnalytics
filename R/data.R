@@ -39,7 +39,7 @@
 #' @description
 #' This file was obtained following this steps:
 #'
-#' 1. Download from {http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/}
+#' 1. Download from \url{http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/}
 #' the refGene.sql, knownGene.sql, knownToRefSeq.sql, kgXref.sql tables
 #' 2. Import everything it in mysql
 #' 3. Generate views for annotation:
