@@ -869,6 +869,11 @@ test_that("remove_collisions succeeds", {
 })
 
 test_that("remove_collisions produces report", {
+    skip_if_not_installed("rmarkdown")
+    skip_if_not(
+        rmarkdown::pandoc_available(),
+        "Pandoc is required to render HTML reports"
+    )
     withr::local_options(list(ISAnalytics.reports = TRUE))
     tmp_dir <- withr::local_tempdir()
     coll_rem <- remove_collisions(

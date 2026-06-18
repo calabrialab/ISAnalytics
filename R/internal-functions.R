@@ -909,10 +909,21 @@
             default = TRUE
         ) == TRUE) {
             bioc_workers <- .get_def_workers(TRUE)
+            available_cores <- tryCatch(
+                future::availableCores(),
+                error = function(e) bioc_workers
+            )
+            available_cores <- suppressWarnings(as.integer(available_cores[1]))
+            if (is.na(available_cores) || available_cores < 1) {
+                available_cores <- 1
+            }
+            available_workers <- max(1, min(bioc_workers, available_cores))
             if (is.null(max_workers)) {
-                max_workers <- min(length(data_list), bioc_workers)
+                max_workers <- min(length(data_list), available_workers)
             } else {
-                max_workers <- min(length(data_list), max_workers)
+                max_workers <- min(
+                    length(data_list), max_workers, available_workers
+                )
             }
         }
     }

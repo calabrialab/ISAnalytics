@@ -585,6 +585,11 @@ test_that("outliers_by_pool_fragments - processes with nas", {
 })
 
 test_that("outliers_by_pool_fragments - produces report", {
+    skip_if_not_installed("rmarkdown")
+    skip_if_not(
+        rmarkdown::pandoc_available(),
+        "Pandoc is required to render HTML reports"
+    )
     withr::local_options(list(ISAnalytics.reports = TRUE))
     withr::local_options(list(ISAnalytics.reports = TRUE))
     tmp_dir <- withr::local_tempdir()
