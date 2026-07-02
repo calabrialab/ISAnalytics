@@ -10,8 +10,7 @@ config <- list(
     run_dir = "/storage9/workspace/lomagnoa/ISAnalytics_tests/SLiM-Retro_AllPools_run",
     vispa_results_dir = "/storage9/workspace/lomagnoa/Vispa3/full_runs/SLiM_Retro_PoolSA111/results/SLiM-Retro/AllPools",
 
-    # Set this if/when an association file is available.
-    association_file_path = NULL,
+    association_file_path = "/storage9/workspace/lomagnoa/Vispa3/full_runs/SLiM_Retro_PoolSA111/input/asso.SLiM-Retro.PoolSA111.tsv",
     vispa_root = NULL,
     settings_path = NULL,
 
@@ -30,13 +29,13 @@ config <- list(
         annotation_qc = TRUE,
         near_integrations = TRUE,
 
-        # These require an association file.
-        association = FALSE,
-        remove_collisions = FALSE,
-        aggregate = FALSE,
-        abundance = FALSE,
-        sharing = FALSE,
-        cis = FALSE
+        association = TRUE,
+        remove_collisions = TRUE,
+        aggregate = TRUE,
+        abundance = TRUE,
+        sharing = TRUE,
+        cis = TRUE,
+        plots = TRUE
     ),
 
     # If discovery finds more than one file for a quantification, set the
@@ -84,6 +83,20 @@ config <- list(
 
     cis = list(
         genomic_annotation_file = "hg19"
+    ),
+
+    plots = list(
+        cis_volcano = TRUE,
+        sharing_heatmap = TRUE,
+        alluvial = TRUE,
+        diversity = TRUE,
+        cis_title_prefix = "SLiM-Retro AllPools",
+        alluvial_group = c("SubjectID", "CellMarker", "Tissue"),
+        alluvial_plot_x = "TimePoint",
+        alluvial_plot_y = "fragmentEstimate_sum_PercAbundance",
+        alluvia_plot_y_threshold = 1,
+        alluvial_max_png = 8,
+        diversity_value_col = "fragmentEstimate_sum_PercAbundance",
+        timepoint_col = "TimePoint"
     )
 )
-
