@@ -95,6 +95,7 @@ save_ggplot <- function(plot, path, width = 9, height = 6) {
         dpi = 150,
         limitsize = FALSE
     )
+    invisible(path)
 }
 
 artifact_path <- function(dirs, name) {
@@ -404,6 +405,10 @@ plot_diversity_metrics <- function(diversity, config) {
     }
 
     if (timepoint_col %in% colnames(diversity)) {
+        line_data <- diversity |>
+            dplyr::group_by(.data$.isa_group_label) |>
+            dplyr::filter(dplyr::n_distinct(.data[[timepoint_col]]) > 1) |>
+            dplyr::ungroup()
         plot <- ggplot2::ggplot(
             diversity,
             ggplot2::aes(
@@ -412,8 +417,16 @@ plot_diversity_metrics <- function(diversity, config) {
                 color = .data$.isa_group_label,
                 group = .data$.isa_group_label
             )
-        ) +
-            ggplot2::geom_line(linewidth = 0.6, alpha = 0.8) +
+        )
+        if (nrow(line_data) > 0) {
+            plot <- plot +
+                ggplot2::geom_line(
+                    data = line_data,
+                    linewidth = 0.6,
+                    alpha = 0.8
+                )
+        }
+        plot <- plot +
             ggplot2::geom_point(size = 2) +
             ggplot2::labs(
                 title = "Diversity over time",
@@ -475,9 +488,37 @@ save_plot_list <- function(plots, dirs, prefix, max_png = Inf) {
             paste0(prefix, "_", sanitize_filename(plot_names[[i]]), ".png")
         )
         save_ggplot(plot, path)
-        saved <- c(saved, path)
+        saved[[paste0(prefix, ":", plot_names[[i]])]] <- path
     }
     invisible(saved)
+}
+
+empty_plot_manifest <- function() {
+    data.frame(
+        label = character(),
+        type = character(),
+        path = character(),
+        stringsAsFactors = FALSE
+    )
+}
+
+add_plot_outputs <- function(outputs, paths, type = "png", label = NULL) {
+    if (length(paths) == 0 || all(is.na(paths))) {
+        return(outputs)
+    }
+    labels <- names(paths)
+    if (is.null(labels) || any(!nzchar(labels))) {
+        labels <- rep(label %||% "plot", length(paths))
+    }
+    rbind(
+        outputs,
+        data.frame(
+            label = labels,
+            type = type,
+            path = unname(paths),
+            stringsAsFactors = FALSE
+        )
+    )
 }
 
 run_stage <- function(stage, state, config, dirs) {
@@ -605,7 +646,7 @@ run_stage <- function(stage, state, config, dirs) {
         state$cis <- cis
     } else if (identical(stage, "plots")) {
         plot_cfg <- config$plots %||% list()
-        plots <- list()
+        plot_outputs <- empty_plot_manifest()
 
         if (isTRUE(plot_cfg$cis_volcano %||% TRUE)) {
             cis <- state$cis
@@ -621,14 +662,18 @@ run_stage <- function(stage, state, config, dirs) {
             }
             if (!is.null(cis_df) && nrow(cis_df) > 0) {
                 log_msg("Producing CIS volcano plot", dirs = dirs)
-                plots$cis_volcano <- ISAnalytics::CIS_volcano_plot(
+                cis_volcano <- ISAnalytics::CIS_volcano_plot(
                     x = cis_df,
                     title_prefix = plot_cfg$cis_title_prefix %||%
                         paste(config$project, config$subproject)
                 )
-                save_ggplot(
-                    plots$cis_volcano,
+                cis_path <- save_ggplot(
+                    cis_volcano,
                     file.path(dirs$plots, "cis_volcano.png")
+                )
+                plot_outputs <- add_plot_outputs(
+                    plot_outputs,
+                    stats::setNames(cis_path, "cis_volcano")
                 )
             } else {
                 log_msg("Skipping CIS volcano plot: no CIS data frame available", dirs = dirs)
@@ -642,11 +687,16 @@ run_stage <- function(stage, state, config, dirs) {
             }
             if (is.data.frame(sharing) && nrow(sharing) > 0) {
                 log_msg("Producing sharing heatmaps", dirs = dirs)
-                plots$sharing_heatmaps <- ISAnalytics::sharing_heatmap(
+                sharing_heatmaps <- ISAnalytics::sharing_heatmap(
                     sharing_df = sharing,
                     interactive = FALSE
                 )
-                save_plot_list(plots$sharing_heatmaps, dirs, "sharing_heatmap")
+                sharing_paths <- save_plot_list(
+                    sharing_heatmaps,
+                    dirs,
+                    "sharing_heatmap"
+                )
+                plot_outputs <- add_plot_outputs(plot_outputs, sharing_paths)
             } else {
                 log_msg("Skipping sharing heatmaps: no sharing data frame available", dirs = dirs)
             }
@@ -665,7 +715,7 @@ run_stage <- function(stage, state, config, dirs) {
                 if (is.data.frame(abundance) &&
                     alluvial_plot_y %in% colnames(abundance)) {
                     log_msg("Producing alluvial plots", dirs = dirs)
-                    plots$alluvial <- ISAnalytics::integration_alluvial_plot(
+                    alluvial_plots <- ISAnalytics::integration_alluvial_plot(
                         x = abundance,
                         group = plot_cfg$alluvial_group %||%
                             c("SubjectID", "CellMarker", "Tissue"),
@@ -675,12 +725,13 @@ run_stage <- function(stage, state, config, dirs) {
                             plot_cfg$alluvia_plot_y_threshold %||% 1,
                         top_abundant_tbl = FALSE
                     )
-                    save_plot_list(
-                        plots$alluvial,
+                    alluvial_paths <- save_plot_list(
+                        alluvial_plots,
                         dirs,
                         "alluvial",
                         max_png = plot_cfg$alluvial_max_png %||% 8
                     )
+                    plot_outputs <- add_plot_outputs(plot_outputs, alluvial_paths)
                 } else {
                     log_msg("Skipping alluvial plots: abundance data or y column is missing", dirs = dirs)
                 }
@@ -699,20 +750,29 @@ run_stage <- function(stage, state, config, dirs) {
             }
             if (!is.null(diversity) && nrow(diversity) > 0) {
                 log_msg("Producing diversity summary and plot", dirs = dirs)
-                write_table(diversity, file.path(dirs$tables, "diversity_metrics.tsv"))
-                plots$diversity_metrics <- diversity
-                plots$diversity_plot <- plot_diversity_metrics(diversity, config)
-                save_ggplot(
-                    plots$diversity_plot,
+                diversity_table <- file.path(dirs$tables, "diversity_metrics.tsv")
+                write_table(diversity, diversity_table)
+                diversity_plot <- plot_diversity_metrics(diversity, config)
+                diversity_path <- save_ggplot(
+                    diversity_plot,
                     file.path(dirs$plots, "diversity_shannon.png")
+                )
+                plot_outputs <- add_plot_outputs(
+                    plot_outputs,
+                    stats::setNames(diversity_path, "diversity_shannon")
+                )
+                plot_outputs <- add_plot_outputs(
+                    plot_outputs,
+                    stats::setNames(diversity_table, "diversity_metrics"),
+                    type = "table"
                 )
             } else {
                 log_msg("Skipping diversity plot: required abundance column is missing", dirs = dirs)
             }
         }
 
-        save_artifact(plots, dirs, "plots")
-        state$plots <- plots
+        save_artifact(plot_outputs, dirs, "plots")
+        state$plots <- plot_outputs
     } else {
         stop("No runner implemented for stage: ", stage, call. = FALSE)
     }
