@@ -18,25 +18,25 @@ A named list of functions/purrr-style lambdas
 default_stats()
 #> $sum
 #> ~sum(.x, na.rm = TRUE)
-#> <environment: 0x55d52ce82708>
+#> <environment: 0x563aa785e3e0>
 #> 
 #> $count
 #> function (x)  .Primitive("length")
 #> 
 #> $shannon
 #> ~vegan::diversity(.x, index = "shannon")
-#> <environment: 0x55d52ce82708>
+#> <environment: 0x563aa785e3e0>
 #> 
 #> $simpson
 #> ~vegan::diversity(.x, index = "simpson")
-#> <environment: 0x55d52ce82708>
+#> <environment: 0x563aa785e3e0>
 #> 
 #> $invsimpson
 #> ~vegan::diversity(.x, index = "invsimpson")
-#> <environment: 0x55d52ce82708>
+#> <environment: 0x563aa785e3e0>
 #> 
 #> $describe
 #> ~tibble::as_tibble(psych::describe(.x))
-#> <environment: 0x55d52ce82708>
+#> <environment: 0x563aa785e3e0>
 #> 
 ```

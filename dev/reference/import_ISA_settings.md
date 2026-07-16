@@ -42,7 +42,7 @@ Other Utilities:
 tmp_folder <- tempdir()
 export_ISA_settings(tmp_folder, "DEFAULT")
 #> Settings profile correctly saved
-#> ℹ Saved at: /tmp/RtmpoihKVt/DEFAULT_ISAsettings.json
+#> ℹ Saved at: /tmp/RtmpRB8w9i/DEFAULT_ISAsettings.json
 import_ISA_settings(fs::path(tmp_folder, "DEFAULT_ISAsettings.json"))
 #> Mandatory IS vars successfully changed
 #> Annotation IS vars successfully changed
