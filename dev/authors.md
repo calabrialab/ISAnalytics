@@ -19,8 +19,8 @@ Source:
 Andrea C, Giulio S, Giulia P (2026). *Analyze gene therapy vector
 insertion sites data identified from genomics next generation sequencing
 reads for clonal tracking studies*.
-[doi:10.18129/B9.bioc.ISAnalytics](https://doi.org/10.18129/B9.bioc.ISAnalytics),
-https://github.com/calabrialab/ISAnalytics - R package version 1.21.1,
+[doi:10.18129/B9.bioc.ISAnalytics](https://doi.org/10.18129/B9.bioc.ISAnalytics).
+https://github.com/calabrialab/ISAnalytics - R package version 1.23.0,
 <http://www.bioconductor.org/packages/ISAnalytics>.
 
     @Manual{,
@@ -28,15 +28,15 @@ https://github.com/calabrialab/ISAnalytics - R package version 1.21.1,
       author = {Calabria Andrea and Spinozzi Giulio and Pais Giulia},
       year = {2026},
       url = {http://www.bioconductor.org/packages/ISAnalytics},
-      note = {https://github.com/calabrialab/ISAnalytics - R package version 1.21.1},
+      note = {https://github.com/calabrialab/ISAnalytics - R package version 1.23.0},
       doi = {10.18129/B9.bioc.ISAnalytics},
     }
 
 Giulia P, Giulio S, Eugenio M, Andrea C (2022). “ISAnalytics enables
 longitudinal and high-throughput clonal tracking studies in
 hematopoietic stem cell gene therapy applications.” *Briefings in
-Bioinformatics*, **24**(1). ISSN -2577,
-[doi:10.1093/bib/bbac551](https://doi.org/10.1093/bib/bbac551),
+Bioinformatics*, **24**(1). ISSN -2577.
+[doi:10.1093/bib/bbac551](https://doi.org/10.1093/bib/bbac551).
 https://academic.oup.com/bib/article-pdf/24/1/bbac551/48782955/bbac551.pdf,
 <https://doi.org/10.1093/bib/bbac551>.
 

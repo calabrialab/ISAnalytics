@@ -24,6 +24,7 @@ There are always 2 versions of the package active:
 RELEASE version:
 
 ``` r
+
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("ISAnalytics")
@@ -32,6 +33,7 @@ BiocManager::install("ISAnalytics")
 DEVEL version:
 
 ``` r
+
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
@@ -46,6 +48,7 @@ BiocManager::install("ISAnalytics")
 RELEASE:
 
 ``` r
+
 if (!require(devtools)) {
   install.packages("devtools")
 }
@@ -58,6 +61,7 @@ devtools::install_github("calabrialab/ISAnalytics",
 DEVEL:
 
 ``` r
+
 if (!require(devtools)) {
   install.packages("devtools")
 }
@@ -74,6 +78,7 @@ additional information to the console while they’re executing. To
 disable this feature do:
 
 ``` r
+
 # DISABLE
 options("ISAnalytics.verbose" = FALSE)
 
@@ -85,6 +90,7 @@ Some functions also produce report in a user-friendly HTML format, to
 set this feature:
 
 ``` r
+
 # DISABLE HTML REPORTS
 options("ISAnalytics.reports" = FALSE)
 
@@ -192,6 +198,7 @@ is publicly available
 the authors and it is available in the package additional files.
 
 ``` r
+
 library(ISAnalytics)
 
 # Set appropriate data and metadata specs ----
@@ -427,6 +434,7 @@ The package provides a simple Shiny interface for data exploration and
 plotting. To start the interface use:
 
 ``` r
+
 NGSdataExplorer()
 ```
 
@@ -435,6 +443,7 @@ possible to load files also from the R environment, for example, before
 opening the app, we can load the included association file:
 
 ``` r
+
 data("association_file")
 ```
 
@@ -474,9 +483,9 @@ The following session information was included to ensure reproducibility
 of results and environment tracking, as recommended by Bioconductor
 guidelines.
 
-    #> R version 4.5.2 (2025-10-31)
+    #> R version 4.6.1 (2026-06-24)
     #> Platform: x86_64-pc-linux-gnu
-    #> Running under: Ubuntu 24.04.3 LTS
+    #> Running under: Ubuntu 24.04.4 LTS
     #> 
     #> Matrix products: default
     #> BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
@@ -495,46 +504,46 @@ guidelines.
     #> [1] stats     graphics  grDevices utils     datasets  methods   base     
     #> 
     #> other attached packages:
-    #> [1] ISAnalytics_1.21.1 RefManageR_1.4.0   BiocStyle_2.38.0  
+    #> [1] ISAnalytics_1.23.0 RefManageR_1.4.0   BiocStyle_2.40.0  
     #> 
     #> loaded via a namespace (and not attached):
-    #>   [1] mnormt_2.1.1        writexl_1.5.4       permute_0.9-8      
-    #>   [4] readxl_1.4.5        datamods_1.5.3      rlang_1.1.7        
-    #>   [7] magrittr_2.0.4      rio_1.2.4           otel_0.2.0         
-    #>  [10] e1071_1.7-17        compiler_4.5.2      mgcv_1.9-3         
-    #>  [13] systemfonts_1.3.1   vctrs_0.7.1         stringr_1.6.0      
+    #>   [1] mnormt_2.1.2        writexl_1.5.4       permute_0.9-10     
+    #>   [4] readxl_1.5.0        datamods_1.5.3      rlang_1.3.0        
+    #>   [7] magrittr_2.0.5      rio_1.3.0           otel_0.2.0         
+    #>  [10] e1071_1.7-17        compiler_4.6.1      mgcv_1.9-4         
+    #>  [13] systemfonts_1.3.2   vctrs_0.7.3         stringr_1.6.0      
     #>  [16] pkgconfig_2.0.3     crayon_1.5.3        fastmap_1.2.0      
-    #>  [19] backports_1.5.0     utf8_1.2.6          promises_1.5.0     
-    #>  [22] phosphoricons_0.2.1 rmarkdown_2.30      tzdb_0.5.0         
-    #>  [25] ragg_1.5.0          purrr_1.2.1         bit_4.6.0          
-    #>  [28] xfun_0.56           cachem_1.1.0        jsonlite_2.0.0     
-    #>  [31] later_1.4.5         BiocParallel_1.44.0 psych_2.5.6        
-    #>  [34] cluster_2.1.8.1     parallel_4.5.2      R6_2.6.1           
-    #>  [37] bslib_0.10.0        stringi_1.8.7       RColorBrewer_1.1-3 
-    #>  [40] shinybusy_0.3.3     parallelly_1.46.1   lubridate_1.9.4    
-    #>  [43] jquerylib_0.1.4     cellranger_1.1.0    Rcpp_1.1.1         
-    #>  [46] bookdown_0.46       iterators_1.0.14    knitr_1.51         
-    #>  [49] future.apply_1.20.1 readr_2.1.6         Matrix_1.7-4       
-    #>  [52] splines_4.5.2       httpuv_1.6.16       timechange_0.3.0   
-    #>  [55] tidyselect_1.2.1    yaml_2.3.12         vegan_2.7-2        
-    #>  [58] codetools_0.2-20    listenv_0.10.0      lattice_0.22-7     
-    #>  [61] tibble_3.3.1        plyr_1.8.9          shiny_1.12.1       
-    #>  [64] withr_3.0.2         S7_0.2.1            evaluate_1.0.5     
-    #>  [67] future_1.69.0       desc_1.4.3          proxy_0.4-29       
-    #>  [70] xml2_1.5.2          pillar_1.11.1       BiocManager_1.30.27
+    #>  [19] backports_1.5.1     utf8_1.2.6          promises_1.5.0     
+    #>  [22] phosphoricons_0.2.1 rmarkdown_2.31      tzdb_0.5.0         
+    #>  [25] ragg_1.5.2          purrr_1.2.2         bit_4.6.0          
+    #>  [28] xfun_0.60           cachem_1.1.0        jsonlite_2.0.0     
+    #>  [31] later_1.4.8         BiocParallel_1.46.0 psych_2.6.5        
+    #>  [34] cluster_2.1.8.2     parallel_4.6.1      R6_2.6.1           
+    #>  [37] bslib_0.11.0        stringi_1.8.7       RColorBrewer_1.1-3 
+    #>  [40] shinybusy_0.3.3     parallelly_1.48.0   lubridate_1.9.5    
+    #>  [43] jquerylib_0.1.4     cellranger_1.1.0    Rcpp_1.1.2         
+    #>  [46] bookdown_0.47       iterators_1.0.14    knitr_1.51         
+    #>  [49] future.apply_1.20.2 readr_2.2.0         Matrix_1.7-5       
+    #>  [52] splines_4.6.1       httpuv_1.6.17       timechange_0.4.0   
+    #>  [55] tidyselect_1.2.1    yaml_2.3.12         vegan_2.7-5        
+    #>  [58] codetools_0.2-20    listenv_1.0.0       lattice_0.22-9     
+    #>  [61] tibble_3.3.1        plyr_1.8.9          shiny_1.14.0       
+    #>  [64] withr_3.0.3         S7_0.2.2            evaluate_1.0.5     
+    #>  [67] future_1.70.0       desc_1.4.3          proxy_0.4-29       
+    #>  [70] xml2_1.6.0          pillar_1.11.1       BiocManager_1.30.27
     #>  [73] KernSmooth_2.23-26  foreach_1.5.2       generics_0.1.4     
-    #>  [76] vroom_1.6.7         hms_1.1.4           ggplot2_4.0.1      
-    #>  [79] scales_1.4.0        globals_0.18.0      xtable_1.8-4       
-    #>  [82] class_7.3-23        glue_1.8.0          toastui_0.4.0      
-    #>  [85] tools_4.5.2         data.table_1.18.0   reactable_0.4.5    
-    #>  [88] fs_1.6.6            grid_4.5.2          tidyr_1.3.2        
-    #>  [91] bibtex_0.5.1        nlme_3.1-168        cli_3.6.5          
-    #>  [94] textshaping_1.0.4   doFuture_1.2.0      dplyr_1.1.4        
+    #>  [76] vroom_1.7.1         hms_1.1.4           ggplot2_4.0.3      
+    #>  [79] scales_1.4.0        globals_0.19.1      xtable_1.8-8       
+    #>  [82] class_7.3-23        glue_1.8.1          toastui_0.4.0      
+    #>  [85] tools_4.6.1         data.table_1.18.4   reactable_0.4.5    
+    #>  [88] fs_2.1.0            grid_4.6.1          tidyr_1.3.2        
+    #>  [91] bibtex_0.5.2        nlme_3.1-169        cli_3.6.6          
+    #>  [94] textshaping_1.0.5   doFuture_1.2.2      dplyr_1.2.1        
     #>  [97] gtable_0.3.6        sass_0.4.10         digest_0.6.39      
     #> [100] classInt_0.4-11     htmlwidgets_1.6.4   farver_2.1.2       
-    #> [103] htmltools_0.5.9     pkgdown_2.2.0       lifecycle_1.0.5    
-    #> [106] httr_1.4.7          shinyWidgets_0.9.0  mime_0.13          
-    #> [109] MASS_7.3-65         bit64_4.6.0-1
+    #> [103] htmltools_0.5.9     pkgdown_2.2.1       lifecycle_1.0.5    
+    #> [106] httr_1.4.8          shinyWidgets_0.9.1  mime_0.13          
+    #> [109] MASS_7.3-65         bit64_4.8.2
 
 ## Bibliography
 

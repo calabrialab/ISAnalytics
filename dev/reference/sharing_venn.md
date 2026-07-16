@@ -73,26 +73,26 @@ venn_tbls
 #> [[1]]
 #> 3 set Venn diagram 
 #> 
-#>                       h     k    a    b  phi
-#> PT001_MNC_BM_0030 -0.42 -0.36 1.05 1.05 3.76
-#> PT001_MNC_BM_0060  0.42 -0.36 1.05 1.05 3.76
-#> PT001_MNC_BM_0090  0.00  0.36 1.05 1.05 3.76
+#>                      type     h     k    a    b  phi width height side
+#> PT001_MNC_BM_0030 ellipse -0.42 -0.36 1.05 1.05 3.76    NA     NA   NA
+#> PT001_MNC_BM_0060 ellipse  0.42 -0.36 1.05 1.05 3.76    NA     NA   NA
+#> PT001_MNC_BM_0090 ellipse  0.00  0.36 1.05 1.05 3.76    NA     NA   NA
 #> 
 #> [[2]]
 #> 3 set Venn diagram 
 #> 
-#>                       h     k    a    b  phi
-#> PT001_MNC_BM_0030 -0.42 -0.36 1.05 1.05 3.76
-#> PT001_MNC_BM_0060  0.42 -0.36 1.05 1.05 3.76
-#> PT001_MNC_BM_0180  0.00  0.36 1.05 1.05 3.76
+#>                      type     h     k    a    b  phi width height side
+#> PT001_MNC_BM_0030 ellipse -0.42 -0.36 1.05 1.05 3.76    NA     NA   NA
+#> PT001_MNC_BM_0060 ellipse  0.42 -0.36 1.05 1.05 3.76    NA     NA   NA
+#> PT001_MNC_BM_0180 ellipse  0.00  0.36 1.05 1.05 3.76    NA     NA   NA
 #> 
 #> [[3]]
 #> 3 set Venn diagram 
 #> 
-#>                       h     k    a    b  phi
-#> PT001_MNC_BM_0030 -0.42 -0.36 1.05 1.05 3.76
-#> PT001_MNC_BM_0060  0.42 -0.36 1.05 1.05 3.76
-#> PT001_MNC_BM_0360  0.00  0.36 1.05 1.05 3.76
+#>                      type     h     k    a    b  phi width height side
+#> PT001_MNC_BM_0030 ellipse -0.42 -0.36 1.05 1.05 3.76    NA     NA   NA
+#> PT001_MNC_BM_0060 ellipse  0.42 -0.36 1.05 1.05 3.76    NA     NA   NA
+#> PT001_MNC_BM_0360 ellipse  0.00  0.36 1.05 1.05 3.76    NA     NA   NA
 #> 
 plot(venn_tbls[[1]])
 ```

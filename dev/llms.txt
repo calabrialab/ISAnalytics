@@ -36,6 +36,7 @@ There are always 2 versions of the package active:
 RELEASE version:
 
 ``` r
+
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("ISAnalytics")
@@ -44,6 +45,7 @@ BiocManager::install("ISAnalytics")
 DEVEL version:
 
 ``` r
+
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 # The following initializes usage of Bioc devel
@@ -56,6 +58,7 @@ BiocManager::install("ISAnalytics")
 RELEASE:
 
 ``` r
+
 if (!require(devtools)) {
   install.packages("devtools")
 }
@@ -68,6 +71,7 @@ devtools::install_github("calabrialab/ISAnalytics",
 DEVEL:
 
 ``` r
+
 if (!require(devtools)) {
   install.packages("devtools")
 }
@@ -84,6 +88,7 @@ additional information to the console while they’re executing. To
 disable this feature do:
 
 ``` r
+
 # DISABLE
 options("ISAnalytics.verbose" = FALSE)
 # ENABLE
@@ -94,6 +99,7 @@ Some functions also produce report in a user-friendly HTML format, to
 set this feature:
 
 ``` r
+
 # DISABLE HTML REPORTS
 options("ISAnalytics.reports" = FALSE)
 # ENABLE HTML REPORTS

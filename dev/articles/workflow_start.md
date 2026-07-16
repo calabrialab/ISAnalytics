@@ -94,6 +94,7 @@ used by using the function
 and providing in input the tags you want to check as a character vector.
 
 ``` r
+
 inspect_tags("chromosome")
 #> * TAG: chromosome
 #> ℹ Description: Number of the chromosome
@@ -151,6 +152,7 @@ On package loading, all lookup tables are set to default values. For
 example, for mandatory IS vars we have:
 
 ``` r
+
 mandatory_IS_vars(TRUE)
 #> # A tibble: 3 × 5
 #>   names             types transform flag     tag       
@@ -173,6 +175,7 @@ To make this work with ISAnalytics functions, we need to compile the
 lookup table like this:
 
 ``` r
+
 new_mand_vars <- tibble::tribble(
     ~names, ~types, ~transform, ~flag, ~tag,
     "chrom", "char", ~ stringr::str_replace_all(.x, "chr", ""), "required",
@@ -192,6 +195,7 @@ after import.
 To set the new variables simply do:
 
 ``` r
+
 set_mandatory_IS_vars(new_mand_vars)
 #> Mandatory IS vars successfully changed
 mandatory_IS_vars(TRUE)
@@ -208,6 +212,7 @@ mandatory_IS_vars(TRUE)
 If you don’t specify a critical tag, a warning message is displayed:
 
 ``` r
+
 new_mand_vars[1, ]$tag <- NA_character_
 set_mandatory_IS_vars(new_mand_vars)
 #> Warning: Warning: important tags missing
@@ -229,6 +234,7 @@ mandatory_IS_vars(TRUE)
 If you change your mind and want to go back to defaults:
 
 ``` r
+
 reset_mandatory_IS_vars()
 #> Mandatory IS vars reset to default
 mandatory_IS_vars(TRUE)
@@ -264,6 +270,7 @@ each:
 Matrix files suffixes work slightly different:
 
 ``` r
+
 matrix_file_suffixes()
 #> # A tibble: 10 × 3
 #>    quantification   matrix_type   file_suffix                                 
@@ -315,6 +322,7 @@ process long tasks report progress via the functions offered by
 for all functions in ISAnalytics do
 
 ``` r
+
 enable_progress_bars()
 ```
 
@@ -413,6 +421,7 @@ standard folder structure, such as the one provided by VISPA2. This
 function also produces an interactive HTML report.
 
 ``` r
+
 fs_path <- generate_default_folder_structure()
 withr::with_options(list(ISAnalytics.reports = FALSE), code = {
     af <- import_association_file(fs_path$af, root = fs_path$root)
@@ -509,6 +518,7 @@ recommended to import them in the first steps of the workflow. To do
 that, you can use `import_VISPA2_stats`:
 
 ``` r
+
 vispa_stats <- import_Vispa2_stats(
     association_file = af,
     join_with_af = FALSE,
@@ -552,6 +562,7 @@ structure: several different formats can be read, since you can specify
 the column separator.
 
 ``` r
+
 matrix_path <- fs::path(
     fs_path$root,
     "PJ01",
@@ -591,6 +602,7 @@ provides a function,
 that allows to do just that in a fast and efficient way.
 
 ``` r
+
 withr::with_options(list(ISAnalytics.reports = FALSE), {
     matrices <- import_parallel_Vispa2Matrices(af,
         c("seqCount", "fragmentEstimate"),
@@ -793,12 +805,12 @@ independent samples for each integration: those who have a count \> 1
 are considered collisions.
 
 | chr | integration_locus | strand | seqCount | CompleteAmplificationID | SubjectID | ProjectID |
-|:----|------------------:|:-------|---------:|:------------------------|:----------|:----------|
-| 1   |            123454 | \+     |      653 | SAMPLE1                 | SUBJ01    | PJ01      |
-| 1   |            123454 | \+     |      456 | SAMPLE2                 | SUBJ02    | PJ01      |
+|:---|---:|:---|---:|:---|:---|:---|
+| 1 | 123454 | \+ | 653 | SAMPLE1 | SUBJ01 | PJ01 |
+| 1 | 123454 | \+ | 456 | SAMPLE2 | SUBJ02 | PJ01 |
 
 Example of collisions: the same integration (1, 123454, +) is found in 2
-different independent samples ((SUBJ01, PJ01) & (SUBJ02, PJ01))
+different independent samples ((SUBJ01, PJ01) & (SUBJ02, PJ01)) {.table}
 
 ##### Re-assign vs remove
 
@@ -829,6 +841,7 @@ integration is simply removed from the matrix.
 #### Usage
 
 ``` r
+
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 ## Multi quantification matrix
@@ -892,6 +905,7 @@ of other matrices to realign. **NOTE: the names in the list must be
 quantification types.**
 
 ``` r
+
 other_realigned <- realign_after_collisions(
     sc_matrix = no_coll_single,
     other_matrices = list(fragmentEstimate = separated$fragmentEstimate)
@@ -955,6 +969,7 @@ documentation
 2.  Perform aggregation
 
 ``` r
+
 data("association_file", package = "ISAnalytics")
 aggregated_meta <- aggregate_metadata(association_file = association_file)
 ```
@@ -1004,6 +1019,7 @@ related to the samples.
 3.  Perform aggregation
 
 ``` r
+
 data("integration_matrices", package = "ISAnalytics")
 data("association_file", package = "ISAnalytics")
 aggreg <- aggregate_values_by_key(
@@ -1057,6 +1073,7 @@ that can be changed according to user preference.
     key as the `aggregate_metadata` function).
 
 ``` r
+
 agg1 <- aggregate_values_by_key(
     x = integration_matrices,
     association_file = association_file,
@@ -1105,6 +1122,7 @@ agg1 <- aggregate_values_by_key(
     `median`, `min`, `max` and so on.
 
 ``` r
+
 agg2 <- aggregate_values_by_key(
     x = integration_matrices,
     association_file = association_file,
@@ -1149,6 +1167,7 @@ lists. In this case all variables from the produced data frame will be
 included in the final data frame. For example:
 
 ``` r
+
 agg3 <- aggregate_values_by_key(
     x = integration_matrices,
     association_file = association_file,
@@ -1193,6 +1212,7 @@ agg3 <- aggregate_values_by_key(
     name_function applied”.
 
 ``` r
+
 agg4 <- aggregate_values_by_key(
     x = integration_matrices,
     association_file = association_file,
@@ -1237,6 +1257,7 @@ agg4 <- aggregate_values_by_key(
     add any other variable to the key, just set it to `NULL`.
 
 ``` r
+
 agg5 <- aggregate_values_by_key(
     x = integration_matrices,
     association_file = association_file,
@@ -1290,6 +1311,7 @@ quantification. The only important thing is that columns that are
 included in the specified key are also included in the input matrices.
 
 ``` r
+
 ## Aggregation by standard key
 agg <- aggregate_values_by_key(integration_matrices,
     association_file,
@@ -1338,6 +1360,7 @@ arguments that can be tuned according to user needs.
 ### SCENARIO 1: single input data frame and single grouping key
 
 ``` r
+
 sharing_1 <- is_sharing(agg,
     group_key = c(
         "SubjectID", "CellMarker",
@@ -1397,6 +1420,7 @@ In this configuration we set:
 ##### Changing the number of comparisons
 
 ``` r
+
 sharing_1_a <- is_sharing(agg,
     group_key = c(
         "SubjectID", "CellMarker",
@@ -1443,6 +1467,7 @@ groups and the corresponding values. In combination with
 sharing between pairs of groups and plot results as a heatmap.
 
 ``` r
+
 sharing_1_b <- is_sharing(agg,
     group_key = c(
         "SubjectID", "CellMarker",
@@ -1479,18 +1504,21 @@ arguments to this function that allow us to obtain heatmaps for the
 absolute sharing values or the relative (percentage) values.
 
 ``` r
+
 heatmaps$absolute
 ```
 
 ![](workflow_start_files/figure-html/unnamed-chunk-45-1.png)
 
 ``` r
+
 heatmaps$on_g1
 ```
 
 ![](workflow_start_files/figure-html/unnamed-chunk-45-2.png)
 
 ``` r
+
 heatmaps$on_union
 ```
 
@@ -1510,6 +1538,7 @@ of integrations that are grouped differently. To do this we give as
 input a **list of keys** through the argument `group_keys`.
 
 ``` r
+
 sharing_2 <- is_sharing(agg,
     group_keys = list(
         g1 = c(
@@ -1562,6 +1591,7 @@ relevant data in 2 separated tables and then proceed by calling the
 function.
 
 ``` r
+
 first_sample <- agg |>
     dplyr::filter(
         SubjectID == "PT001", CellMarker == "MNC", Tissue == "BM",
@@ -1598,6 +1628,7 @@ origin: this is useful in the case group ids are duplicated in the
 inputs. To understand better let’s make an example:
 
 ``` r
+
 sharing_3_a <- is_sharing(
     first_sample, second_sample,
     group_key = c(
@@ -1630,6 +1661,7 @@ data frame 1 is grouped with key 1, data frame 2 is grouped with key 2,
 and so on).
 
 ``` r
+
 df1 <- agg |>
     dplyr::filter(TimePoint == "0030")
 df2 <- agg |>
@@ -1677,6 +1709,7 @@ and
 [`sharing_venn()`](https://calabrialab.github.io/ISAnalytics/dev/reference/sharing_venn.md).
 
 ``` r
+
 sharing_5 <- is_sharing(agg,
     group_keys = list(
         g1 = c(
@@ -1709,6 +1742,7 @@ The argument `table_for_venn = TRUE` will add a new column
 `truth_tbl_venn` that contains corresponding truth tables for each row.
 
 ``` r
+
 sharing_plots1 <- sharing_venn(sharing_5, row_range = 1, euler = TRUE)
 sharing_plots2 <- sharing_venn(sharing_5, row_range = 1, euler = FALSE)
 ```
@@ -1725,12 +1759,14 @@ calling the function
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html):
 
 ``` r
+
 plot(sharing_plots1[[1]])
 ```
 
 ![](workflow_start_files/figure-html/unnamed-chunk-52-1.png)
 
 ``` r
+
 plot(sharing_plots2[[1]])
 ```
 
@@ -1746,138 +1782,136 @@ docs](https://jolars.github.io/eulerr/reference/plot.euler.html).
 
     #> ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
     #>  setting  value
-    #>  version  R version 4.5.2 (2025-10-31)
-    #>  os       Ubuntu 24.04.3 LTS
+    #>  version  R version 4.6.1 (2026-06-24)
+    #>  os       Ubuntu 24.04.4 LTS
     #>  system   x86_64, linux-gnu
     #>  ui       X11
     #>  language en
     #>  collate  C.UTF-8
     #>  ctype    C.UTF-8
     #>  tz       UTC
-    #>  date     2026-01-27
-    #>  pandoc   3.1.11 @ /opt/hostedtoolcache/pandoc/3.1.11/x64/ (via rmarkdown)
+    #>  date     2026-07-16
+    #>  pandoc   3.8.3 @ /opt/hostedtoolcache/pandoc/3.8.3/x64/ (via rmarkdown)
     #>  quarto   NA
     #> 
     #> ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
     #>  package       * version date (UTC) lib source
-    #>  backports       1.5.0   2024-05-23 [1] RSPM
-    #>  bibtex          0.5.1   2023-01-26 [1] RSPM
+    #>  backports       1.5.1   2026-04-03 [1] RSPM
+    #>  bibtex          0.5.2   2026-02-03 [1] RSPM
     #>  BiocManager     1.30.27 2025-11-14 [1] RSPM
-    #>  BiocParallel    1.44.0  2025-10-29 [1] Bioconduc~
-    #>  BiocStyle     * 2.38.0  2025-10-29 [1] Bioconduc~
+    #>  BiocParallel    1.46.0  2026-04-29 [1] Bioconduc~
+    #>  BiocStyle     * 2.40.0  2026-04-28 [1] Bioconduc~
     #>  bit             4.6.0   2025-03-06 [1] RSPM
-    #>  bit64           4.6.0-1 2025-01-16 [1] RSPM
-    #>  bookdown        0.46    2025-12-05 [1] RSPM
-    #>  bslib           0.10.0  2026-01-26 [1] RSPM
+    #>  bit64           4.8.2   2026-05-19 [1] RSPM
+    #>  bookdown        0.47    2026-06-16 [1] RSPM
+    #>  bslib           0.11.0  2026-05-16 [1] RSPM
     #>  cachem          1.1.0   2024-05-16 [1] RSPM
     #>  cellranger      1.1.0   2016-07-27 [1] RSPM
-    #>  class           7.3-23  2025-01-01 [3] CRAN (R 4.5.2)
+    #>  class           7.3-23  2025-01-01 [3] CRAN (R 4.6.1)
     #>  classInt        0.4-11  2025-01-08 [1] RSPM
-    #>  cli             3.6.5   2025-04-23 [1] RSPM
-    #>  codetools       0.2-20  2024-03-31 [3] CRAN (R 4.5.2)
+    #>  cli             3.6.6   2026-04-09 [1] RSPM
+    #>  codetools       0.2-20  2024-03-31 [3] CRAN (R 4.6.1)
     #>  crayon          1.5.3   2024-06-20 [1] RSPM
     #>  crosstalk       1.2.2   2025-08-26 [1] RSPM
-    #>  data.table      1.18.0  2025-12-24 [1] RSPM
+    #>  data.table      1.18.4  2026-05-06 [1] RSPM
     #>  datamods        1.5.3   2024-10-02 [1] RSPM
     #>  desc            1.4.3   2023-12-10 [1] RSPM
     #>  digest          0.6.39  2025-11-19 [1] RSPM
-    #>  doFuture        1.2.0   2026-01-15 [1] RSPM
-    #>  dplyr           1.1.4   2023-11-17 [1] RSPM
+    #>  doFuture        1.2.2   2026-05-22 [1] RSPM
+    #>  dplyr           1.2.1   2026-04-03 [1] RSPM
     #>  DT            * 0.34.0  2025-09-02 [1] RSPM
     #>  e1071           1.7-17  2025-12-18 [1] RSPM
-    #>  eulerr          7.0.4   2025-09-24 [1] RSPM
+    #>  eulerr          8.1.0   2026-06-30 [1] RSPM
     #>  evaluate        1.0.5   2025-08-27 [1] RSPM
     #>  farver          2.1.2   2024-05-13 [1] RSPM
     #>  fastmap         1.2.0   2024-05-15 [1] RSPM
     #>  foreach         1.5.2   2022-02-02 [1] RSPM
-    #>  fs              1.6.6   2025-04-12 [1] RSPM
-    #>  future          1.69.0  2026-01-16 [1] RSPM
-    #>  future.apply    1.20.1  2025-12-09 [1] RSPM
+    #>  fs              2.1.0   2026-04-18 [1] RSPM
+    #>  future          1.70.0  2026-03-14 [1] RSPM
+    #>  future.apply    1.20.2  2026-02-20 [1] RSPM
     #>  generics        0.1.4   2025-05-09 [1] RSPM
-    #>  ggplot2         4.0.1   2025-11-14 [1] RSPM
-    #>  globals         0.18.0  2025-05-08 [1] RSPM
-    #>  glue            1.8.0   2024-09-30 [1] RSPM
+    #>  ggplot2         4.0.3   2026-04-22 [1] RSPM
+    #>  globals         0.19.1  2026-03-13 [1] RSPM
+    #>  glue            1.8.1   2026-04-17 [1] RSPM
     #>  gtable          0.3.6   2024-10-25 [1] RSPM
     #>  gtools          3.9.5   2023-11-20 [1] RSPM
     #>  hms             1.1.4   2025-10-17 [1] RSPM
     #>  htmltools       0.5.9   2025-12-04 [1] RSPM
     #>  htmlwidgets     1.6.4   2023-12-06 [1] RSPM
-    #>  httpuv          1.6.16  2025-04-16 [1] RSPM
-    #>  httr            1.4.7   2023-08-15 [1] RSPM
-    #>  ISAnalytics   * 1.21.1  2026-01-27 [1] local
+    #>  httpuv          1.6.17  2026-03-18 [1] RSPM
+    #>  httr            1.4.8   2026-02-13 [1] RSPM
+    #>  ISAnalytics   * 1.23.0  2026-07-16 [1] local
     #>  iterators       1.0.14  2022-02-05 [1] RSPM
     #>  jquerylib       0.1.4   2021-04-26 [1] RSPM
     #>  jsonlite        2.0.0   2025-03-27 [1] RSPM
-    #>  KernSmooth      2.23-26 2025-01-01 [3] CRAN (R 4.5.2)
+    #>  KernSmooth      2.23-26 2025-01-01 [3] CRAN (R 4.6.1)
     #>  knitr           1.51    2025-12-20 [1] RSPM
     #>  labeling        0.4.3   2023-08-29 [1] RSPM
-    #>  later           1.4.5   2026-01-08 [1] RSPM
-    #>  lattice         0.22-7  2025-04-02 [3] CRAN (R 4.5.2)
+    #>  later           1.4.8   2026-03-05 [1] RSPM
+    #>  lattice         0.22-9  2026-02-09 [3] CRAN (R 4.6.1)
     #>  lifecycle       1.0.5   2026-01-08 [1] RSPM
-    #>  listenv         0.10.0  2025-11-02 [1] RSPM
-    #>  lubridate       1.9.4   2024-12-08 [1] RSPM
-    #>  magrittr        2.0.4   2025-09-12 [1] RSPM
+    #>  listenv         1.0.0   2026-06-22 [1] RSPM
+    #>  lubridate       1.9.5   2026-02-04 [1] RSPM
+    #>  magrittr        2.0.5   2026-04-04 [1] RSPM
     #>  mime            0.13    2025-03-17 [1] RSPM
-    #>  mnormt          2.1.1   2022-09-26 [1] RSPM
-    #>  nlme            3.1-168 2025-03-31 [3] CRAN (R 4.5.2)
+    #>  mnormt          2.1.2   2026-01-27 [1] RSPM
+    #>  nlme            3.1-169 2026-03-27 [3] CRAN (R 4.6.1)
     #>  otel            0.2.0   2025-08-29 [1] RSPM
-    #>  parallelly      1.46.1  2026-01-08 [1] RSPM
+    #>  parallelly      1.48.0  2026-06-29 [1] RSPM
     #>  phosphoricons   0.2.1   2024-04-08 [1] RSPM
     #>  pillar          1.11.1  2025-09-17 [1] RSPM
     #>  pkgconfig       2.0.3   2019-09-22 [1] RSPM
-    #>  pkgdown         2.2.0   2025-11-06 [1] any (@2.2.0)
+    #>  pkgdown         2.2.1   2026-07-07 [1] any (@2.2.1)
     #>  plyr            1.8.9   2023-10-02 [1] RSPM
-    #>  polyclip        1.10-7  2024-07-23 [1] RSPM
-    #>  polylabelr      1.0.0   2026-01-19 [1] RSPM
-    #>  progressr       0.18.0  2025-11-06 [1] RSPM
+    #>  progressr       1.0.0   2026-07-04 [1] RSPM
     #>  promises        1.5.0   2025-11-01 [1] RSPM
     #>  proxy           0.4-29  2025-12-29 [1] RSPM
-    #>  psych           2.5.6   2025-06-23 [1] RSPM
-    #>  purrr           1.2.1   2026-01-09 [1] RSPM
+    #>  psych           2.6.5   2026-05-16 [1] RSPM
+    #>  purrr           1.2.2   2026-04-10 [1] RSPM
     #>  R.methodsS3     1.8.2   2022-06-13 [1] RSPM
     #>  R.oo            1.27.1  2025-05-02 [1] RSPM
     #>  R.utils         2.13.0  2025-02-24 [1] RSPM
     #>  R6              2.6.1   2025-02-15 [1] RSPM
-    #>  ragg            1.5.0   2025-09-02 [1] RSPM
+    #>  ragg            1.5.2   2026-03-23 [1] RSPM
     #>  RColorBrewer    1.1-3   2022-04-03 [1] RSPM
-    #>  Rcpp            1.1.1   2026-01-10 [1] RSPM
+    #>  Rcpp            1.1.2   2026-07-05 [1] RSPM
     #>  reactable       0.4.5   2025-12-01 [1] RSPM
-    #>  readr           2.1.6   2025-11-14 [1] RSPM
-    #>  readxl          1.4.5   2025-03-07 [1] RSPM
+    #>  readr           2.2.0   2026-02-19 [1] RSPM
+    #>  readxl          1.5.0   2026-05-16 [1] RSPM
     #>  RefManageR    * 1.4.0   2022-09-30 [1] RSPM
-    #>  rio             1.2.4   2025-09-26 [1] RSPM
-    #>  rlang           1.1.7   2026-01-09 [1] RSPM
-    #>  rmarkdown       2.30    2025-09-28 [1] RSPM
-    #>  S7              0.2.1   2025-11-14 [1] RSPM
+    #>  rio             1.3.0   2026-04-02 [1] RSPM
+    #>  rlang           1.3.0   2026-07-05 [1] RSPM
+    #>  rmarkdown       2.31    2026-03-26 [1] RSPM
+    #>  S7              0.2.2   2026-04-22 [1] RSPM
     #>  sass            0.4.10  2025-04-11 [1] RSPM
     #>  scales          1.4.0   2025-04-24 [1] RSPM
-    #>  sessioninfo   * 1.2.3   2025-02-05 [1] RSPM
-    #>  shiny           1.12.1  2025-12-09 [1] RSPM
+    #>  sessioninfo   * 1.2.4   2026-06-04 [1] RSPM
+    #>  shiny           1.14.0  2026-06-21 [1] RSPM
     #>  shinybusy       0.3.3   2024-03-09 [1] RSPM
-    #>  shinyWidgets    0.9.0   2025-02-21 [1] RSPM
+    #>  shinyWidgets    0.9.1   2026-03-09 [1] RSPM
     #>  stringi         1.8.7   2025-03-27 [1] RSPM
     #>  stringr         1.6.0   2025-11-04 [1] RSPM
-    #>  systemfonts     1.3.1   2025-10-01 [1] RSPM
-    #>  textshaping     1.0.4   2025-10-10 [1] RSPM
+    #>  systemfonts     1.3.2   2026-03-05 [1] RSPM
+    #>  textshaping     1.0.5   2026-03-06 [1] RSPM
     #>  tibble          3.3.1   2026-01-11 [1] RSPM
     #>  tidyr           1.3.2   2025-12-19 [1] RSPM
     #>  tidyselect      1.2.1   2024-03-11 [1] RSPM
-    #>  timechange      0.3.0   2024-01-18 [1] RSPM
+    #>  timechange      0.4.0   2026-01-29 [1] RSPM
     #>  toastui         0.4.0   2025-04-03 [1] RSPM
     #>  tzdb            0.5.0   2025-03-15 [1] RSPM
     #>  utf8            1.2.6   2025-06-08 [1] RSPM
-    #>  vctrs           0.7.1   2026-01-23 [1] RSPM
-    #>  vroom           1.6.7   2025-11-28 [1] RSPM
-    #>  withr           3.0.2   2024-10-28 [1] RSPM
+    #>  vctrs           0.7.3   2026-04-11 [1] RSPM
+    #>  vroom           1.7.1   2026-03-31 [1] RSPM
+    #>  withr           3.0.3   2026-06-19 [1] RSPM
     #>  writexl         1.5.4   2025-04-15 [1] RSPM
-    #>  xfun            0.56    2026-01-18 [1] RSPM
-    #>  xml2            1.5.2   2026-01-17 [1] RSPM
-    #>  xtable          1.8-4   2019-04-21 [1] RSPM
+    #>  xfun            0.60    2026-07-09 [1] RSPM
+    #>  xml2            1.6.0   2026-06-22 [1] RSPM
+    #>  xtable          1.8-8   2026-02-22 [1] RSPM
     #>  yaml            2.3.12  2025-12-10 [1] RSPM
     #> 
     #>  [1] /home/runner/work/_temp/Library
-    #>  [2] /opt/R/4.5.2/lib/R/site-library
-    #>  [3] /opt/R/4.5.2/lib/R/library
+    #>  [2] /opt/R/4.6.1/lib/R/site-library
+    #>  [3] /opt/R/4.6.1/lib/R/library
     #>  * ── Packages attached to the search path.
     #> 
     #> ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -1885,18 +1919,18 @@ docs](https://jolars.github.io/eulerr/reference/plot.euler.html).
 ## Bibliography
 
 This vignette was generated using
-*[BiocStyle](https://bioconductor.org/packages/3.22/BiocStyle)* (Oleś,
-2025) with *[knitr](https://CRAN.R-project.org/package=knitr)* (Xie,
+*[BiocStyle](https://bioconductor.org/packages/3.23/BiocStyle)* (Oleś,
+2026) with *[knitr](https://CRAN.R-project.org/package=knitr)* (Xie,
 2025) and *[rmarkdown](https://CRAN.R-project.org/package=rmarkdown)*
 (Allaire, Xie, Dervieux, McPherson, Luraschi, Ushey, Atkins, Wickham,
-Cheng, Chang, and Iannone, 2025) running behind the scenes.
+Cheng, Chang, and Iannone, 2026) running behind the scenes.
 
 Citations made with
 *[RefManageR](https://CRAN.R-project.org/package=RefManageR)* (McLean,
 2017).
 
-[\[1\]](#cite-allaire2025rmarkdown) J. Allaire, Y. Xie, C. Dervieux, et
-al. *rmarkdown: Dynamic Documents for R*. R package version 2.30. 2025.
+[\[1\]](#cite-allaire2026rmarkdown) J. Allaire, Y. Xie, C. Dervieux, et
+al. *rmarkdown: Dynamic Documents for R*. R package version 2.31. 2026.
 URL: <https://github.com/rstudio/rmarkdown>.
 
 [\[2\]](#cite-giuliospinozzivispa2) S. B. Giulio Spinozzi Andrea
@@ -1910,9 +1944,9 @@ and Manage BibTeX and BibLaTeX References in R”. In: *The Journal of
 Open Source Software* (2017). DOI:
 [10.21105/joss.00338](https://doi.org/10.21105/joss.00338).
 
-[\[4\]](#cite-ole2025biocstyle) A. Oleś. *BiocStyle: Standard styles for
-vignettes and other Bioconductor documents*. R package version 2.38.0.
-2025. DOI:
+[\[4\]](#cite-ole2026biocstyle) A. Oleś. *BiocStyle: Standard styles for
+vignettes and other Bioconductor documents*. R package version 2.40.0.
+2026. DOI:
 [10.18129/B9.bioc.BiocStyle](https://doi.org/10.18129/B9.bioc.BiocStyle).
 URL: <https://bioconductor.org/packages/BiocStyle>.
 
