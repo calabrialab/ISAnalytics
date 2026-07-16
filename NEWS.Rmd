@@ -2,6 +2,21 @@
 title: "NEWS"
 output: github_document
 ---
+# ISAnalytics 1.23.1 (2026-07-16)
+
+## UPDATE
+
+-   `remove_collisions()` now resolves collisions by first comparing relative
+    integration-site abundance across independent samples. Abundance is measured
+    with the sequence count column selected through `quant_cols["seqCount"]`,
+    summed within each independent sample.
+-   Observations at least `fold_threshold` times less abundant than the maximum
+    abundance observed for the same integration site are removed before any
+    temporal rule is applied. The default threshold is 10 and the exact
+    threshold is inclusive (`max(seqCount) / seqCount >= fold_threshold`).
+-   The temporal rule is now applied only to collision observations not resolved
+    by the fold-abundance comparison.
+
 # ISAnalytics 1.19.3 (2025-07-21)
 
 ## UPDATE

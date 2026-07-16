@@ -198,6 +198,30 @@ example_df_multi <- function(
     return(t)
 }
 
+example_collision_event <- function(
+        seqCount,
+        SubjectID = paste0("subj", seq_along(seqCount)),
+        SequencingDate = rep(lubridate::dmy("05/08/2020"), length(seqCount)),
+        Replicate = rep(1, length(seqCount)),
+        ProjectID = rep("CLOEXP", length(seqCount)),
+        PoolID = rep("POOL6", length(seqCount))) {
+    example_df_multi(
+        ProjectID = ProjectID,
+        seqCount = seqCount,
+        fragmentEstimate = seq_along(seqCount),
+        SequencingDate = SequencingDate,
+        PoolID = PoolID,
+        SubjectID = SubjectID,
+        Replicate = Replicate
+    ) |>
+        dplyr::mutate(
+            chr = "1",
+            integration_locus = 10493,
+            strand = "+",
+            .before = "CompleteAmplificationID"
+        )
+}
+
 test_that(".discriminate_by_date returns as expected for all equal dates", {
     dates <- lubridate::dmy("05/08/2020")
     df <- example_df_multi(
@@ -395,270 +419,233 @@ test_that(".discriminate_by_seqCount returns as expected for ratio > 10", {
 })
 
 #------------------------------------------------------------------------------#
+# Tests .discriminate_by_fold_abundance
+#------------------------------------------------------------------------------#
+test_that(".validate_collision_fold_threshold validates input", {
+    expect_equal(.validate_collision_fold_threshold(10), 10)
+    expect_error(.validate_collision_fold_threshold(NA_real_))
+    expect_error(.validate_collision_fold_threshold(c(10, 20)))
+    expect_error(.validate_collision_fold_threshold("10"))
+    expect_error(.validate_collision_fold_threshold(Inf))
+    expect_error(.validate_collision_fold_threshold(0))
+    expect_error(.validate_collision_fold_threshold(-10))
+    expect_error(.validate_collision_fold_threshold(1))
+})
+
+test_that(".discriminate_by_fold_abundance removes values above threshold", {
+    df <- example_collision_event(seqCount = c(100, 5)) |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
+    result <- .discriminate_by_fold_abundance(
+        df, fold_threshold = 10, seqCount_col = "seqCount",
+        ind_sample_key = c("ProjectID", "SubjectID")
+    )
+    expect_true(result$check)
+    expect_equal(result$data$SubjectID, "subj1")
+})
+
+test_that(".discriminate_by_fold_abundance treats exact threshold as removal", {
+    df <- example_collision_event(seqCount = c(100, 10)) |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
+    result <- .discriminate_by_fold_abundance(
+        df, fold_threshold = 10, seqCount_col = "seqCount",
+        ind_sample_key = c("ProjectID", "SubjectID")
+    )
+    expect_true(result$check)
+    expect_equal(result$data$SubjectID, "subj1")
+})
+
+test_that(".discriminate_by_fold_abundance keeps unresolved close values", {
+    df <- example_collision_event(seqCount = c(90, 10)) |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
+    result <- .discriminate_by_fold_abundance(
+        df, fold_threshold = 10, seqCount_col = "seqCount",
+        ind_sample_key = c("ProjectID", "SubjectID")
+    )
+    expect_false(result$check)
+    expect_equal(result$data, df)
+})
+
+test_that(".discriminate_by_fold_abundance handles equal maxima and multiple samples", {
+    df <- example_collision_event(seqCount = c(100, 20, 5)) |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
+    result <- .discriminate_by_fold_abundance(
+        df, fold_threshold = 10, seqCount_col = "seqCount",
+        ind_sample_key = c("ProjectID", "SubjectID")
+    )
+    expect_true(result$check)
+    expect_equal(result$data$SubjectID, c("subj1", "subj2"))
+
+    df <- example_collision_event(seqCount = c(100, 100, 5)) |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
+    result <- .discriminate_by_fold_abundance(
+        df, fold_threshold = 10, seqCount_col = "seqCount",
+        ind_sample_key = c("ProjectID", "SubjectID")
+    )
+    expect_true(result$check)
+    expect_equal(result$data$SubjectID, c("subj1", "subj2"))
+})
+
+test_that(".discriminate_by_fold_abundance uses custom threshold and validates abundance", {
+    df <- example_collision_event(seqCount = c(100, 20)) |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
+    result <- .discriminate_by_fold_abundance(
+        df, fold_threshold = 5, seqCount_col = "seqCount",
+        ind_sample_key = c("ProjectID", "SubjectID")
+    )
+    expect_true(result$check)
+    expect_equal(result$data$SubjectID, "subj1")
+
+    df_zero <- example_collision_event(seqCount = c(100, 0)) |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
+    result <- .discriminate_by_fold_abundance(
+        df_zero, fold_threshold = 10, seqCount_col = "seqCount",
+        ind_sample_key = c("ProjectID", "SubjectID")
+    )
+    expect_true(result$check)
+    expect_equal(result$data$SubjectID, "subj1")
+
+    df_all_zero <- example_collision_event(seqCount = c(0, 0)) |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
+    result <- .discriminate_by_fold_abundance(
+        df_all_zero, fold_threshold = 10, seqCount_col = "seqCount",
+        ind_sample_key = c("ProjectID", "SubjectID")
+    )
+    expect_false(result$check)
+    expect_equal(result$data, df_all_zero)
+
+    df_na <- example_collision_event(seqCount = c(100, NA_real_)) |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
+    expect_error(
+        .discriminate_by_fold_abundance(
+            df_na, fold_threshold = 10, seqCount_col = "seqCount",
+            ind_sample_key = c("ProjectID", "SubjectID")
+        )
+    )
+})
+
+#------------------------------------------------------------------------------#
 # Tests .four_step_check
 #------------------------------------------------------------------------------#
-test_that(".four_step_check returns as expected for first step", {
-    dates <- c(
-        lubridate::dmy("01/08/2020"),
-        lubridate::dmy("03/08/2020"),
-        lubridate::dmy("03/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020")
+test_that(".four_step_check applies fold before temporal ordering", {
+    ex <- example_collision_event(
+        seqCount = c(5, 100),
+        SubjectID = c("early", "late"),
+        SequencingDate = lubridate::dmy(c("01/08/2020", "05/08/2020"))
     )
-    df <- example_df_multi(
-        ProjectID = "CLOEXP",
-        seqCount = c(20, 25, 2, 50, 800, 6),
-        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
-        SequencingDate = dates, PoolID = "POOL6",
-        SubjectID = c(
-            "subj1", "subj6", "subj3", "subj2",
-            "subj2", "subj5"
-        ),
-        Replicate = c(1, 2, 2, 1, 2, 3)
-    )
-    ex <- df |>
-        dplyr::mutate(
-            chr = "1",
-            integration_locus = 10493,
-            strand = "+",
-            .before = "CompleteAmplificationID"
-        )
     res <- .four_step_check(ex,
         date_col = "SequencingDate",
         repl_col = "ReplicateNumber",
-        reads_ratio = 10,
+        fold_threshold = 10,
         seqCount_col = "seqCount",
         ind_sample_key = c("ProjectID", "SubjectID")
     )
-    rem_col <- res$data
-    reassigned <- res$reassigned
-    removed <- res$removed
-    expect_equal(rem_col$SequencingDate, c(lubridate::dmy("01/08/2020")))
-    expect_equal(rem_col$SubjectID, c("subj1"))
-    expect_true(nrow(rem_col) == 1)
-    expect_true(reassigned == 1)
-    expect_true(removed == 0)
+    expect_equal(res$data$SubjectID, "late")
+    expect_equal(res$data$seqCount, 100)
+    expect_equal(res$reassigned, 1)
+    expect_equal(res$removed, 0)
 })
 
-test_that(".four_step_check returns as expected for second step", {
-    dates <- c(
-        lubridate::dmy("01/08/2020"),
-        lubridate::dmy("01/08/2020"),
-        lubridate::dmy("03/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020")
+test_that(".four_step_check applies temporal ordering after unresolved fold", {
+    ex <- example_collision_event(
+        seqCount = c(10, 90),
+        SubjectID = c("early", "late"),
+        SequencingDate = lubridate::dmy(c("01/08/2020", "05/08/2020"))
     )
-    df <- example_df_multi(
-        ProjectID = "CLOEXP",
-        seqCount = c(20, 25, 2, 50, 800, 6),
-        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
-        SequencingDate = dates, PoolID = "POOL6",
-        SubjectID = c(
-            "subj1", "subj1", "subj3", "subj2",
-            "subj4", "subj5"
-        ),
-        Replicate = c(1, 2, 2, 1, 2, 3)
-    )
-    ex <- df |>
-        dplyr::mutate(
-            chr = "1",
-            integration_locus = 10493,
-            strand = "+",
-            .before = "CompleteAmplificationID"
-        )
-
     res <- .four_step_check(ex,
         date_col = "SequencingDate",
         repl_col = "ReplicateNumber",
-        reads_ratio = 10,
+        fold_threshold = 10,
         seqCount_col = "seqCount",
         ind_sample_key = c("ProjectID", "SubjectID")
     )
-    rem_col <- res$data
-    reassigned <- res$reassigned
-    removed <- res$removed
-    expect_equal(rem_col$ReplicateNumber, c(1, 2))
-    expect_equal(rem_col$SubjectID, c("subj1", "subj1"))
-    expect_true(nrow(rem_col) == 2)
-    expect_true(reassigned == 1)
-    expect_true(removed == 0)
+    expect_equal(res$data$SubjectID, "early")
+    expect_equal(res$data$seqCount, 10)
+    expect_equal(res$reassigned, 1)
+    expect_equal(res$removed, 0)
 })
 
-test_that(".four_step_check returns as expected for third step", {
-    dates <- c(
-        lubridate::dmy("01/08/2020"),
-        lubridate::dmy("01/08/2020"),
-        lubridate::dmy("03/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020")
+test_that(".four_step_check removes only fold-resolved samples before date", {
+    ex <- example_collision_event(
+        seqCount = c(100, 20, 5),
+        SubjectID = c("late", "early", "removed"),
+        SequencingDate = lubridate::dmy(c(
+            "05/08/2020", "01/08/2020", "03/08/2020"
+        ))
     )
-    df <- example_df_multi(
-        ProjectID = "CLOEXP",
-        seqCount = c(20, 25, 2, 50, 800, 6),
-        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
-        SequencingDate = dates, PoolID = "POOL6",
-        SubjectID = c(
-            "subj1", "subj1", "subj3", "subj2",
-            "subj2", "subj5"
-        ),
-        Replicate = c(1, 2, 2, 1, 2, 3)
-    )
-    ex <- df |>
-        dplyr::mutate(
-            chr = "1",
-            integration_locus = 10493,
-            strand = "+",
-            .before = "CompleteAmplificationID"
-        )
-
     res <- .four_step_check(ex,
         date_col = "SequencingDate",
         repl_col = "ReplicateNumber",
-        reads_ratio = 10,
+        fold_threshold = 10,
         seqCount_col = "seqCount",
         ind_sample_key = c("ProjectID", "SubjectID")
     )
-    rem_col <- res$data
-    reassigned <- res$reassigned
-    removed <- res$removed
-    expect_equal(rem_col$ReplicateNumber, c(1, 2))
-    expect_equal(rem_col$seqCount, c(50, 800))
-    expect_equal(rem_col$SubjectID, c("subj2", "subj2"))
-    expect_true(nrow(rem_col) == 2)
-    expect_true(reassigned == 1)
-    expect_true(removed == 0)
+    expect_equal(res$data$SubjectID, "early")
+    expect_equal(res$data$seqCount, 20)
+    expect_equal(res$reassigned, 1)
+    expect_equal(res$removed, 0)
 })
 
-test_that(".four_step_check returns as expected for fourth step", {
-    dates <- c(
-        lubridate::dmy("01/08/2020"),
-        lubridate::dmy("01/08/2020"),
-        lubridate::dmy("03/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020")
+test_that(".four_step_check removes integration if fold and date are unresolved", {
+    ex <- example_collision_event(
+        seqCount = c(50, 50),
+        SubjectID = c("subj1", "subj2"),
+        SequencingDate = lubridate::dmy(c("05/08/2020", "05/08/2020"))
     )
-    df <- example_df_multi(
-        ProjectID = "CLOEXP",
-        seqCount = c(20, 25, 2, 50, 80, 6),
-        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
-        SequencingDate = dates, PoolID = "POOL6",
-        SubjectID = c(
-            "subj1", "subj1", "subj3", "subj2",
-            "subj2", "subj5"
-        ),
-        Replicate = c(1, 2, 2, 1, 2, 3)
-    )
-    ex <- df |>
-        dplyr::mutate(
-            chr = "1",
-            integration_locus = 10493,
-            strand = "+",
-            .before = "CompleteAmplificationID"
-        )
-
     res <- .four_step_check(ex,
         date_col = "SequencingDate",
         repl_col = "ReplicateNumber",
-        reads_ratio = 10,
+        fold_threshold = 10,
         seqCount_col = "seqCount",
         ind_sample_key = c("ProjectID", "SubjectID")
     )
-    rem_col <- res$data
-    reassigned <- res$reassigned
-    removed <- res$removed
-    expect_null(rem_col)
-    expect_true(reassigned == 0)
-    expect_true(removed == 1)
+    expect_null(res$data)
+    expect_equal(res$reassigned, 0)
+    expect_equal(res$removed, 1)
 })
 
 #------------------------------------------------------------------------------#
 # Tests .process_collisions
 #------------------------------------------------------------------------------#
 example_collisions_multi <- function() {
-    cols <- list(
-        chr = c(1, 2, 3, 4),
-        integration_locus = c(103948, 14390, 12453, 12353),
-        strand = c("+", "+", "-", "-")
-    )
-    # Can discriminate by date
-    dates <- c(
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("01/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("03/08/2020")
-    )
-    smpl1 <- example_df_multi(
-        ProjectID = "CLOEXP",
-        seqCount = c(125, 25, 2, 50, 800, 6),
-        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
-        SequencingDate = dates, PoolID = "POOL6",
-        SubjectID = c(
-            "subj1", "subj2", "subj3", "subj4",
-            "subj2", "subj5"
+    collision <- function(chr, locus, strand, seqCount, SubjectID,
+                          SequencingDate) {
+        example_collision_event(
+            seqCount = seqCount,
+            SubjectID = SubjectID,
+            SequencingDate = SequencingDate
+        ) |>
+            dplyr::mutate(
+                chr = as.character(.env$chr),
+                integration_locus = .env$locus,
+                strand = .env$strand
+            )
+    }
+    dplyr::bind_rows(
+        collision(
+            chr = 1, locus = 103948, strand = "+",
+            seqCount = c(5, 100),
+            SubjectID = c("early", "late"),
+            SequencingDate = lubridate::dmy(c("01/08/2020", "05/08/2020"))
         ),
-        Replicate = c(1, 1, 2, 1, 2, 3)
-    )
-    # Can discriminate by replicate
-    dates <- c(
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020"),
-        lubridate::dmy("05/08/2020")
-    )
-    smpl2 <- example_df_multi(
-        ProjectID = "CLOEXP",
-        seqCount = c(125, 25, 2, 50, 800, 6),
-        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
-        SequencingDate = dates, PoolID = "POOL6",
-        SubjectID = c(
-            "subj1", "subj2", "subj3", "subj4",
-            "subj2", "subj5"
+        collision(
+            chr = 2, locus = 14390, strand = "+",
+            seqCount = c(100, 10),
+            SubjectID = c("high", "low"),
+            SequencingDate = lubridate::dmy(c("05/08/2020", "01/08/2020"))
         ),
-        Replicate = c(1, 1, 2, 1, 2, 3)
-    )
-    # Can discriminate by seqCount
-    smpl3 <- example_df_multi(
-        ProjectID = "CLOEXP",
-        seqCount = c(25, 25, 2, 50, 800, 6),
-        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
-        SequencingDate = dates, PoolID = "POOL6",
-        SubjectID = c(
-            "subj1", "subj2", "subj3", "subj4",
-            "subj2", "subj1"
+        collision(
+            chr = 3, locus = 12453, strand = "-",
+            seqCount = c(90, 10),
+            SubjectID = c("late", "early"),
+            SequencingDate = lubridate::dmy(c("05/08/2020", "01/08/2020"))
         ),
-        Replicate = c(1, 1, 2, 1, 2, 3)
+        collision(
+            chr = 4, locus = 12353, strand = "-",
+            seqCount = c(50, 50),
+            SubjectID = c("tie1", "tie2"),
+            SequencingDate = lubridate::dmy(c("05/08/2020", "05/08/2020"))
+        )
     )
-    # Can't discriminate
-    smpl4 <- example_df_multi(
-        ProjectID = "CLOEXP",
-        seqCount = c(125, 25, 2, 50, 800, 6),
-        fragmentEstimate = c(456, 56, 786.87, 644.56, 4.857, 86.563),
-        SequencingDate = dates, PoolID = "POOL6",
-        SubjectID = c(
-            "subj1", "subj2", "subj3", "subj4",
-            "subj2", "subj1"
-        ),
-        Replicate = c(1, 1, 2, 1, 2, 3)
-    )
-    t <- tibble::as_tibble(cols)
-    t <- t |>
-        tibble::add_column(tibble::as_tibble_col(
-            list(
-                smpl1, smpl2,
-                smpl3, smpl4
-            ),
-            column_name = "data"
-        )) |>
-        tidyr::unnest(dplyr::all_of("data"))
-    return(t)
 }
 
 ex_collisions_multi <- example_collisions_multi()
@@ -667,11 +654,11 @@ test_that(".process_collisions returns updated collisions", {
     result <- .process_collisions(
         collisions = ex_collisions_multi,
         date_col = "SequencingDate",
-        reads_ratio = 10,
+        fold_threshold = 10,
         seqCount_col = "seqCount",
         repl_col = "ReplicateNumber",
         ind_sample_key = c("ProjectID", "SubjectID"),
-        max_workers = 4
+        max_workers = 1
     )
     coll <- result$coll
     removed <- result$removed
@@ -691,7 +678,7 @@ test_that(".process_collisions returns updated collisions", {
             .data$chr == 1, .data$integration_locus == 103948,
             .data$strand == "+"
         )
-    expect_true(all(first$SubjectID == "subj3"))
+    expect_true(all(first$SubjectID == "late"))
     expect_true(nrow(first) == 1)
     # Second integration expected result
     second <- coll |>
@@ -699,16 +686,16 @@ test_that(".process_collisions returns updated collisions", {
             .data$chr == 2, .data$integration_locus == 14390,
             .data$strand == "+"
         )
-    expect_true(all(second$SubjectID == "subj2"))
-    expect_true(nrow(second) == 2)
+    expect_true(all(second$SubjectID == "high"))
+    expect_true(nrow(second) == 1)
     # Third integration expected result
     third <- coll |>
         dplyr::filter(
             .data$chr == 3, .data$integration_locus == 12453,
             .data$strand == "-"
         )
-    expect_true(all(third$SubjectID == "subj2"))
-    expect_true(nrow(third) == 2)
+    expect_true(all(third$SubjectID == "early"))
+    expect_true(nrow(third) == 1)
 })
 
 
@@ -828,8 +815,8 @@ test_that(".summary_input returns info correctly", {
         c("seqCount", "fragmentEstimate")
     )
     expect_equal(summary$total_iss, 4)
-    expect_equal(summary$quant_totals$seqCount, 3932)
-    expect_equal(summary$quant_totals$fragmentEstimate, 8139.4)
+    expect_equal(summary$quant_totals$seqCount, 415)
+    expect_equal(summary$quant_totals$fragmentEstimate, 12)
 })
 
 #------------------------------------------------------------------------------#
@@ -854,21 +841,81 @@ test_that("remove_collisions succeeds", {
     coll_rem <- remove_collisions(
         x = minimal_test_coll,
         association_file = minimal_test_coll_meta_probs,
-        report_path = NULL, max_workers = 4
+        report_path = NULL, max_workers = 1
     )
-    expected <- coll_rem |>
+    removed_collision <- coll_rem |>
         dplyr::filter(
             .data$chr == "4",
             .data$integration_locus == 23435,
             .data$strand == "+"
-        ) |>
-        dplyr::distinct(.data$CompleteAmplificationID)
-    expect_true(
-        all(expected$CompleteAmplificationID %in% c("SAMPLE1", "SAMPLE2"))
+        )
+    expect_equal(nrow(removed_collision), 0)
+    expect_equal(colnames(coll_rem), colnames(minimal_test_coll))
+    expect_false(any(c("sum", "remove_by_fold") %in% colnames(coll_rem)))
+})
+
+test_that("remove_collisions propagates fold_threshold", {
+    coll_matrix <- tibble::tribble(
+        ~chr, ~integration_locus, ~strand, ~CompleteAmplificationID,
+        ~seqCount, ~fragmentEstimate,
+        "1", 1000, "+", "SAMPLE1", 20, 20,
+        "1", 1000, "+", "SAMPLE2", 100, 100
     )
+    coll_meta <- tibble::tribble(
+        ~ProjectID, ~PoolID, ~SubjectID, ~SequencingDate, ~ReplicateNumber,
+        ~CompleteAmplificationID,
+        "PJ1", "POOL1", "early", lubridate::as_date("2020-01-01"), 1,
+        "SAMPLE1",
+        "PJ1", "POOL1", "late", lubridate::as_date("2020-02-01"), 1,
+        "SAMPLE2"
+    )
+    temporal_result <- remove_collisions(
+        coll_matrix,
+        association_file = coll_meta,
+        fold_threshold = 10,
+        report_path = NULL,
+        max_workers = 1
+    )
+    fold_result <- remove_collisions(
+        coll_matrix,
+        association_file = coll_meta,
+        fold_threshold = 5,
+        report_path = NULL,
+        max_workers = 1
+    )
+    expect_equal(temporal_result$CompleteAmplificationID, "SAMPLE1")
+    expect_equal(fold_result$CompleteAmplificationID, "SAMPLE2")
+})
+
+test_that("remove_collisions leaves data without collisions unchanged", {
+    no_collision <- tibble::tribble(
+        ~chr, ~integration_locus, ~strand, ~CompleteAmplificationID,
+        ~seqCount, ~fragmentEstimate,
+        "1", 1000, "+", "SAMPLE1", 20, 20,
+        "2", 2000, "-", "SAMPLE2", 100, 100
+    )
+    no_collision_meta <- tibble::tribble(
+        ~ProjectID, ~PoolID, ~SubjectID, ~SequencingDate, ~ReplicateNumber,
+        ~CompleteAmplificationID,
+        "PJ1", "POOL1", "subj1", lubridate::as_date("2020-01-01"), 1,
+        "SAMPLE1",
+        "PJ1", "POOL1", "subj2", lubridate::as_date("2020-02-01"), 1,
+        "SAMPLE2"
+    )
+    result <- remove_collisions(
+        no_collision,
+        association_file = no_collision_meta,
+        report_path = NULL,
+        max_workers = 1
+    )
+    expect_equal(result, no_collision)
 })
 
 test_that("remove_collisions produces report", {
+    testthat::skip_if_not(
+        rmarkdown::pandoc_available(),
+        message = "pandoc is required to render the collision report"
+    )
     withr::local_options(list(ISAnalytics.reports = TRUE))
     tmp_dir <- withr::local_tempdir()
     coll_rem <- remove_collisions(

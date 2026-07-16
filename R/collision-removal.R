@@ -2,7 +2,7 @@
 # Collision removal functions
 #------------------------------------------------------------------------------#
 
-#' Identifies and removes collisions.
+#' Identifies and removes collisions
 #'
 #' @description
 #' `r lifecycle::badge("stable")`
@@ -23,12 +23,25 @@
 #' @param independent_sample_id A character vector of column names that
 #' identify independent samples
 #' @param date_col The date column that should be considered.
-#' @param reads_ratio A single numeric value that represents the ratio that has
-#' to be considered when deciding between `seqCount` value.
+#' @param reads_ratio Deprecated alias for `fold_threshold`, kept for backward
+#' compatibility. If both parameters are supplied they must have the same value.
 #' @param quant_cols A named character vector where names are
 #' quantification types and
 #' values are the names of the corresponding columns. The quantification
 #' `seqCount` MUST be included in the vector.
+#' @param fold_threshold A single numeric value greater than 1. For each
+#' collision, the sequence count values are summed within independent samples
+#' and compared to the maximum summed sequence count observed for the same
+#' integration. Observations from independent samples with
+#' `max(seqCount) / seqCount >= fold_threshold` are removed before applying the
+#' temporal rule. The default is 10, and a ratio exactly equal to the threshold
+#' is considered sufficient for removal. If more than one independent sample is
+#' not clearly separated by this fold rule, only those remaining observations
+#' are passed to the temporal rule. Zero sequence counts are allowed: if the
+#' maximum abundance is positive, zero-abundance observations are removed by the
+#' fold rule; if all abundances are zero, the fold rule is unresolved and the
+#' temporal rule is used. Missing, non-finite or negative sequence counts are
+#' rejected.
 #' @param max_workers Maximum number of parallel workers to distribute the
 #' workload. If `NULL` (default) produces the maximum amount of workers allowed,
 #' a numeric value is requested otherwise. WARNING: a higher number of workers
@@ -65,6 +78,7 @@
 #' no_coll <- remove_collisions(
 #'     x = integration_matrices,
 #'     association_file = association_file,
+#'     fold_threshold = 10,
 #'     report_path = NULL
 #' )
 #' head(no_coll)
@@ -78,6 +92,7 @@ remove_collisions <- function(
             seqCount = "seqCount",
             fragmentEstimate = "fragmentEstimate"
         ),
+        fold_threshold = 10,
         report_path = default_report_path(),
         max_workers = NULL) {
     # Check basic parameter correctness
@@ -94,8 +109,17 @@ remove_collisions <- function(
     ### --- Other checks
     stopifnot(is.null(max_workers[1]) || is.numeric(max_workers[1]))
     max_workers <- max_workers[1]
-    stopifnot(is.integer(reads_ratio) || is.numeric(reads_ratio))
-    reads_ratio <- reads_ratio[1]
+    if (!missing(reads_ratio)) {
+        .validate_collision_fold_threshold(reads_ratio, "reads_ratio")
+        if (!missing(fold_threshold) &&
+            !isTRUE(all.equal(reads_ratio, fold_threshold))) {
+            rlang::abort(
+                "`reads_ratio` and `fold_threshold` must be identical when both are supplied."
+            )
+        }
+        fold_threshold <- reads_ratio
+    }
+    fold_threshold <- .validate_collision_fold_threshold(fold_threshold)
     seq_count_col <- quant_cols["seqCount"]
     ## Check if association file contains all info relative to content the of
     ## the matrix
@@ -187,7 +211,7 @@ remove_collisions <- function(
     fixed_collisions <- .process_collisions(
         collisions = split_df$collisions,
         date_col = date_col,
-        reads_ratio = reads_ratio,
+        fold_threshold = fold_threshold,
         seqCount_col = seq_count_col,
         repl_col = replicate_n_col,
         ind_sample_key = independent_sample_id,

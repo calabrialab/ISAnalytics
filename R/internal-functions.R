@@ -2883,9 +2883,104 @@
     list(collisions = collisions, non_collisions = non_collisions)
 }
 
+# Validate the fold threshold used by collision removal.
+.validate_collision_fold_threshold <- function(
+        fold_threshold,
+        param_name = "fold_threshold") {
+    if (!is.numeric(fold_threshold) || length(fold_threshold) != 1 ||
+        is.na(fold_threshold) || !is.finite(fold_threshold) ||
+        fold_threshold <= 1) {
+        rlang::abort(paste0(
+            "`", param_name, "` must be a single finite numeric value ",
+            "greater than 1."
+        ))
+    }
+    fold_threshold
+}
+
+# Check sequence count values before applying abundance-based collision removal.
+.validate_collision_abundance <- function(x, seqCount_col) {
+    values <- x[[seqCount_col]]
+    if (!is.numeric(values)) {
+        rlang::abort(paste0(
+            "`", seqCount_col, "` must be numeric to resolve collisions by ",
+            "relative abundance."
+        ))
+    }
+    if (any(is.na(values))) {
+        rlang::abort(paste0(
+            "`", seqCount_col, "` contains missing values; collision removal ",
+            "does not convert missing abundance to zero."
+        ))
+    }
+    if (any(!is.finite(values))) {
+        rlang::abort(paste0(
+            "`", seqCount_col, "` must contain only finite values for ",
+            "collision removal."
+        ))
+    }
+    if (any(values < 0)) {
+        rlang::abort(paste0(
+            "`", seqCount_col, "` must not contain negative values for ",
+            "collision removal."
+        ))
+    }
+    invisible(TRUE)
+}
+
+# Internal for abundance discrimination in collision removal.
+#
+# It's the first step in the algorithm for collision removal: sequence count
+# values are summed within independent samples, compared with the maximum
+# abundance observed for the same integration, and observations at least
+# `fold_threshold` times below the maximum are removed. Observations not clearly
+# separated by fold difference are kept for temporal discrimination.
+#
+# @param x - All metadata associated with a single collision event in
+#            a data frame format (does not contain mandatory IS vars)
+# @param fold_threshold The fold difference required to remove less abundant
+# independent samples.
+# @param seqCount_col The name of the sequence count column (support
+# for multi quantification matrix)
+# @param ind_sample_key - character vector containing the columns that identify
+#                       independent samples
+# @return A named list with:
+# * $data: a tibble, containing the data kept after fold filtering
+# * $check: a logical value indicating whether the fold rule removed at least
+# one independent sample
+.discriminate_by_fold_abundance <- function(
+        x,
+        fold_threshold,
+        seqCount_col,
+        ind_sample_key) {
+    .validate_collision_abundance(x, seqCount_col)
+    temp <- x |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) |>
+        dplyr::summarise(sum = sum(.data[[seqCount_col]]), .groups = "drop")
+    max_sum <- max(temp$sum)
+    if (max_sum == 0) {
+        return(list(data = x, check = FALSE))
+    }
+    temp <- temp |>
+        dplyr::mutate(
+            remove_by_fold = .data$sum < max_sum &
+                dplyr::if_else(
+                    .data$sum == 0,
+                    TRUE,
+                    max_sum / .data$sum >= fold_threshold
+                )
+        )
+    to_keep <- temp |>
+        dplyr::filter(.data$remove_by_fold == FALSE) |>
+        dplyr::select(dplyr::all_of(ind_sample_key))
+    filtered <- x |>
+        dplyr::semi_join(to_keep, by = ind_sample_key)
+    list(data = filtered, check = any(temp$remove_by_fold))
+}
+
 # Internal for date discrimination in collision removal.
 #
-# It's the first of 4 steps in the algorithm for collision removal: it tries to
+# It's the temporal step in the algorithm for collision removal: it tries to
 # find a single sample who has an associated date which is earlier than any
 # other. If comparison is not possible the analysis fails and returns the
 # original input data.
@@ -2921,12 +3016,13 @@
 
 # Internal for replicate discrimination in collision removal.
 #
-# It's the second of 4 steps in the algorithm for collision removal:
-# grouping by independent sample it counts the number of
-# rows (replicates) found for each group, orders them from biggest to smallest
-# and, if a single group has more rows than any other group the integration is
-# assigned to that sample, otherwise the analysis fails and returns the
-# original input to be submitted to the next step.
+# Legacy helper for replicate-based discrimination in collision removal.
+# Grouping by independent sample it counts the number of rows (replicates)
+# found for each group, orders them from biggest to smallest and, if a single
+# group has more rows than any other group, the integration is assigned to that
+# sample. The current collision-removal workflow resolves collisions by fold
+# abundance first and then by date, so this helper is retained for compatibility
+# with internal tests and historical behaviour checks.
 #
 # @param x - All metadata associated with a single collision event in
 #            a data frame format (does not contain mandatory IS vars)
@@ -2953,12 +3049,14 @@
 
 # Internal for sequence count discrimination in collision removal.
 #
-# It's the third of 4 steps in the algorithm for collision removal:
-# grouping by independent sample, it sums the value of
-# the sequence count for each group, sorts the groups from highest to lowest
-# cumulative value and then checks the ratio between the first element and the
-# second: if the ratio is > `reads_ratio` the integration is assigned to
-# the first group, otherwise the analysis fails and returns the original input.
+# Legacy helper for top-versus-second sequence count discrimination. Grouping by
+# independent sample, it sums the sequence count for each group, sorts the
+# groups from highest to lowest cumulative value and then checks the ratio
+# between the first element and the second: if the ratio is > `reads_ratio` the
+# integration is assigned to the first group, otherwise the analysis fails and
+# returns the original input. The active collision-removal workflow now uses
+# `.discriminate_by_fold_abundance()` to compare every independent sample with
+# the maximum using the inclusive `fold_threshold` rule.
 #
 # @param x - All metadata associated with a single collision event in
 #            a data frame format (does not contain mandatory IS vars)
@@ -2991,7 +3089,7 @@
     return(list(data = x, check = TRUE))
 }
 
-# Internal function that performs four-step-check of collisions for
+# Internal function that performs fold-first collision resolution for
 # a single integration.
 #
 # @param x - Represents the sub-table containing coordinates
@@ -2999,8 +3097,8 @@
 #            mandatory IS vars)
 # @param date_col The date column to consider
 # @param repl_col - The name of the column containing the replicate number
-# @param reads_ratio The value of the ratio between sequence count values to
-# check
+# @param fold_threshold The fold difference required to remove less abundant
+# independent samples before temporal discrimination
 # @param seqCount_col The name of the sequence count column (support
 # for multi quantification matrix)
 # @param ind_sample_key - character vector containing the columns that identify
@@ -3015,13 +3113,29 @@
         x,
         date_col,
         repl_col,
-        reads_ratio,
+        fold_threshold,
         seqCount_col,
         ind_sample_key,
         progress = NULL) {
     current_data <- x |>
         dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
-    # Try to discriminate by date
+    # First remove observations clearly separated by sequence count abundance.
+    result <- .discriminate_by_fold_abundance(
+        current_data, fold_threshold, seqCount_col, ind_sample_key
+    )
+    current_data <- result$data
+    sample_n <- current_data |>
+        dplyr::distinct(dplyr::across(dplyr::all_of(ind_sample_key))) |>
+        nrow()
+    if (sample_n == 1) {
+        coordinates <- x[seq_len(nrow(current_data)), mandatory_IS_vars()]
+        res <- dplyr::bind_cols(coordinates, current_data)
+        if (!is.null(progress)) {
+            progress()
+        }
+        return(list(data = res, reassigned = 1, removed = 0))
+    }
+    # If the fold rule leaves more than one plausible sample, try date.
     result <- .discriminate_by_date(current_data, date_col, ind_sample_key)
     if (result$check == TRUE) {
         current_data <- result$data
@@ -3032,32 +3146,7 @@
         }
         return(list(data = res, reassigned = 1, removed = 0))
     }
-    # If first check fails try to discriminate by replicate
-    result <- .discriminate_by_replicate(current_data, repl_col, ind_sample_key)
-    if (result$check == TRUE) {
-        current_data <- result$data
-        coordinates <- x[seq_len(nrow(current_data)), mandatory_IS_vars()]
-        res <- dplyr::bind_cols(coordinates, current_data)
-        if (!is.null(progress)) {
-            progress()
-        }
-        return(list(data = res, reassigned = 1, removed = 0))
-    }
-    # If second check fails try to discriminate by seqCount
-    result <- .discriminate_by_seqCount(
-        current_data, reads_ratio, seqCount_col,
-        ind_sample_key
-    )
-    if (result$check == TRUE) {
-        current_data <- result$data
-        coordinates <- x[seq_len(nrow(current_data)), mandatory_IS_vars()]
-        res <- dplyr::bind_cols(coordinates, current_data)
-        if (!is.null(progress)) {
-            progress()
-        }
-        return(list(data = res, reassigned = 1, removed = 0))
-    }
-    # If all check fails remove the integration from all subjects
+    # If fold and date checks fail, remove the integration from all subjects.
     if (!is.null(progress)) {
         progress()
     }
@@ -3074,7 +3163,7 @@
         collisions,
         date_col,
         repl_col,
-        reads_ratio,
+        fold_threshold,
         seqCount_col,
         ind_sample_key,
         max_workers) {
@@ -3088,7 +3177,7 @@
         fun_args = list(
             date_col = date_col,
             repl_col = repl_col,
-            reads_ratio = reads_ratio,
+            fold_threshold = fold_threshold,
             seqCount_col = seqCount_col,
             ind_sample_key = ind_sample_key
         ),
