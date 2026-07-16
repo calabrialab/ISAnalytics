@@ -19,18 +19,18 @@ A named list of lambdas
 default_rec_agg_lambdas()
 #> $character
 #> ~paste0(.x, collapse = ";")
-#> <environment: 0x563aae5f5b30>
+#> <environment: 0x559930ce4088>
 #> 
 #> $integer
 #> ~sum(.x, na.rm = TRUE)
-#> <environment: 0x563aae5f5b30>
+#> <environment: 0x559930ce4088>
 #> 
 #> $double
 #> ~sum(.x, na.rm = TRUE)
-#> <environment: 0x563aae5f5b30>
+#> <environment: 0x559930ce4088>
 #> 
 #> $logical
 #> ~all(.x)
-#> <environment: 0x563aae5f5b30>
+#> <environment: 0x559930ce4088>
 #> 
 ```

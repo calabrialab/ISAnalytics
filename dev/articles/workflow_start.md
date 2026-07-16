@@ -814,29 +814,25 @@ different independent samples ((SUBJ01, PJ01) & (SUBJ02, PJ01)) {.table}
 
 ##### Re-assign vs remove
 
-Once the collisions are identified, the function follows 3 steps where
-it tries to re-assign the combination to a single independent sample.
-The criteria are:
+Once the collisions are identified, the function tries to resolve each
+integration site with a hierarchical rule. First, it compares the
+abundance of the integration across independent samples. Abundance is
+measured with the sequence count column selected through
+`quant_cols["seqCount"]` and is summed within each independent sample.
+Samples whose abundance is at least `fold_threshold` times lower than
+the maximum abundance observed for the same integration are removed from
+that collision event. The default `fold_threshold` is 10 and the exact
+threshold is inclusive, so `max(seqCount) / seqCount >= fold_threshold`
+is sufficient to remove the less abundant observation. When several
+independent samples remain close to the maximum, they all pass this
+step.
 
-1.  Compare dates: if it’s possible to have an absolute ordering on
-    dates, the integration is re-assigned to the sample that has the
-    earliest date. If two samples share the same date it’s impossible to
-    decide, so the next criteria is tested
-2.  Compare replicate number: if a sample has the same integration in
-    more than one replicate, it’s more probable the integration is not
-    an artifact. If it’s possible to have an absolute ordering, the
-    collision is re-assigned to the sample whose grouping is largest
-3.  Compare the sequence count value: if the previous criteria wasn’t
-    sufficient to make a decision, for each group of independent samples
-    it’s evaluated the sum of the sequence count value - for each group
-    there is a cumulative value of the sequence count and this is
-    compared to the value of other groups. If there is a single group
-    which has a ratio n times bigger than other groups, this one is
-    chosen for re-assignment. The factor n is passed as a parameter in
-    the function (`reads_ratio`), the default value is 10.
-
-If none of the criteria were sufficient to make a decision, the
-integration is simply removed from the matrix.
+The temporal rule is applied only after this abundance comparison, and
+only to the observations that were not resolved by the fold rule. If it
+is possible to identify a unique earliest date, the integration is
+re-assigned to that independent sample. If the fold comparison and the
+temporal rule are both insufficient to make a decision, the integration
+is removed from the matrix.
 
 #### Usage
 
@@ -1840,7 +1836,7 @@ docs](https://jolars.github.io/eulerr/reference/plot.euler.html).
     #>  htmlwidgets     1.6.4   2023-12-06 [1] RSPM
     #>  httpuv          1.6.17  2026-03-18 [1] RSPM
     #>  httr            1.4.8   2026-02-13 [1] RSPM
-    #>  ISAnalytics   * 1.23.0  2026-07-16 [1] local
+    #>  ISAnalytics   * 1.23.1  2026-07-16 [1] local
     #>  iterators       1.0.14  2022-02-05 [1] RSPM
     #>  jquerylib       0.1.4   2021-04-26 [1] RSPM
     #>  jsonlite        2.0.0   2025-03-27 [1] RSPM

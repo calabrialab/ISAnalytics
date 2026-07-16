@@ -21,7 +21,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.23.0</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.23.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -1001,29 +1001,25 @@ PJ01))</caption>
 <div class="section level5">
 <h5 id="re-assign-vs-remove">Re-assign vs remove<a class="anchor" aria-label="anchor" href="#re-assign-vs-remove"></a>
 </h5>
-<p>Once the collisions are identified, the function follows 3 steps
-where it tries to re-assign the combination to a single independent
-sample. The criteria are:</p>
-<ol style="list-style-type: decimal">
-<li>Compare dates: if it’s possible to have an absolute ordering on
-dates, the integration is re-assigned to the sample that has the
-earliest date. If two samples share the same date it’s impossible to
-decide, so the next criteria is tested</li>
-<li>Compare replicate number: if a sample has the same integration in
-more than one replicate, it’s more probable the integration is not an
-artifact. If it’s possible to have an absolute ordering, the collision
-is re-assigned to the sample whose grouping is largest</li>
-<li>Compare the sequence count value: if the previous criteria wasn’t
-sufficient to make a decision, for each group of independent samples
-it’s evaluated the sum of the sequence count value - for each group
-there is a cumulative value of the sequence count and this is compared
-to the value of other groups. If there is a single group which has a
-ratio n times bigger than other groups, this one is chosen for
-re-assignment. The factor n is passed as a parameter in the function
-(<code>reads_ratio</code>), the default value is 10.</li>
-</ol>
-<p>If none of the criteria were sufficient to make a decision, the
-integration is simply removed from the matrix.</p>
+<p>Once the collisions are identified, the function tries to resolve
+each integration site with a hierarchical rule. First, it compares the
+abundance of the integration across independent samples. Abundance is
+measured with the sequence count column selected through
+<code>quant_cols["seqCount"]</code> and is summed within each
+independent sample. Samples whose abundance is at least
+<code>fold_threshold</code> times lower than the maximum abundance
+observed for the same integration are removed from that collision event.
+The default <code>fold_threshold</code> is 10 and the exact threshold is
+inclusive, so <code>max(seqCount) / seqCount &gt;= fold_threshold</code>
+is sufficient to remove the less abundant observation. When several
+independent samples remain close to the maximum, they all pass this
+step.</p>
+<p>The temporal rule is applied only after this abundance comparison,
+and only to the observations that were not resolved by the fold rule. If
+it is possible to identify a unique earliest date, the integration is
+re-assigned to that independent sample. If the fold comparison and the
+temporal rule are both insufficient to make a decision, the integration
+is removed from the matrix.</p>
 </div>
 </div>
 <div class="section level4">
@@ -1979,7 +1975,7 @@ docs</a>.</p>
 <span><span class="co">#&gt;  htmlwidgets     1.6.4   <span style="color: #555555;">2023-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  httpuv          1.6.17  <span style="color: #555555;">2026-03-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  httr            1.4.8   <span style="color: #555555;">2026-02-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
-<span><span class="co">#&gt;  ISAnalytics   * 1.23.0  <span style="color: #555555;">2026-07-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
+<span><span class="co">#&gt;  ISAnalytics   * 1.23.1  <span style="color: #555555;">2026-07-16</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
 <span><span class="co">#&gt;  iterators       1.0.14  <span style="color: #555555;">2022-02-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  jquerylib       0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>
 <span><span class="co">#&gt;  jsonlite        2.0.0   <span style="color: #555555;">2025-03-27</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM</span></span></span>

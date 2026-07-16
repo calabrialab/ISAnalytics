@@ -1,4 +1,4 @@
-# Identifies and removes collisions.
+# Identifies and removes collisions
 
 **\[stable\]** A collision is an integration (aka a unique combination
 of the provided
@@ -20,6 +20,7 @@ remove_collisions(
   date_col = "SequencingDate",
   reads_ratio = 10,
   quant_cols = c(seqCount = "seqCount", fragmentEstimate = "fragmentEstimate"),
+  fold_threshold = 10,
   report_path = default_report_path(),
   max_workers = NULL
 )
@@ -47,14 +48,32 @@ remove_collisions(
 
 - reads_ratio:
 
-  A single numeric value that represents the ratio that has to be
-  considered when deciding between `seqCount` value.
+  Deprecated alias for `fold_threshold`, kept for backward
+  compatibility. If both parameters are supplied they must have the same
+  value.
 
 - quant_cols:
 
   A named character vector where names are quantification types and
   values are the names of the corresponding columns. The quantification
   `seqCount` MUST be included in the vector.
+
+- fold_threshold:
+
+  A single numeric value greater than 1. For each collision, the
+  sequence count values are summed within independent samples and
+  compared to the maximum summed sequence count observed for the same
+  integration. Observations from independent samples with
+  `max(seqCount) / seqCount >= fold_threshold` are removed before
+  applying the temporal rule. The default is 10, and a ratio exactly
+  equal to the threshold is considered sufficient for removal. If more
+  than one independent sample is not clearly separated by this fold
+  rule, only those remaining observations are passed to the temporal
+  rule. Zero sequence counts are allowed: if the maximum abundance is
+  positive, zero-abundance observations are removed by the fold rule; if
+  all abundances are zero, the fold rule is unresolved and the temporal
+  rule is used. Missing, non-finite or negative sequence counts are
+  rejected.
 
 - report_path:
 
@@ -105,6 +124,7 @@ data("association_file", package = "ISAnalytics")
 no_coll <- remove_collisions(
     x = integration_matrices,
     association_file = association_file,
+    fold_threshold = 10,
     report_path = NULL
 )
 #> Identifying collisions...

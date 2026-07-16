@@ -20,7 +20,7 @@ Andrea C, Giulio S, Giulia P (2026). *Analyze gene therapy vector
 insertion sites data identified from genomics next generation sequencing
 reads for clonal tracking studies*.
 [doi:10.18129/B9.bioc.ISAnalytics](https://doi.org/10.18129/B9.bioc.ISAnalytics).
-https://github.com/calabrialab/ISAnalytics - R package version 1.23.0,
+https://github.com/calabrialab/ISAnalytics - R package version 1.23.1,
 <http://www.bioconductor.org/packages/ISAnalytics>.
 
     @Manual{,
@@ -28,7 +28,7 @@ https://github.com/calabrialab/ISAnalytics - R package version 1.23.0,
       author = {Calabria Andrea and Spinozzi Giulio and Pais Giulia},
       year = {2026},
       url = {http://www.bioconductor.org/packages/ISAnalytics},
-      note = {https://github.com/calabrialab/ISAnalytics - R package version 1.23.0},
+      note = {https://github.com/calabrialab/ISAnalytics - R package version 1.23.1},
       doi = {10.18129/B9.bioc.ISAnalytics},
     }
 

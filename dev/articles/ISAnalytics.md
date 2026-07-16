@@ -504,7 +504,7 @@ guidelines.
     #> [1] stats     graphics  grDevices utils     datasets  methods   base     
     #> 
     #> other attached packages:
-    #> [1] ISAnalytics_1.23.0 RefManageR_1.4.0   BiocStyle_2.40.0  
+    #> [1] ISAnalytics_1.23.1 RefManageR_1.4.0   BiocStyle_2.40.0  
     #> 
     #> loaded via a namespace (and not attached):
     #>   [1] mnormt_2.1.2        writexl_1.5.4       permute_0.9-10     

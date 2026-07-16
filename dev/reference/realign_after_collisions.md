@@ -93,11 +93,11 @@ realigned
 #>    4:     12          54635693      -         CBX5          -
 #>    5:      5          84009671      -        EDIL3          -
 #>   ---                                                        
-#> 1675:      6           3388625      -         HTR4          +
-#> 1676:     16           3207754      +       UBE2D2          +
-#> 1677:     19          13631664      -    LINC01133          +
-#> 1678:     12          48119158      -        KMT2D          -
-#> 1679:     14          30726412      -     PLEKHG4B          -
+#> 1662:      6           3388625      -         HTR4          +
+#> 1663:     16           3207754      +       UBE2D2          +
+#> 1664:     19          13631664      -    LINC01133          +
+#> 1665:     12          48119158      -        KMT2D          -
+#> 1666:     14          30726412      -     PLEKHG4B          -
 #>                                                    CompleteAmplificationID
 #>                                                                     <char>
 #>    1: PJ01_POOL01_LTR75LC38_PT001_PT001-103_lenti_GLOBE_PB_1_SLiM_0060_MNC
@@ -106,11 +106,11 @@ realigned
 #>    4:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
 #>    5:  PJ01_POOL01_LTR83LC66_PT001_PT001-81_lenti_GLOBE_BM_1_SLiM_0180_MNC
 #>   ---                                                                     
-#> 1675: PJ01_POOL03_LTR93LC90_PT002_PT002-464_lenti_GLOBE_PB_1_SLiM_0360_MNC
-#> 1676: PJ01_POOL03_LTR93LC90_PT002_PT002-464_lenti_GLOBE_PB_1_SLiM_0360_MNC
-#> 1677: PJ01_POOL03_LTR93LC90_PT002_PT002-464_lenti_GLOBE_PB_1_SLiM_0360_MNC
-#> 1678: PJ01_POOL03_LTR93LC90_PT002_PT002-464_lenti_GLOBE_PB_1_SLiM_0360_MNC
-#> 1679: PJ01_POOL03_LTR93LC90_PT002_PT002-464_lenti_GLOBE_PB_1_SLiM_0360_MNC
+#> 1662: PJ01_POOL03_LTR93LC90_PT002_PT002-464_lenti_GLOBE_PB_1_SLiM_0360_MNC
+#> 1663: PJ01_POOL03_LTR93LC90_PT002_PT002-464_lenti_GLOBE_PB_1_SLiM_0360_MNC
+#> 1664: PJ01_POOL03_LTR93LC90_PT002_PT002-464_lenti_GLOBE_PB_1_SLiM_0360_MNC
+#> 1665: PJ01_POOL03_LTR93LC90_PT002_PT002-464_lenti_GLOBE_PB_1_SLiM_0360_MNC
+#> 1666: PJ01_POOL03_LTR93LC90_PT002_PT002-464_lenti_GLOBE_PB_1_SLiM_0360_MNC
 #>            Value
 #>            <num>
 #>    1: 102.945718
@@ -119,10 +119,10 @@ realigned
 #>    4:  65.157600
 #>    5:  61.469810
 #>   ---           
-#> 1675:  11.761600
-#> 1676:  12.600475
-#> 1677:   1.704548
-#> 1678:  11.366729
-#> 1679:   6.047534
+#> 1662:  11.761600
+#> 1663:  12.600475
+#> 1664:   1.704548
+#> 1665:  11.366729
+#> 1666:   6.047534
 #> 
 ```

@@ -137,7 +137,7 @@ Importing integration matrices and metadata from files
   **\[stable\]** : Scans input matrix to find and merge near integration
   sites.
 - [`remove_collisions()`](https://calabrialab.github.io/ISAnalytics/dev/reference/remove_collisions.md)
-  **\[stable\]** : Identifies and removes collisions.
+  **\[stable\]** : Identifies and removes collisions
 - [`realign_after_collisions()`](https://calabrialab.github.io/ISAnalytics/dev/reference/realign_after_collisions.md)
   **\[stable\]** : Re-aligns matrices of other quantification types
   based on the processed sequence count matrix.

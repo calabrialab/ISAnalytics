@@ -71,9 +71,9 @@ Other Utilities:
 fs_path <- generate_default_folder_structure(type = "correct")
 fs_path
 #> $af
-#> /tmp/RtmpRB8w9i/asso_file.tsv
+#> /tmp/Rtmpj3DgoP/asso_file.tsv
 #> 
 #> $root
-#> /tmp/RtmpRB8w9i/fs
+#> /tmp/Rtmpj3DgoP/fs
 #> 
 ```
