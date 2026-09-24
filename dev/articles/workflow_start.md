@@ -827,12 +827,13 @@ is sufficient to remove the less abundant observation. When several
 independent samples remain close to the maximum, they all pass this
 step.
 
-The temporal rule is applied only after this abundance comparison, and
-only to the observations that were not resolved by the fold rule. If it
-is possible to identify a unique earliest date, the integration is
-re-assigned to that independent sample. If the fold comparison and the
-temporal rule are both insufficient to make a decision, the integration
-is removed from the matrix.
+After the abundance comparison, the function counts the rows associated
+with each remaining independent sample. The integration is removed from
+samples represented by a single row and retained in all samples
+represented by at least two rows. The sequencing date is not used. As a
+consequence, a collision can remain associated with more than one
+independent sample after processing. The integration is removed entirely
+only when no independent sample passes both filters.
 
 #### Usage
 
@@ -1779,131 +1780,130 @@ docs](https://jolars.github.io/eulerr/reference/plot.euler.html).
     #> ─ Session info ───────────────────────────────────────────────────────────────────────────────────────────────────────
     #>  setting  value
     #>  version  R version 4.6.1 (2026-06-24)
-    #>  os       Ubuntu 24.04.4 LTS
+    #>  os       Ubuntu 24.04.5 LTS
     #>  system   x86_64, linux-gnu
     #>  ui       X11
     #>  language en
     #>  collate  C.UTF-8
     #>  ctype    C.UTF-8
     #>  tz       UTC
-    #>  date     2026-07-16
+    #>  date     2026-09-24
     #>  pandoc   3.8.3 @ /opt/hostedtoolcache/pandoc/3.8.3/x64/ (via rmarkdown)
     #>  quarto   NA
     #> 
     #> ─ Packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────
-    #>  package       * version date (UTC) lib source
-    #>  backports       1.5.1   2026-04-03 [1] RSPM
-    #>  bibtex          0.5.2   2026-02-03 [1] RSPM
-    #>  BiocManager     1.30.27 2025-11-14 [1] RSPM
-    #>  BiocParallel    1.46.0  2026-04-29 [1] Bioconduc~
-    #>  BiocStyle     * 2.40.0  2026-04-28 [1] Bioconduc~
-    #>  bit             4.6.0   2025-03-06 [1] RSPM
-    #>  bit64           4.8.2   2026-05-19 [1] RSPM
-    #>  bookdown        0.47    2026-06-16 [1] RSPM
-    #>  bslib           0.11.0  2026-05-16 [1] RSPM
-    #>  cachem          1.1.0   2024-05-16 [1] RSPM
-    #>  cellranger      1.1.0   2016-07-27 [1] RSPM
-    #>  class           7.3-23  2025-01-01 [3] CRAN (R 4.6.1)
-    #>  classInt        0.4-11  2025-01-08 [1] RSPM
-    #>  cli             3.6.6   2026-04-09 [1] RSPM
-    #>  codetools       0.2-20  2024-03-31 [3] CRAN (R 4.6.1)
-    #>  crayon          1.5.3   2024-06-20 [1] RSPM
-    #>  crosstalk       1.2.2   2025-08-26 [1] RSPM
-    #>  data.table      1.18.4  2026-05-06 [1] RSPM
-    #>  datamods        1.5.3   2024-10-02 [1] RSPM
-    #>  desc            1.4.3   2023-12-10 [1] RSPM
-    #>  digest          0.6.39  2025-11-19 [1] RSPM
-    #>  doFuture        1.2.2   2026-05-22 [1] RSPM
-    #>  dplyr           1.2.1   2026-04-03 [1] RSPM
-    #>  DT            * 0.34.0  2025-09-02 [1] RSPM
-    #>  e1071           1.7-17  2025-12-18 [1] RSPM
-    #>  eulerr          8.1.0   2026-06-30 [1] RSPM
-    #>  evaluate        1.0.5   2025-08-27 [1] RSPM
-    #>  farver          2.1.2   2024-05-13 [1] RSPM
-    #>  fastmap         1.2.0   2024-05-15 [1] RSPM
-    #>  foreach         1.5.2   2022-02-02 [1] RSPM
-    #>  fs              2.1.0   2026-04-18 [1] RSPM
-    #>  future          1.70.0  2026-03-14 [1] RSPM
-    #>  future.apply    1.20.2  2026-02-20 [1] RSPM
-    #>  generics        0.1.4   2025-05-09 [1] RSPM
-    #>  ggplot2         4.0.3   2026-04-22 [1] RSPM
-    #>  globals         0.19.1  2026-03-13 [1] RSPM
-    #>  glue            1.8.1   2026-04-17 [1] RSPM
-    #>  gtable          0.3.6   2024-10-25 [1] RSPM
-    #>  gtools          3.9.5   2023-11-20 [1] RSPM
-    #>  hms             1.1.4   2025-10-17 [1] RSPM
-    #>  htmltools       0.5.9   2025-12-04 [1] RSPM
-    #>  htmlwidgets     1.6.4   2023-12-06 [1] RSPM
-    #>  httpuv          1.6.17  2026-03-18 [1] RSPM
-    #>  httr            1.4.8   2026-02-13 [1] RSPM
-    #>  ISAnalytics   * 1.23.1  2026-07-16 [1] local
-    #>  iterators       1.0.14  2022-02-05 [1] RSPM
-    #>  jquerylib       0.1.4   2021-04-26 [1] RSPM
-    #>  jsonlite        2.0.0   2025-03-27 [1] RSPM
-    #>  KernSmooth      2.23-26 2025-01-01 [3] CRAN (R 4.6.1)
-    #>  knitr           1.51    2025-12-20 [1] RSPM
-    #>  labeling        0.4.3   2023-08-29 [1] RSPM
-    #>  later           1.4.8   2026-03-05 [1] RSPM
-    #>  lattice         0.22-9  2026-02-09 [3] CRAN (R 4.6.1)
-    #>  lifecycle       1.0.5   2026-01-08 [1] RSPM
-    #>  listenv         1.0.0   2026-06-22 [1] RSPM
-    #>  lubridate       1.9.5   2026-02-04 [1] RSPM
-    #>  magrittr        2.0.5   2026-04-04 [1] RSPM
-    #>  mime            0.13    2025-03-17 [1] RSPM
-    #>  mnormt          2.1.2   2026-01-27 [1] RSPM
-    #>  nlme            3.1-169 2026-03-27 [3] CRAN (R 4.6.1)
-    #>  otel            0.2.0   2025-08-29 [1] RSPM
-    #>  parallelly      1.48.0  2026-06-29 [1] RSPM
-    #>  phosphoricons   0.2.1   2024-04-08 [1] RSPM
-    #>  pillar          1.11.1  2025-09-17 [1] RSPM
-    #>  pkgconfig       2.0.3   2019-09-22 [1] RSPM
-    #>  pkgdown         2.2.1   2026-07-07 [1] any (@2.2.1)
-    #>  plyr            1.8.9   2023-10-02 [1] RSPM
-    #>  progressr       1.0.0   2026-07-04 [1] RSPM
-    #>  promises        1.5.0   2025-11-01 [1] RSPM
-    #>  proxy           0.4-29  2025-12-29 [1] RSPM
-    #>  psych           2.6.5   2026-05-16 [1] RSPM
-    #>  purrr           1.2.2   2026-04-10 [1] RSPM
-    #>  R.methodsS3     1.8.2   2022-06-13 [1] RSPM
-    #>  R.oo            1.27.1  2025-05-02 [1] RSPM
-    #>  R.utils         2.13.0  2025-02-24 [1] RSPM
-    #>  R6              2.6.1   2025-02-15 [1] RSPM
-    #>  ragg            1.5.2   2026-03-23 [1] RSPM
-    #>  RColorBrewer    1.1-3   2022-04-03 [1] RSPM
-    #>  Rcpp            1.1.2   2026-07-05 [1] RSPM
-    #>  reactable       0.4.5   2025-12-01 [1] RSPM
-    #>  readr           2.2.0   2026-02-19 [1] RSPM
-    #>  readxl          1.5.0   2026-05-16 [1] RSPM
-    #>  RefManageR    * 1.4.0   2022-09-30 [1] RSPM
-    #>  rio             1.3.0   2026-04-02 [1] RSPM
-    #>  rlang           1.3.0   2026-07-05 [1] RSPM
-    #>  rmarkdown       2.31    2026-03-26 [1] RSPM
-    #>  S7              0.2.2   2026-04-22 [1] RSPM
-    #>  sass            0.4.10  2025-04-11 [1] RSPM
-    #>  scales          1.4.0   2025-04-24 [1] RSPM
-    #>  sessioninfo   * 1.2.4   2026-06-04 [1] RSPM
-    #>  shiny           1.14.0  2026-06-21 [1] RSPM
-    #>  shinybusy       0.3.3   2024-03-09 [1] RSPM
-    #>  shinyWidgets    0.9.1   2026-03-09 [1] RSPM
-    #>  stringi         1.8.7   2025-03-27 [1] RSPM
-    #>  stringr         1.6.0   2025-11-04 [1] RSPM
-    #>  systemfonts     1.3.2   2026-03-05 [1] RSPM
-    #>  textshaping     1.0.5   2026-03-06 [1] RSPM
-    #>  tibble          3.3.1   2026-01-11 [1] RSPM
-    #>  tidyr           1.3.2   2025-12-19 [1] RSPM
-    #>  tidyselect      1.2.1   2024-03-11 [1] RSPM
-    #>  timechange      0.4.0   2026-01-29 [1] RSPM
-    #>  toastui         0.4.0   2025-04-03 [1] RSPM
-    #>  tzdb            0.5.0   2025-03-15 [1] RSPM
-    #>  utf8            1.2.6   2025-06-08 [1] RSPM
-    #>  vctrs           0.7.3   2026-04-11 [1] RSPM
-    #>  vroom           1.7.1   2026-03-31 [1] RSPM
-    #>  withr           3.0.3   2026-06-19 [1] RSPM
-    #>  writexl         1.5.4   2025-04-15 [1] RSPM
-    #>  xfun            0.60    2026-07-09 [1] RSPM
-    #>  xml2            1.6.0   2026-06-22 [1] RSPM
-    #>  xtable          1.8-8   2026-02-22 [1] RSPM
-    #>  yaml            2.3.12  2025-12-10 [1] RSPM
+    #>  package       * version  date (UTC) lib source
+    #>  bibtex          0.5.3    2026-09-22 [1] RSPM
+    #>  BiocManager     1.30.27  2025-11-14 [1] RSPM
+    #>  BiocParallel    1.46.0   2026-04-29 [1] Bioconduc~
+    #>  BiocStyle     * 2.40.0   2026-04-28 [1] Bioconduc~
+    #>  bit             4.6.0    2025-03-06 [1] RSPM
+    #>  bit64           4.8.6    2026-09-01 [1] RSPM
+    #>  bookdown        0.48     2026-08-28 [1] RSPM
+    #>  bslib           0.12.0   2026-08-04 [1] RSPM
+    #>  cachem          1.1.0    2024-05-16 [1] RSPM
+    #>  cellranger      1.1.0    2016-07-27 [1] RSPM
+    #>  class           7.3-23   2025-01-01 [3] CRAN (R 4.6.1)
+    #>  classInt        0.4-11   2025-01-08 [1] RSPM
+    #>  cli             3.6.6    2026-04-09 [1] RSPM
+    #>  codetools       0.2-20   2024-03-31 [3] CRAN (R 4.6.1)
+    #>  crayon          1.5.3    2024-06-20 [1] RSPM
+    #>  crosstalk       1.2.2    2025-08-26 [1] RSPM
+    #>  data.table      1.18.6.1 2026-08-24 [1] RSPM
+    #>  datamods        1.5.3    2024-10-02 [1] RSPM
+    #>  desc            1.4.3    2023-12-10 [1] RSPM
+    #>  digest          0.6.39   2025-11-19 [1] RSPM
+    #>  doFuture        1.3.0    2026-08-03 [1] RSPM
+    #>  dplyr           1.2.1    2026-04-03 [1] RSPM
+    #>  DT            * 0.34.0   2025-09-02 [1] RSPM
+    #>  e1071           1.7-17   2025-12-18 [1] RSPM
+    #>  eulerr          8.3.1    2026-09-13 [1] RSPM
+    #>  evaluate        1.0.5    2025-08-27 [1] RSPM
+    #>  farver          2.1.2    2024-05-13 [1] RSPM
+    #>  fastmap         1.2.0    2024-05-15 [1] RSPM
+    #>  foreach         1.5.2    2022-02-02 [1] RSPM
+    #>  fs              2.1.0    2026-04-18 [1] RSPM
+    #>  future          1.75.0   2026-07-20 [1] RSPM
+    #>  future.apply    1.20.2   2026-02-20 [1] RSPM
+    #>  generics        0.1.4    2025-05-09 [1] RSPM
+    #>  ggplot2         4.0.3    2026-04-22 [1] RSPM
+    #>  globals         0.19.1   2026-03-13 [1] RSPM
+    #>  glue            1.8.1    2026-04-17 [1] RSPM
+    #>  gtable          0.3.6    2024-10-25 [1] RSPM
+    #>  gtools          3.9.5    2023-11-20 [1] RSPM
+    #>  hms             1.1.4    2025-10-17 [1] RSPM
+    #>  htmltools       0.5.9    2025-12-04 [1] RSPM
+    #>  htmlwidgets     1.6.4    2023-12-06 [1] RSPM
+    #>  httpuv          1.6.17   2026-03-18 [1] RSPM
+    #>  httr            1.4.9    2026-09-01 [1] RSPM
+    #>  ISAnalytics   * 1.23.2   2026-09-24 [1] local
+    #>  iterators       1.0.14   2022-02-05 [1] RSPM
+    #>  jquerylib       0.1.4    2021-04-26 [1] RSPM
+    #>  jsonlite        2.0.0    2025-03-27 [1] RSPM
+    #>  KernSmooth      2.23-26  2025-01-01 [3] CRAN (R 4.6.1)
+    #>  knitr           1.52     2026-09-06 [1] RSPM
+    #>  labeling        0.4.3    2023-08-29 [1] RSPM
+    #>  later           1.4.8    2026-03-05 [1] RSPM
+    #>  lattice         0.22-9   2026-02-09 [3] CRAN (R 4.6.1)
+    #>  lifecycle       1.0.5    2026-01-08 [1] RSPM
+    #>  listenv         1.0.0    2026-06-22 [1] RSPM
+    #>  lubridate       1.9.5    2026-02-04 [1] RSPM
+    #>  magrittr        2.0.5    2026-04-04 [1] RSPM
+    #>  mime            0.13     2025-03-17 [1] RSPM
+    #>  mnormt          2.1.2    2026-01-27 [1] RSPM
+    #>  nlme            3.1-169  2026-03-27 [3] CRAN (R 4.6.1)
+    #>  otel            0.2.0    2025-08-29 [1] RSPM
+    #>  parallelly      1.48.0   2026-06-29 [1] RSPM
+    #>  phosphoricons   0.2.1    2024-04-08 [1] RSPM
+    #>  pillar          1.11.1   2025-09-17 [1] RSPM
+    #>  pkgconfig       2.0.3    2019-09-22 [1] RSPM
+    #>  pkgdown         2.2.1    2026-07-07 [1] any (@2.2.1)
+    #>  plyr            1.8.9    2023-10-02 [1] RSPM
+    #>  progressr       1.0.0    2026-07-04 [1] RSPM
+    #>  promises        1.5.0    2025-11-01 [1] RSPM
+    #>  proxy           0.4-29   2025-12-29 [1] RSPM
+    #>  psych           2.6.5    2026-05-16 [1] RSPM
+    #>  purrr           1.2.2    2026-04-10 [1] RSPM
+    #>  R.methodsS3     1.8.2    2022-06-13 [1] RSPM
+    #>  R.oo            1.27.1   2025-05-02 [1] RSPM
+    #>  R.utils         2.13.0   2025-02-24 [1] RSPM
+    #>  R6              2.6.1    2025-02-15 [1] RSPM
+    #>  ragg            1.5.2    2026-03-23 [1] RSPM
+    #>  RColorBrewer    1.1-3    2022-04-03 [1] RSPM
+    #>  Rcpp            1.1.2    2026-07-05 [1] RSPM
+    #>  reactable       0.4.5    2025-12-01 [1] RSPM
+    #>  readr           2.2.0    2026-02-19 [1] RSPM
+    #>  readxl          1.5.0.1  2026-09-16 [1] RSPM
+    #>  RefManageR    * 1.4.0    2022-09-30 [1] RSPM
+    #>  rio             1.3.0    2026-04-02 [1] RSPM
+    #>  rlang           1.3.0    2026-07-05 [1] RSPM
+    #>  rmarkdown       2.32     2026-09-01 [1] RSPM
+    #>  S7              0.2.2    2026-04-22 [1] RSPM
+    #>  sass            0.4.10   2025-04-11 [1] RSPM
+    #>  scales          1.4.0    2025-04-24 [1] RSPM
+    #>  sessioninfo   * 1.2.4    2026-06-04 [1] RSPM
+    #>  shiny           1.14.0   2026-06-21 [1] RSPM
+    #>  shinybusy       0.3.3    2024-03-09 [1] RSPM
+    #>  shinyWidgets    0.9.1    2026-03-09 [1] RSPM
+    #>  stringi         1.8.9    2026-08-04 [1] RSPM
+    #>  stringr         1.6.0    2025-11-04 [1] RSPM
+    #>  systemfonts     1.3.2    2026-03-05 [1] RSPM
+    #>  textshaping     1.0.5    2026-03-06 [1] RSPM
+    #>  tibble          3.3.1    2026-01-11 [1] RSPM
+    #>  tidyr           1.3.2    2025-12-19 [1] RSPM
+    #>  tidyselect      1.2.1    2024-03-11 [1] RSPM
+    #>  timechange      0.4.0    2026-01-29 [1] RSPM
+    #>  toastui         0.4.0    2025-04-03 [1] RSPM
+    #>  tzdb            0.5.0    2025-03-15 [1] RSPM
+    #>  utf8            1.2.6    2025-06-08 [1] RSPM
+    #>  vctrs           0.7.3    2026-04-11 [1] RSPM
+    #>  vroom           1.7.1    2026-03-31 [1] RSPM
+    #>  withr           3.0.3    2026-06-19 [1] RSPM
+    #>  writexl         2.0.1    2026-08-21 [1] RSPM
+    #>  xfun            0.61     2026-09-16 [1] RSPM
+    #>  xml2            1.6.0    2026-06-22 [1] RSPM
+    #>  xtable          1.8-8    2026-02-22 [1] RSPM
+    #>  yaml            2.3.12   2025-12-10 [1] RSPM
     #> 
     #>  [1] /home/runner/work/_temp/Library
     #>  [2] /opt/R/4.6.1/lib/R/site-library
@@ -1917,7 +1917,7 @@ docs](https://jolars.github.io/eulerr/reference/plot.euler.html).
 This vignette was generated using
 *[BiocStyle](https://bioconductor.org/packages/3.23/BiocStyle)* (Oleś,
 2026) with *[knitr](https://CRAN.R-project.org/package=knitr)* (Xie,
-2025) and *[rmarkdown](https://CRAN.R-project.org/package=rmarkdown)*
+2026) and *[rmarkdown](https://CRAN.R-project.org/package=rmarkdown)*
 (Allaire, Xie, Dervieux, McPherson, Luraschi, Ushey, Atkins, Wickham,
 Cheng, Chang, and Iannone, 2026) running behind the scenes.
 
@@ -1926,7 +1926,7 @@ Citations made with
 2017).
 
 [\[1\]](#cite-allaire2026rmarkdown) J. Allaire, Y. Xie, C. Dervieux, et
-al. *rmarkdown: Dynamic Documents for R*. R package version 2.31. 2026.
+al. *rmarkdown: Dynamic Documents for R*. R package version 2.32. 2026.
 URL: <https://github.com/rstudio/rmarkdown>.
 
 [\[2\]](#cite-giuliospinozzivispa2) S. B. Giulio Spinozzi Andrea
@@ -1946,6 +1946,6 @@ vignettes and other Bioconductor documents*. R package version 2.40.0.
 [10.18129/B9.bioc.BiocStyle](https://doi.org/10.18129/B9.bioc.BiocStyle).
 URL: <https://bioconductor.org/packages/BiocStyle>.
 
-[\[5\]](#cite-xie2025knitr) Y. Xie. *knitr: A General-Purpose Package
-for Dynamic Report Generation in R*. R package version 1.51. 2025. URL:
+[\[5\]](#cite-xie2026knitr) Y. Xie. *knitr: A General-Purpose Package
+for Dynamic Report Generation in R*. R package version 1.52. 2026. URL:
 <https://yihui.org/knitr/>.

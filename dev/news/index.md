@@ -1,5 +1,19 @@
 # Changelog
 
+## ISAnalytics 1.23.2 (2026-09-24)
+
+### UPDATE
+
+- After fold-abundance filtering,
+  [`remove_collisions()`](https://calabrialab.github.io/ISAnalytics/dev/reference/remove_collisions.md)
+  removes an integration site from each independent sample represented
+  by only one row and retains it in every sample represented by at least
+  two rows. The same integration site may therefore remain in multiple
+  patients.
+- Sequencing date is no longer used to resolve collisions. `date_col` is
+  kept as an ignored argument for backward compatibility, and
+  `ReplicateNumber` is no longer required.
+
 ## ISAnalytics 1.23.1 (2026-07-16)
 
 ### UPDATE

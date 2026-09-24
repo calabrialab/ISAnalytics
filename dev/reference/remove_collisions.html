@@ -3,19 +3,19 @@
 A collision is an integration (aka a unique combination of the provided
 mandatory_IS_vars()) which is observed in more than one
 independent sample.
-The function tries to decide to which independent sample should
-an integration event be assigned to, and if no
-decision can be taken, the integration is completely removed from the data
-frame.
+The function removes collision observations that have insufficient support.
+The same integration can remain assigned to more than one independent sample
+when multiple samples pass all filtering rules. If no observation passes,
+the integration is completely removed from the data frame.
 For more details refer to the vignette "Collision removal functionality":
 vignette("workflow_start", package = "ISAnalytics")'><meta property="og:description" content='
 A collision is an integration (aka a unique combination of the provided
 mandatory_IS_vars()) which is observed in more than one
 independent sample.
-The function tries to decide to which independent sample should
-an integration event be assigned to, and if no
-decision can be taken, the integration is completely removed from the data
-frame.
+The function removes collision observations that have insufficient support.
+The same integration can remain assigned to more than one independent sample
+when multiple samples pass all filtering rules. If no observation passes,
+the integration is completely removed from the data frame.
 For more details refer to the vignette "Collision removal functionality":
 vignette("workflow_start", package = "ISAnalytics")'><meta property="og:image" content="https://calabrialab.github.io/ISAnalytics/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -25,7 +25,7 @@ vignette("workflow_start", package = "ISAnalytics")'><meta property="og:image" c
 
     <a class="navbar-brand me-2" href="../index.html">ISAnalytics</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.23.1</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.23.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,10 +60,10 @@ vignette("workflow_start", package = "ISAnalytics")'><meta property="og:image" c
 A collision is an integration (aka a unique combination of the provided
 <code><a href="mandatory_IS_vars.html">mandatory_IS_vars()</a></code>) which is observed in more than one
 independent sample.
-The function tries to decide to which independent sample should
-an integration event be assigned to, and if no
-decision can be taken, the integration is completely removed from the data
-frame.
+The function removes collision observations that have insufficient support.
+The same integration can remain assigned to more than one independent sample
+when multiple samples pass all filtering rules. If no observation passes,
+the integration is completely removed from the data frame.
 For more details refer to the vignette "Collision removal functionality":
 <code><a href="../articles/workflow_start.html">vignette("workflow_start", package = "ISAnalytics")</a></code></p>
     </div>
@@ -103,7 +103,8 @@ identify independent samples</p></dd>
 
 
 <dt id="arg-date-col">date_col<a class="anchor" aria-label="anchor" href="#arg-date-col"></a></dt>
-<dd><p>The date column that should be considered.</p></dd>
+<dd><p>Deprecated and ignored. Kept for backward compatibility;
+dates are no longer used to resolve collisions.</p></dd>
 
 
 <dt id="arg-reads-ratio">reads_ratio<a class="anchor" aria-label="anchor" href="#arg-reads-ratio"></a></dt>
@@ -123,15 +124,16 @@ values are the names of the corresponding columns. The quantification
 collision, the sequence count values are summed within independent samples
 and compared to the maximum summed sequence count observed for the same
 integration. Observations from independent samples with
-<code>max(seqCount) / seqCount &gt;= fold_threshold</code> are removed before applying the
-temporal rule. The default is 10, and a ratio exactly equal to the threshold
-is considered sufficient for removal. If more than one independent sample is
-not clearly separated by this fold rule, only those remaining observations
-are passed to the temporal rule. Zero sequence counts are allowed: if the
-maximum abundance is positive, zero-abundance observations are removed by the
-fold rule; if all abundances are zero, the fold rule is unresolved and the
-temporal rule is used. Missing, non-finite or negative sequence counts are
-rejected.</p></dd>
+<code>max(seqCount) / seqCount &gt;= fold_threshold</code> are removed. The default is 10,
+and a ratio exactly equal to the threshold is considered sufficient for
+removal. After the fold rule, each remaining independent sample is filtered
+by row count: samples represented by exactly one row are removed, while all
+samples represented by at least two rows are retained. Consequently, the
+same integration can remain in multiple independent samples. Zero sequence
+counts are allowed: if the maximum abundance is positive, zero-abundance
+observations are removed by the fold rule; if all abundances are zero, all
+observations proceed to row-count filtering. Missing, non-finite or negative
+sequence counts are rejected.</p></dd>
 
 
 <dt id="arg-report-path">report_path<a class="anchor" aria-label="anchor" href="#arg-report-path"></a></dt>
@@ -158,7 +160,6 @@ accordingly.</p></dd>
 
 <p>The function will explicitly check for the presence of these tags:</p><ul><li><p>project_id</p></li>
 <li><p>pool_id</p></li>
-<li><p>pcr_replicate</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
