@@ -40,7 +40,6 @@ minimal_test_coll_meta_probs <- minimal_test_coll_meta |>
 sample_tag_cols <- tibble::tribble(
     ~names, ~types, ~transform, ~flag, ~tag,
     "CompleteAmplificationID", "char", NULL, "required", "pcr_repl_id",
-    "ReplicateNumber", "int", NULL, "required", "pcr_replicate",
     "PoolID", "char", NULL, "required", "pool_id",
     "ProjectID", "char", NULL, "required", "project_id"
 )
@@ -300,7 +299,7 @@ test_that(".discriminate_by_date returns as expected for single min date", {
 #------------------------------------------------------------------------------#
 # Tests .discriminate_by_replicate
 #------------------------------------------------------------------------------#
-test_that(".discriminate_by_replicate returns as expected for single max", {
+test_that(".discriminate_by_replicate removes single-row samples", {
     dates <- c(
         lubridate::dmy("01/08/2020"),
         lubridate::dmy("01/08/2020"),
@@ -321,15 +320,14 @@ test_that(".discriminate_by_replicate returns as expected for single max", {
         Replicate = c(1, 1, 2, 1, 2, 3)
     )
     result <- .discriminate_by_replicate(
-        df, "ReplicateNumber",
-        c("ProjectID", "SubjectID")
+        df, c("ProjectID", "SubjectID")
     )
     expect_true(result$check == TRUE)
     df <- df |> dplyr::filter(.data$SubjectID == "subj2")
     expect_equal(result$data, df)
 })
 
-test_that(".discriminate_by_replicate returns as expected for not max", {
+test_that(".discriminate_by_replicate retains every multi-row sample", {
     dates <- c(
         lubridate::dmy("01/08/2020"),
         lubridate::dmy("01/08/2020"),
@@ -350,11 +348,35 @@ test_that(".discriminate_by_replicate returns as expected for not max", {
         Replicate = c(1, 2, 2, 1, 2, 3)
     )
     result <- .discriminate_by_replicate(
-        df, "ReplicateNumber",
-        c("ProjectID", "SubjectID")
+        df, c("ProjectID", "SubjectID")
     )
-    expect_true(result$check == FALSE)
-    expect_null(result$data)
+    expect_true(result$check)
+    expected <- df |>
+        dplyr::filter(.data$SubjectID %in% c("subj1", "subj2"))
+    expect_equal(result$data, expected)
+})
+
+test_that(".discriminate_by_replicate leaves supported samples unchanged", {
+    df <- example_collision_event(
+        seqCount = c(50, 50, 40, 40),
+        SubjectID = c("subj1", "subj1", "subj2", "subj2")
+    ) |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
+    result <- .discriminate_by_replicate(
+        df, c("ProjectID", "SubjectID")
+    )
+    expect_false(result$check)
+    expect_equal(result$data, df)
+})
+
+test_that(".discriminate_by_replicate can remove all samples", {
+    df <- example_collision_event(seqCount = c(50, 40)) |>
+        dplyr::select(-dplyr::all_of(mandatory_IS_vars()))
+    result <- .discriminate_by_replicate(
+        df, c("ProjectID", "SubjectID")
+    )
+    expect_true(result$check)
+    expect_equal(nrow(result$data), 0)
 })
 
 #------------------------------------------------------------------------------#
@@ -526,74 +548,82 @@ test_that(".discriminate_by_fold_abundance uses custom threshold and validates a
 #------------------------------------------------------------------------------#
 # Tests .four_step_check
 #------------------------------------------------------------------------------#
-test_that(".four_step_check applies fold before temporal ordering", {
+test_that(".four_step_check applies fold before row-count filtering", {
     ex <- example_collision_event(
-        seqCount = c(5, 100),
-        SubjectID = c("early", "late"),
-        SequencingDate = lubridate::dmy(c("01/08/2020", "05/08/2020"))
+        seqCount = c(5, 60, 40),
+        SubjectID = c("low", "high", "high")
     )
     res <- .four_step_check(ex,
-        date_col = "SequencingDate",
-        repl_col = "ReplicateNumber",
         fold_threshold = 10,
         seqCount_col = "seqCount",
         ind_sample_key = c("ProjectID", "SubjectID")
     )
-    expect_equal(res$data$SubjectID, "late")
-    expect_equal(res$data$seqCount, 100)
+    expect_true(all(res$data$SubjectID == "high"))
+    expect_equal(res$data$seqCount, c(60, 40))
     expect_equal(res$reassigned, 1)
     expect_equal(res$removed, 0)
 })
 
-test_that(".four_step_check applies temporal ordering after unresolved fold", {
+test_that(".four_step_check retains multiple supported samples", {
     ex <- example_collision_event(
-        seqCount = c(10, 90),
-        SubjectID = c("early", "late"),
-        SequencingDate = lubridate::dmy(c("01/08/2020", "05/08/2020"))
-    )
-    res <- .four_step_check(ex,
-        date_col = "SequencingDate",
-        repl_col = "ReplicateNumber",
-        fold_threshold = 10,
-        seqCount_col = "seqCount",
-        ind_sample_key = c("ProjectID", "SubjectID")
-    )
-    expect_equal(res$data$SubjectID, "early")
-    expect_equal(res$data$seqCount, 10)
-    expect_equal(res$reassigned, 1)
-    expect_equal(res$removed, 0)
-})
-
-test_that(".four_step_check removes only fold-resolved samples before date", {
-    ex <- example_collision_event(
-        seqCount = c(100, 20, 5),
-        SubjectID = c("late", "early", "removed"),
+        seqCount = c(50, 50, 45, 45, 20),
+        SubjectID = c("subj1", "subj1", "subj2", "subj2", "single"),
         SequencingDate = lubridate::dmy(c(
-            "05/08/2020", "01/08/2020", "03/08/2020"
+            "05/08/2020", "05/08/2020", "01/08/2020", "01/08/2020",
+            "03/08/2020"
         ))
     )
     res <- .four_step_check(ex,
-        date_col = "SequencingDate",
-        repl_col = "ReplicateNumber",
         fold_threshold = 10,
         seqCount_col = "seqCount",
         ind_sample_key = c("ProjectID", "SubjectID")
     )
-    expect_equal(res$data$SubjectID, "early")
-    expect_equal(res$data$seqCount, 20)
+    expect_setequal(unique(res$data$SubjectID), c("subj1", "subj2"))
+    expect_equal(nrow(res$data), 4)
     expect_equal(res$reassigned, 1)
     expect_equal(res$removed, 0)
 })
 
-test_that(".four_step_check removes integration if fold and date are unresolved", {
+test_that(".four_step_check ignores sequencing date", {
     ex <- example_collision_event(
-        seqCount = c(50, 50),
-        SubjectID = c("subj1", "subj2"),
-        SequencingDate = lubridate::dmy(c("05/08/2020", "05/08/2020"))
+        seqCount = c(50, 50, 50, 50),
+        SubjectID = c("late", "late", "early", "early"),
+        SequencingDate = lubridate::dmy(c(
+            "05/08/2020", "05/08/2020", "01/08/2020", "01/08/2020"
+        ))
     )
     res <- .four_step_check(ex,
-        date_col = "SequencingDate",
-        repl_col = "ReplicateNumber",
+        fold_threshold = 10,
+        seqCount_col = "seqCount",
+        ind_sample_key = c("ProjectID", "SubjectID")
+    )
+    expect_setequal(unique(res$data$SubjectID), c("early", "late"))
+    expect_equal(nrow(res$data), 4)
+    expect_equal(res$reassigned, 1)
+    expect_equal(res$removed, 0)
+})
+
+test_that(".four_step_check removes integration if all samples have one row", {
+    ex <- example_collision_event(
+        seqCount = c(50, 50),
+        SubjectID = c("subj1", "subj2")
+    )
+    res <- .four_step_check(ex,
+        fold_threshold = 10,
+        seqCount_col = "seqCount",
+        ind_sample_key = c("ProjectID", "SubjectID")
+    )
+    expect_null(res$data)
+    expect_equal(res$reassigned, 0)
+    expect_equal(res$removed, 1)
+})
+
+test_that(".four_step_check filters a fold winner with only one row", {
+    ex <- example_collision_event(
+        seqCount = c(100, 5),
+        SubjectID = c("high", "low")
+    )
+    res <- .four_step_check(ex,
         fold_threshold = 10,
         seqCount_col = "seqCount",
         ind_sample_key = c("ProjectID", "SubjectID")
@@ -623,26 +653,31 @@ example_collisions_multi <- function() {
     dplyr::bind_rows(
         collision(
             chr = 1, locus = 103948, strand = "+",
-            seqCount = c(5, 100),
-            SubjectID = c("early", "late"),
-            SequencingDate = lubridate::dmy(c("01/08/2020", "05/08/2020"))
+            seqCount = c(5, 60, 40),
+            SubjectID = c("low", "high", "high"),
+            SequencingDate = lubridate::dmy(c(
+                "01/08/2020", "05/08/2020", "05/08/2020"
+            ))
         ),
         collision(
             chr = 2, locus = 14390, strand = "+",
-            seqCount = c(100, 10),
-            SubjectID = c("high", "low"),
-            SequencingDate = lubridate::dmy(c("05/08/2020", "01/08/2020"))
+            seqCount = c(50, 40, 45, 45, 20),
+            SubjectID = c("multi1", "multi1", "multi2", "multi2", "single"),
+            SequencingDate = lubridate::dmy(c(
+                "05/08/2020", "05/08/2020", "01/08/2020", "01/08/2020",
+                "03/08/2020"
+            ))
         ),
         collision(
             chr = 3, locus = 12453, strand = "-",
-            seqCount = c(90, 10),
-            SubjectID = c("late", "early"),
+            seqCount = c(50, 50),
+            SubjectID = c("single1", "single2"),
             SequencingDate = lubridate::dmy(c("05/08/2020", "01/08/2020"))
         ),
         collision(
             chr = 4, locus = 12353, strand = "-",
-            seqCount = c(50, 50),
-            SubjectID = c("tie1", "tie2"),
+            seqCount = c(100, 5),
+            SubjectID = c("high", "low"),
             SequencingDate = lubridate::dmy(c("05/08/2020", "05/08/2020"))
         )
     )
@@ -653,49 +688,34 @@ ex_collisions_multi <- example_collisions_multi()
 test_that(".process_collisions returns updated collisions", {
     result <- .process_collisions(
         collisions = ex_collisions_multi,
-        date_col = "SequencingDate",
         fold_threshold = 10,
         seqCount_col = "seqCount",
-        repl_col = "ReplicateNumber",
         ind_sample_key = c("ProjectID", "SubjectID"),
         max_workers = 1
     )
     coll <- result$coll
     removed <- result$removed
     reassigned <- result$reassigned
-    expect_true(removed == 1)
-    expect_true(reassigned == 3)
-    # Removed integration should not be in the result
-    rem_integration <- coll |>
-        dplyr::filter(
-            .data$chr == 4, .data$integration_locus == 12353,
-            .data$strand == "-"
-        )
-    expect_true(nrow(rem_integration) == 0)
+    expect_equal(removed, 2)
+    expect_equal(reassigned, 2)
+    # Third and fourth integrations should not be in the result.
+    expect_false(any(coll$chr %in% c("3", "4")))
     # First integration expected result
     first <- coll |>
         dplyr::filter(
             .data$chr == 1, .data$integration_locus == 103948,
             .data$strand == "+"
         )
-    expect_true(all(first$SubjectID == "late"))
-    expect_true(nrow(first) == 1)
+    expect_true(all(first$SubjectID == "high"))
+    expect_equal(nrow(first), 2)
     # Second integration expected result
     second <- coll |>
         dplyr::filter(
             .data$chr == 2, .data$integration_locus == 14390,
             .data$strand == "+"
         )
-    expect_true(all(second$SubjectID == "high"))
-    expect_true(nrow(second) == 1)
-    # Third integration expected result
-    third <- coll |>
-        dplyr::filter(
-            .data$chr == 3, .data$integration_locus == 12453,
-            .data$strand == "-"
-        )
-    expect_true(all(third$SubjectID == "early"))
-    expect_true(nrow(third) == 1)
+    expect_setequal(unique(second$SubjectID), c("multi1", "multi2"))
+    expect_equal(nrow(second), 4)
 })
 
 
@@ -754,20 +774,17 @@ test_that(".collisions_check_input_af works as expected", {
     ## NULL or empty independent sample key throws error
     expect_error({
         checks <- .collisions_check_input_af(minimal_test_coll_meta,
-            date_col = "SequencingDate",
             independent_sample_id = NULL
         )
     })
     expect_error({
         checks <- .collisions_check_input_af(minimal_test_coll_meta,
-            date_col = "SequencingDate",
             independent_sample_id = c()
         )
     })
     ## Throws error if user input cols are not in af
     expect_error({
         checks <- .collisions_check_input_af(minimal_test_coll_meta,
-            date_col = "SequencingDate",
             independent_sample_id = c("A", "B")
         )
     })
@@ -777,33 +794,22 @@ test_that(".collisions_check_input_af works as expected", {
         checks <- .collisions_check_input_af(
             minimal_test_coll_meta |>
                 dplyr::rename(Project = "ProjectID"),
-            date_col = "SequencingDate",
             independent_sample_id = c("SubjectID")
         )
     })
-    ## Throws error if date column is not a date
-    expect_error(
-        {
-            checks <- .collisions_check_input_af(
-                minimal_test_coll_meta |>
-                    dplyr::mutate(SequencingDate = as.character(
-                        .data$SequencingDate
-                    )),
-                date_col = "SequencingDate",
-                independent_sample_id = c("SubjectID")
-            )
-        },
-        class = "not_date_coll_err"
-    )
-    ## Throws error if date col contains NA
-    expect_error({
-        mod_af <- minimal_test_coll_meta
-        mod_af[1, ]$SequencingDate <- NA
-        checks <- .collisions_check_input_af(mod_af,
-            date_col = "SequencingDate",
-            independent_sample_id = c("ProjectID", "SubjectID")
+    ## Date and replicate columns are no longer required.
+    minimal_af <- minimal_test_coll_meta |>
+        dplyr::select(
+            "ProjectID", "PoolID", "SubjectID", "CompleteAmplificationID"
         )
-    })
+    checks <- .collisions_check_input_af(
+        minimal_af,
+        independent_sample_id = c("ProjectID", "SubjectID")
+    )
+    expect_setequal(
+        checks$tag,
+        c("project_id", "pool_id", "pcr_repl_id")
+    )
 })
 
 #------------------------------------------------------------------------------#
@@ -815,8 +821,8 @@ test_that(".summary_input returns info correctly", {
         c("seqCount", "fragmentEstimate")
     )
     expect_equal(summary$total_iss, 4)
-    expect_equal(summary$quant_totals$seqCount, 415)
-    expect_equal(summary$quant_totals$fragmentEstimate, 12)
+    expect_equal(summary$quant_totals$seqCount, 510)
+    expect_equal(summary$quant_totals$fragmentEstimate, 27)
 })
 
 #------------------------------------------------------------------------------#
@@ -849,7 +855,11 @@ test_that("remove_collisions succeeds", {
             .data$integration_locus == 23435,
             .data$strand == "+"
         )
-    expect_equal(nrow(removed_collision), 0)
+    expect_equal(nrow(removed_collision), 2)
+    expect_setequal(
+        removed_collision$CompleteAmplificationID,
+        c("SAMPLE1", "SAMPLE2")
+    )
     expect_equal(colnames(coll_rem), colnames(minimal_test_coll))
     expect_false(any(c("sum", "remove_by_fold") %in% colnames(coll_rem)))
 })
@@ -858,18 +868,19 @@ test_that("remove_collisions propagates fold_threshold", {
     coll_matrix <- tibble::tribble(
         ~chr, ~integration_locus, ~strand, ~CompleteAmplificationID,
         ~seqCount, ~fragmentEstimate,
-        "1", 1000, "+", "SAMPLE1", 20, 20,
-        "1", 1000, "+", "SAMPLE2", 100, 100
+        "1", 1000, "+", "SAMPLE1", 10, 10,
+        "1", 1000, "+", "SAMPLE2", 10, 10,
+        "1", 1000, "+", "SAMPLE3", 50, 50,
+        "1", 1000, "+", "SAMPLE4", 50, 50
     )
     coll_meta <- tibble::tribble(
-        ~ProjectID, ~PoolID, ~SubjectID, ~SequencingDate, ~ReplicateNumber,
-        ~CompleteAmplificationID,
-        "PJ1", "POOL1", "early", lubridate::as_date("2020-01-01"), 1,
-        "SAMPLE1",
-        "PJ1", "POOL1", "late", lubridate::as_date("2020-02-01"), 1,
-        "SAMPLE2"
+        ~ProjectID, ~PoolID, ~SubjectID, ~CompleteAmplificationID,
+        "PJ1", "POOL1", "subject1", "SAMPLE1",
+        "PJ1", "POOL1", "subject1", "SAMPLE2",
+        "PJ1", "POOL1", "subject2", "SAMPLE3",
+        "PJ1", "POOL1", "subject2", "SAMPLE4"
     )
-    temporal_result <- remove_collisions(
+    loose_result <- remove_collisions(
         coll_matrix,
         association_file = coll_meta,
         fold_threshold = 10,
@@ -883,8 +894,14 @@ test_that("remove_collisions propagates fold_threshold", {
         report_path = NULL,
         max_workers = 1
     )
-    expect_equal(temporal_result$CompleteAmplificationID, "SAMPLE1")
-    expect_equal(fold_result$CompleteAmplificationID, "SAMPLE2")
+    expect_setequal(
+        loose_result$CompleteAmplificationID,
+        c("SAMPLE1", "SAMPLE2", "SAMPLE3", "SAMPLE4")
+    )
+    expect_setequal(
+        fold_result$CompleteAmplificationID,
+        c("SAMPLE3", "SAMPLE4")
+    )
 })
 
 test_that("remove_collisions leaves data without collisions unchanged", {

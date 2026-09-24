@@ -26,7 +26,8 @@ named list of matrices (names must be quantification types)}
 \item{independent_sample_id}{A character vector of column names that
 identify independent samples}
 
-\item{date_col}{The date column that should be considered.}
+\item{date_col}{Deprecated and ignored. Kept for backward compatibility;
+dates are no longer used to resolve collisions.}
 
 \item{reads_ratio}{Deprecated alias for \code{fold_threshold}, kept for backward
 compatibility. If both parameters are supplied they must have the same value.}
@@ -40,15 +41,16 @@ values are the names of the corresponding columns. The quantification
 collision, the sequence count values are summed within independent samples
 and compared to the maximum summed sequence count observed for the same
 integration. Observations from independent samples with
-\code{max(seqCount) / seqCount >= fold_threshold} are removed before applying the
-temporal rule. The default is 10, and a ratio exactly equal to the threshold
-is considered sufficient for removal. If more than one independent sample is
-not clearly separated by this fold rule, only those remaining observations
-are passed to the temporal rule. Zero sequence counts are allowed: if the
-maximum abundance is positive, zero-abundance observations are removed by the
-fold rule; if all abundances are zero, the fold rule is unresolved and the
-temporal rule is used. Missing, non-finite or negative sequence counts are
-rejected.}
+\code{max(seqCount) / seqCount >= fold_threshold} are removed. The default is 10,
+and a ratio exactly equal to the threshold is considered sufficient for
+removal. After the fold rule, each remaining independent sample is filtered
+by row count: samples represented by exactly one row are removed, while all
+samples represented by at least two rows are retained. Consequently, the
+same integration can remain in multiple independent samples. Zero sequence
+counts are allowed: if the maximum abundance is positive, zero-abundance
+observations are removed by the fold rule; if all abundances are zero, all
+observations proceed to row-count filtering. Missing, non-finite or negative
+sequence counts are rejected.}
 
 \item{report_path}{The path where the report file should be saved.
 Can be a folder or \code{NULL} if no report should be produced.
@@ -68,10 +70,10 @@ Either a multi-quantification matrix or a list of data frames
 A collision is an integration (aka a unique combination of the provided
 \code{mandatory_IS_vars()}) which is observed in more than one
 independent sample.
-The function tries to decide to which independent sample should
-an integration event be assigned to, and if no
-decision can be taken, the integration is completely removed from the data
-frame.
+The function removes collision observations that have insufficient support.
+The same integration can remain assigned to more than one independent sample
+when multiple samples pass all filtering rules. If no observation passes,
+the integration is completely removed from the data frame.
 For more details refer to the vignette "Collision removal functionality":
 \code{vignette("workflow_start", package = "ISAnalytics")}
 }
@@ -81,7 +83,6 @@ The function will explicitly check for the presence of these tags:
 \itemize{
 \item project_id
 \item pool_id
-\item pcr_replicate
 }
 }
 

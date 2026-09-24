@@ -444,7 +444,7 @@ available_tags <- function() {
             c("generate_Vispa2_launch_AF"),
             c(),
             c(),
-            c("import_association_file", "remove_collisions"),
+            c("import_association_file"),
             c(),
             c(
                 "import_association_file", "generate_Vispa2_launch_AF",

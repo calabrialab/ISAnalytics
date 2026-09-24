@@ -2774,14 +2774,13 @@
 # - Returns the selected and found tags if no errors are raised
 .collisions_check_input_af <- function(
         association_file,
-        date_col,
         independent_sample_id) {
     stopifnot(is.data.frame(association_file))
     stopifnot(is.character(independent_sample_id) &&
         !purrr::is_empty(independent_sample_id))
     af_specs <- association_file_columns(TRUE)
     ## Check if input columns are present actual af
-    user_input_cols <- unique(c(independent_sample_id, date_col))
+    user_input_cols <- unique(independent_sample_id)
     if (!all(user_input_cols %in%
         colnames(association_file))) {
         missing_cols <- user_input_cols[!user_input_cols %in%
@@ -2792,7 +2791,6 @@
     required_tags <- list(
         project_id = "char",
         pool_id = "char",
-        pcr_replicate = c("int", "numeric"),
         pcr_repl_id = "char"
     )
     req_tag_cols <- .check_required_cols(required_tags, af_specs, "error")
@@ -2800,14 +2798,6 @@
         rlang::abort(.missing_af_needed_cols(req_tag_cols$names[
             !req_tag_cols$names %in% colnames(association_file)
         ]))
-    }
-    ## Check date_col
-    if (!lubridate::is.Date(association_file[[date_col]])) {
-        not_date_err <- c(paste0("'", date_col, "'", " is not a date vector"))
-        rlang::abort(not_date_err, class = "not_date_coll_err")
-    }
-    if (any(is.na(association_file[[date_col]]))) {
-        rlang::abort(.na_in_date_col())
     }
     return(req_tag_cols)
 }
@@ -2934,7 +2924,7 @@
 # values are summed within independent samples, compared with the maximum
 # abundance observed for the same integration, and observations at least
 # `fold_threshold` times below the maximum are removed. Observations not clearly
-# separated by fold difference are kept for temporal discrimination.
+# separated by fold difference are kept for row-count filtering.
 #
 # @param x - All metadata associated with a single collision event in
 #            a data frame format (does not contain mandatory IS vars)
@@ -2978,12 +2968,10 @@
     list(data = filtered, check = any(temp$remove_by_fold))
 }
 
-# Internal for date discrimination in collision removal.
+# Legacy helper for date discrimination in collision removal.
 #
-# It's the temporal step in the algorithm for collision removal: it tries to
-# find a single sample who has an associated date which is earlier than any
-# other. If comparison is not possible the analysis fails and returns the
-# original input data.
+# This helper is retained for historical compatibility but is not used by the
+# active collision-removal workflow.
 #
 # @param x - All metadata associated with a single collision event in
 #            a data frame format (does not contain mandatory IS vars)
@@ -3014,37 +3002,34 @@
     return(list(data = x, check = TRUE))
 }
 
-# Internal for replicate discrimination in collision removal.
+# Internal for row-count filtering in collision removal.
 #
-# Legacy helper for replicate-based discrimination in collision removal.
-# Grouping by independent sample it counts the number of rows (replicates)
-# found for each group, orders them from biggest to smallest and, if a single
-# group has more rows than any other group, the integration is assigned to that
-# sample. The current collision-removal workflow resolves collisions by fold
-# abundance first and then by date, so this helper is retained for compatibility
-# with internal tests and historical behaviour checks.
+# Grouping by independent sample, it counts the number of rows found for each
+# group. Independent samples supported by a single row are removed, while all
+# samples supported by at least two rows are retained. More than one independent
+# sample may therefore retain the same integration.
 #
 # @param x - All metadata associated with a single collision event in
 #            a data frame format (does not contain mandatory IS vars)
-# @param repl_col - The name of the column containing the replicate number
 # @param ind_sample_key - character vector containing the columns that identify
 #                       independent samples
 # @return A named list with:
-# * $data: a data frame, containing the data (unmodified or modified)
-# * $check: a logical value indicating whether the analysis was successful or
-# not (and therefore there is the need to perform the next step)
-.discriminate_by_replicate <- function(x, repl_col, ind_sample_key) {
+# * $data: a data frame containing observations from samples with at least two
+# rows
+# * $check: a logical value indicating whether at least one single-row sample
+# was removed
+.discriminate_by_replicate <- function(
+        x,
+        ind_sample_key) {
     temp <- x |>
         dplyr::group_by(dplyr::across(dplyr::all_of(ind_sample_key))) |>
-        dplyr::summarise(N = dplyr::n(), .groups = "drop") |>
-        dplyr::arrange(dplyr::desc(.data$N))
-    if (length(temp$N) != 1 & !temp$N[1] > temp$N[2]) {
-        return(list(data = NULL, check = FALSE))
-    }
-    temp <- temp[1, ind_sample_key]
-    x <- x |>
-        dplyr::semi_join(temp, by = ind_sample_key)
-    return(list(data = x, check = TRUE))
+        dplyr::summarise(N = dplyr::n(), .groups = "drop")
+    to_keep <- temp |>
+        dplyr::filter(.data$N > 1) |>
+        dplyr::select(dplyr::all_of(ind_sample_key))
+    filtered <- x |>
+        dplyr::semi_join(to_keep, by = ind_sample_key)
+    list(data = filtered, check = any(temp$N == 1))
 }
 
 # Internal for sequence count discrimination in collision removal.
@@ -3089,30 +3074,26 @@
     return(list(data = x, check = TRUE))
 }
 
-# Internal function that performs fold-first collision resolution for
-# a single integration.
+# Internal function that performs fold and row-count filtering for a single
+# integration.
 #
 # @param x - Represents the sub-table containing coordinates
 #            and metadata about a SINGLE collision event (same values for
 #            mandatory IS vars)
-# @param date_col The date column to consider
-# @param repl_col - The name of the column containing the replicate number
 # @param fold_threshold The fold difference required to remove less abundant
-# independent samples before temporal discrimination
+# independent samples before row-count filtering
 # @param seqCount_col The name of the sequence count column (support
 # for multi quantification matrix)
 # @param ind_sample_key - character vector containing the columns that identify
 #                         independent samples
 # @return A list with:
-# * $data: an updated tibble with processed collisions or NULL if no
-# criteria was sufficient
-# * $reassigned: 1 if the integration was successfully reassigned, 0 otherwise
-# * $removed: 1 if the integration is removed entirely because no criteria was
-# met, 0 otherwise
+# * $data: an updated tibble with processed collisions or NULL if no independent
+# sample remains
+# * $reassigned: 1 if the integration is retained in at least one independent
+# sample, 0 otherwise
+# * $removed: 1 if the integration is removed entirely, 0 otherwise
 .four_step_check <- function(
         x,
-        date_col,
-        repl_col,
         fold_threshold,
         seqCount_col,
         ind_sample_key,
@@ -3124,33 +3105,25 @@
         current_data, fold_threshold, seqCount_col, ind_sample_key
     )
     current_data <- result$data
-    sample_n <- current_data |>
-        dplyr::distinct(dplyr::across(dplyr::all_of(ind_sample_key))) |>
-        nrow()
-    if (sample_n == 1) {
-        coordinates <- x[seq_len(nrow(current_data)), mandatory_IS_vars()]
-        res <- dplyr::bind_cols(coordinates, current_data)
+    # Then remove the integration from samples supported by a single row.
+    result <- .discriminate_by_replicate(
+        current_data, ind_sample_key
+    )
+    current_data <- result$data
+    # If no sample survives both filters, remove the integration entirely.
+    if (nrow(current_data) == 0) {
         if (!is.null(progress)) {
             progress()
         }
-        return(list(data = res, reassigned = 1, removed = 0))
+        return(list(data = NULL, reassigned = 0, removed = 1))
     }
-    # If the fold rule leaves more than one plausible sample, try date.
-    result <- .discriminate_by_date(current_data, date_col, ind_sample_key)
-    if (result$check == TRUE) {
-        current_data <- result$data
-        coordinates <- x[seq_len(nrow(current_data)), mandatory_IS_vars()]
-        res <- dplyr::bind_cols(coordinates, current_data)
-        if (!is.null(progress)) {
-            progress()
-        }
-        return(list(data = res, reassigned = 1, removed = 0))
-    }
-    # If fold and date checks fail, remove the integration from all subjects.
+    # Keep all surviving samples, including multiple independent samples.
+    coordinates <- x[seq_len(nrow(current_data)), mandatory_IS_vars()]
+    res <- dplyr::bind_cols(coordinates, current_data)
     if (!is.null(progress)) {
         progress()
     }
-    return(list(data = NULL, reassigned = 0, removed = 1))
+    list(data = res, reassigned = 1, removed = 0)
 }
 
 
@@ -3158,11 +3131,9 @@
 # parallelized.
 # @return A list containing the updated collisions, a numeric value
 # representing the number of integrations removed and a numeric value
-# representing the number of integrations reassigned
+# representing the number of integrations retained after filtering
 .process_collisions <- function(
         collisions,
-        date_col,
-        repl_col,
         fold_threshold,
         seqCount_col,
         ind_sample_key,
@@ -3175,8 +3146,6 @@
         data_list = split_data,
         fun_to_apply = .four_step_check,
         fun_args = list(
-            date_col = date_col,
-            repl_col = repl_col,
             fold_threshold = fold_threshold,
             seqCount_col = seqCount_col,
             ind_sample_key = ind_sample_key
@@ -3319,7 +3288,6 @@
         removed, reassigned,
         joined, post_joined, pool_col,
         final_matr,
-        replicate_n_col,
         independent_sample_id,
         seq_count_col) {
     input_summary <- .summary_input(x, quant_cols)

@@ -9,10 +9,10 @@
 #' A collision is an integration (aka a unique combination of the provided
 #' `mandatory_IS_vars()`) which is observed in more than one
 #' independent sample.
-#' The function tries to decide to which independent sample should
-#' an integration event be assigned to, and if no
-#' decision can be taken, the integration is completely removed from the data
-#' frame.
+#' The function removes collision observations that have insufficient support.
+#' The same integration can remain assigned to more than one independent sample
+#' when multiple samples pass all filtering rules. If no observation passes,
+#' the integration is completely removed from the data frame.
 #' For more details refer to the vignette "Collision removal functionality":
 #' \code{vignette("workflow_start", package = "ISAnalytics")}
 #'
@@ -22,7 +22,8 @@
 #' `import_association_file()`
 #' @param independent_sample_id A character vector of column names that
 #' identify independent samples
-#' @param date_col The date column that should be considered.
+#' @param date_col Deprecated and ignored. Kept for backward compatibility;
+#' dates are no longer used to resolve collisions.
 #' @param reads_ratio Deprecated alias for `fold_threshold`, kept for backward
 #' compatibility. If both parameters are supplied they must have the same value.
 #' @param quant_cols A named character vector where names are
@@ -33,15 +34,16 @@
 #' collision, the sequence count values are summed within independent samples
 #' and compared to the maximum summed sequence count observed for the same
 #' integration. Observations from independent samples with
-#' `max(seqCount) / seqCount >= fold_threshold` are removed before applying the
-#' temporal rule. The default is 10, and a ratio exactly equal to the threshold
-#' is considered sufficient for removal. If more than one independent sample is
-#' not clearly separated by this fold rule, only those remaining observations
-#' are passed to the temporal rule. Zero sequence counts are allowed: if the
-#' maximum abundance is positive, zero-abundance observations are removed by the
-#' fold rule; if all abundances are zero, the fold rule is unresolved and the
-#' temporal rule is used. Missing, non-finite or negative sequence counts are
-#' rejected.
+#' `max(seqCount) / seqCount >= fold_threshold` are removed. The default is 10,
+#' and a ratio exactly equal to the threshold is considered sufficient for
+#' removal. After the fold rule, each remaining independent sample is filtered
+#' by row count: samples represented by exactly one row are removed, while all
+#' samples represented by at least two rows are retained. Consequently, the
+#' same integration can remain in multiple independent samples. Zero sequence
+#' counts are allowed: if the maximum abundance is positive, zero-abundance
+#' observations are removed by the fold rule; if all abundances are zero, all
+#' observations proceed to row-count filtering. Missing, non-finite or negative
+#' sequence counts are rejected.
 #' @param max_workers Maximum number of parallel workers to distribute the
 #' workload. If `NULL` (default) produces the maximum amount of workers allowed,
 #' a numeric value is requested otherwise. WARNING: a higher number of workers
@@ -99,11 +101,8 @@ remove_collisions <- function(
     ### --- For matrices
     mode <- .collisions_check_input_matrices(x, quant_cols)
     ### --- For AF
-    stopifnot(is.character(date_col))
-    date_col <- date_col[1]
     req_tag_cols <- .collisions_check_input_af(
         association_file,
-        date_col,
         independent_sample_id
     )
     ### --- Other checks
@@ -171,9 +170,6 @@ remove_collisions <- function(
 
     # Begin workflow
     ## - Join based on pcr identifier
-    replicate_n_col <- req_tag_cols |>
-        dplyr::filter(.data$tag == "pcr_replicate") |>
-        dplyr::pull(.data$names)
     pool_col <- req_tag_cols |>
         dplyr::filter(.data$tag == "pool_id") |>
         dplyr::pull(.data$names)
@@ -181,8 +177,7 @@ remove_collisions <- function(
         dplyr::left_join(association_file, by = pcr_col) |>
         dplyr::select(dplyr::all_of(
             c(
-                colnames(pre_process), date_col,
-                replicate_n_col, independent_sample_id, pool_col
+                colnames(pre_process), independent_sample_id, pool_col
             )
         ))
     if (verbose) {
@@ -210,10 +205,8 @@ remove_collisions <- function(
     }
     fixed_collisions <- .process_collisions(
         collisions = split_df$collisions,
-        date_col = date_col,
         fold_threshold = fold_threshold,
         seqCount_col = seq_count_col,
-        repl_col = replicate_n_col,
         ind_sample_key = independent_sample_id,
         max_workers = max_workers
     )
@@ -230,8 +223,7 @@ remove_collisions <- function(
         post_joined <- final_matr |>
             dplyr::left_join(association_file, by = pcr_col)
         post_joined <- post_joined[, c(
-            colnames(final_matr), date_col,
-            replicate_n_col, independent_sample_id, pool_col
+            colnames(final_matr), independent_sample_id, pool_col
         )]
         summaries <- .collisions_obtain_report_summaries(
             x = x, association_file = association_file,
@@ -242,7 +234,7 @@ remove_collisions <- function(
             joined = joined,
             final_matr = final_matr,
             post_joined = post_joined,
-            pool_col = pool_col, replicate_n_col = replicate_n_col,
+            pool_col = pool_col,
             independent_sample_id = independent_sample_id,
             seq_count_col = seq_count_col
         )

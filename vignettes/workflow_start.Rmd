@@ -789,11 +789,13 @@ integration are removed from that collision event. The default
 abundant observation. When several independent samples remain close to the
 maximum, they all pass this step.
 
-The temporal rule is applied only after this abundance comparison, and only to
-the observations that were not resolved by the fold rule. If it is possible to
-identify a unique earliest date, the integration is re-assigned to that
-independent sample. If the fold comparison and the temporal rule are both
-insufficient to make a decision, the integration is removed from the matrix.
+After the abundance comparison, the function counts the rows associated with
+each remaining independent sample. The integration is removed from samples
+represented by a single row and retained in all samples represented by at
+least two rows. The sequencing date is not used. As a consequence, a collision
+can remain associated with more than one independent sample after processing.
+The integration is removed entirely only when no independent sample passes
+both filters.
 
 ### Usage
 

@@ -271,18 +271,18 @@ gauge(coll_id_ratio, min = 0, max = 100, symbol = "%", gaugeSectors(
 
 Col2
 -------------------------------------------------------------------------------
-### Collisions re-assigned
+### Collisions retained after filtering
 ```{r echo=FALSE}
 valueBox(value = coll_info$reassigned, icon = "fa-recycle")
 ```
 
-### Collisions re-assigned (% on pre-processing matrix)
+### Collisions retained (% on pre-processing matrix)
 ```{r echo=FALSE}
 ra_ratio_pre <- round((coll_info$reassigned / pre_matrix_info$total_iss) * 100, digits = 2)
 gauge(ra_ratio_pre, min = 0, max = 100, symbol = "%")
 ```
 
-### Collisions re-assigned (% on collisions)
+### Collisions retained (% on collisions)
 ```{r echo=FALSE}
 ra_ratio_coll <- round((coll_info$reassigned / coll_info$coll_n) * 100, digits = 2)
 gauge(ra_ratio_coll, min = 0, max = 100, symbol = "%")
@@ -434,4 +434,3 @@ Row1 {data-height=600}
 ```{r attr.output='style="max-height: 580px;"'}
 sessionInfo()
 ```
-
